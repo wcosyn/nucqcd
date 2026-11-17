@@ -40,10 +40,11 @@ execute_process(COMMAND readlink -f Cuba
 include(ExternalProject)
 ExternalProject_Add(Cuba
 					SOURCE_DIR ${Cuba_dir}
-					CONFIGURE_COMMAND ${Cuba_dir}/configure --prefix=${CMAKE_CURRENT_BINARY_DIR}/Cuba-install --libdir=${CMAKE_SOURCE_DIR}/lib 
+					# Cuba is old C code (typedef enum {false,true} bool): gcc>=15 defaults to C23 where these are keywords
+					CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env "CFLAGS=-O3 -std=gnu17" ${Cuba_dir}/configure --prefix=${CMAKE_CURRENT_BINARY_DIR}/Cuba-install --libdir=${CMAKE_SOURCE_DIR}/lib 
 					BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/Cuba-build
-					BUILD_COMMAND make lib
-					INSTALL_COMMAND make install
+					BUILD_COMMAND make -j1 lib
+					INSTALL_COMMAND make -j1 install
 					)
 
 ############################

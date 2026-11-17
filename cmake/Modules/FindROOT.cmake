@@ -12,10 +12,8 @@
 
 MESSAGE(STATUS "Looking for Root...")
 
-execute_process(COMMAND root-config --bindir
-	OUTPUT_VARIABLE ROOT_CONFIG_SEARCHPATH
-	OUTPUT_STRIP_TRAILING_WHITESPACE)
-
+# prefer $ROOTSYS/bin (set by thisroot.sh), then fall back to root-config on the PATH
+set(ROOT_CONFIG_SEARCHPATH $ENV{ROOTSYS}/bin)
 ## Kept the Code below for now 
 ## if the above command execute_process works
 ## this can be deleted
@@ -36,6 +34,9 @@ SET(ROOT_CONFIG_EXECUTABLE ROOT_CONFIG_EXECUTABLE-NOTFOUND)
 FIND_PROGRAM(ROOT_CONFIG_EXECUTABLE NAMES root-config PATHS
    ${ROOT_CONFIG_SEARCHPATH}
    NO_DEFAULT_PATH)
+IF (NOT ROOT_CONFIG_EXECUTABLE)
+  FIND_PROGRAM(ROOT_CONFIG_EXECUTABLE NAMES root-config)
+ENDIF()
     
 IF (${ROOT_CONFIG_EXECUTABLE} MATCHES "ROOT_CONFIG_EXECUTABLE-NOTFOUND")
   MESSAGE( FATAL_ERROR "ROOT not installed in the searchpath and ROOTSYS is not set. Please
