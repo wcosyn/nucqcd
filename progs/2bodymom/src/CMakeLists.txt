@@ -1,45 +1,27 @@
-project(2body)
+# Camille's programs for the 2-nucleon knockout calculations.
 
-set(2b_SRCS 
-    sampler_HALLA.cpp sampler_PRL99_072501.cpp sampler_HALLB.cpp parser.cpp event.cpp GlauberGridThick_SCX.cpp GlauberGridThick_SEL.cpp ClassGridThick_SCX.cpp)
-
-
-#wrapper lib used in the python file MeanFieldNucleus.py in the same folder
-add_library(MeanFieldNucleusWrapper SHARED MeanFieldNucleusWrapper.cpp)
-target_include_directories(MeanFieldNucleusWrapper PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(MeanFieldNucleusWrapper Glauber)
-# set_target_properties(MeanFieldNucleusWrapper PROPERTIES ${MeanFieldNucleusWrapper_LIBRARY_PROPERTIES})
-
-    
-    
-# all programs that camille used
-add_executable(sampler sampler.cpp ${2b_SRCS})
-target_link_libraries(sampler Knockout Glauber MePhys ${CMAKE_SOURCE_DIR}/lib/libcuba.a)
-
-add_executable(2bodymom_new 2bodymom.cpp ${2b_SRCS})
-target_link_libraries(2bodymom_new Knockout Glauber MePhys ${CMAKE_SOURCE_DIR}/lib/libcuba.a)
-
-add_executable(SCX_test_new SCX_test.cpp ${2b_SRCS})
-target_link_libraries(SCX_test_new Knockout Glauber MePhys ${CMAKE_SOURCE_DIR}/lib/libcuba.a)
-
-add_executable(class_SCX class_SCX.cpp ${2b_SRCS})
-target_link_libraries(class_SCX Knockout Glauber MePhys ${CMAKE_SOURCE_DIR}/lib/libcuba.a)
-
-add_executable(sampler_test sampler_test.cpp ${2b_SRCS})
-target_link_libraries(sampler_test Knockout Glauber MePhys ${CMAKE_SOURCE_DIR}/lib/libcuba.a)
-
-
+# sources shared by all programs below: compiled once
+add_library(twobody_common OBJECT
+  sampler_HALLA.cpp sampler_PRL99_072501.cpp sampler_HALLB.cpp parser.cpp event.cpp
+  GlauberGridThick_SCX.cpp GlauberGridThick_SEL.cpp ClassGridThick_SCX.cpp)
+target_include_directories(twobody_common PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(twobody_common PUBLIC Knockout Glauber MePhys cuba)
 if(NOT BUILD_PROGS)
-set_target_properties(MeanFieldNucleusWrapper PROPERTIES EXCLUDE_FROM_ALL 1)
-set_target_properties(sampler PROPERTIES EXCLUDE_FROM_ALL 1)
-set_target_properties(sampler_test PROPERTIES EXCLUDE_FROM_ALL 1)
-set_target_properties(SCX_test_new PROPERTIES EXCLUDE_FROM_ALL 1)
-set_target_properties(class_SCX PROPERTIES EXCLUDE_FROM_ALL 1)
-set_target_properties(2bodymom_new PROPERTIES EXCLUDE_FROM_ALL 1)
+  set_target_properties(twobody_common PROPERTIES EXCLUDE_FROM_ALL ON)
 endif()
 
+physcode_add_program(sampler LINK twobody_common)
+physcode_add_program(sampler_test LINK twobody_common)
+physcode_add_program(2bodymom_new SOURCES 2bodymom.cpp LINK twobody_common)
+physcode_add_program(SCX_test_new SOURCES SCX_test.cpp LINK twobody_common)
+physcode_add_program(class_SCX LINK twobody_common)
+
+# wrapper library used by MeanFieldNucleus.py in this directory (installed next to it as well)
+add_library(MeanFieldNucleusWrapper SHARED MeanFieldNucleusWrapper.cpp)
+target_link_libraries(MeanFieldNucleusWrapper PRIVATE Glauber)
 if(BUILD_PROGS)
-install(TARGETS MeanFieldNucleusWrapper DESTINATION "${CMAKE_SOURCE_DIR}/lib")
-install(TARGETS MeanFieldNucleusWrapper DESTINATION  ${CMAKE_CURRENT_SOURCE_DIR})
-install(TARGETS sampler sampler_test SCX_test_new class_SCX 2bodymom_new DESTINATION "${CMAKE_SOURCE_DIR}/bin")
+  install(TARGETS MeanFieldNucleusWrapper LIBRARY DESTINATION lib)
+  install(TARGETS MeanFieldNucleusWrapper LIBRARY DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}")
+else()
+  set_target_properties(MeanFieldNucleusWrapper PROPERTIES EXCLUDE_FROM_ALL ON)
 endif()

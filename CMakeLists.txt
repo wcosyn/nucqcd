@@ -1,203 +1,123 @@
-#originaly written by Florian Uhlig
-#example of CMake script for compiling and linking root classse.  
-#To create an Xcode project:
-#   cmake -G Xcode ./ 
-#extracted from FairRoot project (fairroot.gsi.de) by M. Al-Turany (m.al-turany@gsi.de)
+# physics-code: libraries (Integrator, MePhys, Glauber, Knockout, DIS, Evolution, GPD) and programs.
+#
+#   cd build
+#   cmake -DCMAKE_BUILD_TYPE=Release [-DBUILD_PROGS=yes] [-DPARTONS_ENABLED=yes] ..
+#   make install -j4        # libraries -> <repo>/lib, programs -> <repo>/bin
+#   make doc                # Doxygen documentation
+#
+# Options: BUILD_PROGS, PARTONS_ENABLED, MPI_ENABLED, STATIC_BUILD (all OFF by default).
+# ROOT (with MathMore and Minuit2) is found through its CMake config: source thisroot.sh,
+# or ROOT in /opt/root is used.
+cmake_minimum_required(VERSION 3.16)
+project(physics-code LANGUAGES C CXX Fortran)
 
-#cmake -DCMAKE_CXX_COMPILER=icpc -DCMAKE_C_COMPILER=icc -DCMAKE_BUILD_TYPE=Debug ..
+option(BUILD_PROGS "Build the programs in progs/ with 'make' and install them" OFF)
+option(PARTONS_ENABLED "Build GPD_Partons and progs/GPD (needs PARTONS, see scripts/install_partons.sh)" OFF)
+option(MPI_ENABLED "Enable MPI (TMPI class and MPI programs)" OFF)
+option(STATIC_BUILD "Also build static versions of the libraries" OFF)
 
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+endif()
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
-# Check if cmake has the required version
-CMAKE_MINIMUM_REQUIRED(VERSION 3.6.0 FATAL_ERROR)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)   # compile_commands.json for VS Code
 
-#set defaults
-if(NOT CMAKE_BUILD_TYPE)
-set(CMAKE_BUILD_TYPE Release)
+# ---- output and install layout -------------------------------------------------------------
+# Build products go to build/lib and build/bin; 'make install' puts them into the source tree
+# (<repo>/lib, <repo>/bin) unless another CMAKE_INSTALL_PREFIX is given. Binaries get an RPATH
+# to <prefix>/lib and to the directories of the external libraries they link (ROOT, PARTONS...).
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
+# (/usr/local, CMake's default, is also replaced: build directories configured with the old
+# CMakeLists have it in their cache, where it is no longer flagged as the default)
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT OR CMAKE_INSTALL_PREFIX STREQUAL "/usr/local")
+  set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}" CACHE PATH "Install prefix" FORCE)
 endif()
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH ON)
+set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
 
-if(NOT BUILD_PROGS)
-  set(BUILD_PROGS no)
-endif()
-
-if(NOT STATIC_BUILD)
-  set(STATIC_BUILD no)
-endif()
-
-if(NOT MPI_ENABLED)
-  set(MPI_ENABLED no)
-endif()
-
-if(NOT PARTONS_ENABLED)
-  set(PARTONS_ENABLED no)
-endif()
-
-
-project(mycode CXX Fortran)
-MESSAGE("c++ ${CMAKE_CXX_COMPILER}")
-MESSAGE("c ${CMAKE_C_COMPILER}")
-MESSAGE("Type ${CMAKE_BUILD_TYPE}")
-# Set name of our project to "Event". Has to be done
-# after check of cmake version since this is a new feature                  
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-# Load some basic macros which are needed later on
-find_package(ROOT REQUIRED)
-find_package(GSL REQUIRED)
-if(MPI_ENABLED)
-  find_package(MPI REQUIRED)
-  MESSAGE("MPI compile flags ${MPI_COMPILE_FLAGS}" )
-  MESSAGE("MPI link flags ${MPI_LINK_FLAGS}" )
-  MESSAGE("MPI lib ${MPI_LIBRARY}" )
-  MESSAGE("MPI lib alt ${MPI_EXTRA_LIBRARY}" )
-  MESSAGE("MPI libs ${MPI_LIBRARIES}" )
-  endif()
-
-find_package(Fortran REQUIRED)
-find_package(Doxygen)
-
-set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib")
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON) #to create compile_commands.json file used in VS code
-
-set(HPC_NAMES 
-haunter
-gastly
-dugtrio 
-raichu
-delcatty
-gulpin
-gligar
-golett
-phanpy
-)
-
-
- 
-set(CMAKE_VERBOSE_MAKEFILE ON)
-
-set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR})
-set(CMAKE_INSTALL_RPATH "${CMAKE_SOURCE_DIR}/lib")
-set(CMAKE_INSTALL_NAME_DIR "${CMAKE_SOURCE_DIR}/lib")
-set(CMAKE_BUILD_WITH_INSTALL_RPATH 1)
-# also add the directories of linked external libraries (ROOT, PARTONS, ...) to the RPATH
-set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-
-enable_language (Fortran)
-get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
-set(CMAKE_COMPILER_IS_CLANGCXX 0)
-set(CMAKE_COMPILER_IS_CLANGCC 0)
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")	 	
-  set(CMAKE_COMPILER_IS_GNUCXX 1)
-  set(CMAKE_COMPILER_IS_CLANGCXX 1)
-endif()
-if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
-  set(CMAKE_COMPILER_IS_GNUCC 1)
-  set(CMAKE_COMPILER_IS_CLANGCC 1)
-endif()
-
-execute_process(COMMAND "hostname" OUTPUT_VARIABLE hostname)
-
-set(RELEASE_FLAGS -Wall -Wextra)
-set(DEBUG_FLAGS ${RELEASE_FLAGS})
-
-if (CMAKE_COMPILER_IS_GNUCXX)
-MESSAGE("--- Found GNU compiler collection")   
-  set(RELEASE_FLAGS ${RELEASE_FLAGS} -O3 -march=native -mtune=native -pipe -fopenmp)
-  set(DEBUG_FLAGS ${DEBUG_FLAGS} -g)
-endif (CMAKE_COMPILER_IS_GNUCXX)
-  
-if(${CMAKE_CXX_COMPILER} MATCHES "icpc")
-  MESSAGE("--- Found Intel compiler collection")
-  set(RELEASE_FLAGS ${RELEASE_FLAGS} -O3 -shared-intel -fp-model source -unroll -pthread -ipo -xavx)
-  set(DEBUG_FLAGS ${DEBUG_FLAGS} -g)
-
+# ---- compiler flags (all languages: C, C++, Fortran) ------------------------------------------
+set(PHYSCODE_RELEASE_FLAGS)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  set(PHYSCODE_RELEASE_FLAGS -O3 -march=native -mtune=native -pipe)
+  # -fopenmp only for C/C++ (which contain no OpenMP directives, as before). The Fortran in
+  # DIS/evolution does contain !$omp directives but was always built without OpenMP; enabling
+  # it there would also need OpenMP at link time (find_package(OpenMP), OpenMP::OpenMP_Fortran).
+  add_compile_options("$<$<AND:$<CONFIG:Release>,$<COMPILE_LANGUAGE:C,CXX>>:-fopenmp>")
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")     # classic icpc
+  set(PHYSCODE_RELEASE_FLAGS -O3 -shared-intel -fp-model source -unroll -pthread -ipo -xavx)
   if(MPI_ENABLED)
-   MESSAGE("-- Enabling mpi flags")
-  set(RELEASE_FLAGS ${RELEASE_FLAGS} -parallel)  
-  endif()  
-endif(${CMAKE_CXX_COMPILER} MATCHES "icpc")
+    list(APPEND PHYSCODE_RELEASE_FLAGS -parallel)
+    add_link_options(-parallel)
+  endif()
+  find_program(XIAR xiar)                          # archiver needed for -ipo static libraries
+  if(XIAR)
+    set(CMAKE_AR "${XIAR}")
+  endif()
+  mark_as_advanced(XIAR)
+endif()
+add_compile_options(-Wall -Wextra "$<$<CONFIG:Release>:${PHYSCODE_RELEASE_FLAGS}>" "$<$<CONFIG:Debug>:-g>")
 
+# ---- external dependencies -------------------------------------------------------------------
+find_package(ROOT 6 CONFIG REQUIRED COMPONENTS MathMore Minuit Minuit2
+             HINTS "$ENV{ROOTSYS}/cmake" /opt/root/cmake)
+if(NOT ROOT_mathmore_FOUND)
+  message(FATAL_ERROR "ROOT has to be built with MathMore (ROOT in ${ROOT_DIR})")
+endif()
+message(STATUS "ROOT ${ROOT_VERSION} in ${ROOT_DIR}")
+# ROOT's libraries are linked by path (ROOT_LIBRARIES) rather than through the ROOT:: targets,
+# because those require ROOT's own C++ standard (C++23 for ROOT 6.40) and would switch the
+# whole code base to it.
+add_library(root_libs INTERFACE)
+target_include_directories(root_libs SYSTEM INTERFACE ${ROOT_INCLUDE_DIRS})
+target_link_libraries(root_libs INTERFACE ${ROOT_LIBRARIES})
 
-# if (hostname MATCHES we05c807 OR hostname MATCHES we05c708 OR hostname MATCHES we05c700)
-#    MESSAGE("--- Configuring for machine in our group")
+find_package(GSL REQUIRED)
 
-#   if (Fortran_COMPILER_NAME STREQUAL "gfortran")
-#   elseif (Fortran_COMPILER_NAME STREQUAL "ifort")
-#   elseif (Fortran_COMPILER_NAME STREQUAL "g77")
-#   else (Fortran_COMPILER_NAME STREQUAL "gfortran")
-#     message ("CMAKE_Fortran_COMPILER full path: " ${CMAKE_Fortran_COMPILER})
-#     message ("Fortran compiler: " ${Fortran_COMPILER_NAME})
-#     message ("No optimized Fortran compiler flags are known, we just try -O2...")
-#   endif (Fortran_COMPILER_NAME STREQUAL "gfortran")
-# #supercomputer config
-# elseif (hostname MATCHES .os)
-# foreach(hpcname ${HPC_NAMES})
-# if(hostname MATCHES ${hpcname})
-#    MESSAGE("--- Configuring for supercomputer")
-# endif(hostname MATCHES ${hpcname})
-# endforeach(hpcname ${HPC_NAMES})
-
-# else(hostname MATCHES we05c807  OR hostname MATCHES we05c708 OR hostname MATCHES we05c700) 
-#    MESSAGE("--- default configuration")
-# endif (hostname MATCHES we05c807  OR hostname MATCHES we05c708 OR hostname MATCHES we05c700 ) 
-
-
-# set(CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR})
-FIND_PROGRAM(XIAR xiar)
-IF(XIAR)
-  SET(CMAKE_AR "${XIAR}")
-ENDIF(XIAR)
-MARK_AS_ADVANCED(XIAR)
-
-add_subdirectory(Integrator)
-add_subdirectory(Tools)
-add_subdirectory(Glauber)
-add_subdirectory(Knockout)
-add_subdirectory(DIS)
+if(MPI_ENABLED)
+  find_package(MPI REQUIRED COMPONENTS CXX)
+endif()
 
 if(PARTONS_ENABLED)
-  # PARTONS and its dependencies (SFML 2.6, ElementaryUtils, NumA++) are installed in ~/.local by default;
-  # appended so a user-supplied -DCMAKE_PREFIX_PATH still takes precedence
+  # PARTONS and its dependencies are installed in ~/.local by scripts/install_partons.sh;
+  # appended so that a user-supplied CMAKE_PREFIX_PATH takes precedence
   list(APPEND CMAKE_PREFIX_PATH "$ENV{HOME}/.local")
-
-  # find libraries: additional modules
-  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/GPD_Partons/cmake/Modules/")
-
-  # find libraries: SFML
-  find_package(SFML COMPONENTS system REQUIRED)
-
-  # find libraries: ElementaryUtils
+  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/GPD_Partons/cmake/Modules")
+  find_package(SFML 2.6 CONFIG REQUIRED COMPONENTS system)
   find_package(ElementaryUtils REQUIRED)
-
-  # find libraries: NumA++
   find_package(NumA++ REQUIRED)
-
-  # find libraries: PARTONS
   find_package(PARTONS REQUIRED)
-
-  # directories containing headers 
-  include_directories(${QT_INCLUDE_DIRS} ${SFML_INCLUDE_DIR} ${ElementaryUtils_INCLUDE_DIR} ${NumA++_INCLUDE_DIR} ${PARTONS_INCLUDE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/include")
-
-  add_subdirectory(GPD_Partons)
+  add_library(partons_libs INTERFACE)
+  target_include_directories(partons_libs SYSTEM INTERFACE
+    ${ElementaryUtils_INCLUDE_DIR} ${NumA++_INCLUDE_DIR} ${PARTONS_INCLUDE_DIR})
+  target_link_libraries(partons_libs INTERFACE
+    ${PARTONS_LIBRARIES} ${NumA++_LIBRARIES} ${ElementaryUtils_LIBRARIES} sfml-system)
 endif()
 
+find_package(Doxygen)
+
+# ---- the code ----------------------------------------------------------------------------------
+include(cmake/PhysicsCode.cmake)
+
+add_subdirectory(Integrator)    # also builds the bundled Cuba library (target 'cuba')
+add_subdirectory(Tools)         # libMePhys
+add_subdirectory(Glauber)
+add_subdirectory(Knockout)
+add_subdirectory(DIS)           # also DIS/evolution (libEvolution)
+if(PARTONS_ENABLED)
+  add_subdirectory(GPD_Partons) # libGPD
+endif()
 add_subdirectory(progs)
 
-
 if(DOXYGEN_FOUND)
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY IMMEDIATE)
+  configure_file(Doxyfile.in "${PROJECT_BINARY_DIR}/Doxyfile" @ONLY)
   add_custom_target(doc
-  COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-  SOURCES ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-  COMMENT "Generating API documentation with Doxygen" VERBATIM
-  )
+    COMMAND ${DOXYGEN_EXECUTABLE} "${PROJECT_BINARY_DIR}/Doxyfile"
+    COMMENT "Generating API documentation with Doxygen" VERBATIM)
 endif()
-
-
-
-# message(${CMAKE_CXX_FLAGS_RELEASE})
-# message(${CMAKE_Fortran_FLAGS_RELEASE})
-# message(${CMAKE_CXX_FLAGS_DEBUG})
-# message(${CMAKE_Fortran_FLAGS_DEBUG})
