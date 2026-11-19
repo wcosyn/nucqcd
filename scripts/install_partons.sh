@@ -7,7 +7,8 @@
 #   1. apt-installs the system dependencies that are missing (asks for sudo only if needed)
 #   2. builds SFML 2.6 (system module only) -- Ubuntu >= 26.04 ships SFML 3, which removed
 #      sf::Thread / sf::Mutex / sf::Lock that PARTONS uses
-#   3. builds LHAPDF (patching lhapdf-config so it accepts --incdir, which PARTONS' FindLHAPDF calls)
+#   3. builds LHAPDF with its Python bindings (module `lhapdf`, installed in the user site-packages of
+#      python3), patching lhapdf-config so it accepts --incdir, which PARTONS' FindLHAPDF calls
 #   4. builds APFEL++
 #   5. clones/updates and builds elementary-utils, numa and partons (in that order)
 #   6. writes partons.properties / logger.properties into GPD_Partons/bin (where the GPD programs
@@ -54,7 +55,7 @@ mkdir -p "$PREFIX" "$SRC"
 
 # ---- 1. system packages --------------------------------------------------------------------
 step "System packages"
-PKGS=(build-essential cmake git curl libgsl-dev libxml2-dev libeigen3-dev libcln-dev)
+PKGS=(build-essential cmake git curl libgsl-dev libxml2-dev libeigen3-dev libcln-dev python3-dev cython3)
 MISSING=()
 for p in "${PKGS[@]}"; do dpkg -s "$p" > /dev/null 2>&1 || MISSING+=("$p"); done
 if (( ${#MISSING[@]} )); then
@@ -70,15 +71,27 @@ git clone -q --depth 1 -b "$SFML_VERSION" -c advice.detachedHead=false https://g
 build_cmake "$WORK/sfml" -DSFML_BUILD_WINDOW=OFF -DSFML_BUILD_GRAPHICS=OFF \
                          -DSFML_BUILD_AUDIO=OFF -DSFML_BUILD_NETWORK=OFF
 
-# ---- 3. LHAPDF ------------------------------------------------------------------------------
+# ---- 3. LHAPDF (with Python bindings) ---------------------------------------------------------
+# - cython3 is needed: the lhapdf.cpp shipped in the tarball is too old for recent Pythons, and
+#   configure only regenerates it when it finds Cython.
+# - LHAPDF's default module path (<prefix>/lib/python3.X/dist-packages) is not on sys.path on
+#   Debian/Ubuntu, so install into the user site-packages of python3 instead (not seen by venvs
+#   created without --system-site-packages).
+# - the RPATH lets the module find libLHAPDF in $PREFIX/lib without LD_LIBRARY_PATH.
 step "LHAPDF $LHAPDF_VERSION"
 curl -sSfL "https://lhapdf.hepforge.org/downloads/LHAPDF-$LHAPDF_VERSION.tar.gz" | tar xz -C "$WORK"
+PYSITE=$(python3 -c 'import site; print(site.getusersitepackages())')
+# (steps chained with &&: set -e does not apply inside a subshell followed by ||;
+#  the log is printed on failure because $WORK is removed on exit)
 (
-  cd "$WORK/LHAPDF-$LHAPDF_VERSION"
-  ./configure --prefix="$PREFIX" --disable-python > build.log 2>&1
-  make -j "$JOBS" >> build.log 2>&1
+  cd "$WORK/LHAPDF-$LHAPDF_VERSION" &&
+  ./configure --prefix="$PREFIX" PYTHON=python3 LHAPDF_PYTHONPATH="$PYSITE" \
+              LDFLAGS="-Wl,-rpath,$PREFIX/lib" > build.log 2>&1 &&
+  make -j "$JOBS" >> build.log 2>&1 &&
   make install >> build.log 2>&1
-) || { echo "LHAPDF build failed"; exit 1; }
+) || { tail -30 "$WORK/LHAPDF-$LHAPDF_VERSION/build.log"; echo "LHAPDF build failed"; exit 1; }
+python3 -c 'import lhapdf; print("lhapdf python module", lhapdf.__version__, "in", lhapdf.__file__)' \
+  || { echo "LHAPDF python module not importable"; exit 1; }
 # lhapdf-config advertises --incdir but only accepts --includedir; PARTONS calls --incdir
 sed -i 's/^\(\s*\)--includedir)\(\s*\)show_incdir=1 ;;/\1--includedir|--incdir)\2show_incdir=1 ;;/' "$PREFIX/bin/lhapdf-config"
 "$PREFIX/bin/lhapdf-config" --incdir > /dev/null || { echo "lhapdf-config --incdir patch failed"; exit 1; }
