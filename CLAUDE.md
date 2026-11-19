@@ -8,7 +8,7 @@ A collection of C++ (plus some Fortran) libraries and executables for nuclear an
 
 ## Build
 
-Dependencies: ROOT (with `mathmore`, `minuit2`), GSL, a Fortran compiler, and CMake ≥ 3.6. C++17 is required. Release builds use `-O3 -march=native -fopenmp`. MPI and PARTONS (Qt5, SFML, ElementaryUtils, NumA++) are optional.
+Dependencies: ROOT (with `mathmore`, `minuit2`), GSL, a Fortran compiler, and CMake ≥ 3.6. C++17 is required. Release builds use `-O3 -march=native -fopenmp`. MPI and PARTONS are optional. PARTONS v5 (`elementary-utils`, `numa`, `partons`, no longer uses Qt) needs SFML 2.6, LHAPDF, APFEL++, CLN, Eigen3 and libxml2. Ubuntu 26.04 only packages SFML 3, which removed the `sf::Thread`/`sf::Mutex`/`sf::Lock` classes PARTONS uses, so SFML 2.6 is built from source. PARTONS and these dependencies are installed in `~/.local`, which CMake searches automatically when `PARTONS_ENABLED` is set; the PARTONS sources are cloned next to this repo in `~/Git`.
 
 ```bash
 cd build
@@ -19,7 +19,7 @@ make doc                  # Doxygen API docs -> doc/
 
 - `-DBUILD_PROGS=yes`: executables in `progs/` are `EXCLUDE_FROM_ALL` unless this is set. Without it, build one program with `make <target>` (e.g. `make poldeut`), but it is not installed into `bin/`.
 - Other options: `-DPARTONS_ENABLED=yes` (builds `GPD_Partons/` and `progs/GPD`), `-DMPI_ENABLED=yes` (adds `TMPI`), `-DSTATIC_BUILD=yes` (adds `*ST` static libs), and `-DCMAKE_BUILD_TYPE=Debug`.
-- `make install` copies shared libs into `<repo>/lib` and executables into `<repo>/bin`. Binaries use an RPATH that points at `<repo>/lib`, so run them from `bin/` after installing.
+- `make install` copies shared libs into `<repo>/lib` and executables into `<repo>/bin`. Binaries use an RPATH that points at `<repo>/lib` plus the directories of linked external libraries (e.g. `/opt/root/lib`, `~/.local/lib`), so run them from `bin/` after installing.
 - Cuba (`Integrator/Cuba` → symlink to `Cuba-4.2.1`) is built as a CMake `ExternalProject` with autotools. It runs serially (`make -j1`) with `-std=gnu17`, because it does not compile as C23 under gcc ≥ 15. The resulting `lib/libcuba.a` is linked by path in `DIS`.
 - If CMake cannot find ROOT, check `ROOTSYS` and the search path in `cmake/Modules/FindROOT.cmake`.
 

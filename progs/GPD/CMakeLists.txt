@@ -22,6 +22,7 @@ target_link_libraries(diDVCS_gen_grid GPD   ${ElementaryUtils_LIBRARIES} ${QT_LI
 
 add_executable(diDVCS_gen_gridonly diDVCS_gen_gridonly.cpp)
 target_link_libraries(diDVCS_gen_gridonly ${ROOT_LIBRARIES})
+target_include_directories(diDVCS_gen_gridonly PRIVATE ${ROOT_INCLUDE_DIR})
 
 add_executable(two_vector_electro_N two_vector_electro_N.cpp)
 target_link_libraries(two_vector_electro_N GPD   ${ElementaryUtils_LIBRARIES} ${QT_LIBRARIES})

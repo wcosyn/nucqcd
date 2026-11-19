@@ -81,6 +81,8 @@ set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR})
 set(CMAKE_INSTALL_RPATH "${CMAKE_SOURCE_DIR}/lib")
 set(CMAKE_INSTALL_NAME_DIR "${CMAKE_SOURCE_DIR}/lib")
 set(CMAKE_BUILD_WITH_INSTALL_RPATH 1)
+# also add the directories of linked external libraries (ROOT, PARTONS, ...) to the RPATH
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 enable_language (Fortran)
 get_filename_component (Fortran_COMPILER_NAME ${CMAKE_Fortran_COMPILER} NAME)
@@ -156,12 +158,9 @@ add_subdirectory(Knockout)
 add_subdirectory(DIS)
 
 if(PARTONS_ENABLED)
-  # find libraries: Qt4
-  find_package(Qt5 COMPONENTS Core Sql XmlPatterns REQUIRED)
-
-  # add some useful macros and variables
-  
-  add_definitions(${QT_DEFINITIONS})
+  # PARTONS and its dependencies (SFML 2.6, ElementaryUtils, NumA++) are installed in ~/.local by default;
+  # appended so a user-supplied -DCMAKE_PREFIX_PATH still takes precedence
+  list(APPEND CMAKE_PREFIX_PATH "$ENV{HOME}/.local")
 
   # find libraries: additional modules
   set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/GPD_Partons/cmake/Modules/")
