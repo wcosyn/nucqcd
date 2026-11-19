@@ -35,7 +35,7 @@ FIND_PROGRAM(ROOT_CONFIG_EXECUTABLE NAMES root-config PATHS
    ${ROOT_CONFIG_SEARCHPATH}
    NO_DEFAULT_PATH)
 IF (NOT ROOT_CONFIG_EXECUTABLE)
-  FIND_PROGRAM(ROOT_CONFIG_EXECUTABLE NAMES root-config)
+  FIND_PROGRAM(ROOT_CONFIG_EXECUTABLE NAMES root-config PATHS /opt/root/bin)
 ENDIF()
     
 IF (${ROOT_CONFIG_EXECUTABLE} MATCHES "ROOT_CONFIG_EXECUTABLE-NOTFOUND")
@@ -162,24 +162,18 @@ IF (ROOT_FOUND)
     )
 
 #check if mathmore and minuit modules are available
-execute_process(COMMAND root-config --has-mathmore
+execute_process(COMMAND ${ROOT_CONFIG_EXECUTABLE} --has-mathmore
 	OUTPUT_VARIABLE ROOT_MATHMORE
 	OUTPUT_STRIP_TRAILING_WHITESPACE)
-execute_process(COMMAND root-config --has-mathmore
-	OUTPUT_VARIABLE ROOT_MATHMORE
-	OUTPUT_STRIP_TRAILING_WHITESPACE)
-execute_process(COMMAND root-config --has-minuit
-	OUTPUT_VARIABLE ROOT_MINUIT
-	OUTPUT_STRIP_TRAILING_WHITESPACE)
-execute_process(COMMAND root-config --has-minuit2
-	OUTPUT_VARIABLE ROOT_MINUIT2
-	OUTPUT_STRIP_TRAILING_WHITESPACE)
-IF (${ROOT_MATHMORE} MATCHES "no")
+IF (NOT "${ROOT_MATHMORE}" STREQUAL "yes")
   MESSAGE( FATAL_ERROR "ROOT has to be installed with the MathMore module enabled.  Please see the ROOT documentation for details")
-ENDIF (${ROOT_MATHMORE} MATCHES "no")
-IF (${ROOT_MINUIT} MATCHES "no" AND ${ROOT_MINUIT2} MATCHES "no" AND found_root_major_vers GREATER_EQUAL 6 AND found_root_minor_vers GREATER_EQUAL 32)
-  MESSAGE( FATAL_ERROR "ROOT has to be installed with the Minuit or Minuit2 module enabled.  Please see the ROOT documentation for details")
-ENDIF (${ROOT_MINUIT} MATCHES "no" AND ${ROOT_MINUIT2} MATCHES "no" AND found_root_major_vers GREATER_EQUAL 6 AND found_root_minor_vers GREATER_EQUAL 32)
+ENDIF ()
+# Minuit2 is always built since ROOT 6.32 (root-config --has-minuit2 no longer exists),
+# so check for the library itself instead.
+FIND_LIBRARY(ROOT_MINUIT2_LIBRARY NAMES Minuit2 PATHS ${ROOT_LIBRARY_DIR} NO_DEFAULT_PATH)
+IF (NOT ROOT_MINUIT2_LIBRARY)
+  MESSAGE( FATAL_ERROR "ROOT has to be installed with the Minuit2 module enabled.  Please see the ROOT documentation for details")
+ENDIF ()
 
 
 
