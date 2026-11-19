@@ -1,132 +1,20 @@
-project(GPD)
-
-# BASIC DEFINITIONS ========================================================================
-
-# define minimum version of cmake
-#cmake_minimum_required(VERSION 2.6)
-
-# define project name and its language
-#project(PARTONS_release CXX)
-
-# define c++ standard and issue all the warning demanded by this standard
-#add_definitions(-std=c++98 -pedantic)
-
-# AUTOMOC ==================================================================================
-
-# tell cmake to run Qt moc when necessary
-#set(CMAKE_AUTOMOC ON)
-  
-# as moc files are generated in the binary dir, tell cmake to always look for includes there
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-# Provide a safe alias for the NumA++ library variable (avoid using pluses in variable names later)
-if(NumA++_LIBRARIES)
-  set(NumApp_LIBRARIES ${NumA++_LIBRARIES})
-endif()
-
-# FIND LIBRARIES ===========================================================================
-
-
-# FINALIZE ==================================================================================
-
-# generate list of source files
-file(
-
-        GLOB_RECURSE
-
-        source_files
-
-        src/*
-)
-
-
-# Set the library version in the main CMakeLists.txt
-SET(GPD_MAJOR_VERSION 1)
-SET(GPD_MINOR_VERSION 0)
-SET(GPD_PATCH_VERSION 0)
-SET(GPD_VERSION "${GPD_MAJOR_VERSION}.${GPD_MINOR_VERSION}.${GPD_PATCH_VERSION}")
-SET(GPD_LIBRARY_PROPERTIES ${GPD_LIBRARY_PROPERTIES}
-    VERSION "${GPD_VERSION}"
-    SOVERSION "${GPD_MAJOR_VERSION}"
-    SUFFIX ".so"
-)
-
-
-############### build the library #####################
-add_library(GPD SHARED ${source_files})
+# libGPD: deuteron vector and transversity GPD convolutions, built on PARTONS.
+# Only included with -DPARTONS_ENABLED=yes (the PARTONS libraries are found in the top level).
+physcode_add_library(GPD
+  SOURCES
+    src/Deut_Conv_GPD_T.cpp
+    src/Deut_Conv_GPD_V.cpp
+    src/Deut_GPD_T_set.cpp
+    src/Deut_GPD_V_set.cpp
+    src/DiDVCS.cpp
+    src/GPD_T_Nucl_grid.cpp
+    src/GPD_V_Nucl_grid.cpp
+    src/TransGPD_set.cpp
+    src/TwoVector_Deut.cpp
+    src/TwoVector_Nucl.cpp
+  LINK partons_libs MePhys Integrator Glauber cuba)
+# the headers are in include/, not next to this file
 target_include_directories(GPD PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
-target_link_libraries(GPD 
-   ${QT_LIBRARIES}
-
- 	${SFML_LIBRARIES}
-
-   ${ElementaryUtils_LIBRARIES}
-
-   ${NumApp_LIBRARIES}
-        
-   ${PARTONS_LIBRARIES} 
-MePhys Integrator Glauber ${CMAKE_SOURCE_DIR}/lib/libcuba.a)
-set_target_properties(GPD PROPERTIES ${GPD_LIBRARY_PROPERTIES})
-
-# Ensure runtime linker can find dependent libs placed in the project's lib/ directory
-set_target_properties(GPD PROPERTIES
-  BUILD_RPATH "${CMAKE_SOURCE_DIR}/lib"
-  INSTALL_RPATH "${CMAKE_SOURCE_DIR}/lib"
-)
-############### install the library ###################
-install(TARGETS GPD DESTINATION "${CMAKE_SOURCE_DIR}/lib")
-
-############### build the library #####################
 if(STATIC_BUILD)
-  add_library(GPDST STATIC ${source_files})
-  target_include_directories(GPDST PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})  
-  target_link_libraries(GPDST          ${QT_LIBRARIES}
-
-  ${SFML_LIBRARIES}
-
-  ${ElementaryUtils_LIBRARIES}
-
-  ${NumApp_LIBRARIES}
- 
-  ${PARTONS_LIBRARIES} 
-MePhys Integrator ${CMAKE_SOURCE_DIR}/lib/libcuba.a -Wl,-no-whole-archive)
-  set_target_properties(GPDST PROPERTIES OUTPUT_NAME DIS)
-  set_target_properties(GPDST PROPERTIES
-    BUILD_RPATH "${CMAKE_SOURCE_DIR}/lib"
-    INSTALL_RPATH "${CMAKE_SOURCE_DIR}/lib"
-  )
-  install(TARGETS GPDST DESTINATION "${CMAKE_SOURCE_DIR}/lib")
-endif(STATIC_BUILD)
-
-
-
-
-# define target executable
-# set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR}/bin)
-
-# add_executable(
-
-#         PARTONS_example
-
-#         ${source_files}
-# )
-
-# define libraries to be linked
-# target_link_libraries(
-
-#         PARTONS_example
-        
-#         ${QT_LIBRARIES}
-
-# 	${SFML_LIBRARIES}
-
-#         ${ElementaryUtils_LIBRARIES}
- 
-#         ${NumA++_LIBRARIES}
-        
-#         ${PARTONS_LIBRARIES} 
-
-#         Integrator 
-        
-#         MePhys 
-# )
+  target_include_directories(GPDST PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
+endif()

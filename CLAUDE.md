@@ -8,7 +8,7 @@ A collection of C++ (plus some Fortran) libraries and executables for nuclear an
 
 ## Build
 
-Dependencies: ROOT (with `mathmore`, `minuit2`), GSL, a Fortran compiler, and CMake ≥ 3.6. C++17 is required. Release builds use `-O3 -march=native -fopenmp`. MPI and PARTONS are optional. PARTONS v5 (`elementary-utils`, `numa`, `partons`, no longer uses Qt) needs SFML 2.6, LHAPDF, APFEL++, CLN, Eigen3 and libxml2. Ubuntu 26.04 only packages SFML 3, which removed the `sf::Thread`/`sf::Mutex`/`sf::Lock` classes PARTONS uses, so SFML 2.6 is built from source. PARTONS and these dependencies are installed in `~/.local`, which CMake searches automatically when `PARTONS_ENABLED` is set; the PARTONS sources are cloned next to this repo in `~/Git`. LHAPDF is built with its Python bindings (`import lhapdf` from the system `python3`; the module goes to the user site-packages, so a venv only sees it with `--system-site-packages`); PDF sets are installed with `lhapdf install <set>` into `~/.local/share/LHAPDF`. To set this up on a new machine, run `scripts/install_partons.sh` (needs ROOT installed for its final test build). PARTONS programs only start with `partons.properties` (and the `logger.properties` it points to) in the executable's directory; the script creates both in `GPD_Partons/bin`, where the `progs/GPD` programs are installed.
+Dependencies: ROOT 6 (with `mathmore`, `minuit2`), GSL, a Fortran compiler, and CMake ≥ 3.16. The code is compiled as C++17 (ROOT 6.40 itself is built with C++23; ROOT's libraries are linked by path so that its C++ standard is not imposed). Release builds use `-O3 -march=native -fopenmp`. MPI and PARTONS are optional. PARTONS v5 (`elementary-utils`, `numa`, `partons`, no longer uses Qt) needs SFML 2.6, LHAPDF, APFEL++, CLN, Eigen3 and libxml2. Ubuntu 26.04 only packages SFML 3, which removed the `sf::Thread`/`sf::Mutex`/`sf::Lock` classes PARTONS uses, so SFML 2.6 is built from source. PARTONS and these dependencies are installed in `~/.local`, which CMake searches automatically when `PARTONS_ENABLED` is set; the PARTONS sources are cloned next to this repo in `~/Git`. LHAPDF is built with its Python bindings (`import lhapdf` from the system `python3`; the module goes to the user site-packages, so a venv only sees it with `--system-site-packages`); PDF sets are installed with `lhapdf install <set>` into `~/.local/share/LHAPDF`. To set this up on a new machine, run `scripts/install_partons.sh` (needs ROOT installed for its final test build). PARTONS programs only start with `partons.properties` (and the `logger.properties` it points to) in the executable's directory; the script creates both in `GPD_Partons/bin`, where the `progs/GPD` programs are installed.
 
 ```bash
 cd build
@@ -19,9 +19,9 @@ make doc                  # Doxygen API docs -> doc/
 
 - `-DBUILD_PROGS=yes`: executables in `progs/` are `EXCLUDE_FROM_ALL` unless this is set. Without it, build one program with `make <target>` (e.g. `make poldeut`), but it is not installed into `bin/`.
 - Other options: `-DPARTONS_ENABLED=yes` (builds `GPD_Partons/` and `progs/GPD`), `-DMPI_ENABLED=yes` (adds `TMPI`), `-DSTATIC_BUILD=yes` (adds `*ST` static libs), and `-DCMAKE_BUILD_TYPE=Debug`.
-- `make install` copies shared libs into `<repo>/lib` and executables into `<repo>/bin`. Binaries use an RPATH that points at `<repo>/lib` plus the directories of linked external libraries (e.g. `/opt/root/lib`, `~/.local/lib`), so run them from `bin/` after installing.
-- Cuba (`Integrator/Cuba` → symlink to `Cuba-4.2.1`) is built as a CMake `ExternalProject` with autotools. It runs serially (`make -j1`) with `-std=gnu17`, because it does not compile as C23 under gcc ≥ 15. The resulting `lib/libcuba.a` is linked by path in `DIS`.
-- If CMake cannot find ROOT, check `ROOTSYS` and the search path in `cmake/Modules/FindROOT.cmake`.
+- `make install` copies shared libs into `<repo>/lib` and executables into `<repo>/bin` (the default `CMAKE_INSTALL_PREFIX` is the repo itself). Binaries use an RPATH that points at `<repo>/lib` plus the directories of linked external libraries (e.g. `/opt/root/lib`, `~/.local/lib`), so run them from `bin/` after installing.
+- Cuba (`Integrator/Cuba` → symlink to `Cuba-4.2.1`) is built as a CMake `ExternalProject` with autotools into the build tree. It runs serially (`make -j1`) with `-std=gnu17`, because it does not compile as C23 under gcc ≥ 15. Link the INTERFACE target `cuba` to use it (provides `<Cuba/cuba.h>`, `libcuba.a` and the build dependency); `libcuba.a` is also installed into `lib/`.
+- ROOT is found through its own CMake config (`ROOTConfig.cmake`): source `thisroot.sh` (sets `ROOTSYS`), or it is taken from `/opt/root`. GSL and MPI use CMake's built-in find modules; only the PARTONS libraries (`ElementaryUtils`, `NumA++`, `PARTONS`) use find modules in `GPD_Partons/cmake/Modules`, and SFML its own config.
 
 ## Library layering
 
@@ -34,14 +34,20 @@ Libraries build in this order, and each links against the ones before it:
 5. **DIS** (`libDIS`): inclusive and tagged DIS on the deuteron and He3, the polarized deuteron (`Poldeut`), resonances, and the EMT light-front convolution. `DIS/evolution/` is a separate Fortran library, `libEvolution`, for QCD evolution.
 6. **GPD_Partons** (`libGPD`, optional): deuteron vector and transversity GPD convolutions that use PARTONS.
 
-To add a source file, list it explicitly in that library's `CMakeLists.txt`; there is no globbing. To add a program, create `progs/<dir>/CMakeLists.txt` and follow the pattern in `progs/poldeut/CMakeLists.txt`: `add_executable`, then `target_link_libraries`, then the `EXCLUDE_FROM_ALL` setting when `BUILD_PROGS` is off, then `install` to `${CMAKE_SOURCE_DIR}/bin`. Finally, register the directory in `progs/CMakeLists.txt`.
+All CMakeLists use the helpers in `cmake/PhysicsCode.cmake`:
+
+- `physcode_add_library(<name> SOURCES ... LINK ... [LINKDEFS ...])`: shared library (version 1.0.0) with its directory as public include dir, installed into `lib/`; with `STATIC_BUILD` also `<name>ST`. Dependencies in `LINK` are public, so programs only need to name the highest library they use.
+- `physcode_add_program(<name> [SOURCES ...] LINK ... [DESTINATION dir])` and `physcode_add_programs(LINK ... PROGRAMS a b c ...)`: executables (default source `<name>.cpp`), built by `make` and installed only with `BUILD_PROGS`.
+- Interface targets for external dependencies: `root_libs`, `GSL::gsl`, `cuba`, `MPI::MPI_CXX`, `partons_libs`.
+
+To add a source file, list it explicitly in that library's `CMakeLists.txt`; there is no globbing. To add a program, add a `physcode_add_program(s)` line to the `CMakeLists.txt` of its `progs/` subdirectory (new directories are registered in `progs/CMakeLists.txt`).
 
 ## Key cross-cutting conventions
 
 - **`Tools/constants.hpp` is generated** from `Tools/constants.hpp.in` at configure time and is gitignored, so edit the `.in` file. The generated file defines the physical constants (masses in MeV, `HBARC`, etc.) as macros. It also defines `HOMEDIR` as the absolute path to `<repo>/share`.
 - **The `share/` data directory** holds input data such as nuclear mean-field wavefunctions (`share/input/*.radial*.bound`), PDF grids, and correlation grids. Most physics classes take a `dir`/`homedir` string argument, usually `HOMEDIR`, and read their input relative to it.
 - **The FSI grid hierarchy (Glauber).** `AbstractFsiGrid` → `AbstractFsiCTGrid`/`AbstractFsiGridThick` → … → concrete `GlauberGrid`, `GlauberGridThick`, `GlauberDecayGridThick`, `OneGlauberGrid`, `ROMEAGrid`, and `ClassGridThick_SCX`. A user adds `FastParticle`s, then calls `fillGrids()`/`updateGrids()`. The grids are expensive to compute, so they are cached as files under `share/grids/` (gitignored) and reused on later runs. If you change the physics or the grid parameters, delete the stale grid files.
-- **ROOT dictionaries.** Each `T*` class in Tools (and `TMFSpinor` in Glauber) has a `*LinkDef.h`, and CMake generates ROOT dictionaries from them via `ROOT_GENERATE_DICTIONARY`. A new class of this kind needs a LinkDef entry in that library's CMakeLists.
+- **ROOT dictionaries.** Each `T*` class in Tools (and `TMFSpinor` in Glauber) has a `*LinkDef.h`; `physcode_add_library(... LINKDEFS ...)` runs `rootcling` on `X.h(pp)` + `XLinkDef.h` and installs `XDict_rdict.pcm` into `lib/`. A new class of this kind needs its LinkDef added to that library's `LINKDEFS`.
 - Integrands for `numint` are usually written as a struct functor that holds a pointer to the physics object, plus a static `exec` function. Integration precision is passed in as a parameter, and the integrator choice is often an `int` flag on the class.
 - The code mixes MeV and GeV units (for example `MASSP` versus `MASSP_G` in `constants.hpp`), so check which unit a class expects.
 - `bin/`, `lib/`, `build/`, and `doc/` are build outputs and are gitignored.

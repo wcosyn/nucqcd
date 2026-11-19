@@ -1,31 +1,26 @@
-project(progs)
-
-add_subdirectory(Obstest) #prog used to compute A(e,e'p) observables
-add_subdirectory(twonucl) #old code that was work in progress on a 2n knockout model w correlated pairs
-# add_subdirectory(threeres) #old code that was never properly used, resonance model for incl DIS
-add_subdirectory(onenucl)  #programs used to compute A(e,e'p) cross sections and transparencies
-add_subdirectory(SCX_test) # test program to check charge exchange densities etc. Camille wrote it, doesn't seem to be running fine on my system (roundoff errors in gsl)
-add_subdirectory(RhoTransparency)  #several programs used to compute rho transparencies
-add_subdirectory(poldeut) #program for testing lightfront deuteron spectator tagging code
-add_subdirectory(pionprog) #program that wrote out pion glauber parameters
-add_subdirectory(pionestimate) #program that estimated uncertainties caused by rho decay to 2 pions in rho transparency calculations
-add_subdirectory(neutrinoQE) #set of programs to compute neutrino QE double differential and single differential cross sections, relativistic mean field, relativistic fermi gas, nucleon and nucleus
-add_subdirectory(momdistr) #small program that computed momentum distributions with relativistic MF nuclear wf
-add_subdirectory(LDRD_test) #small test program for the LDRD project, tagging with He3, never properly used
-add_subdirectory(integrator) #small test program for integration routines, calculates volume of part of a sphere
-add_subdirectory(incldis) #contains programs that were used to compute fsi in inclusive deuteron dis [unpolarized and Azz]
-add_subdirectory(gammatest) #test program for gamma matrix identities and to check some trace calculations explicitly
-add_subdirectory(DQEinc) #inclusive deuteron QE FSI calculations, work in progress
-
-add_subdirectory(cuba_test) #test prog for the cuba library
-add_subdirectory(camille) #some test programs that camille used, don't know the details...
-
-add_subdirectory(2bodymom/src) #camille's programs for the 2nucleon knockout calculations
-
-add_subdirectory(deepsdis) #programs for spectator tagging (deeps/bonus) & deuteron tensor structure calculations
-
+# Programs. They are only built by 'make' (and installed into <repo>/bin) with -DBUILD_PROGS=yes;
+# otherwise build one with 'make <name>'. See cmake/PhysicsCode.cmake for physcode_add_program(s).
+add_subdirectory(Obstest)          # A(e,e'p) observables
+add_subdirectory(twonucl)          # old work in progress on a 2N knockout model with correlated pairs
+# add_subdirectory(threeres)       # old, never properly used: resonance model for inclusive DIS
+add_subdirectory(onenucl)          # A(e,e'p) cross sections and transparencies
+add_subdirectory(SCX_test)         # checks of charge-exchange densities (Camille; roundoff problems in gsl)
+add_subdirectory(RhoTransparency)  # rho (and pion) transparencies
+add_subdirectory(poldeut)          # light-front deuteron spectator tagging
+add_subdirectory(pionprog)         # writes out pion Glauber parameters
+add_subdirectory(pionestimate)     # uncertainty from rho -> 2 pion decay in rho transparencies
+add_subdirectory(neutrinoQE)       # neutrino QE double/single differential cross sections (RMF, RFG; nucleon, nucleus)
+add_subdirectory(momdistr)         # momentum distributions with relativistic mean-field wave functions
+add_subdirectory(LDRD_test)        # LDRD project test, tagging with He3, never properly used
+add_subdirectory(integrator)       # test of the integration routines (volume of part of a sphere)
+add_subdirectory(incldis)          # FSI in inclusive deuteron DIS (unpolarized and Azz)
+add_subdirectory(gammatest)        # gamma-matrix identities and trace checks
+add_subdirectory(DQEinc)           # inclusive deuteron QE with FSI, work in progress
+add_subdirectory(cuba_test)        # tests of the Cuba library
+add_subdirectory(camille)          # Camille's test programs
+add_subdirectory(2bodymom/src)     # Camille's programs for the 2-nucleon knockout calculations
+add_subdirectory(deepsdis)         # spectator tagging (DEEPS/BONuS) and deuteron tensor structure
 if(PARTONS_ENABLED)
-    add_subdirectory(GPD) #programs for transversity gpds (spin1)
+  add_subdirectory(GPD)            # transversity and vector GPDs (spin 1), diDVCS
 endif()
-
-add_subdirectory(F2_largex_fit) #program for x>1 nuclear F2 fit, crosschecks with Adam Freese
+add_subdirectory(F2_largex_fit)    # x > 1 nuclear F2 fit, cross-checks with Adam Freese
