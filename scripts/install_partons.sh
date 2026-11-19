@@ -10,7 +10,9 @@
 #   3. builds LHAPDF (patching lhapdf-config so it accepts --incdir, which PARTONS' FindLHAPDF calls)
 #   4. builds APFEL++
 #   5. clones/updates and builds elementary-utils, numa and partons (in that order)
-#   6. test-configures physics-code with PARTONS enabled and builds libGPD
+#   6. writes partons.properties / logger.properties into GPD_Partons/bin (where the GPD programs
+#      are installed; PARTONS needs them next to the executable) unless they already exist
+#   7. test-configures physics-code with PARTONS enabled and builds libGPD
 #
 # Everything is linked with an RPATH to $PREFIX/lib, so no LD_LIBRARY_PATH is needed.
 # Re-running is safe: existing clones are updated and rebuilt.
@@ -95,7 +97,46 @@ for r in elementary-utils numa partons; do
   build_cmake "$SRC/$r" -DSFML_ROOT="$PREFIX"
 done
 
-# ---- 6. test physics-code ---------------------------------------------------------------------
+# ---- 6. PARTONS runtime configuration for physics-code -----------------------------------------
+# PARTONS refuses to start without partons.properties in the directory of the executable.
+# The GPD programs are installed into GPD_Partons/bin (git-ignored), so put the config there.
+# Existing files are left alone, so local edits survive re-running this script.
+step "PARTONS configuration in GPD_Partons/bin"
+BIN="$REPO_DIR/GPD_Partons/bin"
+mkdir -p "$BIN/tmp"
+if [[ ! -f $BIN/xmlSchema.xsd ]]; then
+  # XML schema (only used by PARTONS' XML automation), taken from the partons-example templates
+  clone_or_update https://github.com/3d-partons/partons-example.git "$SRC/partons-example"
+  cp "$SRC/partons-example/data/xmlSchema.xsd" "$BIN/"
+fi
+if [[ ! -f $BIN/partons.properties ]]; then
+  cat > "$BIN/partons.properties" <<EOF
+# PARTONS v5 configuration (must sit next to the executable)
+log.file.path = $BIN/logger.properties
+xml.schema.file.path = $BIN/xmlSchema.xsd
+computation.nb.processor = 1
+gpd.service.batch.size = 1000
+collinear_distribution.service.batch.size = 1000
+ccf.service.batch.size = 1000
+observable.service.batch.size = 1000
+EOF
+  echo "wrote $BIN/partons.properties"
+else
+  echo "$BIN/partons.properties exists, left unchanged"
+fi
+if [[ ! -f $BIN/logger.properties ]]; then
+  cat > "$BIN/logger.properties" <<EOF
+enable = true
+default.level = INFO
+print.mode = COUT
+log.folder.path = $BIN/tmp
+EOF
+  echo "wrote $BIN/logger.properties"
+else
+  echo "$BIN/logger.properties exists, left unchanged"
+fi
+
+# ---- 7. test physics-code ---------------------------------------------------------------------
 step "Test: configure physics-code with PARTONS and build libGPD"
 if command -v root-config > /dev/null || [[ -x /opt/root/bin/root-config ]]; then
   cmake -S "$REPO_DIR" -B "$WORK/physics-code" -DPARTONS_ENABLED=yes > "$WORK/test.log" 2>&1 \
