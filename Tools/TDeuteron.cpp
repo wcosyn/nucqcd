@@ -1093,7 +1093,7 @@ complex<double> TDeuteron::Wavefunction::DeuteronRState(int deuteronPol, int nuc
 
   // L=2, mL=mD-mS, S=1, mS=m1+m2
 //   for(int mS=-1; mS<=1; ++mS)
-    state -=
+    state +=
       ClebschGordan(4,deuteronPol-nucleon1Pol-nucleon2Pol,2,nucleon1Pol+nucleon2Pol,2,deuteronPol)
       *ClebschGordan(1,nucleon1Pol,1,nucleon2Pol,2,nucleon1Pol+nucleon2Pol)
       *SphericalHarmonic(2,(deuteronPol-nucleon1Pol-nucleon2Pol)/2,r.Theta(),r.Phi())

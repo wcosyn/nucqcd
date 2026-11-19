@@ -24,7 +24,9 @@ using namespace std;
 #include <numint/numint.hpp>
 #include <numint/numint2Cuba.hpp>
 
-void int_3d(numint::vector_z &, double p, double costheta, double phi, TInterpolatingWavefunction &wf, TVector3 &pvec);
+//void int_3d(numint::vector_z &, double p, double costheta, double phi, TInterpolatingWavefunction &wf, TVector3 &pvec);
+void int_3d(numint::vector_z &, double p, double costheta, double phi, TDeuteron::Wavefunction &wf, TVector3 &pvec);
+
 
 
 
@@ -51,6 +53,8 @@ int main(int argc, char *argv[]){
         wf.AddWr(i*r_grid,wfref->GetWr(i*r_grid));
         
     }
+
+    cout << wfref->GetWp(100) << " " << wf.GetWp(200) << endl;
 
      double sum1=0.,sum2=0.,sum3=0.,sum4=0., sum5=0.;
      double omega=0., ISL_approx=0.,ISL_unapprox=0., eps_SL_approx=0., eps_SL_unapprox=0.;
@@ -99,7 +103,7 @@ int main(int argc, char *argv[]){
     cout << "delta_perp perpendicular " << 1.-ST_perp*4.*PI << endl;
     cout << "epsilon ST approximated " << eps_ST_approx*4.*PI << endl;
     cout << "epsilon ST unapproximated " << eps_ST_unapprox*4.*PI << endl;
-    exit(1);
+
     
    // for(int dspin=-2;dspin<=2;dspin+=2){
     //     for(int pspin=-1;pspin<=1;pspin+=2){
@@ -109,7 +113,8 @@ int main(int argc, char *argv[]){
     //         }
     //     }
     // }
-    for(int i=-1500; i<=1000;i+=2){
+
+/*    for(int i=-1500; i<=1000;i+=2){
         double pz=i;
         for(int j=0;j<=1000;j+=2){
             double pt=j;
@@ -134,7 +139,7 @@ int main(int argc, char *argv[]){
             }
         }
     }
-    exit(1);
+    */
 
     cout << "single test" << endl;
     cout << wf.DeuteronPState(0,1,1,TVector3(100.*sin(1)*cos(2),100.*sin(1)*sin(2),100.*cos(1))) << " " << -wf.GetWp(100.)*3./2.*cos(1.)*sin(1.)*exp(-I_UNIT*2.)/sqrt(4.*PI) << endl << endl;
@@ -189,16 +194,20 @@ int main(int argc, char *argv[]){
 
         static void exec(const numint::array<double,3> &x, void *param, numint::vector_z &ret) {
             Ftor &p = * (Ftor *) param;
-            p.f(ret,x[0],x[1],x[2],*p.wf,p.pvec);
+            //p.f(ret,x[0],x[1],x[2],*p.wfref,p.pvec);
+            p.f(ret,x[0],x[1],x[2],*p.wfref,p.pvec);
         }
-        TInterpolatingWavefunction *wf;
+        //TInterpolatingWavefunction *wf;
+        TDeuteron::Wavefunction *wfref;
         TVector3 pvec;
-        void (*f)(numint::vector_z &, double p, double costheta, double phi, TInterpolatingWavefunction &wf, TVector3 &pvec);
+        //void (*f)(numint::vector_z &, double p, double costheta, double phi, TInterpolatingWavefunction &wf, TVector3 &pvec);
+        void (*f)(numint::vector_z &, double p, double costheta, double phi, TDeuteron::Wavefunction &wf, TVector3 &pvec);
 
     };
 
     Ftor F;
-    F.wf=&wf;
+    //F.wf=&wf;
+    F.wfref=wfref;
     F.pvec=TVector3(50.,40.,30.);
     numint::mdfunction<numint::vector_z,3> mdfH;
     mdfH.func = &Ftor::exec;
@@ -230,7 +239,8 @@ int main(int argc, char *argv[]){
 }
 
 
-void int_3d(numint::vector_z &res, double r, double costheta, double phi, TInterpolatingWavefunction &wf, TVector3 &pvec){
+//void int_3d(numint::vector_z &res, double r, double costheta, double phi, TInterpolatingWavefunction &wf, TVector3 &pvec){
+void int_3d(numint::vector_z &res, double r, double costheta, double phi, TDeuteron::Wavefunction &wf, TVector3 &pvec){
 
     res=numint::vector_z(13,0.);
     double d3dnorm=0.;
@@ -241,10 +251,13 @@ void int_3d(numint::vector_z &res, double r, double costheta, double phi, TInter
     for(int dspin=-2;dspin<=2;dspin+=2){
         for(int pspin=-1;pspin<=1;pspin+=2){
             for(int nspin=-1;nspin<=1;nspin+=2){
-                d3dnorm+=norm(wf.DeuteronRState(dspin,nspin,pspin,TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
+                // d3dnorm+=norm(wf.DeuteronRState(dspin,nspin,pspin,TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
+                // res[1+(dspin+2)/2*4+(pspin+1)+(nspin+1)/2]=expf
+                //     *r*wf.DeuteronRState(dspin,nspin,pspin,TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta))*pow(2.*PI*HBARC,-3./2.);
+                 d3dnorm+=norm(wf.DeuteronRState(dspin,nspin,pspin,TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
                 res[1+(dspin+2)/2*4+(pspin+1)+(nspin+1)/2]=expf
                     *r*wf.DeuteronRState(dspin,nspin,pspin,TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta))*pow(2.*PI*HBARC,-3./2.);
-            }
+           }
         }
     }
     res[0]=d3dnorm/3.;
