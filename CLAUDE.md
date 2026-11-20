@@ -25,7 +25,7 @@ make doc                  # Doxygen API docs -> doc/
 
 ## Roadmap
 
-`docs/ROADMAP.md` holds the ordered cleanup and modernization plan and its status. Read it before cleanup or refactoring work, and update its status in the same PR as the work.
+`docs/ROADMAP.md` holds the ordered cleanup and modernization plan and its status. Read it before cleanup or refactoring work, and update its status in the same PR as the work. `docs/HISTORY.md` records where the code came from (SVN, UGent GitHub, github.com), its contributors, the archived branches, and which programs produced which results.
 
 ## Tests
 
