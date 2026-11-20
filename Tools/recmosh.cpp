@@ -4,116 +4,12 @@ RecMosh::RecMosh(int n1, int l1, int n2, int l2, string path)
 	  l1(l1),
 	  n2(n2),
 	  l2(l2),
-	  coefficients(),
 	  path(path)
 {
-	loadFile();
-	
-	
-// 	if( 2*n+l+2*N+Lambda == 2*n1+l1+2*n2+l2)
-// 	{
-// 		double result = calculate(n,l,N,Lambda,n1,l1,n2,l2,L);
-// 		cout << result << endl;
-// 	}
-// 	else cout << "energy error result = 0" << endl;
-      /*int totalE = 2*n1+l1 + 2*n2+l2;
-	for( int n = 0; 2*n<=totalE; n++ )
-	{
-		for( int N = 0; 2*n+2*N<=totalE; N++ )
-		{
-			for( int l = 0; 2*n+l+2*N <= totalE; l++ )
-			{
-				int L = totalE - 2*n-2*N-l;
-				if( 2*n+l + 2*N+L != totalE) cerr<< "Energy Error " << endl;
-				for( int lambda = fabs(l1-l2); lambda <= l1+l2; lambda++)
-				{
-
-					if( l+L < lambda || fabs(l-L) > lambda) continue;
-					double result =calculate(n, l, N, L, n1, l1, n2, l2, lambda);
-					cout << n << l << N << L << lambda << " " << result << endl;
-					
-					
-				//	for( int lambda_m = - lambda; lambda_m < lambda+1; lambda_m++)
-				//	{
-					
-// 						double result, error;
-// 						int status = calculateBracket( n, l, N, L, lambda, lambda_m, &result, &error, calls);
-// 						if(status) cerr << "failed, gsl_errno = " << status << endl;
-// 						int key = 100000*n + 10000*l + 1000*N + 100*L + 10*lambda + lambda_m;
-// 						coefficients[key] = result;
-// 						errors[key] = error; 
-				//	}
-				}
-				
-			}
-		}
-	}
-	*/
-	
 }
 
 RecMosh::~RecMosh()
 {
-	// Worked very good for updating missing bracket, but is now to slow.
-	//uncomment when calc special ones...
-// 	writeToFile();
-
-}
-
-void RecMosh::writeToFile()
-{
-	stringstream name;
-	name << path << "/recmosh/recmosh" << n1 << l1 << n2 << l2 << ".dat";
-// 	cout << "write to " << name.str().c_str() << endl;
-	ofstream dataFile ( name.str().c_str(), ofstream::out );
-	if( !dataFile.is_open() )
-	{
-		cerr << "File could not be opened! Output written to stdout" << endl;
-		dataFile.close();
-// 		cout << 1000*n1 + 100*l1 + 10*n2 + l2  << endl;
-		map<int, double>::iterator it;
-		for( it =coefficients.begin(); it!= coefficients.end(); it++ )
-		{
-			cout << (it)->first << " " << (it)->second << endl;
-		}
-	}
-	dataFile << 1000*n1 + 100*l1 + 10*n2 + l2  << endl;
-	map<int, double>::iterator it;
-	for( it =coefficients.begin(); it!= coefficients.end(); it++ )
-	{
-		dataFile << (it)->first << " " << (it)->second <<   endl;
-// 		cout << (it)->first << " " << (it)->second << endl;
-	}
-	
-	dataFile.close();
-	
-}
-
-void RecMosh::loadFile(  )
-{
-	stringstream name;
-	
-	name << path << "/recmosh/recmosh" << n1 << l1 << n2 << l2 << ".dat";
-	ifstream dataFile ( name.str().c_str(), ifstream::in );
-	if( !dataFile )
-	{
-		cerr << "File " << name.str() << " not found! " << endl;
-		dataFile.close();
-	}
-	else
-	{
-		int data;
-		dataFile >> data;
-		while(!dataFile.eof())
-		{
-			int key;
-			double coefficient ;
-			dataFile >> key;
-			dataFile >> coefficient;
-			coefficients[key] = coefficient;
-		}
-		dataFile.close();
-	}
 }
 
 double RecMosh::getCoefficient( int n, int l, int N, int Lambda, int L )
@@ -122,24 +18,22 @@ double RecMosh::getCoefficient( int n, int l, int N, int Lambda, int L )
 	{
 		return 0;
 	}
-	int key = 100000*n + 10000*l + 1000*N + 100*Lambda + L*10;
-		
-	map< int, double >::iterator it;
-	it = coefficients.find(key);
-	if( it == coefficients.end()) 
-	{
-		double result = calculate(n,l,N,Lambda,n1,l1,n2,l2,L);
-		coefficients[key] = result;
-		return result;
-	}
-	else return it->second;
+	// memoized in calculate(); the old int key 100000*n + 10000*l + ... collided once l >= 10
+	return calculate(n,l,N,Lambda,n1,l1,n2,l2,L);
 }
 
 double RecMosh::calculate( int n, int l, int N, int Lambda, int n1, int l1, int n2, int l2, int L)
 {
-// 	cout << "<(" << n << l << N << Lambda << ")" << L;
-// 	cout << "|(0" << l1 << 0 << l2 << ")" << L << "> = " << endl;
-	cerr << " calculating missing coeff \n Remark that new calculated brackets aren't written out anymore." << endl;
+	const std::array<int,9> key{ n, l, N, Lambda, n1, l1, n2, l2, L };
+	auto it = memo.find(key);
+	if( it != memo.end() ) return it->second;
+	double result = calculateUncached(n, l, N, Lambda, n1, l1, n2, l2, L);
+	memo[key] = result;
+	return result;
+}
+
+double RecMosh::calculateUncached( int n, int l, int N, int Lambda, int n1, int l1, int n2, int l2, int L)
+{
 	if( L < fabs(l-Lambda) || L > l+Lambda)
 		return 0;
 	if( L < fabs(l1-l2) || L > l1+l2 )
@@ -233,7 +127,7 @@ double RecMosh::calculate( int n, int l, int N, int Lambda, int n1, int l1, int 
 	}
 	
 	cerr << " IMPOSSIBLE " << endl;
-	return NULL;
+	return 0.;
 	
 }
 

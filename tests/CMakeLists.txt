@@ -31,7 +31,7 @@ target_compile_definitions(physcode_test_support PRIVATE
   PHYSCODE_TEST_REFDIR_DEFAULT="${PHYSCODE_TEST_REFDIR}")
 
 # ---- fixture: (re)create the sandbox share dir before any test that needs it --------------------
-# Read-only data are symlinked; input/ and recmosh/ are copied (the code writes into them);
+# Read-only data are symlinked; input/ is copied (the code writes into it);
 # grids/ is emptied, so Glauber grids are always recomputed and the user's share/grids/ is
 # never read or written.
 add_test(NAME share_sandbox
@@ -68,6 +68,7 @@ physcode_add_test(unit_deuteron_wf     DIR unit LABEL unit LINK MePhys cuba)
 physcode_add_test(unit_kinematics      DIR unit LABEL unit LINK MePhys cuba)
 physcode_add_test(unit_constants       DIR unit LABEL unit LINK MePhys cuba)
 physcode_add_test(unit_meanfield       DIR unit LABEL unit LINK Glauber cuba)
+physcode_add_test(unit_moshinsky       DIR unit LABEL unit LINK MePhys cuba)
 
 # ---- regression tests: golden values from master (tests/reference/*.ref) ---------------------
 physcode_add_test(reg_nucleon_structure DIR regression LABEL regression LINK MePhys cuba)
