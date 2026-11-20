@@ -42,11 +42,10 @@ TEST_CASE("DeuteronCross: light-cone and VNA, plane wave and FSI", "[tagged]") {
   }
 }
 
-// Hidden known bug (run by hand: reg_deuteron_tagged "[known-bug]"): since commit a458b63 the
-// Fortran side of He3wf declares the file name as character(kind=C_CHAR), bind(C) :: datname,
-// i.e. of length 1 (Tools/getwavemod_tm.f:25), so it opens '/' and stops with a Fortran runtime
-// error. Once fixed: remove the [.] and [known-bug] tags and capture the reference values.
-TEST_CASE("He3Cross: tagged DIS with two spectators", "[.][tagged][known-bug]") {
+// From a458b63 (2020) until 2026, He3wf passed its file name to Fortran as a 1-character string
+// and could not read its wave function. The proton and neutron loop below also checks that the
+// wave function can be read twice in one process.
+TEST_CASE("He3Cross: tagged DIS with two spectators", "[tagged]") {
   TVector3 sp1(0., 200., 0.), sp2(100., -100., 100.);
   TVector3 spcm = sp1 + sp2;
   TVector3 beam(5000. * std::cos(-1.), 0., 5000. * std::sin(-1.));
