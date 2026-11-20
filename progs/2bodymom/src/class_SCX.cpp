@@ -2,7 +2,7 @@
 #include "parser.hpp"
 #include "2bodymom.hpp"
 #include <numint/numint.hpp>
-#include "ClassGridThick_SCX.hpp"
+#include "ClassGridThickNucleus_SCX.hpp"
 #include <FastParticle.hpp>
 #include <vector>
 #include <complex>
@@ -47,7 +47,7 @@ struct F_SCX{
 		return 0; // always "succes"
 	}
 	Event *event;
-	ClassGridThick_SCX *cx_grid_1,*cx_grid_2;
+	ClassGridThickNucleus_SCX *cx_grid_1,*cx_grid_2;
 	GlauberGridThick *fsi_grid;
 	MeanFieldNucleusThick* nuc;
 	int m1,m2;
@@ -148,8 +148,8 @@ void calculate_CX_probabilities(struct Event& event,MeanFieldNucleusThick& nuc,d
 	FastParticle fp1_cx((event.type1==0)? FastParticle::P_CLASS_SCX : FastParticle::N_CLASS_SCX,0,event.p1,0.,0.,1.,1.,SHAREDIR); // change elastic scattering nucleon 0 is proton 1 is neutron
 	FastParticle fp2_cx((event.type2==0)? FastParticle::P_CLASS_SCX : FastParticle::N_CLASS_SCX,0,event.p2,0.,0.,1.,1.,SHAREDIR); // change elastic scattering nucleon 0 is proton 1 is neutron
 	/** now make the classical CX grids, one for each particle **/
-	ClassGridThick_SCX cx_grid_1(&nuc,&fp1_cx,25,25);
-	ClassGridThick_SCX cx_grid_2(&nuc,&fp2_cx,25,25);
+	ClassGridThickNucleus_SCX cx_grid_1(&nuc,&fp1_cx,25,25);
+	ClassGridThickNucleus_SCX cx_grid_2(&nuc,&fp2_cx,25,25);
 	cx_grid_1.addKnockoutParticle(event.shellindex1);
 	cx_grid_1.addKnockoutParticle(event.shellindex2);
 	cx_grid_1.constructGrid();

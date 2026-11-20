@@ -1,10 +1,10 @@
-#include "ClassGridThick_SCX.hpp"
+#include "ClassGridThickNucleus_SCX.hpp"
 #include <gsl/gsl_sf_bessel.h>
 #include <numint/numint.hpp>
 #include <fstream>
 #include "2bodymom.hpp"
 
-ClassGridThick_SCX::ClassGridThick_SCX(MeanFieldNucleusThick* nuc,FastParticle* fp,int bpoints,int zpoints) : 
+ClassGridThickNucleus_SCX::ClassGridThickNucleus_SCX(MeanFieldNucleusThick* nuc,FastParticle* fp,int bpoints,int zpoints) : 
 	_nuc(nuc),
 	_fp(fp),
 	_bpoints(bpoints),
@@ -27,7 +27,7 @@ ClassGridThick_SCX::ClassGridThick_SCX(MeanFieldNucleusThick* nuc,FastParticle* 
 	std::cout << "#[ClassGridThick::info]  FastParticle (Sigmap,Sigman) is " << "(" << _fp->getSigmap() << ", " << _fp->getSigman() << ")"  << std::endl;
 }
 
-ClassGridThick_SCX::~ClassGridThick_SCX(){
+ClassGridThickNucleus_SCX::~ClassGridThickNucleus_SCX(){
 	if ( _pgrid != NULL ){ // all the other grids are also NULL if _pgrid is NULL
 		for (int bi=0; bi<_bpoints;bi++){
 			delete[] _pgrid[bi];
@@ -42,7 +42,7 @@ ClassGridThick_SCX::~ClassGridThick_SCX(){
 	}
 }
 
-void ClassGridThick_SCX::addKnockoutParticle(int level){ // add a knockout particle, on which no FSIs take place, only to correct for density changes
+void ClassGridThickNucleus_SCX::addKnockoutParticle(int level){ // add a knockout particle, on which no FSIs take place, only to correct for density changes
 	assert(level < _nuc->getTotalLevels());
 	if (level < _nuc->getPLevels()){ // it is a proton
 		_pdens_fctr -= 1.; ///_nuc->getZ();
@@ -52,12 +52,12 @@ void ClassGridThick_SCX::addKnockoutParticle(int level){ // add a knockout parti
 	//std::cout << "#[ClassGridThick::info] density correction factors are (p,n) = (" << _pdens_fctr << ", " << _ndens_fctr << ") " << std::endl;
 }
 
-void ClassGridThick_SCX::clearKnockout(){
+void ClassGridThickNucleus_SCX::clearKnockout(){
 	_pdens_fctr = _nuc->getZ(); //1.; // because density is normed to one, we need density normed to Z
 	_ndens_fctr = _nuc->getN(); //1.; // because density is normed to one, we need density normed to N
 }
 
-void ClassGridThick_SCX::constructGrid(){
+void ClassGridThickNucleus_SCX::constructGrid(){
 	assert(_pgrid==NULL && _ngrid==NULL && _perrorGrid==NULL && _nerrorGrid==NULL && _bstep > 0. && _zstep > 0.);
 	std::fstream file;
 	file.open(_filename,std::ios::binary | std::ios::in);
@@ -153,7 +153,7 @@ void ClassGridThick_SCX::constructGrid(){
 	}
 }
 
-void ClassGridThick_SCX::printGrid(){ // debug function
+void ClassGridThickNucleus_SCX::printGrid(){ // debug function
 	std::cout << 0                 << "\t" << _nuc->getRange() << "\t" << _bpoints << std::endl;
 	std::cout << -_nuc->getRange() << "\t" << _nuc->getRange() << "\t" << _zpoints << std::endl;
 	for (int bi=0; bi<_bpoints;bi++){
@@ -166,7 +166,7 @@ void ClassGridThick_SCX::printGrid(){ // debug function
 	}
 }
 
-void ClassGridThick_SCX::printDensityGrid(){
+void ClassGridThickNucleus_SCX::printDensityGrid(){
 	for (int bi=0; bi<_bpoints;bi++){
 		for (int zi=0; zi<_zpoints;zi++){
 			double b = bi*_bstep; 
@@ -189,7 +189,7 @@ void ClassGridThick_SCX::printDensityGrid(){
  *  to fetch the correct fsi factor
  *  @param x the coordinates in \f$r, \, \cos \theta\ \,\text{and} \phi$
  *  */
-double ClassGridThick_SCX::getInterp(numint::array<double,3> x){ // x is r,costheta,phi 
+double ClassGridThickNucleus_SCX::getInterp(numint::array<double,3> x){ // x is r,costheta,phi 
 	//std::cout << "# GlauberGrid got interpolation request for " << x[0] << " " << x[1] << std::endl;
 	assert( _pgrid != NULL); // if one grid is not NULL, all the others will not be NULL as well
 	_fp->setHitcoord(x[0],x[1],sqrt(1.-x[1]*x[1]),cos(x[2]),sin(x[2]) ); // set the hitcoordinates for the fast particle
@@ -222,8 +222,8 @@ double ClassGridThick_SCX::getInterp(numint::array<double,3> x){ // x is r,costh
  *  to fetch the correct fsi factor
  *  @param x the coordinates in \f$r, \, \cos \theta\ \,\text{and} \phi$\f
  *  */
-double ClassGridThick_SCX::getInterp(double x[]){ // x is r,costheta,phi 
-	//std::cout << "# ClassGridThick_SCX got interpolation request for " << x[0] << " " << x[1] << " " << x[2] << std::endl;
+double ClassGridThickNucleus_SCX::getInterp(double x[]){ // x is r,costheta,phi 
+	//std::cout << "# ClassGridThickNucleus_SCX got interpolation request for " << x[0] << " " << x[1] << " " << x[2] << std::endl;
 	assert( _pgrid != NULL); // if one grid is not NULL, all the others will not be NULL as well
 	_fp->setHitcoord(x[0],x[1],sqrt(1.-x[1]*x[1]),cos(x[2]),sin(x[2]) ); // set the hitcoordinates for the fast particle
 	double** _grid = (_fp->getParticletype() == FastParticle::P_CLASS_SCX) ? _pgrid : _ngrid;
@@ -280,7 +280,7 @@ struct F_SCX {
 /**calculate the grid factors given (b,z) and density function densf
  * you still have to multiply this with the correct prefactors!
  */
-void ClassGridThick_SCX::calcq(double b,double z,double& ret,double& err, double (MeanFieldNucleusThick::*densf)(const double) const){
+void ClassGridThickNucleus_SCX::calcq(double b,double z,double& ret,double& err, double (MeanFieldNucleusThick::*densf)(const double) const){
 	/** set up integrator struct **/
 	struct F_SCX p;
 	p.nuc   = _nuc;

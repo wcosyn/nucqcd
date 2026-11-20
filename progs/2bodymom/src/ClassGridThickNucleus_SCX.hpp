@@ -1,5 +1,10 @@
-#ifndef CLASS_GRIDTHICK_SCX_HPP
-#define CLASS_GRIDTHICK_SCX_HPP
+#ifndef CLASS_GRIDTHICK_NUCLEUS_SCX_HPP
+#define CLASS_GRIDTHICK_NUCLEUS_SCX_HPP
+
+// The 2014 version of the semiclassical SCX grid, specific to MeanFieldNucleusThick (separate proton
+// and neutron grids, density corrections for knocked-out nucleons). Glauber/ClassGridThick_SCX is the
+// later generic rewrite (any spherical density). Renamed from ClassGridThick_SCX in 2026: both were
+// linked into the same programs (ODR violation).
 
 #include "numint/numint.hpp"
 #include <cmath>
@@ -19,11 +24,11 @@ using std::complex;
  *   independent integral).
  *
  *  */
-class ClassGridThick_SCX {
+class ClassGridThickNucleus_SCX {
 	public:
 		/** make sure both bpoints and zpoints are always larger than 2 plz **/
-		ClassGridThick_SCX(MeanFieldNucleusThick* nuc,FastParticle* fp,int bpoints, int zpoints);
-		~ClassGridThick_SCX();
+		ClassGridThickNucleus_SCX(MeanFieldNucleusThick* nuc,FastParticle* fp,int bpoints, int zpoints);
+		~ClassGridThickNucleus_SCX();
 		void constructGrid();
 		void printGrid();
 		void printDensityGrid();
@@ -46,4 +51,4 @@ class ClassGridThick_SCX {
 };
 
 
-#endif // CLASS_GRIDTHICK_SCX_HPP
+#endif // CLASS_GRIDTHICK_NUCLEUS_SCX_HPP

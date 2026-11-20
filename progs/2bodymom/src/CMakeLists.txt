@@ -3,7 +3,7 @@
 # sources shared by all programs below: compiled once
 add_library(twobody_common OBJECT
   sampler_HALLA.cpp sampler_PRL99_072501.cpp sampler_HALLB.cpp parser.cpp event.cpp
-  GlauberGridThick_SCX.cpp GlauberGridThick_SEL.cpp ClassGridThick_SCX.cpp)
+  GlauberGridThick_SCX.cpp GlauberGridThick_SEL.cpp ClassGridThickNucleus_SCX.cpp)
 target_include_directories(twobody_common PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(twobody_common PUBLIC Knockout Glauber MePhys cuba)
 if(NOT BUILD_PROGS)

@@ -2,7 +2,7 @@
 #include "GlauberGridThick_SCX.hpp"
 #include "GlauberGridThick_SEL.hpp"
 #include "MeanFieldNucleusThick.hpp"
-#include "ClassGridThick_SCX.hpp"
+#include "ClassGridThickNucleus_SCX.hpp"
 #include "FastParticle.hpp"
 #include "event.hpp"
 #ifndef SHAREDIR
@@ -184,7 +184,7 @@ void testClass(){
 	FastParticle fpp(FastParticle::P_CLASS_SCX,0,100.,0.,0.,0.,0.,1.,1.,SHAREDIR);
 	FastParticle fpn(FastParticle::N_CLASS_SCX,0,1000.,0.,0.,0.,0.,1.,1.,SHAREDIR);
 	MeanFieldNucleusThick nuc(MeanFieldNucleusThick::Pb,SHAREDIR);
-	ClassGridThick_SCX g(&nuc,&fpp,25,20);
+	ClassGridThickNucleus_SCX g(&nuc,&fpp,25,20);
 	g.constructGrid();
 	g.printGrid();
 }
