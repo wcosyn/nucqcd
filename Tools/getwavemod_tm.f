@@ -22,7 +22,10 @@
        REAL,ALLOCATABLE    ::  wavef(:)
 
        PUBLIC readwave,getwave,getwave_s,getwave_d,mbjreset
-       character(kind=C_CHAR), bind(C, name="he3filename"):: datname
+C      file name of the wave function, set from C++ (He3wf) as a
+C      NUL-terminated string in "char he3filename[256]"
+       character(kind=C_CHAR), bind(C, name="he3filename")::
+     X      datname(256)
        PUBLIC :: datname
 
       CONTAINS
@@ -614,14 +617,16 @@ c       CALL fort_pat_stop(3)
 c     readwave reads in the wave function in file DATNAME
 c     the third component of the isospin is fixed by the data file
 c     the third component of the spin of the 3n system is given 
-c     by mbjset= +/- 1, it can only be called once.
+c     by mbjset= +/- 1. A new call rereads the file and replaces the
+c     wave function of an earlier call (there is only one at a time).
 c     if usecdep = .true. then it uses the isospin violating parts 
 c     of the wave function, otherwise it neglects them (good approximation,faster)
 
       SUBROUTINE readwave(mbjset,usecdep) bind(C, name="readhe3wave")
        IMPLICIT NONE
 
-!        CHARACTER(LEN=256) DATNAME
+       CHARACTER(LEN=256) fname
+       INTEGER ic
        LOGICAL usecdep
 
        INTEGER j3max,lammax,l4max,potnr_yak,potynnr_yak,
@@ -638,11 +643,28 @@ c     of the wave function, otherwise it neglects them (good approximation,faste
        REAL sum,sump,sumq
 C     define polarization of 3n system
        mbj=mbjset
-!        write(6,*)'bla', DATNAME
+
+C     free the arrays of an earlier call, so a wave function can be
+C     read more than once in the same process
+       IF(ALLOCATED(PSI)) DEALLOCATE(PSI)
+       IF(ALLOCATED(P12P)) DEALLOCATE(P12P,P3P,P34P,Q4P,QP)
+       IF(ALLOCATED(qnl12)) DEALLOCATE(qnl12,qns12,qnj12,qnt12,
+     X      qnl3,qnI3,qntau)
+       IF(ALLOCATED(coupfaktor)) DEALLOCATE(coupfaktor,chanf)
+       IF(ALLOCATED(spharm12)) DEALLOCATE(spharm12,spharm3)
+       IF(ALLOCATED(sqfakt)) DEALLOCATE(sqfakt)
+       IF(ALLOCATED(wavef)) DEALLOCATE(wavef)
        
 *21apr       WRITE(*,*) 'Read 3N wave function'
 
-       OPEN(84,FILE=DATNAME,FORM='FORMATTED',STATUS='OLD')
+C     convert the NUL-terminated C string to a Fortran string
+       fname=' '
+       DO ic=1,256
+         IF(datname(ic).EQ.C_NULL_CHAR) EXIT
+         fname(ic:ic)=datname(ic)
+       END DO
+
+       OPEN(84,FILE=TRIM(fname),FORM='FORMATTED',STATUS='OLD')
        
        READ(84,*) erkennung
 *21apr       write(4,*) erkennung
