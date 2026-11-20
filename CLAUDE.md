@@ -23,6 +23,10 @@ make doc                  # Doxygen API docs -> doc/
 - Cuba (`Integrator/Cuba` → symlink to `Cuba-4.2.1`) is built as a CMake `ExternalProject` with autotools into the build tree. It runs serially (`make -j1`) with `-std=gnu17`, because it does not compile as C23 under gcc ≥ 15. Link the INTERFACE target `cuba` to use it (provides `<Cuba/cuba.h>`, `libcuba.a` and the build dependency); `libcuba.a` is also installed into `lib/`.
 - ROOT is found through its own CMake config (`ROOTConfig.cmake`): source `thisroot.sh` (sets `ROOTSYS`), or it is taken from `/opt/root`. GSL and MPI use CMake's built-in find modules; only the PARTONS libraries (`ElementaryUtils`, `NumA++`, `PARTONS`) use find modules in `GPD_Partons/cmake/Modules`, and SFML its own config.
 
+## Roadmap
+
+`docs/ROADMAP.md` holds the ordered cleanup and modernization plan and its status. Read it before cleanup or refactoring work, and update its status in the same PR as the work.
+
 ## Tests
 
 `tests/` holds a Catch2 v3 suite, fetched by CMake on the first configure, and is built when `BUILD_TESTING` is ON (the default). Details are in `tests/README.md`.
