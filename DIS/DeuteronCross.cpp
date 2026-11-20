@@ -547,7 +547,7 @@ void DeuteronCross::readin_deeps(double ******pdeepsarray, string dir){
   for(int i=0;i<Q2index;i++){
     for(int j=0;j<Windex;j++){
       for(int k=0;k<psindex;k++){ 
-	string filename=dir+"/deepsdata/exp.Q"+qq[i]+".W"+ww[j]+".p"+pp[k]+".dat";
+	string filename=dir+"/expdata/deeps/exp.Q"+qq[i]+".W"+ww[j]+".p"+pp[k]+".dat";
 	ifstream file(filename.c_str(),ios::in);
 	if (file.is_open()){
 	  for(int l=0;l<thetaindex;l++) file >> (*pdeepsarray)[i][j][k][l][0]>>(*pdeepsarray)[i][j][k][l][1]
