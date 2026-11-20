@@ -106,8 +106,7 @@ name(nm),proton(pr), mass(pr?MASSP:MASSN),dir(HOMEDIR){
   if(!name.compare("MSTW")){
     string file= string(HOMEDIR)+"/mstw_grids/mstw2008lo.00.dat";
     mstw = new c_mstwpdf(file,false,true);
-    double q2gev=Q2*1.E-06;
-    mstw->update(x,q2gev);
+    mstw->update(x,sqrt(Q2)*1.E-03); //c_mstwpdf takes Q [GeV], not Q^2
   }
   else mstw=NULL;
 
@@ -121,8 +120,7 @@ name(nm),proton(pr), mass(pr?MASSP:MASSN),dir(HOMEDIR),x(xin),Q2(Q2in),Wsq(Wsqin
   if(!name.compare("MSTW")){
     string file= string(HOMEDIR)+"/mstw_grids/mstw2008lo.00.dat";
     mstw = new c_mstwpdf(file,false,true);
-    double q2gev=Q2*1.E-06;
-    mstw->update(x,q2gev);
+    mstw->update(x,sqrt(Q2)*1.E-03); //c_mstwpdf takes Q [GeV], not Q^2
   }
   else mstw=NULL;
   
@@ -141,6 +139,11 @@ NuclStructure::NuclStructure(const NuclStructure& rhs){
   x=rhs.x;
   Q2=rhs.Q2;
   Wsq=rhs.Wsq;
+  mstw=NULL;
+  if(rhs.mstw){
+    mstw = new c_mstwpdf(string(HOMEDIR)+"/mstw_grids/mstw2008lo.00.dat",false,true);
+    mstw->update(x,sqrt(Q2)*1.E-03);
+  }
 }
 
 NuclStructure& NuclStructure::operator=(const NuclStructure& rhs){
@@ -152,6 +155,12 @@ NuclStructure& NuclStructure::operator=(const NuclStructure& rhs){
     x=rhs.x;
     Q2=rhs.Q2;
     Wsq=rhs.Wsq;
+    delete mstw;
+    mstw=NULL;
+    if(rhs.mstw){
+      mstw = new c_mstwpdf(string(HOMEDIR)+"/mstw_grids/mstw2008lo.00.dat",false,true);
+      mstw->update(x,sqrt(Q2)*1.E-03);
+    }
   }
   return *this;
  
@@ -271,18 +280,18 @@ void NuclStructure::getF_HMRS(double &F1,double &F2){
 
 void NuclStructure::getF_MSTW(double &F1,double &F2){
   double u,d,s,c,b,ubar,dbar,sbar,cbar,bbar;
-  double q2gev=Q2*1.E-06;
+  double qgev=sqrt(Q2)*1.E-03; //c_mstwpdf takes Q [GeV], not Q^2
 
-  d=mstw->parton(1,x,q2gev);
-  u=mstw->parton(2,x,q2gev);
-  s=mstw->parton(3,x,q2gev);
-  c=mstw->parton(4,x,q2gev);
-  b=mstw->parton(5,x,q2gev);
-  dbar=mstw->parton(-1,x,q2gev);
-  ubar=mstw->parton(-2,x,q2gev);
-  sbar=mstw->parton(-3,x,q2gev);
-  cbar=mstw->parton(-4,x,q2gev);
-  bbar=mstw->parton(-5,x,q2gev);
+  d=mstw->parton(1,x,qgev);
+  u=mstw->parton(2,x,qgev);
+  s=mstw->parton(3,x,qgev);
+  c=mstw->parton(4,x,qgev);
+  b=mstw->parton(5,x,qgev);
+  dbar=mstw->parton(-1,x,qgev);
+  ubar=mstw->parton(-2,x,qgev);
+  sbar=mstw->parton(-3,x,qgev);
+  cbar=mstw->parton(-4,x,qgev);
+  bbar=mstw->parton(-5,x,qgev);
   if(proton){ 
     F2=1./9.*(4.*(u+ubar)+(d+dbar)+(s+sbar)+4*(c+cbar)+(b+bbar));
     F1=1./(2.*x)/(1.+getr1998(x,Q2))*(1.+4.*MASSP*MASSP*x*x/Q2)*F2;
