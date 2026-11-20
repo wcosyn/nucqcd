@@ -47,6 +47,7 @@ Poldeut& Poldeut::operator=(const Poldeut& rhs){
   if(this!=&rhs) { // avoid self-assignment
     strucname=rhs.strucname;
     wfname=rhs.wfname;
+    delete wfref;
     wfref = TDeuteron::Wavefunction::CreateWavefunction(wfname);
     wf=rhs.wf;
     s_wave=rhs.s_wave;
