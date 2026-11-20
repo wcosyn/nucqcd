@@ -142,6 +142,9 @@ deliberately and removes its `[known-bug]` tag.
 - [ ] **ROOT `.pcm` dictionary files** are not copied to `build/lib`. This only shows up in crash output.
 - [ ] **Check how the structure functions reach `DeuteronCross` and `InclusiveCross`.** A mutation test
   of SLAC F2 was not caught by their tests, so they appear to use a different code path.
+- [x] **`progs/deepsdis/b1_calc.cpp` Azz angular factor:** the longitudinal tensor term used
+  `1/4 + 3/4 cos θq` instead of d²₀₀(θq) = `1/4 + 3/4 cos 2θq` (the integrand `res[10]` already used
+  `cos 2θq`). Fixed in PR #5. Found while reviewing the archived `Alan` branch, which had the same fix.
 
 ## 5. Low-risk modernization
 
