@@ -1,10 +1,6 @@
 // Regression: (anti)neutrino quasi-elastic scattering (Knockout/WeakQECross): elementary nucleon
 // cross sections (charged current only; the elementary routine returns 0 for neutral current) and
 // plane-wave nuclear cross sections for charged and neutral current.
-// NOTE: the neutral-current nuclear prefactor (Knockout/WeakQECross.cpp:637-638) is suspect:
-//   pow(E_beam - omega*G_FERMI/(Q2/M_Z/M_Z+1.)/PI, 2.)  -- probably meant (E_beam-omega)*G_FERMI/...
-// (compare the charged-current branch, line 157), which makes the NC values ~1e23 too large, and
-// M_Z in constants.hpp is 10x too large (see unit_constants). Fixing either moves the "NC" values.
 #include <test_support.hpp>
 
 #include <MeanFieldNucleusThick.hpp>
@@ -57,12 +53,10 @@ TEST_CASE("Nuclear plane-wave charged-current QE on carbon", "[weakqe]") {
   }
 }
 
-// Hidden known bug (run by hand: reg_weakqe "[known-bug]"): the neutral-current constructor
-// WeakQECross(TElectronKinematics*, ...) never initializes the member `lepton`, but
-// getDiffWeakQECross dereferences lepton->GetBeamEnergy(kin) for every process, so NC nuclear
-// cross sections segfault (or return garbage). See also the NC prefactor issue at the top of this
-// file. Once fixed: remove [.] and [known-bug], and capture reference values.
-TEST_CASE("Nuclear plane-wave neutral-current QE on carbon", "[.][weakqe][known-bug]") {
+// The NC branch of getDiffWeakQECross used to dereference the uninitialized `lepton` member
+// (segfault), and its prefactor had a misplaced parenthesis (values ~1e23 too large) and was a
+// factor 2 larger than the CC one. With the fix, NC/CC ~ 0.24 at these kinematics (pm = 50).
+TEST_CASE("Nuclear plane-wave neutral-current QE on carbon", "[weakqe]") {
   const std::string dir = nucqcd_test::share_dir();
   MeanFieldNucleusThick carbon(MeanFieldNucleus::C, dir);
   std::unique_ptr<TElectronKinematics> elec(TElectronKinematics::CreateWithBeamEnergy(1500.));
@@ -72,7 +66,8 @@ TEST_CASE("Nuclear plane-wave neutral-current QE on carbon", "[.][weakqe][known-
   for (int shell = 0; shell < carbon.getPLevels(); shell++) {
     std::ostringstream key;
     key << "C_pm50_shell" << shell << "_NC_pw";
-    CHECK_REF(refs, key.str(), nc.getDiffWeakQECross(kin, 2, 0, 0, 0, 1, shell, 0., 20000, WeakQECross::ctheta_lab, false),
-              1e-7, 1e-40);
+    const double xs = nc.getDiffWeakQECross(kin, 2, 0, 0, 0, 1, shell, 0., 20000, WeakQECross::ctheta_lab, false);
+    CHECK(xs > 0.);
+    CHECK_REF(refs, key.str(), xs, 1e-7, 1e-40);
   }
 }
