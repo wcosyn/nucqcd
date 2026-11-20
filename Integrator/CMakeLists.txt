@@ -1,5 +1,5 @@
 # libIntegrator: numint (templated quadratures) and adaptive cubature.
-physcode_add_library(Integrator
+nucqcd_add_library(Integrator
   SOURCES
     numint/cube_romb.cpp
     numint/cube_tr.cpp

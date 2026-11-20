@@ -8,7 +8,7 @@
 // [experiment "miniboone", "minerva", "t2k"] [lepton id "electron", "muon", "tau"] [sharedir]
 
 // example for plane wave calculation for miniboone
-// > sdiff_Q2 0.1 3 500. 200. 1 0 miniboone muon ~/physics-code/share/
+// > sdiff_Q2 0.1 3 500. 200. 1 0 miniboone muon <repo>/share/
 
 
 

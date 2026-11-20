@@ -1,4 +1,4 @@
-physcode_add_programs(LINK Knockout Glauber MePhys PROGRAMS
+nucqcd_add_programs(LINK Knockout Glauber MePhys PROGRAMS
   observables          # A(e,e'p) observables
   Ca_dens
   PxPz_exp_sample

@@ -1,6 +1,6 @@
 # libGPD: deuteron vector and transversity GPD convolutions, built on PARTONS.
 # Only included with -DPARTONS_ENABLED=yes (the PARTONS libraries are found in the top level).
-physcode_add_library(GPD
+nucqcd_add_library(GPD
   SOURCES
     src/Deut_Conv_GPD_T.cpp
     src/Deut_Conv_GPD_V.cpp

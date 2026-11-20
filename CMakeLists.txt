@@ -1,4 +1,4 @@
-# physics-code: libraries (Integrator, MePhys, Glauber, Knockout, DIS, Evolution, GPD) and programs.
+# nucqcd: QCD in nuclei. Libraries (Integrator, MePhys, Glauber, Knockout, DIS, Evolution, GPD) and programs.
 #
 #   cd build
 #   cmake -DCMAKE_BUILD_TYPE=Release [-DBUILD_PROGS=yes] [-DPARTONS_ENABLED=yes] ..
@@ -10,7 +10,7 @@
 # ROOT (with MathMore and Minuit2) is found through its CMake config: source thisroot.sh,
 # or ROOT in /opt/root is used.
 cmake_minimum_required(VERSION 3.16)
-project(physics-code LANGUAGES C CXX Fortran)
+project(nucqcd LANGUAGES C CXX Fortran)
 
 option(BUILD_PROGS "Build the programs in progs/ with 'make' and install them" OFF)
 option(PARTONS_ENABLED "Build GPD_Partons and progs/GPD (needs PARTONS, see scripts/install_partons.sh)" OFF)
@@ -45,17 +45,17 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH ON)
 set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
 
 # ---- compiler flags (all languages: C, C++, Fortran) ------------------------------------------
-set(PHYSCODE_RELEASE_FLAGS)
+set(NUCQCD_RELEASE_FLAGS)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-  set(PHYSCODE_RELEASE_FLAGS -O3 -march=native -mtune=native -pipe)
+  set(NUCQCD_RELEASE_FLAGS -O3 -march=native -mtune=native -pipe)
   # -fopenmp only for C/C++ (which contain no OpenMP directives, as before). The Fortran in
   # DIS/evolution does contain !$omp directives but was always built without OpenMP; enabling
   # it there would also need OpenMP at link time (find_package(OpenMP), OpenMP::OpenMP_Fortran).
   add_compile_options("$<$<AND:$<CONFIG:Release>,$<COMPILE_LANGUAGE:C,CXX>>:-fopenmp>")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")     # classic icpc
-  set(PHYSCODE_RELEASE_FLAGS -O3 -shared-intel -fp-model source -unroll -pthread -ipo -xavx)
+  set(NUCQCD_RELEASE_FLAGS -O3 -shared-intel -fp-model source -unroll -pthread -ipo -xavx)
   if(MPI_ENABLED)
-    list(APPEND PHYSCODE_RELEASE_FLAGS -parallel)
+    list(APPEND NUCQCD_RELEASE_FLAGS -parallel)
     add_link_options(-parallel)
   endif()
   find_program(XIAR xiar)                          # archiver needed for -ipo static libraries
@@ -64,7 +64,7 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")     # classic icpc
   endif()
   mark_as_advanced(XIAR)
 endif()
-add_compile_options(-Wall -Wextra "$<$<CONFIG:Release>:${PHYSCODE_RELEASE_FLAGS}>" "$<$<CONFIG:Debug>:-g>")
+add_compile_options(-Wall -Wextra "$<$<CONFIG:Release>:${NUCQCD_RELEASE_FLAGS}>" "$<$<CONFIG:Debug>:-g>")
 
 # ---- external dependencies -------------------------------------------------------------------
 find_package(ROOT 6 CONFIG REQUIRED COMPONENTS MathMore Minuit Minuit2
@@ -105,7 +105,7 @@ endif()
 find_package(Doxygen)
 
 # ---- the code ----------------------------------------------------------------------------------
-include(cmake/PhysicsCode.cmake)
+include(cmake/NucQCD.cmake)
 
 add_subdirectory(Integrator)    # also builds the bundled Cuba library (target 'cuba')
 add_subdirectory(Tools)         # libMePhys

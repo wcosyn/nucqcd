@@ -1,26 +1,26 @@
-# Helper functions shared by all CMakeLists.txt of physics-code.
+# Helper functions shared by all CMakeLists.txt of nucqcd.
 #
-#   physcode_add_library(<name> SOURCES <src>... [LINK <lib>...] [LINKDEFS <XLinkDef.h>...])
+#   nucqcd_add_library(<name> SOURCES <src>... [LINK <lib>...] [LINKDEFS <XLinkDef.h>...])
 #       Shared library lib<name>.so (version 1.0.0), its directory as public include
 #       directory, installed into <prefix>/lib. LINK libraries are public dependencies.
-#       LINKDEFS: one ROOT dictionary per LinkDef file (see physcode_root_dictionary).
+#       LINKDEFS: one ROOT dictionary per LinkDef file (see nucqcd_root_dictionary).
 #       With STATIC_BUILD also a static lib<name>.a (target <name>ST).
 #
-#   physcode_add_program(<name> [SOURCES <src>...] [LINK <lib>...] [DESTINATION <dir>])
+#   nucqcd_add_program(<name> [SOURCES <src>...] [LINK <lib>...] [DESTINATION <dir>])
 #       Executable <name> (default source <name>.cpp). With BUILD_PROGS it is built by
 #       'make' and installed into <prefix>/<DESTINATION> (default: bin); otherwise it is
 #       only built on request ('make <name>').
 #
-#   physcode_add_programs(LINK <lib>... PROGRAMS <name>... [DESTINATION <dir>])
+#   nucqcd_add_programs(LINK <lib>... PROGRAMS <name>... [DESTINATION <dir>])
 #       Shortcut for several single-source programs with the same libraries.
 #
-#   physcode_root_dictionary(<target> <XLinkDef.h>...)
+#   nucqcd_root_dictionary(<target> <XLinkDef.h>...)
 #       Runs rootcling for each X: X.h or X.hpp + XLinkDef.h -> XDict.cxx (+ XDict_rdict.pcm,
 #       installed next to the library), and adds XDict.cxx to <target>.
 
 include_guard(GLOBAL)
 
-function(physcode_root_dictionary target)
+function(nucqcd_root_dictionary target)
   set(incflags "-I$<JOIN:$<TARGET_PROPERTY:${target},INCLUDE_DIRECTORIES>,;-I>")
   foreach(linkdef IN LISTS ARGN)
     string(REGEX REPLACE "LinkDef\\.h$" "" cls "${linkdef}")
@@ -45,14 +45,14 @@ function(physcode_root_dictionary target)
   endforeach()
 endfunction()
 
-function(physcode_add_library name)
+function(nucqcd_add_library name)
   cmake_parse_arguments(ARG "" "" "SOURCES;LINK;LINKDEFS" ${ARGN})
   add_library(${name} SHARED ${ARG_SOURCES})
   target_include_directories(${name} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
   target_link_libraries(${name} PUBLIC ${ARG_LINK})
   set_target_properties(${name} PROPERTIES VERSION 1.0.0 SOVERSION 1)
   if(ARG_LINKDEFS)
-    physcode_root_dictionary(${name} ${ARG_LINKDEFS})
+    nucqcd_root_dictionary(${name} ${ARG_LINKDEFS})
   endif()
   install(TARGETS ${name} LIBRARY DESTINATION lib)
 
@@ -66,7 +66,7 @@ function(physcode_add_library name)
   endif()
 endfunction()
 
-function(physcode_add_program name)
+function(nucqcd_add_program name)
   cmake_parse_arguments(ARG "" "DESTINATION" "SOURCES;LINK" ${ARGN})
   if(NOT ARG_SOURCES)
     set(ARG_SOURCES ${name}.cpp)
@@ -83,9 +83,9 @@ function(physcode_add_program name)
   endif()
 endfunction()
 
-function(physcode_add_programs)
+function(nucqcd_add_programs)
   cmake_parse_arguments(ARG "" "DESTINATION" "LINK;PROGRAMS" ${ARGN})
   foreach(prog IN LISTS ARG_PROGRAMS)
-    physcode_add_program(${prog} LINK ${ARG_LINK} DESTINATION "${ARG_DESTINATION}")
+    nucqcd_add_program(${prog} LINK ${ARG_LINK} DESTINATION "${ARG_DESTINATION}")
   endforeach()
 endfunction()

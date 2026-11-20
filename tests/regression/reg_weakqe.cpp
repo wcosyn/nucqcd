@@ -19,7 +19,7 @@
 #include <string>
 
 namespace {
-physcode_test::RefStore refs("reg_weakqe");
+nucqcd_test::RefStore refs("reg_weakqe");
 const double M_A = 1.03E03, mmu = 105.6583715;
 }  // namespace
 
@@ -38,7 +38,7 @@ TEST_CASE("Elementary charged-current QE cross sections", "[weakqe]") {
 }
 
 TEST_CASE("Nuclear plane-wave charged-current QE on carbon", "[weakqe]") {
-  const std::string dir = physcode_test::share_dir();
+  const std::string dir = nucqcd_test::share_dir();
   MeanFieldNucleusThick carbon(MeanFieldNucleus::C, dir);
   std::unique_ptr<TLeptonKinematics> muon(TLeptonKinematics::CreateWithBeamEnergy(TLeptonKinematics::muon, 1500.));
   WeakQECross cc(muon.get(), &carbon, 1.E-05, 2, dir, true, M_A, false, false);
@@ -63,7 +63,7 @@ TEST_CASE("Nuclear plane-wave charged-current QE on carbon", "[weakqe]") {
 // cross sections segfault (or return garbage). See also the NC prefactor issue at the top of this
 // file. Once fixed: remove [.] and [known-bug], and capture reference values.
 TEST_CASE("Nuclear plane-wave neutral-current QE on carbon", "[.][weakqe][known-bug]") {
-  const std::string dir = physcode_test::share_dir();
+  const std::string dir = nucqcd_test::share_dir();
   MeanFieldNucleusThick carbon(MeanFieldNucleus::C, dir);
   std::unique_ptr<TElectronKinematics> elec(TElectronKinematics::CreateWithBeamEnergy(1500.));
   WeakQECross nc(elec.get(), &carbon, 1.E-05, 2, dir, false, M_A, false, false);

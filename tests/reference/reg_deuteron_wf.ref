@@ -1,5 +1,5 @@
-# Golden values for the physics-code regression tests (key value).
-# Captured from the code on master; regenerate with PHYSCODE_UPDATE_REFERENCE=1.
+# Golden values for the nucqcd regression tests (key value).
+# Captured from the code on master; regenerate with NUCQCD_UPDATE_REFERENCE=1.
 AV18_p100_U 0.00068805529240586409
 AV18_p100_W 7.9331583661651972e-05
 AV18_p20_U 0.0038418225542644485

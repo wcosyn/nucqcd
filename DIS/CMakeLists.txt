@@ -1,5 +1,5 @@
 # libDIS: inclusive and tagged DIS on the deuteron and He3, polarized deuteron, resonances.
-physcode_add_library(DIS
+nucqcd_add_library(DIS
   SOURCES
     InclusiveCross.cpp
     # InclusiveCrossRes.cpp   # only used the Romberg routines, no longer used

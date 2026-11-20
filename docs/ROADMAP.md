@@ -21,7 +21,7 @@ same PR.
 |---|---|---|
 | 1 | Test suite | ✅ done (PR #2) |
 | 2 | Repo hygiene, including branches | ✅ done (PR #4) |
-| 3 | Rename the repository | ⬜ (name to be chosen) |
+| 3 | Rename the repository | 🔶 renamed to `nucqcd` (PR #7); local folder and `tagged-poldeut` docs to do |
 | 4 | Bug fixes | ⬜ |
 | 5 | Low-risk modernization | ⬜ |
 | 6 | Structural refactors | ⬜ |
@@ -80,24 +80,18 @@ including Glauber/RMSGA final-state interactions, deuteron and He3 structure, ta
 DIS, and deuteron GPDs. Do the rename after the hygiene step, so the new name is in place before the
 bug-fix PRs and long before the README.
 
-- [ ] **Choose a name.** Candidates:
-  - `hadronuc`: hadronic and nuclear physics. Short, and covers the whole scope.
-  - `nucreact`: nuclear reactions. Describes most of the code (knockout, FSI, DIS, neutrino QE).
-  - `glauber-lf`: the two main tools, Glauber FSI and light-front deuteron physics. Narrower.
-  - `cosyn-nuclear`: tied to the author. Unambiguous, but less descriptive.
-- [ ] **Rename on GitHub:** `gh repo rename <new>`, or use the repository settings. GitHub permanently
-  redirects the old web and git URLs, as long as no new repo named `physics-code` is created under
-  the account. Commit hashes are unchanged, so references such as `e9d1e6a` in other repos stay valid.
-- [ ] **Update local clones:** `git remote set-url origin https://github.com/wcosyn/<new>.git`.
-- [ ] **Update the name inside the repo:**
-  - the CMake `project()` name and the header comments of `CMakeLists.txt` and `cmake/PhysicsCode.cmake`
-  - `scripts/install_partons.sh`
-  - usage comments in `progs/` (`~/physics-code/...`)
-  - CLAUDE.md and this roadmap
-  - the text in `tests/support/test_support.*` and the `.ref` headers
-
-  Consider renaming `cmake/PhysicsCode.cmake` and the `physcode_*` helpers too.
-- [ ] **Optional: rename the local folder** `~/Git/physics-code`. This requires:
+- [x] **Name:** `nucqcd`, "QCD in nuclei": high-energy (JLab to EIC) reactions on nuclei, used to learn
+  about the strong force in nuclei, as opposed to low-energy nuclear structure. Other candidates were
+  `qcd-nuclei`, `hinuc`, `hadronuc`, `nucreact`, `glauber-lf` and `cosyn-nuclear`.
+- [x] **Renamed on GitHub** (2026-11-20). GitHub permanently redirects the old web and git URLs, as long
+  as no new repo named `physics-code` is created under the account. Commit hashes are unchanged.
+- [x] **Updated the remote of the local clone:** `git remote set-url origin https://github.com/wcosyn/nucqcd.git`.
+- [x] **Updated the name inside the repo:** the CMake `project()`, `cmake/PhysicsCode.cmake` →
+  `cmake/NucQCD.cmake`, the `physcode_*` helpers → `nucqcd_*`, `PHYSCODE_*` variables → `NUCQCD_*`
+  (including `NUCQCD_UPDATE_REFERENCE`), `nucqcd_test::` in the tests, the `.ref` headers,
+  `scripts/install_partons.sh`, the usage comments in `progs/`, README, CLAUDE.md and HISTORY.md.
+- [ ] **Rename the local folder** `~/Git/physics-code` → `~/Git/nucqcd` with `mv`, not a fresh clone: a clone would lose the
+  untracked grid cache in `share/grids/` (367 MB), `share/gpd_deutgrids/` and the PARTONS configuration in `GPD_Partons/bin`. This requires:
   - a fresh build directory, because `HOMEDIR` in `Tools/constants.hpp` and the RPATHs are absolute paths
   - `make install` again
   - updating `physics-code.code-workspace` and the VS Code settings

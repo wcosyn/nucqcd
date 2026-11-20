@@ -7,7 +7,7 @@
 #include <string>
 
 namespace {
-physcode_test::RefStore refs("reg_poldeut");
+nucqcd_test::RefStore refs("reg_poldeut");
 }
 
 TEST_CASE("Poldeut light-front distributions", "[poldeut]") {

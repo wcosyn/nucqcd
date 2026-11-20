@@ -1,5 +1,5 @@
 # libKnockout: quasi-elastic A(e,e'p), 2N knockout, rho/pion transparency, neutrino QE.
-physcode_add_library(Knockout
+nucqcd_add_library(Knockout
   SOURCES
     DeuteronMomDistr.cpp
     Model.cpp

@@ -1,1 +1,1 @@
-physcode_add_program(SCX_test LINK Glauber MePhys)
+nucqcd_add_program(SCX_test LINK Glauber MePhys)

@@ -1,4 +1,4 @@
-physcode_add_programs(LINK DIS MePhys PROGRAMS
+nucqcd_add_programs(LINK DIS MePhys PROGRAMS
   deepstest               # DEEPS-like reduced structure functions
   deepsfit                # fit of the FSI parameters to the DEEPS data
   bonustest               # BONuS-like ratios (numerator and denominator separately), with the data

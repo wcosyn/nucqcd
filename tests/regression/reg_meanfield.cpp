@@ -7,12 +7,12 @@
 #include <string>
 
 namespace {
-physcode_test::RefStore refs("reg_meanfield");
+nucqcd_test::RefStore refs("reg_meanfield");
 }
 
 TEST_CASE("Mean-field wave functions, densities and masses", "[meanfield]") {
   for (const char *name : {"C", "O", "Fe", "Pb"}) {
-    MeanFieldNucleusThick nucl(MeanFieldNucleus::TypeNames.at(name), physcode_test::share_dir());
+    MeanFieldNucleusThick nucl(MeanFieldNucleus::TypeNames.at(name), nucqcd_test::share_dir());
     const std::string n(name);
     CHECK_REF(refs, n + "_massA", nucl.getMassA());
     CHECK_REF(refs, n + "_massA_min_p", nucl.getMassA_min_proton());

@@ -9,7 +9,7 @@ results can still be traced. The current cleanup plan is in [ROADMAP.md](ROADMAP
 |---|---|---|
 | 2012-03 – 2017 | Subversion (SVN) | First commit `bf133f9`, 2012-03-06. Working copies were checked out as `~/Code/trunk`, and some old paths in `progs/` still refer to it. |
 | 2017 – 2022 | `github.ugent.be/wcosyn/physics-code` (Ghent University GitHub Enterprise) | The SVN repository was converted to git with its full history. The first git merge is UGent PR #1 (`cmake_prog`, 2017-11-10). |
-| 2022-09 – now | [github.com/wcosyn/physics-code](https://github.com/wcosyn/physics-code) | The UGent account ended in 2022 after a change of institution, so everything was migrated here. |
+| 2022-09 – now | [github.com/wcosyn/nucqcd](https://github.com/wcosyn/nucqcd) | The UGent account ended in 2022 after a change of institution, so everything was migrated here, still as `physics-code`. Renamed to `nucqcd` ("QCD in nuclei") on 2026-11-20; GitHub redirects the old URLs. |
 
 Traces of the earlier hosts in the git history:
 

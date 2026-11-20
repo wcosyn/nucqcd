@@ -1,4 +1,4 @@
-physcode_add_programs(LINK Knockout Glauber MePhys PROGRAMS
+nucqcd_add_programs(LINK Knockout Glauber MePhys PROGRAMS
   transp               # transparencies for Or for some proposal
   transp_jlab12        # idem
   transp_uchannel      # idem
