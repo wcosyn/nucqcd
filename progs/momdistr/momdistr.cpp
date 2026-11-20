@@ -78,8 +78,8 @@ int main(int argc, char *argv[])
 
 void adap_intr(numint::vector_z & results, double r, MeanFieldNucleusThick *pNucleus, int shell, double p){
    results = vector<complex<double> >(2,0.);
-   results[1]=results[0]= r*gsl_sf_bessel_jl(pNucleus->getL_array()[shell],p*r*INVHBARC);
-   results[0]*=pNucleus->getWave_G(shell,r);
-   results[1]*=pNucleus->getWave_F(shell,r);
+   //upper component G has orbital angular momentum l, lower component F has lbar
+   results[0]= r*gsl_sf_bessel_jl(pNucleus->getL_array()[shell],p*r*INVHBARC)*pNucleus->getWave_G(shell,r);
+   results[1]= r*gsl_sf_bessel_jl(pNucleus->getLbar_array()[shell],p*r*INVHBARC)*pNucleus->getWave_F(shell,r);
    
 }
