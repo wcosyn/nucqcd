@@ -1,9 +1,9 @@
 # Golden values for the nucqcd regression tests (key value).
 # Captured from the code on master; regenerate with NUCQCD_UPDATE_REFERENCE=1.
-C_RMSGA_shell0 4.5404580438814559e-09
-C_RMSGA_shell0_transparency 0.31028469536919873
-C_RMSGA_shell1 1.8387332960472349e-08
-C_RMSGA_shell1_transparency 0.63409786646304411
+C_RMSGA_shell0 4.5403765499455183e-09
+C_RMSGA_shell0_transparency 0.31028330615405036
+C_RMSGA_shell1 1.838715408678158e-08
+C_RMSGA_shell1_transparency 0.63409604340807602
 C_r0.5_cth-0.8_phi0.4_fsi_im -0.023049127066518727
 C_r0.5_cth-0.8_phi0.4_fsi_re 0.33435307905405809
 C_r0.5_cth-0.8_phi0.4_fsict_im -0.023125417121882128
