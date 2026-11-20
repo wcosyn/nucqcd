@@ -21,11 +21,12 @@ same PR.
 |---|---|---|
 | 1 | Test suite | ✅ done (PR #2) |
 | 2 | Repo hygiene, including branches | 🔶 in progress: merged branches deleted |
-| 3 | Bug fixes | ⬜ |
-| 4 | Low-risk modernization | ⬜ |
-| 5 | Structural refactors | ⬜ |
-| 6 | Unbundle Cuba | ⬜ (can be done any time after step 2) |
-| 7 | Repository README | ⬜ (last) |
+| 3 | Rename the repository | ⬜ (name to be chosen) |
+| 4 | Bug fixes | ⬜ |
+| 5 | Low-risk modernization | ⬜ |
+| 6 | Structural refactors | ⬜ |
+| 7 | Unbundle Cuba | ⬜ (can be done any time after step 2) |
+| 8 | Repository README | ⬜ (last) |
 
 ---
 
@@ -74,7 +75,50 @@ This step needs no physics changes, so the tests must stay green throughout.
     - `evolution_integration`: 2 commits, 2018
     - `LDRD-branch-0.01`: 5 commits, 2014
 
-## 3. Bug fixes
+## 3. Rename the repository
+
+`physics-code` is too generic for what the repository is: nuclear and hadronic reaction theory,
+including Glauber/RMSGA final-state interactions, deuteron and He3 structure, tagged and inclusive
+DIS, and deuteron GPDs. Do the rename after the hygiene step, so the new name is in place before the
+bug-fix PRs and long before the README.
+
+- [ ] **Choose a name.** Candidates:
+  - `hadronuc`: hadronic and nuclear physics. Short, and covers the whole scope.
+  - `nucreact`: nuclear reactions. Describes most of the code (knockout, FSI, DIS, neutrino QE).
+  - `glauber-lf`: the two main tools, Glauber FSI and light-front deuteron physics. Narrower.
+  - `cosyn-nuclear`: tied to the author. Unambiguous, but less descriptive.
+- [ ] **Rename on GitHub:** `gh repo rename <new>`, or use the repository settings. GitHub permanently
+  redirects the old web and git URLs, as long as no new repo named `physics-code` is created under
+  the account. Commit hashes are unchanged, so references such as `e9d1e6a` in other repos stay valid.
+- [ ] **Update local clones:** `git remote set-url origin https://github.com/wcosyn/<new>.git`.
+- [ ] **Update the name inside the repo:**
+  - the CMake `project()` name and the header comments of `CMakeLists.txt` and `cmake/PhysicsCode.cmake`
+  - `scripts/install_partons.sh`
+  - usage comments in `progs/` (`~/physics-code/...`)
+  - CLAUDE.md and this roadmap
+  - the text in `tests/support/test_support.*` and the `.ref` headers
+
+  Consider renaming `cmake/PhysicsCode.cmake` and the `physcode_*` helpers too.
+- [ ] **Optional: rename the local folder** `~/Git/physics-code`. This requires:
+  - a fresh build directory, because `HOMEDIR` in `Tools/constants.hpp` and the RPATHs are absolute paths
+  - `make install` again
+  - updating `physics-code.code-workspace` and the VS Code settings
+  - moving the Claude Code project memory folder (`~/.claude/projects/-home-wcosyn-Git-physics-code`)
+- [ ] **Update the docs in `tagged-poldeut`** (github.com/wcosyn/tagged-poldeut), on both `master` and
+  the `photoproduction` branch. That branch exists only on GitHub; check it out with
+  `git switch photoproduction`. Refer to the new name, and say "formerly known as `physics-code`" once,
+  e.g. in the README and `docs/DEVELOPMENT_NOTES.md`. Mentions as of 2026-11-20:
+  - `master`, 23 lines: `README.md`, `docs/DEVELOPMENT_NOTES.md`, `notebooks/build_notebook.py`,
+    `notebooks/paper_figures.ipynb`, and docstrings and comments in `taggedpd/{constants,nucleon,wavefunctions}.py`
+    and `tests/test_nucleon.py`
+  - `photoproduction`, 44 lines: the same files, plus `taggedpd/{christy_bosted,inclusive}.py`,
+    `notebooks/{build_inclusive_notebook.py,inclusive.ipynb}`, `tests/test_christy_bosted.py` and
+    `tests/reference/fortran/README.md`
+
+  Regenerate the notebooks from their `build_*.py` scripts rather than editing the `.ipynb` by hand.
+  The commit hashes cited there stay valid.
+
+## 4. Bug fixes
 
 Fix one bug per commit or PR. Each fix that changes outputs re-baselines its reference values
 deliberately and removes its `[known-bug]` tag.
@@ -101,7 +145,7 @@ deliberately and removes its `[known-bug]` tag.
 - [ ] **Check how the structure functions reach `DeuteronCross` and `InclusiveCross`.** A mutation test
   of SLAC F2 was not caught by their tests, so they appear to use a different code path.
 
-## 4. Low-risk modernization
+## 5. Low-risk modernization
 
 - [ ] **Constants:** `constexpr` constants in a namespace, keeping the macros as aliases during the transition.
 - [ ] **Ownership:** use smart pointers for owned members and rule-of-zero classes. About 17 classes own
@@ -118,7 +162,7 @@ deliberately and removes its `[known-bug]` tag.
 - [ ] **`-fopenmp`:** remove it, or actually use OpenMP. No C/C++ code contains OpenMP directives.
 - [ ] **Doxygen:** turn off `EXTRACT_ALL` so that `WARN_IF_UNDOCUMENTED` reports the gaps.
 
-## 5. Structural refactors
+## 6. Structural refactors
 
 Do these one at a time, running the full test suite (including `slow`) after each.
 
@@ -138,7 +182,7 @@ Do these one at a time, running the full test suite (including `slow`) after eac
 - [ ] **Very long files and functions:** break them up, for example `Tools/TKinematics2to3.cpp`
   (6.8k lines, one function of about 1.3k lines) and `Glauber/NucleonEMOperator.cpp` (4.2k lines).
 
-## 6. Unbundle Cuba
+## 7. Unbundle Cuba
 
 This is a build-system change only, and the `unit_cuba` tests verify it.
 
@@ -150,9 +194,9 @@ This is a build-system change only, and the `unit_cuba` tests verify it.
   because the `numint` wrappers rely on the 4.2 API.
 - [ ] Optionally, install it into `~/.local` from `scripts/`, the way `scripts/install_partons.sh` does for PARTONS.
 
-## 7. Repository README
+## 8. Repository README
 
-Write this last, after the refactors, so it describes the final layout.
+Write this last, after the refactors, so it describes the final layout and uses the new name.
 
 - [ ] Cover:
   - what the code computes, and the libraries and how they depend on each other
