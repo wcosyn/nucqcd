@@ -139,7 +139,7 @@ deliberately and removes its `[known-bug]` tag.
   - There are two inconsistent mass sets, `MASSP`/`MASSN` and `M_P`/`M_N`.
 - [ ] **`Poldeut::operator=` leaks** the old wave function (`DIS/Poldeut.cpp:48`).
 - [ ] **Cuba Suave crashes** with flatness < 1 ("buffer overflow detected" or a segfault). Fix the
-  parameters in `progs/cuba_test/*.cpp` and `progs/2bodymom/src/SCX_test.cpp`; the demo value is 25.
+  parameters in `progs/attic/cuba_test/*.cpp` and `progs/2bodymom/src/SCX_test.cpp`; the demo value is 25.
 - [ ] **`progs/momdistr/momdistr.cpp`** Fourier-transforms the lower component F with l instead of l̄.
 - [ ] **ROOT `.pcm` dictionary files** are not copied to `build/lib`. This only shows up in crash output.
 - [ ] **Check how the structure functions reach `DeuteronCross` and `InclusiveCross`.** A mutation test

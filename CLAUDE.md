@@ -41,7 +41,7 @@ PHYSCODE_UPDATE_REFERENCE=1 ctest -L "regression|slow"   # re-baseline, then rev
 - A regression failure is a lead to investigate, not a verdict: the old value may itself be wrong. Re-baseline only when the change is understood.
 - Tests use a sandbox share dir (`build/tests/share`, with an empty `grids/`) via `physcode_test::share_dir()`, never `share/grids/`.
 - Bugs found by the suite are documented as `[known-bug]` tests (`[!mayfail]`, or hidden `[.]` when they crash).
-- Test target names are prefixed `unit_`/`reg_`. `progs/camille/test` already defines `test_*` targets.
+- Test target names are prefixed `unit_`/`reg_`. `progs/attic/camille/test` already defines `test_*` targets.
 
 ## Library layering
 

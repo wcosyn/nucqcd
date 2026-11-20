@@ -1,4 +1,4 @@
-// MePhys: FourVector algebra and Dirac (gamma-matrix) algebra; logic from progs/gammatest/gamma.cpp.
+// MePhys: FourVector algebra and Dirac (gamma-matrix) algebra; logic from progs/attic/gammatest/gamma.cpp.
 #include <test_support.hpp>
 
 #include <FourVector.h>
@@ -97,7 +97,7 @@ TEST_CASE("pslash pslash = p^2 and Tr(pslash qslash) = 4 p.q", "[gamma]") {
 }
 
 TEST_CASE("Photon polarization vectors are complete: sum = -g + q q / Q^2", "[gamma]") {
-  // virtual photon along z, from progs/gammatest/gamma.cpp
+  // virtual photon along z, from progs/attic/gammatest/gamma.cpp
   const double Q2 = 1.e06, nu = 800.;
   const double qvec = std::sqrt(Q2 + nu * nu);
   FourVector<cd> q(nu, 0., 0., qvec);

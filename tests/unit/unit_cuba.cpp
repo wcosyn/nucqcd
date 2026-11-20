@@ -75,7 +75,7 @@ TEST_CASE("Divonne on the 4D unit ball (discontinuous integrand)", "[cuba]") {
 }
 
 // Hidden test (not run by ctest; run by hand with: unit_cuba "[known-bug]"): Suave with a small
-// flatness parameter (0.25, as used in progs/cuba_test/*.cpp; 0.2 in progs/2bodymom/src/SCX_test.cpp)
+// flatness parameter (0.25, as used in progs/attic/cuba_test/*.cpp; 0.2 in progs/2bodymom/src/SCX_test.cpp)
 // overflows its fluctuation estimate (minfluct = inf in src/suave/Integrate.c), computes a negative
 // sample count and writes out of bounds: "buffer overflow detected" / segfault. Cuba's demo uses 25.
 TEST_CASE("Known bug: Suave crashes for small flatness", "[.][cuba][known-bug]") {
