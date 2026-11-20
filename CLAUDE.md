@@ -41,7 +41,7 @@ PHYSCODE_UPDATE_REFERENCE=1 ctest -L "regression|slow"   # re-baseline, then rev
 - A regression failure is a lead to investigate, not a verdict: the old value may itself be wrong. Re-baseline only when the change is understood.
 - Tests use a sandbox share dir (`build/tests/share`, with an empty `grids/`) via `physcode_test::share_dir()`, never `share/grids/`.
 - Bugs found by the suite are documented as `[known-bug]` tests (`[!mayfail]`, or hidden `[.]` when they crash).
-- Test target names are prefixed `unit_`/`reg_`. `progs/camille/test` already defines `test_*` targets.
+- Test target names are prefixed `unit_`/`reg_`. `progs/attic/camille/test` already defines `test_*` targets.
 
 ## Library layering
 
@@ -65,7 +65,7 @@ To add a source file, list it explicitly in that library's `CMakeLists.txt`; the
 ## Key cross-cutting conventions
 
 - **`Tools/constants.hpp` is generated** from `Tools/constants.hpp.in` at configure time and is gitignored, so edit the `.in` file. The generated file defines the physical constants (masses in MeV, `HBARC`, etc.) as macros. It also defines `HOMEDIR` as the absolute path to `<repo>/share`.
-- **The `share/` data directory** holds input data such as nuclear mean-field wavefunctions (`share/input/*.radial*.bound`), PDF grids, and correlation grids. Most physics classes take a `dir`/`homedir` string argument, usually `HOMEDIR`, and read their input relative to it.
+- **The `share/` data directory** holds input data such as nuclear mean-field wavefunctions (`share/input/*.radial*.bound`), PDF grids, and correlation grids. Experiment data used for fits and comparisons (DEEPS, BONuS) are in `share/expdata/`. Most physics classes take a `dir`/`homedir` string argument, usually `HOMEDIR`, and read their input relative to it.
 - **The FSI grid hierarchy (Glauber).** `AbstractFsiGrid` → `AbstractFsiCTGrid`/`AbstractFsiGridThick` → … → concrete `GlauberGrid`, `GlauberGridThick`, `GlauberDecayGridThick`, `OneGlauberGrid`, `ROMEAGrid`, and `ClassGridThick_SCX`. A user adds `FastParticle`s, then calls `fillGrids()`/`updateGrids()`. The grids are expensive to compute, so they are cached as files under `share/grids/` (gitignored) and reused on later runs. If you change the physics or the grid parameters, delete the stale grid files.
 - **ROOT dictionaries.** Each `T*` class in Tools (and `TMFSpinor` in Glauber) has a `*LinkDef.h`; `physcode_add_library(... LINKDEFS ...)` runs `rootcling` on `X.h(pp)` + `XLinkDef.h` and installs `XDict_rdict.pcm` into `lib/`. A new class of this kind needs its LinkDef added to that library's `LINKDEFS`.
 - Integrands for `numint` are usually written as a struct functor that holds a pointer to the physics object, plus a static `exec` function. Integration precision is passed in as a parameter, and the integrator choice is often an `int` flag on the class.

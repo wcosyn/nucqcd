@@ -1,7 +1,9 @@
 import ctypes
+import os
 
-
-lib = ctypes.cdll.LoadLibrary("/home/camille/Code/trunk/progs/2bodymom/src/MeanFieldNucleusWrapper.so")
+# built and installed into <repo>/lib by CMake (target MeanFieldNucleusWrapper, needs -DBUILD_PROGS=yes)
+_libdir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "lib")
+lib = ctypes.cdll.LoadLibrary(os.path.join(_libdir, "libMeanFieldNucleusWrapper.so"))
 # return types
 lib.getA.restype             = ctypes.c_int
 lib.getZ.restype             = ctypes.c_int

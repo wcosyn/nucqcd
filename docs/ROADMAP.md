@@ -20,7 +20,7 @@ same PR.
 | Step | Content | Status |
 |---|---|---|
 | 1 | Test suite | ✅ done (PR #2) |
-| 2 | Repo hygiene, including branches | 🔶 in progress: merged branches deleted |
+| 2 | Repo hygiene, including branches | ✅ done (PR #4) |
 | 3 | Rename the repository | ⬜ (name to be chosen) |
 | 4 | Bug fixes | ⬜ |
 | 5 | Low-risk modernization | ⬜ |
@@ -40,40 +40,38 @@ The suite is a Catch2 v3 + CTest test suite in `tests/`:
 
 Usage is described in `tests/README.md`.
 
-## 2. Repo hygiene
+## 2. Repo hygiene ✅
 
-This step needs no physics changes, so the tests must stay green throughout.
+This step needed no physics changes, and the tests stayed green throughout. Done on 2026-11-20:
 
-- [ ] **Remove junk files and stale build files:**
-  - `todo` and `list of changes` (a 2010s log, with a space in the filename)
-  - `.vscode/.cmaketools.json` and `.vscode/c_cpp_properties.json` (per-machine IDE state)
-  - `progs/GPD/diDVCS_gen_grid.cpp.backup`, `DIS/evolution/kinds.mod` (a build artifact),
-    `share/input/.directory`, `Integrator/Cuba-4.2.1/demo/demo-c.out`
-  - `progs/2bodymom/src/libMeanFieldNucleusWrapper.so`
-  - the hand-written makefiles that CMake doesn't use: `progs/deepsdis/makefile` and
-    `progs/2bodymom/src/Makefile`
-  - add `.gitignore` entries so these don't come back
-- [ ] **Move `layout.xml`** next to `Doxyfile.in`, for instance in `cmake/` or a `doc/` source folder.
-- [ ] **`share/`:**
-  - 719 of its 843 committed files are `share/recmosh/`, a generated Moshinsky-bracket cache
-    written by `Tools/recmosh.cpp:63`. Decide whether to generate it on demand instead of committing it.
-  - Move the Fortran sources out of `share/input/` (`bystricky.f`, `fpn_chex.f`).
-  - Separate the experiment data (`share/deepsdata/`, used only by `progs/deepsdis`) from the library data.
-  - Resolve the two different `exc.dat` files (`share/input/` and `share/nuclei/`).
-- [ ] **Duplicate class:** `progs/2bodymom/src/ClassGridThick_SCX.*` is a diverged copy of
-  `Glauber/ClassGridThick_SCX.*`, and both get linked into the same program (an ODR violation).
-  Merge them into one. `SCX_test.cpp` and `2bodymom.cpp` are also duplicated between `progs/` subdirectories.
-- [ ] **`progs/` organization:** move the personal or one-off directories (`camille/`, `LDRD_test`,
-  `twonucl`, `DQEinc`, `gammatest`, `cuba_test`, `integrator`) into `progs/attic/` or a separate
-  repo, and collect the Python scripts that are mixed in with the C++.
-- [ ] **Branches:**
-  - [x] Deleted the merged branches `fix-ww-integral`, `pionT`, `brandon` and `partons_integration` (2026-11-20).
-  - [ ] Review the unmerged branches: merge them, cherry-pick what's useful, or archive them. To
-    archive, tag the tip (e.g. `archive/LDRD-branch-0.01`) and delete the branch; the commits stay
-    reachable through the tag.
-    - `Alan`: 6 commits, 2024-09 ("fixed b2 changes")
-    - `evolution_integration`: 2 commits, 2018
-    - `LDRD-branch-0.01`: 5 commits, 2014
+- [x] **Removed junk and stale build files:** `todo`, `list of changes`, `.vscode/.cmaketools.json`,
+  `.vscode/c_cpp_properties.json`, `progs/GPD/diDVCS_gen_grid.cpp.backup`, `DIS/evolution/kinds.mod`,
+  `share/input/.directory`, `Integrator/Cuba-4.2.1/demo/demo-c.out`, and the unused makefiles
+  `progs/deepsdis/makefile` and `progs/2bodymom/src/Makefile`. `.gitignore` entries keep them out.
+  `MeanFieldNucleusWrapper` is now installed only into `lib/` (not into the source tree), and
+  `MeanFieldNucleus.py` loads it from there instead of a hard-coded path.
+- [x] **Moved** `Doxyfile.in` and `layout.xml` to `cmake/doxygen/`.
+- [x] **`share/`:**
+  - `share/recmosh/` (719 files) is gone. `RecMosh` memoizes its recursion and computes all brackets
+    on demand in milliseconds. The cache was wrong in 29 files (shells 2n1+l1+2n2+l2 ≥ 10), because
+    its integer key collided once l or Λ reached 10. This changes results of `DoubleNModel`
+    (`progs/attic/twonucl`) for those shells. `tests/unit/unit_moshinsky.cpp` checks orthonormality.
+  - `bystricky.f`, `fpn_chex.f` and their `B_ampl_*.dat` tables moved to `docs/reference-code/nn_amplitudes/`.
+  - Experiment data moved to `share/expdata/` (`deeps/`, read by `DeuteronCross::readin_deeps`, and `bonus/`).
+  - `share/input/exc.dat` was removed. `share/nuclei/exc.dat` is a superset of it, and no code reads either file.
+- [x] **Duplicate class:** the 2014 `progs/2bodymom/src/ClassGridThick_SCX` was renamed to
+  `ClassGridThickNucleus_SCX`, which removes the ODR violation. It has a different API from the
+  generic `Glauber/ClassGridThick_SCX`, so the two were not merged. `SCX_test.cpp` and `2bodymom.cpp` turned
+  out to be different programs that share a file name, not duplicates.
+- [x] **`progs/`:** `camille`, `LDRD_test`, `twonucl`, `DQEinc`, `gammatest`, `cuba_test` and
+  `integrator` moved to `progs/attic/`. They are still built with `BUILD_PROGS`. The Python scripts are
+  helpers for the program next to them (plotting or fitting its output), so they stay where they are.
+- [x] **Branches:**
+  - Deleted the merged branches `fix-ww-integral`, `pionT`, `brandon` and `partons_integration`.
+  - Archived the unmerged branches as the tags `archive/Alan` (b1–b4 extraction in
+    `progs/deepsdis/b1_calc.cpp`, 2024), `archive/evolution_integration` (2018, its change is already on
+    master) and `archive/LDRD-branch-0.01` (2014), and deleted the branches. To revive one, run
+    `git switch -c <name> archive/<name>`.
 
 ## 3. Rename the repository
 
@@ -139,7 +137,7 @@ deliberately and removes its `[known-bug]` tag.
   - There are two inconsistent mass sets, `MASSP`/`MASSN` and `M_P`/`M_N`.
 - [ ] **`Poldeut::operator=` leaks** the old wave function (`DIS/Poldeut.cpp:48`).
 - [ ] **Cuba Suave crashes** with flatness < 1 ("buffer overflow detected" or a segfault). Fix the
-  parameters in `progs/cuba_test/*.cpp` and `progs/2bodymom/src/SCX_test.cpp`; the demo value is 25.
+  parameters in `progs/attic/cuba_test/*.cpp` and `progs/2bodymom/src/SCX_test.cpp`; the demo value is 25.
 - [ ] **`progs/momdistr/momdistr.cpp`** Fourier-transforms the lower component F with l instead of l̄.
 - [ ] **ROOT `.pcm` dictionary files** are not copied to `build/lib`. This only shows up in crash output.
 - [ ] **Check how the structure functions reach `DeuteronCross` and `InclusiveCross`.** A mutation test

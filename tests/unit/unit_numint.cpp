@@ -17,7 +17,7 @@ void exp_1d(double x, void *, double &ret) { ret = std::exp(x); }
 void spherical_volume(const numint::array<double, 3> &x, void *, double &ret) {
   ret = x[0] * x[0] * std::sin(x[1]);  // r^2 sin(theta) on [0,1]x[0,pi]x[0,2pi]
 }
-// integrand of progs/integrator/inttest.cpp: r^2 cos^2(phi) + sqrt(phi) on [0,1]x[-1,1]x[0,2pi]
+// integrand of progs/attic/integrator/inttest.cpp: r^2 cos^2(phi) + sqrt(phi) on [0,1]x[-1,1]x[0,2pi]
 void cubature_integrand(unsigned, const double *x, void *, unsigned, double *ret) {
   ret[0] = x[0] * x[0] * std::cos(x[2]) * std::cos(x[2]) + std::sqrt(x[2]);
 }

@@ -121,7 +121,7 @@ if(BUILD_TESTING)
 endif()
 
 if(DOXYGEN_FOUND)
-  configure_file(Doxyfile.in "${PROJECT_BINARY_DIR}/Doxyfile" @ONLY)
+  configure_file(cmake/doxygen/Doxyfile.in "${PROJECT_BINARY_DIR}/Doxyfile" @ONLY)
   add_custom_target(doc
     COMMAND ${DOXYGEN_EXECUTABLE} "${PROJECT_BINARY_DIR}/Doxyfile"
     COMMENT "Generating API documentation with Doxygen" VERBATIM)

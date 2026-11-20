@@ -1,5 +1,5 @@
 // Regression: tagged spectator DIS on the deuteron (DIS/DeuteronCross) and He3 (DIS/He3Cross);
-// kinematics from progs/LDRD_test/LDRD_test.cpp.
+// kinematics from progs/attic/LDRD_test/LDRD_test.cpp.
 #include <test_support.hpp>
 
 #include <DeuteronCross.hpp>

@@ -51,7 +51,7 @@ New keys are added the same way, so a new `CHECK_REF` has no value until it is f
 Tests do not use `share/` directly. The fixture `share_sandbox` (re)creates `build/tests/share/`:
 
 - read-only data directories are symlinked
-- `input/` and `recmosh/` are copied, because the code writes into them
+- `input/` is copied, because the code writes into it
 - `grids/` is emptied on every ctest run, so Glauber grids are always recomputed by the code under
   test, and your `share/grids/` cache is never read or written
 

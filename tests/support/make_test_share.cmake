@@ -1,7 +1,7 @@
 # Creates the sandbox share directory used by the tests (run as: cmake -DSRC=.. -DDEST=.. -P).
 #   - read-only data directories: symlinks into <repo>/share
-#   - input/, recmosh/: copied once (FsiCorrelator writes CorrGrid files into input/,
-#     RecMosh writes its cache into recmosh/), so the repository copy is never modified
+#   - input/: copied once (FsiCorrelator writes CorrGrid files into it), so the repository copy
+#     is never modified
 #   - grids/: emptied on every run, so FSI grids are computed by the code under test instead
 #     of being read from a cache (and share/grids/ of the user is never touched)
 if(NOT SRC OR NOT DEST)
@@ -14,7 +14,7 @@ foreach(entry IN LISTS entries)
   if(entry STREQUAL "grids" OR NOT IS_DIRECTORY "${SRC}/${entry}")
     continue()
   endif()
-  if(entry STREQUAL "input" OR entry STREQUAL "recmosh")
+  if(entry STREQUAL "input")
     if(NOT EXISTS "${DEST}/${entry}/.copied")
       file(REMOVE_RECURSE "${DEST}/${entry}")
       file(COPY "${SRC}/${entry}" DESTINATION "${DEST}")
