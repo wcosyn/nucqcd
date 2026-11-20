@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
       //angle between beam and virtual photon 3momenta [radians]  angle as used is positive because from photon dir to electron direction = polarization direction
       double thetaq=acos((Ein*Ein+qvec*qvec-Eout*Eout)/2/Ein/qvec);  
 
-      cout << 2.*x << " " << thetaq*RADTODEGR << " " << (0.25+0.75*cos(thetaq)) << " " << 0.75*sin(2*thetaq) << " " << 0.75*(1.-cos(2.*thetaq)) << " " ;
+      cout << 2.*x << " " << thetaq*RADTODEGR << " " << (0.25+0.75*cos(2.*thetaq)) << " " << 0.75*sin(2*thetaq) << " " << 0.75*(1.-cos(2.*thetaq)) << " " ;
       cout << eps << " " << sqrt(2.*eps*(1.+eps)) << " ";
       
       
@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
       res = numint::cube_adaptive(mdf,lower,upper,1.E-08,PREC,1E02,2E05,ret,count,0); //integration carried out
       //cout << 2.*x << " " << ret[0] << " " <<   ret[1] << " " << ret[2] << " " << ret[3] << " "<< ret[8]/2. << " " << 2.*(F1p+F1n) << " " << 1./(1+gamma*gamma) <</*" " << sqrt(2./3.)*ret[4]/ret[8]*2.*(F1p+F1n)*-3./2. << " " << sqrt(2./3.)*ret[10]/ret[11]*2.*(F1p+F1n)*-3./2. << " " << sqrt(2./3.)*ret[10]/ret[11] <<*/;
       cout << ret[0] << " " << ret[3] << " "<< ret[8]/2. << " " << 2.*(F1p+F1n) << " "  << ret[4] << " " << ret[5] << " " << ret[6] << " " << ret[7]  << " ";
-      double numerator = (0.25+0.75*cos(thetaq))*(ret[4]+eps*ret[5])+0.75*sin(2*thetaq)*sqrt(2.*eps*(1.+eps))*ret[6]+0.75*(1.-cos(2.*thetaq))*eps*ret[7];
+      double numerator = (0.25+0.75*cos(2.*thetaq))*(ret[4]+eps*ret[5])+0.75*sin(2*thetaq)*sqrt(2.*eps*(1.+eps))*ret[6]+0.75*(1.-cos(2.*thetaq))*eps*ret[7];
       double numerator_0 = (ret[4]+eps*ret[5]);
       double denominator = ret[8]+eps*ret[9];
       double Azz = 2./3.*numerator/denominator;
