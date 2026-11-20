@@ -35,3 +35,11 @@ share/gpd_deutgrids/
 # test suite: lock/temp files of the golden-value store
 tests/reference/*.lock
 tests/reference/*.tmp
+
+# editor/IDE state and backups
+.vscode/.cmaketools.json
+.vscode/c_cpp_properties.json
+.directory
+*.backup
+# build outputs written into the source tree
+*.out
