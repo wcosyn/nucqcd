@@ -5,7 +5,8 @@
 #   make install -j4        # libraries -> <repo>/lib, programs -> <repo>/bin
 #   make doc                # Doxygen documentation
 #
-# Options: BUILD_PROGS, PARTONS_ENABLED, MPI_ENABLED, STATIC_BUILD (all OFF by default).
+# Options: BUILD_PROGS, PARTONS_ENABLED, MPI_ENABLED, STATIC_BUILD (all OFF by default),
+# BUILD_TESTING (ON by default; tests in tests/, run with 'ctest', see tests/README.md).
 # ROOT (with MathMore and Minuit2) is found through its CMake config: source thisroot.sh,
 # or ROOT in /opt/root is used.
 cmake_minimum_required(VERSION 3.16)
@@ -15,6 +16,7 @@ option(BUILD_PROGS "Build the programs in progs/ with 'make' and install them" O
 option(PARTONS_ENABLED "Build GPD_Partons and progs/GPD (needs PARTONS, see scripts/install_partons.sh)" OFF)
 option(MPI_ENABLED "Enable MPI (TMPI class and MPI programs)" OFF)
 option(STATIC_BUILD "Also build static versions of the libraries" OFF)
+include(CTest)   # option BUILD_TESTING (default ON): test suite in tests/, needs network once (Catch2)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
@@ -114,6 +116,9 @@ if(PARTONS_ENABLED)
   add_subdirectory(GPD_Partons) # libGPD
 endif()
 add_subdirectory(progs)
+if(BUILD_TESTING)
+  add_subdirectory(tests)       # Catch2 + CTest, see tests/README.md
+endif()
 
 if(DOXYGEN_FOUND)
   configure_file(Doxyfile.in "${PROJECT_BINARY_DIR}/Doxyfile" @ONLY)
