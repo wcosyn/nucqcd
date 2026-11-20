@@ -32,3 +32,6 @@ share/gpd_deutgrids/
 *.o
 *.so
 *.mod
+# test suite: lock/temp files of the golden-value store
+tests/reference/*.lock
+tests/reference/*.tmp

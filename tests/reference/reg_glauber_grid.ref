@@ -1,0 +1,22 @@
+# Golden values for the physics-code regression tests (key value).
+# Captured from the code on master; regenerate with PHYSCODE_UPDATE_REFERENCE=1.
+C_RMSGA_shell0 4.5404580438814559e-09
+C_RMSGA_shell0_transparency 0.31028469536919873
+C_RMSGA_shell1 1.8387332960472349e-08
+C_RMSGA_shell1_transparency 0.63409786646304411
+C_r0.5_cth-0.8_phi0.4_fsi_im -0.023049127066518727
+C_r0.5_cth-0.8_phi0.4_fsi_re 0.33435307905405809
+C_r0.5_cth-0.8_phi0.4_fsict_im -0.023125417121882128
+C_r0.5_cth-0.8_phi0.4_fsict_re 0.37791501755151746
+C_r1_cth0.5_phi5.5_fsi_im -0.02072674967759202
+C_r1_cth0.5_phi5.5_fsi_re 0.54964272025385896
+C_r1_cth0.5_phi5.5_fsict_im -0.018858937437558333
+C_r1_cth0.5_phi5.5_fsict_re 0.61349718802275843
+C_r2_cth0_phi3_fsi_im -0.020033174991815186
+C_r2_cth0_phi3_fsi_re 0.55547328074934799
+C_r2_cth0_phi3_fsict_im -0.01889921084932026
+C_r2_cth0_phi3_fsict_re 0.5946993485203188
+C_r4_cth0.9_phi1_fsi_im -0.00010567877712662499
+C_r4_cth0.9_phi1_fsi_re 0.99792241716671848
+C_r4_cth0.9_phi1_fsict_im -6.4090913206362585e-05
+C_r4_cth0.9_phi1_fsict_re 0.99871470587046374

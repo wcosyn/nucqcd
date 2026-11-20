@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-A collection of C++ (plus some Fortran) libraries and executables for nuclear and hadronic physics calculations by Wim Cosyn. It covers Glauber/RMSGA final-state interactions, quasi-elastic knockout, deuteron and He3 inclusive and tagged DIS, rho/pion transparencies, neutrino QE scattering, and (optionally) deuteron GPDs via PARTONS. The repo has no test suite. The programs in `progs/` serve as both test drivers and production calculations. More background is in `manual/manual.tex` (LaTeX) and in the Doxygen comments in the headers.
+A collection of C++ (plus some Fortran) libraries and executables for nuclear and hadronic physics calculations by Wim Cosyn. It covers Glauber/RMSGA final-state interactions, quasi-elastic knockout, deuteron and He3 inclusive and tagged DIS, rho/pion transparencies, neutrino QE scattering, and (optionally) deuteron GPDs via PARTONS. A Catch2/CTest test suite lives in `tests/` (see below). The programs in `progs/` serve as both drivers and production calculations. More background is in `manual/manual.tex` (LaTeX) and in the Doxygen comments in the headers.
 
 ## Build
 
@@ -22,6 +22,22 @@ make doc                  # Doxygen API docs -> doc/
 - `make install` copies shared libs into `<repo>/lib` and executables into `<repo>/bin` (the default `CMAKE_INSTALL_PREFIX` is the repo itself). Binaries use an RPATH that points at `<repo>/lib` plus the directories of linked external libraries (e.g. `/opt/root/lib`, `~/.local/lib`), so run them from `bin/` after installing.
 - Cuba (`Integrator/Cuba` → symlink to `Cuba-4.2.1`) is built as a CMake `ExternalProject` with autotools into the build tree. It runs serially (`make -j1`) with `-std=gnu17`, because it does not compile as C23 under gcc ≥ 15. Link the INTERFACE target `cuba` to use it (provides `<Cuba/cuba.h>`, `libcuba.a` and the build dependency); `libcuba.a` is also installed into `lib/`.
 - ROOT is found through its own CMake config (`ROOTConfig.cmake`): source `thisroot.sh` (sets `ROOTSYS`), or it is taken from `/opt/root`. GSL and MPI use CMake's built-in find modules; only the PARTONS libraries (`ElementaryUtils`, `NumA++`, `PARTONS`) use find modules in `GPD_Partons/cmake/Modules`, and SFML its own config.
+
+## Tests
+
+`tests/` holds a Catch2 v3 suite, fetched by CMake on the first configure, and is built when `BUILD_TESTING` is ON (the default). Details are in `tests/README.md`.
+
+```bash
+cd build && make -j8 && ctest -LE slow -j8    # unit + regression, ~30 s
+ctest -L slow                                # Glauber grids computed from scratch
+PHYSCODE_UPDATE_REFERENCE=1 ctest -L "regression|slow"   # re-baseline, then review git diff tests/reference/
+```
+
+- Labels: `unit` (analytic or exact checks), `regression` (golden values in `tests/reference/*.ref`, captured from master on 2026-11-20), `slow`.
+- A regression failure is a lead to investigate, not a verdict: the old value may itself be wrong. Re-baseline only when the change is understood.
+- Tests use a sandbox share dir (`build/tests/share`, with an empty `grids/`) via `physcode_test::share_dir()`, never `share/grids/`.
+- Bugs found by the suite are documented as `[known-bug]` tests (`[!mayfail]`, or hidden `[.]` when they crash).
+- Test target names are prefixed `unit_`/`reg_`. `progs/camille/test` already defines `test_*` targets.
 
 ## Library layering
 
