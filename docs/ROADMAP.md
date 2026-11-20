@@ -204,5 +204,6 @@ Write this last, after the refactors, so it describes the final layout and uses 
   - how to build, test and run the main programs
   - the data in `share/`
   - which papers to cite
+  - a link to `docs/HISTORY.md`
 
   CLAUDE.md and `manual/manual.tex` already contain parts of this.
