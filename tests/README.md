@@ -40,7 +40,7 @@ investigate.** The failure message prints the computed value, the reference valu
 When a change of a reference value is understood and intended, re-baseline and review the diff:
 
 ```bash
-PHYSCODE_UPDATE_REFERENCE=1 ctest -L "regression|slow"
+NUCQCD_UPDATE_REFERENCE=1 ctest -L "regression|slow"
 git diff tests/reference/
 ```
 
@@ -55,7 +55,7 @@ Tests do not use `share/` directly. The fixture `share_sandbox` (re)creates `bui
 - `grids/` is emptied on every ctest run, so Glauber grids are always recomputed by the code under
   test, and your `share/grids/` cache is never read or written
 
-Pass `physcode_test::share_dir()` wherever a class takes a `dir`/`homedir`. Classes that use the
+Pass `nucqcd_test::share_dir()` wherever a class takes a `dir`/`homedir`. Classes that use the
 compiled-in `HOMEDIR` (MSTW, GRSV) only read from `share/`.
 
 ## Known bugs
@@ -72,7 +72,7 @@ When a bug is fixed, remove the tags (and capture reference values where needed)
 
 - Add `unit/<name>.cpp` or `regression/<name>.cpp`.
 - Register it in `CMakeLists.txt`:
-  `physcode_add_test(<name> DIR unit|regression LABEL unit|regression|slow LINK <highest library> cuba)`.
-- Regression values: `physcode_test::RefStore refs("<name>");` then
-  `CHECK_REF(refs, "key", value[, rel_tol[, abs_tol]]);`, then capture with `PHYSCODE_UPDATE_REFERENCE=1`.
+  `nucqcd_add_test(<name> DIR unit|regression LABEL unit|regression|slow LINK <highest library> cuba)`.
+- Regression values: `nucqcd_test::RefStore refs("<name>");` then
+  `CHECK_REF(refs, "key", value[, rel_tol[, abs_tol]]);`, then capture with `NUCQCD_UPDATE_REFERENCE=1`.
 - Keep each test case at a few seconds or less, or label the executable `slow`.

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install PARTONS v5 and its dependencies so physics-code can be built with -DPARTONS_ENABLED=yes.
+# Install PARTONS v5 and its dependencies so nucqcd can be built with -DPARTONS_ENABLED=yes.
 #
 #   Usage: scripts/install_partons.sh
 #
@@ -13,7 +13,7 @@
 #   5. clones/updates and builds elementary-utils, numa and partons (in that order)
 #   6. writes partons.properties / logger.properties into GPD_Partons/bin (where the GPD programs
 #      are installed; PARTONS needs them next to the executable) unless they already exist
-#   7. test-configures physics-code with PARTONS enabled and builds libGPD
+#   7. test-configures nucqcd with PARTONS enabled and builds libGPD
 #
 # Everything is linked with an RPATH to $PREFIX/lib, so no LD_LIBRARY_PATH is needed.
 # Re-running is safe: existing clones are updated and rebuilt.
@@ -21,7 +21,7 @@
 # Override defaults with environment variables, e.g.  PREFIX=/opt/partons JOBS=4 scripts/install_partons.sh
 set -euo pipefail
 
-PREFIX=${PREFIX:-$HOME/.local}          # install prefix (physics-code's CMake searches ~/.local by default)
+PREFIX=${PREFIX:-$HOME/.local}          # install prefix (nucqcd's CMake searches ~/.local by default)
 SRC=${SRC:-$HOME/Git}                   # where the apfelxx and PARTONS repos are cloned
 JOBS=${JOBS:-$(nproc)}
 SFML_VERSION=${SFML_VERSION:-2.6.2}
@@ -110,7 +110,7 @@ for r in elementary-utils numa partons; do
   build_cmake "$SRC/$r" -DSFML_ROOT="$PREFIX"
 done
 
-# ---- 6. PARTONS runtime configuration for physics-code -----------------------------------------
+# ---- 6. PARTONS runtime configuration for nucqcd -----------------------------------------
 # PARTONS refuses to start without partons.properties in the directory of the executable.
 # The GPD programs are installed into GPD_Partons/bin (git-ignored), so put the config there.
 # Existing files are left alone, so local edits survive re-running this script.
@@ -149,15 +149,15 @@ else
   echo "$BIN/logger.properties exists, left unchanged"
 fi
 
-# ---- 7. test physics-code ---------------------------------------------------------------------
-step "Test: configure physics-code with PARTONS and build libGPD"
+# ---- 7. test nucqcd ---------------------------------------------------------------------
+step "Test: configure nucqcd with PARTONS and build libGPD"
 if command -v root-config > /dev/null || [[ -x /opt/root/bin/root-config ]]; then
-  cmake -S "$REPO_DIR" -B "$WORK/physics-code" -DPARTONS_ENABLED=yes > "$WORK/test.log" 2>&1 \
-    && cmake --build "$WORK/physics-code" -j "$JOBS" --target GPD >> "$WORK/test.log" 2>&1 \
+  cmake -S "$REPO_DIR" -B "$WORK/nucqcd" -DPARTONS_ENABLED=yes > "$WORK/test.log" 2>&1 \
+    && cmake --build "$WORK/nucqcd" -j "$JOBS" --target GPD >> "$WORK/test.log" 2>&1 \
     && echo "libGPD builds fine" \
-    || { tail -30 "$WORK/test.log"; echo "physics-code test build FAILED"; exit 1; }
+    || { tail -30 "$WORK/test.log"; echo "nucqcd test build FAILED"; exit 1; }
 else
-  echo "ROOT not found (no root-config on PATH or in /opt/root), skipping the physics-code test"
+  echo "ROOT not found (no root-config on PATH or in /opt/root), skipping the nucqcd test"
 fi
 
 step "Done. PARTONS and its dependencies are installed in $PREFIX"

@@ -14,11 +14,11 @@
 #include <string>
 
 namespace {
-physcode_test::RefStore refs("reg_glauber_points");
+nucqcd_test::RefStore refs("reg_glauber_points");
 }
 
 TEST_CASE("Glauber and CT FSI factors for a 1.5 GeV proton in carbon (tiny grid)", "[glauber]") {
-  const std::string dir = physcode_test::share_dir();
+  const std::string dir = nucqcd_test::share_dir();
   MeanFieldNucleusThick carbon(MeanFieldNucleus::C, dir);
   // FastParticle(type, inc, p, theta, phi, hard_scale, Gamma, lc_mod, nkt_mod, dir); type 0 = proton
   FastParticle proton(0, 0, 1500., 0., 0., 8., 0., 1., 1., dir);

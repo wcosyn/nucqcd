@@ -20,11 +20,11 @@
 #include <string>
 
 namespace {
-physcode_test::RefStore refs("reg_glauber_grid");
+nucqcd_test::RefStore refs("reg_glauber_grid");
 }
 
 TEST_CASE("Glauber grid: fill, interpolate, cache round trip (off-axis proton in carbon)", "[glauber]") {
-  const std::string dir = physcode_test::share_dir();
+  const std::string dir = nucqcd_test::share_dir();
   MeanFieldNucleusThick carbon(MeanFieldNucleus::C, dir);
   // off-axis momentum, in the phi=0 plane
   FastParticle proton(0, 0, 1500., 0.3, 0., 8., 0., 1., 1., dir);
@@ -63,7 +63,7 @@ TEST_CASE("Glauber grid: fill, interpolate, cache round trip (off-axis proton in
 }
 
 TEST_CASE("RMSGA A(e,e'p) cross section for carbon (default 120x36x5 grids)", "[glauber][eep]") {
-  const std::string dir = physcode_test::share_dir();
+  const std::string dir = nucqcd_test::share_dir();
   MeanFieldNucleusThick carbon(MeanFieldNucleus::C, dir);
   std::unique_ptr<TElectronKinematics> elec(TElectronKinematics::CreateWithBeamEnergy(3245.));
   Cross obs(*elec, &carbon, 1.E-03, 2, dir, false, 1.);

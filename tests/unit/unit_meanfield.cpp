@@ -24,7 +24,7 @@ double simpson(const std::function<double(double)> &f, double a, double b, int n
 }  // namespace
 
 TEST_CASE("Mean-field nuclei: quantum numbers, normalization of shells and densities", "[meanfield]") {
-  const std::string dir = physcode_test::share_dir();
+  const std::string dir = nucqcd_test::share_dir();
   for (const char *name : {"He", "C", "O", "Ca40", "Fe", "Pb"}) {
     INFO("nucleus " << name);
     MeanFieldNucleusThick nucl(MeanFieldNucleus::TypeNames.at(name), dir);
@@ -60,7 +60,7 @@ TEST_CASE("Mean-field nuclei: quantum numbers, normalization of shells and densi
 TEST_CASE("Mean-field momentum distributions are normalized (Parseval)", "[meanfield]") {
   // (2/pi) int dk k^2 [ (int dr r G j_l(kr))^2 + (int dr r F j_lbar(kr))^2 ] = int (G^2+F^2) dr = 1
   // (note: progs/momdistr/momdistr.cpp uses l instead of lbar for the lower component F)
-  MeanFieldNucleusThick nucl(MeanFieldNucleus::TypeNames.at("C"), physcode_test::share_dir());
+  MeanFieldNucleusThick nucl(MeanFieldNucleus::TypeNames.at("C"), nucqcd_test::share_dir());
   const double R = nucl.getRange();
   for (int shell = 0; shell < nucl.getTotalLevels(); shell++) {
     INFO("shell " << shell);

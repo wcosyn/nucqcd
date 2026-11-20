@@ -1,3 +1,8 @@
+# nucqcd
+
+Code for high-energy reactions on nuclei (JLab to EIC energies), used to study QCD and the strong
+force in nuclei. Formerly known as `physics-code`; see [docs/HISTORY.md](docs/HISTORY.md).
+
 Short version for now...
 
 The manual subfolder has a tex file manual.tex with some info.

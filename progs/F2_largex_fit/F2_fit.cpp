@@ -1,6 +1,6 @@
 //program used to fit the high x F2 JLab data
 // takes two parameters: 1) prefix of filenames that have output of fits and data 2) include sys errors or not (1/0)
-//run for instance  ~/physics-code/bin/F2_fit speedyevofitstat 0
+//run for instance  <repo>/bin/F2_fit speedyevofitstat 0
 
 #include <TVirtualFitter.h>
 #include <TFitter.h>

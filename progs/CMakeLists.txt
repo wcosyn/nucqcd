@@ -1,5 +1,5 @@
 # Programs. They are only built by 'make' (and installed into <repo>/bin) with -DBUILD_PROGS=yes;
-# otherwise build one with 'make <name>'. See cmake/PhysicsCode.cmake for physcode_add_program(s).
+# otherwise build one with 'make <name>'. See cmake/NucQCD.cmake for nucqcd_add_program(s).
 add_subdirectory(Obstest)          # A(e,e'p) observables
 # add_subdirectory(threeres)       # old, never properly used: resonance model for inclusive DIS
 add_subdirectory(onenucl)          # A(e,e'p) cross sections and transparencies

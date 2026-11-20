@@ -27,7 +27,7 @@ if(MPI_ENABLED)
   set(mpi_sources TMPI.cpp)
 endif()
 
-physcode_add_library(MePhys
+nucqcd_add_library(MePhys
   SOURCES
     NuclStructure.cpp
     NucleonStructure.cpp

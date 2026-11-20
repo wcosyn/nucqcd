@@ -1,5 +1,5 @@
-# Golden values for the physics-code regression tests (key value).
-# Captured from the code on master; regenerate with PHYSCODE_UPDATE_REFERENCE=1.
+# Golden values for the nucqcd regression tests (key value).
+# Captured from the code on master; regenerate with NUCQCD_UPDATE_REFERENCE=1.
 Alekhin_n_x0.1_Q2_2_F1 1.3328628222219308
 Alekhin_n_x0.1_Q2_2_F2 0.32057220456363344
 Alekhin_n_x0.1_Q2_5_F1 1.4519065613275541

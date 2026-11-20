@@ -9,7 +9,7 @@
 #include <vector>
 
 namespace {
-physcode_test::RefStore refs("reg_nucleon_structure");
+nucqcd_test::RefStore refs("reg_nucleon_structure");
 
 // default grid of (x, Q^2[MeV^2]) points; Christy-Bosted only covers W < ~3 GeV (and calls exit()
 // outside its range), so it gets its own grid

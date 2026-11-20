@@ -12,7 +12,7 @@
 #include <string>
 
 namespace {
-physcode_test::RefStore refs("reg_deuteron_tagged");
+nucqcd_test::RefStore refs("reg_deuteron_tagged");
 }
 
 TEST_CASE("DeuteronCross: light-cone and VNA, plane wave and FSI", "[tagged]") {
@@ -52,7 +52,7 @@ TEST_CASE("He3Cross: tagged DIS with two spectators", "[.][tagged][known-bug]") 
   TVector3 beam(5000. * std::cos(-1.), 0., 5000. * std::sin(-1.));
   LightConeKin2to3 kin(MASSHE3, 2.E06, MASSP, MASSP, 0., 4.E03, sp1, sp2, beam, spcm);
   for (int proton = 0; proton <= 1; proton++) {
-    He3Cross he3("AV18", physcode_test::share_dir(), "SLAC", proton);
+    He3Cross he3("AV18", nucqcd_test::share_dir(), "SLAC", proton);
     const std::string nuc = proton ? "p" : "n";
     CHECK_REF(refs, "He3_density_" + nuc, he3.getDensity(kin), 1e-7, 1e-30);
     CHECK_REF(refs, "He3_cross_" + nuc, he3.getCross(kin), 1e-7, 1e-30);

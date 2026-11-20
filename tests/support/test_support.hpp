@@ -1,5 +1,5 @@
 /*! \file test_support.hpp
- * \brief Helpers for the physics-code test suite: sandbox share directory and golden-value store.
+ * \brief Helpers for the nucqcd test suite: sandbox share directory and golden-value store.
  *
  * Regression tests compare against reference values stored in tests/reference/<name>.ref
  * (plain text, one "key value" pair per line). These values were captured from the code on
@@ -7,10 +7,10 @@
  * a new bug, or a deliberate fix of an old one (the reference values may themselves contain
  * long-standing bugs). It is a lead to investigate, not a verdict.
  *
- * Re-baselining: run with PHYSCODE_UPDATE_REFERENCE=1, then review `git diff tests/reference`.
+ * Re-baselining: run with NUCQCD_UPDATE_REFERENCE=1, then review `git diff tests/reference`.
  */
-#ifndef PHYSCODE_TEST_SUPPORT_HPP
-#define PHYSCODE_TEST_SUPPORT_HPP
+#ifndef NUCQCD_TEST_SUPPORT_HPP
+#define NUCQCD_TEST_SUPPORT_HPP
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
@@ -18,13 +18,13 @@
 #include <map>
 #include <string>
 
-namespace physcode_test {
+namespace nucqcd_test {
 
 /*! Sandbox share directory (copy/symlinks of <repo>/share with an empty grids/), to be passed as
- * the dir/homedir argument of the physics classes. Overridable with PHYSCODE_TEST_SHARE. */
+ * the dir/homedir argument of the physics classes. Overridable with NUCQCD_TEST_SHARE. */
 std::string share_dir();
 
-/*! true if PHYSCODE_UPDATE_REFERENCE=1: reference values are (re)written instead of checked */
+/*! true if NUCQCD_UPDATE_REFERENCE=1: reference values are (re)written instead of checked */
 bool updating_references();
 
 /*! Result of a comparison with a stored reference value */
@@ -47,14 +47,14 @@ private:
   void store(const std::string &key, double value);
 };
 
-}  // namespace physcode_test
+}  // namespace nucqcd_test
 
 /*! CHECK a value against the golden value stored under key (optional args: rel_tol, abs_tol) */
 #define CHECK_REF(store, key, ...)                                   \
   do {                                                               \
-    const auto physcode_ref_result_ = (store).compare(key, __VA_ARGS__); \
-    INFO(physcode_ref_result_.message);                              \
-    CHECK(physcode_ref_result_.ok);                                  \
+    const auto nucqcd_ref_result_ = (store).compare(key, __VA_ARGS__); \
+    INFO(nucqcd_ref_result_.message);                              \
+    CHECK(nucqcd_ref_result_.ok);                                  \
   } while (0)
 
 #endif

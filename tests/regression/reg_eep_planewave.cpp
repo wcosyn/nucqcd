@@ -14,11 +14,11 @@
 #include <string>
 
 namespace {
-physcode_test::RefStore refs("reg_eep_planewave");
+nucqcd_test::RefStore refs("reg_eep_planewave");
 
 // kinematics of progs/onenucl/A_QE_cross.cpp (Dutta data, Ebeam 3245 MeV)
 void check_nucleus(const char *name) {
-  const std::string dir = physcode_test::share_dir();
+  const std::string dir = nucqcd_test::share_dir();
   MeanFieldNucleusThick nucl(MeanFieldNucleus::TypeNames.at(name), dir);
   std::unique_ptr<TElectronKinematics> elec(TElectronKinematics::CreateWithBeamEnergy(3245.));
   Cross obs(*elec, &nucl, 1.E-05, 2, dir, false, 1.);
@@ -49,7 +49,7 @@ TEST_CASE("A(e,e'p) plane wave: iron", "[eep]") { check_nucleus("Fe"); }
 
 TEST_CASE("Plane-wave calculations do not write Glauber grids", "[eep]") {
   check_nucleus("O");
-  const std::filesystem::path grids = std::filesystem::path(physcode_test::share_dir()) / "grids";
+  const std::filesystem::path grids = std::filesystem::path(nucqcd_test::share_dir()) / "grids";
   for (const auto &entry : std::filesystem::directory_iterator(grids))
     CHECK(entry.path().filename().string().rfind("O.", 0) != 0);  // no grid files for oxygen
 }

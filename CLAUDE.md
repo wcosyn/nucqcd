@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-A collection of C++ (plus some Fortran) libraries and executables for nuclear and hadronic physics calculations by Wim Cosyn. It covers Glauber/RMSGA final-state interactions, quasi-elastic knockout, deuteron and He3 inclusive and tagged DIS, rho/pion transparencies, neutrino QE scattering, and (optionally) deuteron GPDs via PARTONS. A Catch2/CTest test suite lives in `tests/` (see below). The programs in `progs/` serve as both drivers and production calculations. More background is in `manual/manual.tex` (LaTeX) and in the Doxygen comments in the headers.
+**nucqcd** ("QCD in nuclei", formerly `physics-code`): a collection of C++ (plus some Fortran) libraries and executables by Wim Cosyn for high-energy reactions on nuclei (JLab to EIC energies), used to learn about the strong force in nuclei. It covers Glauber/RMSGA final-state interactions, quasi-elastic knockout, deuteron and He3 inclusive and tagged DIS, rho/pion transparencies, neutrino QE scattering, and (optionally) deuteron GPDs via PARTONS. A Catch2/CTest test suite lives in `tests/` (see below). The programs in `progs/` serve as both drivers and production calculations. More background is in `manual/manual.tex` (LaTeX) and in the Doxygen comments in the headers.
 
 ## Build
 
@@ -34,12 +34,12 @@ make doc                  # Doxygen API docs -> doc/
 ```bash
 cd build && make -j8 && ctest -LE slow -j8    # unit + regression, ~30 s
 ctest -L slow                                # Glauber grids computed from scratch
-PHYSCODE_UPDATE_REFERENCE=1 ctest -L "regression|slow"   # re-baseline, then review git diff tests/reference/
+NUCQCD_UPDATE_REFERENCE=1 ctest -L "regression|slow"   # re-baseline, then review git diff tests/reference/
 ```
 
 - Labels: `unit` (analytic or exact checks), `regression` (golden values in `tests/reference/*.ref`, captured from master on 2026-11-20), `slow`.
 - A regression failure is a lead to investigate, not a verdict: the old value may itself be wrong. Re-baseline only when the change is understood.
-- Tests use a sandbox share dir (`build/tests/share`, with an empty `grids/`) via `physcode_test::share_dir()`, never `share/grids/`.
+- Tests use a sandbox share dir (`build/tests/share`, with an empty `grids/`) via `nucqcd_test::share_dir()`, never `share/grids/`.
 - Bugs found by the suite are documented as `[known-bug]` tests (`[!mayfail]`, or hidden `[.]` when they crash).
 - Test target names are prefixed `unit_`/`reg_`. `progs/attic/camille/test` already defines `test_*` targets.
 
@@ -54,20 +54,20 @@ Libraries build in this order, and each links against the ones before it:
 5. **DIS** (`libDIS`): inclusive and tagged DIS on the deuteron and He3, the polarized deuteron (`Poldeut`), resonances, and the EMT light-front convolution. `DIS/evolution/` is a separate Fortran library, `libEvolution`, for QCD evolution.
 6. **GPD_Partons** (`libGPD`, optional): deuteron vector and transversity GPD convolutions that use PARTONS.
 
-All CMakeLists use the helpers in `cmake/PhysicsCode.cmake`:
+All CMakeLists use the helpers in `cmake/NucQCD.cmake`:
 
-- `physcode_add_library(<name> SOURCES ... LINK ... [LINKDEFS ...])`: shared library (version 1.0.0) with its directory as public include dir, installed into `lib/`; with `STATIC_BUILD` also `<name>ST`. Dependencies in `LINK` are public, so programs only need to name the highest library they use.
-- `physcode_add_program(<name> [SOURCES ...] LINK ... [DESTINATION dir])` and `physcode_add_programs(LINK ... PROGRAMS a b c ...)`: executables (default source `<name>.cpp`), built by `make` and installed only with `BUILD_PROGS`.
+- `nucqcd_add_library(<name> SOURCES ... LINK ... [LINKDEFS ...])`: shared library (version 1.0.0) with its directory as public include dir, installed into `lib/`; with `STATIC_BUILD` also `<name>ST`. Dependencies in `LINK` are public, so programs only need to name the highest library they use.
+- `nucqcd_add_program(<name> [SOURCES ...] LINK ... [DESTINATION dir])` and `nucqcd_add_programs(LINK ... PROGRAMS a b c ...)`: executables (default source `<name>.cpp`), built by `make` and installed only with `BUILD_PROGS`.
 - Interface targets for external dependencies: `root_libs`, `GSL::gsl`, `cuba`, `MPI::MPI_CXX`, `partons_libs`.
 
-To add a source file, list it explicitly in that library's `CMakeLists.txt`; there is no globbing. To add a program, add a `physcode_add_program(s)` line to the `CMakeLists.txt` of its `progs/` subdirectory (new directories are registered in `progs/CMakeLists.txt`).
+To add a source file, list it explicitly in that library's `CMakeLists.txt`; there is no globbing. To add a program, add a `nucqcd_add_program(s)` line to the `CMakeLists.txt` of its `progs/` subdirectory (new directories are registered in `progs/CMakeLists.txt`).
 
 ## Key cross-cutting conventions
 
 - **`Tools/constants.hpp` is generated** from `Tools/constants.hpp.in` at configure time and is gitignored, so edit the `.in` file. The generated file defines the physical constants (masses in MeV, `HBARC`, etc.) as macros. It also defines `HOMEDIR` as the absolute path to `<repo>/share`.
 - **The `share/` data directory** holds input data such as nuclear mean-field wavefunctions (`share/input/*.radial*.bound`), PDF grids, and correlation grids. Experiment data used for fits and comparisons (DEEPS, BONuS) are in `share/expdata/`. Most physics classes take a `dir`/`homedir` string argument, usually `HOMEDIR`, and read their input relative to it.
 - **The FSI grid hierarchy (Glauber).** `AbstractFsiGrid` → `AbstractFsiCTGrid`/`AbstractFsiGridThick` → … → concrete `GlauberGrid`, `GlauberGridThick`, `GlauberDecayGridThick`, `OneGlauberGrid`, `ROMEAGrid`, and `ClassGridThick_SCX`. A user adds `FastParticle`s, then calls `fillGrids()`/`updateGrids()`. The grids are expensive to compute, so they are cached as files under `share/grids/` (gitignored) and reused on later runs. If you change the physics or the grid parameters, delete the stale grid files.
-- **ROOT dictionaries.** Each `T*` class in Tools (and `TMFSpinor` in Glauber) has a `*LinkDef.h`; `physcode_add_library(... LINKDEFS ...)` runs `rootcling` on `X.h(pp)` + `XLinkDef.h` and installs `XDict_rdict.pcm` into `lib/`. A new class of this kind needs its LinkDef added to that library's `LINKDEFS`.
+- **ROOT dictionaries.** Each `T*` class in Tools (and `TMFSpinor` in Glauber) has a `*LinkDef.h`; `nucqcd_add_library(... LINKDEFS ...)` runs `rootcling` on `X.h(pp)` + `XLinkDef.h` and installs `XDict_rdict.pcm` into `lib/`. A new class of this kind needs its LinkDef added to that library's `LINKDEFS`.
 - Integrands for `numint` are usually written as a struct functor that holds a pointer to the physics object, plus a static `exec` function. Integration precision is passed in as a parameter, and the integrator choice is often an `int` flag on the class.
 - The code mixes MeV and GeV units (for example `MASSP` versus `MASSP_G` in `constants.hpp`), so check which unit a class expects.
 - `bin/`, `lib/`, `build/`, and `doc/` are build outputs and are gitignored.

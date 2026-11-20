@@ -1,4 +1,4 @@
-physcode_add_programs(LINK Integrator cuba PROGRAMS
+nucqcd_add_programs(LINK Integrator cuba PROGRAMS
   cubatest
   cubatest_wrapped
   cubatest_complex

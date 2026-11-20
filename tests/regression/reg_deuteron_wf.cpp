@@ -10,7 +10,7 @@
 #include <string>
 
 namespace {
-physcode_test::RefStore refs("reg_deuteron_wf");
+nucqcd_test::RefStore refs("reg_deuteron_wf");
 }
 
 TEST_CASE("TDeuteron wave functions at selected r and p", "[deuteron]") {

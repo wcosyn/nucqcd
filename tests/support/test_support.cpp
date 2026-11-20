@@ -12,7 +12,7 @@
 #include <sys/file.h>
 #include <unistd.h>
 
-namespace physcode_test {
+namespace nucqcd_test {
 
 namespace {
 
@@ -62,12 +62,12 @@ private:
 
 }  // namespace
 
-std::string share_dir() { return env_or("PHYSCODE_TEST_SHARE", PHYSCODE_TEST_SHARE_DEFAULT); }
+std::string share_dir() { return env_or("NUCQCD_TEST_SHARE", NUCQCD_TEST_SHARE_DEFAULT); }
 
-bool updating_references() { return env_or("PHYSCODE_UPDATE_REFERENCE", "0") == "1"; }
+bool updating_references() { return env_or("NUCQCD_UPDATE_REFERENCE", "0") == "1"; }
 
 RefStore::RefStore(const std::string &name)
-    : path(env_or("PHYSCODE_TEST_REFDIR", PHYSCODE_TEST_REFDIR_DEFAULT) + "/" + name + ".ref"),
+    : path(env_or("NUCQCD_TEST_REFDIR", NUCQCD_TEST_REFDIR_DEFAULT) + "/" + name + ".ref"),
       values(read_ref_file(path)) {}
 
 void RefStore::store(const std::string &key, double value) {
@@ -77,8 +77,8 @@ void RefStore::store(const std::string &key, double value) {
   const std::string tmp = path + ".tmp";
   {
     std::ofstream out(tmp);
-    out << "# Golden values for the physics-code regression tests (key value).\n"
-        << "# Captured from the code on master; regenerate with PHYSCODE_UPDATE_REFERENCE=1.\n";
+    out << "# Golden values for the nucqcd regression tests (key value).\n"
+        << "# Captured from the code on master; regenerate with NUCQCD_UPDATE_REFERENCE=1.\n";
     for (const auto &kv : current) out << kv.first << ' ' << kv.second << '\n';
   }
   std::rename(tmp.c_str(), path.c_str());
@@ -95,7 +95,7 @@ RefResult RefStore::compare(const std::string &key, double value, double rel_tol
   }
   auto it = values.find(key);
   if (it == values.end()) {
-    msg << " -- no reference value stored; run with PHYSCODE_UPDATE_REFERENCE=1 to create it";
+    msg << " -- no reference value stored; run with NUCQCD_UPDATE_REFERENCE=1 to create it";
     return {false, msg.str()};
   }
   const double ref = std::stod(it->second);
@@ -106,8 +106,8 @@ RefResult RefStore::compare(const std::string &key, double value, double rel_tol
   if (!ok)
     msg << "\n  -> The output differs from the value captured from master. This can be a new bug,"
            "\n     or a deliberate change/fix (the old value may itself have been wrong): investigate,"
-           "\n     and if the new value is right re-baseline with PHYSCODE_UPDATE_REFERENCE=1.";
+           "\n     and if the new value is right re-baseline with NUCQCD_UPDATE_REFERENCE=1.";
   return {ok, msg.str()};
 }
 
-}  // namespace physcode_test
+}  // namespace nucqcd_test

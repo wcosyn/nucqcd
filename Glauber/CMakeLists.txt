@@ -1,5 +1,5 @@
 # libGlauber: mean-field nuclei, nucleon current operators, Glauber/RMSGA FSI grids.
-physcode_add_library(Glauber
+nucqcd_add_library(Glauber
   SOURCES
     MeanFieldNucleus.cpp
     MeanFieldNucleusThick.cpp

@@ -5,7 +5,7 @@
 # evolvers.f90 and wrappers.f90 are therefore inactive.)
 set_property(DIRECTORY PROPERTY COMPILE_OPTIONS "")
 
-physcode_add_library(Evolution
+nucqcd_add_library(Evolution
   SOURCES
     kinds.f90
     utils.f90

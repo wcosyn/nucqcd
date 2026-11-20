@@ -1,1 +1,1 @@
-physcode_add_program(twonucl LINK Knockout Glauber MePhys)
+nucqcd_add_program(twonucl LINK Knockout Glauber MePhys)

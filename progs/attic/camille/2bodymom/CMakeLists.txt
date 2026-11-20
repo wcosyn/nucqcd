@@ -1,1 +1,1 @@
-physcode_add_programs(LINK Knockout PROGRAMS 2bodymom 2bodymom_glauber)
+nucqcd_add_programs(LINK Knockout PROGRAMS 2bodymom 2bodymom_glauber)

@@ -11,7 +11,7 @@
 #include <vector>
 
 namespace {
-physcode_test::RefStore refs("reg_inclusive_dis");
+nucqcd_test::RefStore refs("reg_inclusive_dis");
 }
 
 TEST_CASE("Inclusive F2D: plane wave and FSI (resonance model)", "[inclusive]") {
