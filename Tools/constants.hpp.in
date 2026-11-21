@@ -11,9 +11,7 @@
  * names. Exceptions: PI stays a literal, because Integrator/numint/macros.hpp defines the same macro
  * and a macro may only be redefined with identical tokens; HOMEDIR stays a string literal.
  *
- * Masses are in MeV unless the name ends in _GeV. The values are unchanged from the macro versions,
- * including the low-precision ones (deg_to_rad, rad_to_deg) and the two rho masses (mass_rho and
- * mass_rho_kin), so that results do not change.
+ * Masses are in MeV unless the name ends in _GeV.
  */
 
 #ifndef CONST_H
@@ -26,8 +24,8 @@ inline namespace constants {
 
 // ---- mathematics and numerics ----
 inline constexpr double pi = 3.1415926535897932385;    //!< pi
-inline constexpr double deg_to_rad = 0.0174532925;     //!< pi/180 (to about 1e-9)
-inline constexpr double rad_to_deg = 57.2957795;       //!< 180/pi (to about 1e-9)
+inline constexpr double deg_to_rad = pi / 180.;        //!< pi/180
+inline constexpr double rad_to_deg = 180. / pi;        //!< 180/pi
 inline constexpr std::complex<double> i_unit{0., 1.};  //!< imaginary unit
 inline constexpr double integration_prec = 1e-04;      //!< default precision of the integrations (macro PREC)
 /*! underflow in the code: a double smaller than this should be treated as zero */
@@ -56,8 +54,7 @@ inline constexpr double mass_he3 = 2809.41338;                     //!< He3 mass
 // ---- mesons, hyperons and bosons [MeV] ----
 inline constexpr double mass_pi = 139.57;        //!< charged pion mass
 inline constexpr double mass_pi0 = 134.977;      //!< neutral pion mass
-inline constexpr double mass_rho = 775.49;       //!< rho0 mass (macro MASSRHO)
-inline constexpr double mass_rho_kin = 775.5;    //!< rho mass of the kinematics classes (macro M_RHO)
+inline constexpr double mass_rho = 775.26;       //!< rho(770) mass, PDG 2022-2026 average (775.49 until 2026-11, PDG 2012)
 inline constexpr double mass_omega = 782.65;     //!< omega mass
 inline constexpr double mass_phi = 1019.46;      //!< phi mass
 inline constexpr double mass_kp = 493.677;       //!< K+ mass
@@ -108,7 +105,7 @@ inline constexpr const char *share_dir = "@SHARE_DIR@";  //!< absolute path of <
 #define M_S0 nucqcd::mass_sigma0
 #define M_SP nucqcd::mass_sigmap
 #define M_SM nucqcd::mass_sigmam
-#define M_RHO nucqcd::mass_rho_kin
+#define M_RHO nucqcd::mass_rho
 #define M_OMEGA nucqcd::mass_omega
 #define M_PHI nucqcd::mass_phi
 #define M_PIP nucqcd::mass_pi

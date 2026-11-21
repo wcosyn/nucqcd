@@ -187,8 +187,14 @@ one commit per bug; no `[known-bug]` tests remain.
   unchanged, so no reference moved. `PI` stays a literal, because `Integrator/numint/macros.hpp`
   defines the same macro; `HOMEDIR` stays a string literal (also `nucqcd::share_dir`). `M_W` is now a
   double instead of an int. The `MUP` doc said "anomalous" magnetic moment, but 2.79 is the full
-  moment; fixed in the doc. Kept as they were: two rho masses (`MASSRHO` 775.49, `M_RHO` 775.5) and
-  the low-precision `DEGRTORAD`/`RADTODEGR`.
+  moment; fixed in the doc.
+- [x] **Rho mass and degree conversions:** there were two rho masses, `MASSRHO` 775.49 (the PDG 2012
+  value) and `M_RHO` 775.5 (unused). Both are now `nucqcd::mass_rho` = 775.26 MeV, the PDG 2022–2026
+  average, so rho results move by about −0.03% (rho transparency and production in `FastParticle`,
+  `RhoTCross`, `RhoDeuteron`). Earlier rho results used 775.49. No test covers the rho mass. Delete
+  cached rho Glauber grids in `share/grids/`, since the file names do not record the mass.
+  `DEGRTORAD`/`RADTODEGR` are now exactly π/180 and 180/π (they were accurate to about 1e-9); no
+  reference moved.
 - [ ] **Ownership:** use smart pointers for owned members and rule-of-zero classes. About 17 classes own
   raw pointers without copy or assignment operators (e.g. `Knockout/Model`, `Knockout/Cross`,
   `DIS/InclusiveCross`, `Glauber/FsiCorrelator`), and `MeanFieldNucleus[Thick]` has no `operator=`.
@@ -231,8 +237,8 @@ one commit per bug; no `[known-bug]` tests remain.
 Do these one at a time, running the full test suite (including `slow`) after each.
 
 - [ ] **Constants macros:** replace the macro uses with the `nucqcd::` names, then remove the macros
-  (except `PI` until `numint` drops its own). Decide then whether to merge the two rho masses and use
-  exact `deg_to_rad`/`rad_to_deg`; both change results slightly.
+  (except `PI` until `numint` drops its own). Other values are also older PDG values (e.g. the
+  proton mass 938.27231 versus 938.27209 in PDG 2024); updating them changes results.
 - [ ] **Split `Tools` (library `MePhys`)** into coherent parts:
   - math and Lorentz algebra
   - kinematics

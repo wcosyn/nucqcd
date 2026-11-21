@@ -62,7 +62,8 @@ TEST_CASE("Macros are aliases of the nucqcd constants", "[constants]") {
   CHECK(M_P == nucqcd::mass_p);
   CHECK(MASSn == nucqcd::mass_nucleon);
   CHECK(M_PIP == MASSPI);
-  CHECK(M_RHO != MASSRHO);  // two different rho masses, kept so that results do not change
+  CHECK(M_RHO == MASSRHO);  // one rho mass since 2026-11 (was 775.49 and 775.5)
+  CHECK(DEGRTORAD * 180. == PI);
   CHECK(I_UNIT == std::complex<double>(0., 1.));
   CHECK(std::string(HOMEDIR) == nucqcd::share_dir);
 }
