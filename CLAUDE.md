@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-**nucqcd** ("QCD in nuclei", formerly `physics-code`): a collection of C++ (plus some Fortran) libraries and executables by Wim Cosyn for high-energy reactions on nuclei (JLab to EIC energies), used to learn about the strong force in nuclei. It covers Glauber/RMSGA final-state interactions, quasi-elastic knockout, deuteron and He3 inclusive and tagged DIS, rho/pion transparencies, neutrino QE scattering, and (optionally) deuteron GPDs via PARTONS. A Catch2/CTest test suite lives in `tests/` (see below). The programs in `progs/` serve as both drivers and production calculations. More background is in `manual/manual.tex` (LaTeX) and in the Doxygen comments in the headers.
+**nucqcd** ("QCD in nuclei", formerly `physics-code`): a collection of C++ (plus some Fortran) libraries and executables by Wim Cosyn for high-energy reactions on nuclei (JLab to EIC energies), used to learn about the strong force in nuclei. It covers Glauber/RMSGA final-state interactions, quasi-elastic knockout, deuteron and He3 inclusive and tagged DIS, rho/pion transparencies, neutrino QE scattering, and (optionally) deuteron GPDs via PARTONS. A Catch2/CTest test suite lives in `tests/` (see below). The programs in `progs/` serve as both drivers and production calculations. More background is in `manual/manual.tex` (LaTeX) and in the Doxygen comments in the headers. Not everything has Doxygen comments, especially the older code (mostly in `Tools`, e.g. the `TKinematics*`, `TSpinor` and `TDeuteron` classes). After `make doc`, `build/doxygen_warnings.log` lists what is missing.
 
 ## Build
 

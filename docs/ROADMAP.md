@@ -200,7 +200,12 @@ one commit per bug; no `[known-bug]` tests remain.
   undocumented members, mostly in `Tools` (`TKinematics2to3.h` alone has 300). About 80 are real doc
   errors that were already there: `\param` names that do not match the arguments, unclosed `\f$`
   formulas, and member documentation that matches no declaration. Fix the errors first, then
-  document the classes that programs use.
+  document the classes that programs use. The gaps are also a good task for Claude, one class or library per PR:
+  it can write the missing comments from the code and the existing docs, and the warning log shows
+  when a class is done. Units, conventions and physics meaning still need the author's review,
+  because the code often does not state them. Also replace the Doxygen main page, which is still
+  titled "Glauber ISI/FSI RMSGA C++ Project" and shares its comment with the Glauber group
+  (`Glauber/AbstractFsiGrid.hpp`), together with the README (step 8).
 
 ## 6. Structural refactors
 
