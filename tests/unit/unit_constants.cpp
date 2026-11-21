@@ -1,5 +1,4 @@
-// Tools/constants.hpp(.in): physical constants. Known bugs are documented as [!mayfail] tests
-// (they are reported but do not fail the suite); remove the tag when the bug is fixed.
+// Tools/constants.hpp(.in): physical constants.
 #include <test_support.hpp>
 
 #include <constants.hpp>
@@ -25,24 +24,23 @@ TEST_CASE("Hadron masses: MeV and GeV versions agree, proton lighter than neutro
   CHECK_THAT(MASSN_G * 1e3, WithinRel(MASSN, 1e-12));
   CHECK_THAT(MASSD_G * 1e3, WithinRel(MASSD, 1e-12));
   CHECK_THAT(MASSn, WithinRel(0.5 * (MASSP + MASSN), 1e-15));
-  // the second mass set agrees with the first to the quoted digits
-  CHECK_THAT(M_P, WithinRel(MASSP, 1e-5));
-  CHECK_THAT(M_N, WithinRel(MASSN, 1e-5));
-  CHECK_THAT(M_NUCL, WithinRel(MASSn, 1e-5));
+  // the second set of mass names are aliases of the first
+  CHECK(M_P == MASSP);
+  CHECK(M_N == MASSN);
+  CHECK(M_NUCL == MASSn);
   // deuteron binding energy ~2.2 MeV
   CHECK_THAT(MASSP + MASSN - MASSD, WithinAbs(2.22, 0.05));
 }
 
-TEST_CASE("Known bug: MASSn_G is in MeV instead of GeV", "[constants][known-bug][!mayfail]") {
+TEST_CASE("MASSn_G is the average nucleon mass in GeV", "[constants]") {
   CHECK_THAT(MASSn_G, WithinRel(0.5 * (MASSP_G + MASSN_G), 1e-12));
 }
 
-TEST_CASE("Known bug: M_Z is 10x too large (used in Knockout/WeakQECross.cpp)", "[constants][known-bug][!mayfail]") {
+TEST_CASE("Z boson mass", "[constants]") {
   CHECK_THAT(M_Z, WithinRel(91187.6, 1e-4));
 }
 
-TEST_CASE("Known bug: INVHBARC = 1/197.328 is inconsistent with HBARC = 197.327 (5e-6 relative)",
-          "[constants][known-bug][!mayfail]") {
+TEST_CASE("INVHBARC is the inverse of HBARC", "[constants]") {
   CHECK_THAT(HBARC * INVHBARC, WithinRel(1., 1e-9));
 }
 

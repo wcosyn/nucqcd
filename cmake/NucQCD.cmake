@@ -16,7 +16,8 @@
 #
 #   nucqcd_root_dictionary(<target> <XLinkDef.h>...)
 #       Runs rootcling for each X: X.h or X.hpp + XLinkDef.h -> XDict.cxx (+ XDict_rdict.pcm,
-#       installed next to the library), and adds XDict.cxx to <target>.
+#       copied next to the library in the build tree and installed next to it), and adds
+#       XDict.cxx to <target>.
 
 include_guard(GLOBAL)
 
@@ -33,9 +34,13 @@ function(nucqcd_root_dictionary target)
     endif()
     set(dict "${CMAKE_CURRENT_BINARY_DIR}/${cls}Dict.cxx")
     set(pcm "${CMAKE_CURRENT_BINARY_DIR}/${cls}Dict_rdict.pcm")
+    # ROOT looks for the .pcm next to the library, so also copy it to the build tree's lib/
+    # (for tests and programs run from the build directory); install() covers <repo>/lib.
+    set(libpcm "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${cls}Dict_rdict.pcm")
     add_custom_command(
-      OUTPUT "${dict}" "${pcm}"
+      OUTPUT "${dict}" "${pcm}" "${libpcm}"
       COMMAND ${ROOT_rootcling_CMD} -f "${dict}" "${incflags}" "${header}" "${linkdef}"
+      COMMAND ${CMAKE_COMMAND} -E copy "${pcm}" "${libpcm}"
       DEPENDS "${header}" "${linkdef}"
       WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
       COMMENT "Generating ROOT dictionary ${cls}Dict"

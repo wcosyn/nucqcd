@@ -57,7 +57,9 @@ public:
 	double prec, int integrator, std::string dir, bool charged, double M_A_in, bool user_sigma, bool enable_ROMEA,
 	double gA_s=-0.19, double r_s2=0., 
 	double mu_s=0., double sigma_screening=0.);
-    /*! Constructor for weak neutral current processes
+    /*! Constructor for weak neutral current processes.
+   * \warning The NC cross section has not been used in any calculation yet and is untested: it
+   * segfaulted until 2026-11 and has never been compared with a published NC result.
    * \param elec contains all the electron kinematics
    * \param pnucl pointer to a MF nucleus instance
    * \param prec precision you want in the integrations

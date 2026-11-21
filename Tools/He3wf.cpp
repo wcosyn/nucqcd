@@ -5,10 +5,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <cassert>
+#include <constants.hpp>
 
 using namespace std;
-
-#define INVHBARC 0.00506770453255 /*!< \def defines (hbar*c)^-1 [(MeV*fm)^-1] */
 
 
 //data type needed for complex (fortran data type) return 

@@ -16,7 +16,7 @@ using namespace std;
 WeakQECross::WeakQECross(TElectronKinematics *elec, MeanFieldNucleusThick *pnucleus, double precision, int integr,
 	     string dir, bool cc, double M_A_in, bool user_sigma, bool enable_ROMEA_in,double gA_s_in, double r_s2_in, 
 	      double mu_s_in, double sigma_screening)
-:homedir(dir),electron(elec),pnucl(pnucleus),reacmodel(NULL), prec(precision),integrator(integr),
+:homedir(dir),lepton(NULL),electron(elec),pnucl(pnucleus),reacmodel(NULL), prec(precision),integrator(integr),
 charged(cc), M_A(M_A_in), usersigma(user_sigma), gA_s(gA_s_in), r_s2(r_s2_in), mu_s(mu_s_in), sigmascreening(sigma_screening), enable_ROMEA(enable_ROMEA_in){
   if(cc){
      cerr << "ERROR in WeakQECross::constructor "
@@ -29,7 +29,7 @@ WeakQECross::WeakQECross(TLeptonKinematics *lep,
 			 MeanFieldNucleusThick *pnucleus, double precision, int integr,
 	     string dir, bool cc, double M_A_in, bool user_sigma,bool enable_ROMEA_in, double gA_s_in, double r_s2_in, 
 	      double mu_s_in, double sigma_screening)
-:homedir(dir),lepton(lep),pnucl(pnucleus),reacmodel(NULL), prec(precision),integrator(integr),
+:homedir(dir),lepton(lep),electron(NULL),pnucl(pnucleus),reacmodel(NULL), prec(precision),integrator(integr),
 charged(cc), M_A(M_A_in), usersigma(user_sigma), gA_s(gA_s_in), r_s2(r_s2_in), mu_s(mu_s_in), sigmascreening(sigma_screening), enable_ROMEA(enable_ROMEA_in){
   if(!cc){
      cerr << "ERROR in WeakQECross::constructor "
@@ -434,9 +434,11 @@ double WeakQECross::getDiffWeakQECross(TKinematics2to2 &kin, int current, int th
   //kaon is residual A-1 nucleus
   
   //m_n*m_{A-1}*p_f/E_{A-1}/f_rec (for lab)
-  double Ebeam=lepton->GetBeamEnergy(kin);
+  //CC uses the lepton kinematics, NC the (massless) electron kinematics object
+  double Ebeam=charged? lepton->GetBeamEnergy(kin) : electron->GetBeamEnergy(kin);
   double Eout=Ebeam-kin.GetWlab();
-  double leptonmass2=lepton->GetLeptonMass()*lepton->GetLeptonMass();
+  double leptonmass2=charged? lepton->GetLeptonMass()*lepton->GetLeptonMass() : 0.;
+  double costhl_out=charged? lepton->GetCosScatterAngle(kin) : electron->GetCosScatterAngle(kin);
 
 
   double frontfactor=0.;
@@ -454,7 +456,7 @@ double WeakQECross::getDiffWeakQECross(TKinematics2to2 &kin, int current, int th
     case(N_lab_diff): 
       //we neglect the third term in the recoil factor which depends on the azymuthal angle and yields zero for the dominant contribution after avg
       frontfactor=(kin.GetHyperonMass()*kin.GetMesonMass()*kin.GetPYlab()/(8*pow(PI,3.))
-      /abs(kin.GetEklab()+Eout*(1-Ebeam*lepton->GetCosScatterAngle(kin)/sqrt(Eout*Eout-leptonmass2))));  
+      /abs(kin.GetEklab()+Eout*(1-Ebeam*costhl_out/sqrt(Eout*Eout-leptonmass2))));  
       break;  
     default:
       cerr << "Invaled differential type in getDiffWeakQECross " << d_type << endl;
@@ -634,8 +636,12 @@ double WeakQECross::getDiffWeakQECross(TKinematics2to2 &kin, int current, int th
   }  
   //NC
   else{
+     //NOTE: the NC cross section has not been used in any calculation yet and is untested (it segfaulted
+     //until 2026-11); compare with a published NC result before using it.
+     //same normalization as the CC branch: G_F^2 E'^2 cos^2(theta/2)/(2 pi^2), the NC form factors
+     //(NucleonWeakOperator) carry the factors 1/2 of the Z coupling
      double mott=(1.+electron->GetCosScatterAngle(kin))*
-	pow(electron->GetBeamEnergy(kin)-kin.GetWlab()*G_FERMI/(Q2/M_Z/M_Z+1.)/PI,2.)/2.;
+	pow((electron->GetBeamEnergy(kin)-kin.GetWlab())*G_FERMI/(Q2/M_Z/M_Z+1.)/PI/2.,2.);
     double tan2=pow(tan(acos(electron->GetCosScatterAngle(kin))/2.),2.);
     double kinfactors[6];
     kinfactors[0]=1.; //v_L

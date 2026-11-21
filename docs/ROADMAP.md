@@ -1,4 +1,4 @@
-# Roadmap: cleanup and modernization of physics-code
+# Roadmap: cleanup and modernization of nucqcd
 
 This roadmap follows from an assessment of the repository done in November 2026. The steps are
 ordered so that every change is protected by the test suite (`tests/`, see `tests/README.md`). Work
@@ -12,7 +12,7 @@ same PR.
 - **Regression failures are leads, not verdicts.** The reference values in `tests/reference/` were
   captured from master on 2026-11-20 and may contain long-standing bugs. When a change moves them,
   find out which value is physically right. If the new value is right, re-baseline deliberately
-  (`PHYSCODE_UPDATE_REFERENCE=1 ctest -L "regression|slow"`) and review `git diff tests/reference/`.
+  (`NUCQCD_UPDATE_REFERENCE=1 ctest -L "regression|slow"`) and review `git diff tests/reference/`.
 - **Bug fixes remove their `[known-bug]` test tag** (see `tests/README.md`).
 
 ## Status
@@ -21,8 +21,8 @@ same PR.
 |---|---|---|
 | 1 | Test suite | ✅ done (PR #2) |
 | 2 | Repo hygiene, including branches | ✅ done (PR #4) |
-| 3 | Rename the repository | 🔶 renamed to `nucqcd` (PR #7); local folder and `tagged-poldeut` docs to do |
-| 4 | Bug fixes | ⬜ |
+| 3 | Rename the repository | ✅ done (PR #7, tagged-poldeut PRs #1 and #2) |
+| 4 | Bug fixes | 🔶 listed bugs fixed (PR #8); He3 normalization to check |
 | 5 | Low-risk modernization | ⬜ |
 | 6 | Structural refactors | ⬜ |
 | 7 | Unbundle Cuba | ⬜ (can be done any time after step 2) |
@@ -73,7 +73,7 @@ This step needed no physics changes, and the tests stayed green throughout. Done
     master) and `archive/LDRD-branch-0.01` (2014), and deleted the branches. To revive one, run
     `git switch -c <name> archive/<name>`.
 
-## 3. Rename the repository
+## 3. Rename the repository ✅
 
 `physics-code` is too generic for what the repository is: nuclear and hadronic reaction theory,
 including Glauber/RMSGA final-state interactions, deuteron and He3 structure, tagged and inclusive
@@ -90,13 +90,13 @@ bug-fix PRs and long before the README.
   `cmake/NucQCD.cmake`, the `physcode_*` helpers → `nucqcd_*`, `PHYSCODE_*` variables → `NUCQCD_*`
   (including `NUCQCD_UPDATE_REFERENCE`), `nucqcd_test::` in the tests, the `.ref` headers,
   `scripts/install_partons.sh`, the usage comments in `progs/`, README, CLAUDE.md and HISTORY.md.
-- [ ] **Rename the local folder** `~/Git/physics-code` → `~/Git/nucqcd` with `mv`, not a fresh clone: a clone would lose the
+- [x] **Renamed the local folder** `~/Git/physics-code` → `~/Git/nucqcd` with `mv`, not a fresh clone: a clone would lose the
   untracked grid cache in `share/grids/` (367 MB), `share/gpd_deutgrids/` and the PARTONS configuration in `GPD_Partons/bin`. This requires:
   - a fresh build directory, because `HOMEDIR` in `Tools/constants.hpp` and the RPATHs are absolute paths
   - `make install` again
   - updating `physics-code.code-workspace` and the VS Code settings
   - moving the Claude Code project memory folder (`~/.claude/projects/-home-wcosyn-Git-physics-code`)
-- [ ] **Update the docs in `tagged-poldeut`** (github.com/wcosyn/tagged-poldeut), on both `master` and
+- [x] **Updated the docs in `tagged-poldeut`** (its PRs #1 and #2) (github.com/wcosyn/tagged-poldeut), on both `master` and
   the `photoproduction` branch. That branch exists only on GitHub; check it out with
   `git switch photoproduction`. Refer to the new name, and say "formerly known as `physics-code`" once,
   e.g. in the README and `docs/DEVELOPMENT_NOTES.md`. Mentions as of 2026-11-20:
@@ -113,29 +113,47 @@ bug-fix PRs and long before the README.
 ## 4. Bug fixes
 
 Fix one bug per commit or PR. Each fix that changes outputs re-baselines its reference values
-deliberately and removes its `[known-bug]` tag.
+deliberately and removes its `[known-bug]` tag. The fixes below were done on 2026-11-20 in one PR,
+one commit per bug; no `[known-bug]` tests remain.
 
-- [ ] **He3 is broken.** Since commit `a458b63`, `Tools/getwavemod_tm.f:25` declares the file name as
-  a `bind(C)` character of length 1. `He3wf` and `He3Cross` therefore open `'/'` and stop with a
-  Fortran runtime error. Fix it with a C_CHAR array `datname(256)`, converted to a string before `OPEN`.
-- [ ] **`WeakQECross` neutral-current constructor:** it never initializes `lepton`, but
-  `getDiffWeakQECross` dereferences it, so nuclear NC cross sections segfault or return garbage.
-- [ ] **NC prefactor:** `Knockout/WeakQECross.cpp:638` looks like it has a misplaced parenthesis
-  (`E - ω·G_F/…` instead of `(E-ω)·G_F/…`; compare the charged-current branch at line 157). As written,
-  the values are about 1e23 too large.
-- [ ] **Constants in `Tools/constants.hpp.in`:**
-  - `M_Z` is 10× too large; it is used on the NC line above.
-  - `MASSn_G` evaluates in MeV instead of GeV.
-  - `INVHBARC` is 1/197.328 while `HBARC` is 197.327.
-  - The proton and neutron doc comments on `MASSN`/`MASSP` (and on the `_G` versions) are swapped.
-  - There are two inconsistent mass sets, `MASSP`/`MASSN` and `M_P`/`M_N`.
-- [ ] **`Poldeut::operator=` leaks** the old wave function (`DIS/Poldeut.cpp:48`).
-- [ ] **Cuba Suave crashes** with flatness < 1 ("buffer overflow detected" or a segfault). Fix the
-  parameters in `progs/attic/cuba_test/*.cpp` and `progs/2bodymom/src/SCX_test.cpp`; the demo value is 25.
-- [ ] **`progs/momdistr/momdistr.cpp`** Fourier-transforms the lower component F with l instead of l̄.
-- [ ] **ROOT `.pcm` dictionary files** are not copied to `build/lib`. This only shows up in crash output.
-- [ ] **Check how the structure functions reach `DeuteronCross` and `InclusiveCross`.** A mutation test
-  of SLAC F2 was not caught by their tests, so they appear to use a different code path.
+- [x] **He3 was broken.** Since commit `a458b63` (2020), `Tools/getwavemod_tm.f` declared the file name
+  as a `bind(C)` character of length 1, so `He3wf` and `He3Cross` opened `'/'` and stopped with a
+  Fortran runtime error. It is now a `C_CHAR` array `datname(256)`, converted to a string before
+  `OPEN`. `readwave` also frees its module arrays first, so a wave function can be read twice in one
+  process (`He3Cross` for proton and then neutron crashed on the second read). The `He3Cross` test is
+  now a regular regression test.
+- [ ] **He3 normalization (lead).** A 6D Vegas integral of Σ|ψ|² d³p₁d³p₂ of `He3wf("AV18")` gave
+  0.918 ± 0.007 (Vegas did not reach its target precision), not 1. Check this with a better integral
+  (Jacobi coordinates p₁₂, p₃, as used inside `getwavemod_tm.f`) before trusting He3 results. The
+  normalization of the momentum grid in the `.form` files, the `INVHBARC³` conversion in `He3wf::getWF`
+  and the sum of the three cyclic Faddeev components are the places to look.
+- [x] **`WeakQECross` neutral current:** the NC constructor never initialized `lepton`, but
+  `getDiffWeakQECross` dereferenced it, so nuclear NC cross sections segfaulted. NC now takes its
+  kinematics from the electron object.
+- [x] **NC prefactor:** `E - ω·G_F/…` is now `(E-ω)·G_F/…` (the values were about 1e23 too large).
+  The prefactor was also a factor 2 larger than the CC one, although both currents use the same
+  G_F/√2 normalization (the NC form factors carry the ½ of the Z coupling); with that fixed, NC/CC ≈ 0.24
+  at the test kinematics, as expected. The NC branch was marked "still to be implemented" and had
+  never been validated: the NC cross section has not been used in any calculation yet, so it is
+  untested. Compare with a published NC calculation before using it (a note says so in the code).
+- [x] **Constants in `Tools/constants.hpp.in`:** `M_Z` was 10× too large, `MASSn_G` was in MeV,
+  `INVHBARC` was 1/197.328 while `HBARC` is 197.327 (`He3wf.cpp` had its own copy), the proton and
+  neutron doc comments were swapped, and `M_P`/`M_N`/`M_NUCL` are now aliases of `MASSP`/`MASSN`/`MASSn`
+  instead of a second set of values. Results moved by at most 4e-5 relative (more only near zeros).
+- [x] **`Poldeut::operator=` leaked** the old wave function.
+- [x] **Cuba Suave crashed** with flatness < 1 ("buffer overflow detected"), and for flatness 1–5 it
+  silently returned wrong values with `fail = 1`. The cause is a bug in Cuba 4.2.1 itself:
+  `src/suave/Fluct.c` capped the fluctuation with `MaxL` instead of `MinL`, so it overflowed. Patched in
+  the bundled copy (see step 7); the programs' flatness values can stay as they are.
+- [x] **`progs/momdistr/momdistr.cpp`** Fourier-transformed the lower component F with l instead of l̄.
+- [x] **ROOT `.pcm` dictionary files** are now copied to `build/lib`, next to the libraries.
+- [x] **Structure functions in `DeuteronCross` and `InclusiveCross`:** they use `NuclStructure` (via
+  `DeuteronStructure`), a second wrapper around the same parametrizations as `NucleonStructure`. The
+  mutation test had changed `NucleonStructure`, which these classes do not use; a mutation of
+  `NuclStructure` is caught. A new test checks the two classes against each other. It found that
+  `NuclStructure` still passed Q² instead of Q to MSTW (fixed in `NucleonStructure` in 2016,
+  `2e05c63`), and that its copy constructor and assignment left the MSTW pointer uninitialized. Both
+  are fixed. Merging the two classes is part of step 6.
 - [x] **`progs/deepsdis/b1_calc.cpp` Azz angular factor:** the longitudinal tensor term used
   `1/4 + 3/4 cos θq` instead of d²₀₀(θq) = `1/4 + 3/4 cos 2θq` (the integrand `res[10]` already used
   `cos 2θq`). Fixed in PR #5. Found while reviewing the archived `Alan` branch, which had the same fix.
@@ -174,6 +192,9 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   largely copy-pasted, as are the {plain, Thick} × {CT, Decay} abstract classes.
 - [ ] **Model selection:** use enums or factory registries instead of model-name strings (about 700
   string comparisons). A typo should fail at compile time, not with `exit()` at runtime.
+- [ ] **Merge `NuclStructure` into `NucleonStructure`.** They wrap the same parametrizations and
+  have already drifted apart once (the MSTW scale, step 4). `DeuteronStructure` uses `NuclStructure`
+  and builds F1 for SLAC itself, where `NuclStructure` returns inf.
 - [ ] **Very long files and functions:** break them up, for example `Tools/TKinematics2to3.cpp`
   (6.8k lines, one function of about 1.3k lines) and `Glauber/NucleonEMOperator.cpp` (4.2k lines).
 
@@ -185,6 +206,11 @@ This is a build-system change only, and the `unit_cuba` tests verify it.
 - [ ] CMake first looks for an installed Cuba (in `CUBA_ROOT`, `~/.local` or the system). If none is
   found, it downloads the release tarball via `ExternalProject` (URL and SHA256 pinned) and builds
   it with the current workarounds (`-std=gnu17`, serial `make`).
+- [ ] The bundled Cuba 4.2.1 carries a patch to `src/suave/Fluct.c` (`MaxL` → `MinL`, step 4). The
+  latest release, 4.2.2, still has the bug (checked 2026-11-21), so keep the patch as a file in the repo
+  and apply it in the `ExternalProject` (`PATCH_COMMAND`) and in any install script. A system Cuba
+  cannot be patched; consider reporting the bug upstream.
+  `unit_cuba` tests Suave with a small flatness, so it catches this.
 - [ ] Keep the `cuba` INTERFACE target name, so nothing that links against it changes. Pin Cuba 4.2.x,
   because the `numint` wrappers rely on the 4.2 API.
 - [ ] Optionally, install it into `~/.local` from `scripts/`, the way `scripts/install_partons.sh` does for PARTONS.
