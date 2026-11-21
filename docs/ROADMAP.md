@@ -22,8 +22,8 @@ same PR.
 | 1 | Test suite | ✅ done (PR #2) |
 | 2 | Repo hygiene, including branches | ✅ done (PR #4) |
 | 3 | Rename the repository | ✅ done (PR #7, tagged-poldeut PRs #1 and #2) |
-| 4 | Bug fixes | 🔶 listed bugs fixed (PR #8); He3 normalization to check |
-| 5 | Low-risk modernization | ⬜ |
+| 4 | Bug fixes | 🔶 listed bugs fixed (PRs #8, #9); He3 normalization to check |
+| 5 | Low-risk modernization | 🔶 `-fopenmp` and Doxygen done |
 | 6 | Structural refactors | ⬜ |
 | 7 | Unbundle Cuba | ⬜ (can be done any time after step 2) |
 | 8 | Repository README | ⬜ (last) |
@@ -190,8 +190,15 @@ one commit per bug; no `[known-bug]` tests remain.
   - Make cache writes atomic.
 - [ ] **Fortran interop:** stop filling COMMON blocks with `strcpy` into fixed 128-byte buffers
   (`Tools/NuclStructure.cpp`). Use `ISO_C_BINDING` and bounded copies.
-- [ ] **`-fopenmp`:** remove it, or actually use OpenMP. No C/C++ code contains OpenMP directives.
-- [ ] **Doxygen:** turn off `EXTRACT_ALL` so that `WARN_IF_UNDOCUMENTED` reports the gaps.
+- [x] **`-fopenmp`:** removed. No C/C++ code contains OpenMP directives, so the flag had no effect.
+  The Fortran in `DIS/evolution` has `!$omp` directives but was never built with OpenMP.
+- [x] **Doxygen:** `EXTRACT_ALL` is off, so `WARN_IF_UNDOCUMENTED` reports the gaps, written to
+  `build/doxygen_warnings.log` by `make doc`. Undocumented entities are no longer in the output.
+- [ ] **Doxygen gaps:** with `EXTRACT_ALL` off there are about 1400 warnings, about 1300 of them
+  undocumented members, mostly in `Tools` (`TKinematics2to3.h` alone has 300). About 80 are real doc
+  errors that were already there: `\param` names that do not match the arguments, unclosed `\f$`
+  formulas, and member documentation that matches no declaration. Fix the errors first, then
+  document the classes that programs use.
 
 ## 6. Structural refactors
 
