@@ -23,7 +23,7 @@ same PR.
 | 2 | Repo hygiene, including branches | ✅ done (PR #4) |
 | 3 | Rename the repository | ✅ done (PR #7, tagged-poldeut PRs #1 and #2) |
 | 4 | Bug fixes | 🔶 listed bugs fixed (PRs #8, #9, #12); He3 normalization to check |
-| 5 | Low-risk modernization | 🔶 `-fopenmp`, Doxygen and Fortran interop done |
+| 5 | Low-risk modernization | 🔶 `-fopenmp`, Doxygen, Fortran interop and constants done |
 | 6 | Structural refactors | ⬜ |
 | 7 | Unbundle Cuba | ⬜ (can be done any time after step 2) |
 | 8 | Repository README | ⬜ (last) |
@@ -182,7 +182,13 @@ one commit per bug; no `[known-bug]` tests remain.
 
 ## 5. Low-risk modernization
 
-- [ ] **Constants:** `constexpr` constants in a namespace, keeping the macros as aliases during the transition.
+- [x] **Constants:** `Tools/constants.hpp.in` defines `inline constexpr` variables in namespace
+  `nucqcd` (also reachable as `nucqcd::constants::`), and the macros are aliases of them. Values are
+  unchanged, so no reference moved. `PI` stays a literal, because `Integrator/numint/macros.hpp`
+  defines the same macro; `HOMEDIR` stays a string literal (also `nucqcd::share_dir`). `M_W` is now a
+  double instead of an int. The `MUP` doc said "anomalous" magnetic moment, but 2.79 is the full
+  moment; fixed in the doc. Kept as they were: two rho masses (`MASSRHO` 775.49, `M_RHO` 775.5) and
+  the low-precision `DEGRTORAD`/`RADTODEGR`.
 - [ ] **Ownership:** use smart pointers for owned members and rule-of-zero classes. About 17 classes own
   raw pointers without copy or assignment operators (e.g. `Knockout/Model`, `Knockout/Cross`,
   `DIS/InclusiveCross`, `Glauber/FsiCorrelator`), and `MeanFieldNucleus[Thick]` has no `operator=`.
@@ -224,6 +230,9 @@ one commit per bug; no `[known-bug]` tests remain.
 
 Do these one at a time, running the full test suite (including `slow`) after each.
 
+- [ ] **Constants macros:** replace the macro uses with the `nucqcd::` names, then remove the macros
+  (except `PI` until `numint` drops its own). Decide then whether to merge the two rho masses and use
+  exact `deg_to_rad`/`rad_to_deg`; both change results slightly.
 - [ ] **Split `Tools` (library `MePhys`)** into coherent parts:
   - math and Lorentz algebra
   - kinematics

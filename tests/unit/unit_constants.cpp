@@ -5,6 +5,7 @@
 
 #include <cmath>
 #include <complex>
+#include <string>
 
 using Catch::Matchers::WithinAbs;
 using Catch::Matchers::WithinRel;
@@ -49,4 +50,19 @@ TEST_CASE("Electroweak constants", "[constants]") {
   CHECK_THAT(G_FERMI, WithinRel(1.16637e-11, 1e-5));  // MeV^-2
   CHECK(SIN2W > 0.22);
   CHECK(SIN2W < 0.24);
+}
+
+// The constants are inline constexpr variables in namespace nucqcd; the macros are aliases (step 5).
+static_assert(nucqcd::mass_nucleon == 0.5 * (nucqcd::mass_n + nucqcd::mass_p), "constexpr average nucleon mass");
+static_assert(nucqcd::constants::hbarc == nucqcd::hbarc, "inline namespace nucqcd::constants");
+
+TEST_CASE("Macros are aliases of the nucqcd constants", "[constants]") {
+  CHECK(PI == nucqcd::pi);  // PI is a literal (shared with Integrator/numint/macros.hpp)
+  CHECK(MASSP == nucqcd::mass_p);
+  CHECK(M_P == nucqcd::mass_p);
+  CHECK(MASSn == nucqcd::mass_nucleon);
+  CHECK(M_PIP == MASSPI);
+  CHECK(M_RHO != MASSRHO);  // two different rho masses, kept so that results do not change
+  CHECK(I_UNIT == std::complex<double>(0., 1.));
+  CHECK(std::string(HOMEDIR) == nucqcd::share_dir);
 }
