@@ -22,7 +22,7 @@ same PR.
 | 1 | Test suite | ✅ done (PR #2) |
 | 2 | Repo hygiene, including branches | ✅ done (PR #4) |
 | 3 | Rename the repository | ✅ done (PR #7, tagged-poldeut PRs #1 and #2) |
-| 4 | Bug fixes | 🔶 listed bugs fixed (PRs #8, #9); open: He3 normalization, `TKinematics` format check |
+| 4 | Bug fixes | 🔶 listed bugs fixed (PRs #8, #9, #12); He3 normalization to check |
 | 5 | Low-risk modernization | 🔶 `-fopenmp`, Doxygen and Fortran interop done |
 | 6 | Structural refactors | ⬜ |
 | 7 | Unbundle Cuba | ⬜ (can be done any time after step 2) |
@@ -122,9 +122,10 @@ one commit per bug; no `[known-bug]` tests remain.
   `OPEN`. `readwave` also frees its module arrays first, so a wave function can be read twice in one
   process (`He3Cross` for proton and then neutron crashed on the second read). The `He3Cross` test is
   now a regular regression test.
-- [ ] **`TKinematics::ReadFormatString` never rejects a bad number of variables:** the check
-  `(fNVars<2) && (fNVars>4)` is always false (it should be `||`), so format strings with 1 or more
-  than 4 variables are not caught. Found during step 5.
+- [x] **`TKinematics::ReadFormatString` never rejected a bad number of variables:** the check
+  `(fNVars<2) && (fNVars>4)` was always false, and its error branch used `assert`, which does nothing
+  in release builds. Found during step 5. It now uses `||` and throws `std::invalid_argument`
+  (tested in `unit_kinematics`). `TKinematics2to3` has its own parser and is not affected.
 - [ ] **He3 normalization (lead).** A 6D Vegas integral of Σ|ψ|² d³p₁d³p₂ of `He3wf("AV18")` gave
   0.918 ± 0.007 (Vegas did not reach its target precision), not 1. Check this with a better integral
   (Jacobi coordinates p₁₂, p₃, as used inside `getwavemod_tm.f`) before trusting He3 results. The

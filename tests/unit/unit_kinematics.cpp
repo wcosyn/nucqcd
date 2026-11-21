@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <memory>
+#include <stdexcept>
 
 using Catch::Matchers::WithinAbs;
 using Catch::Matchers::WithinRel;
@@ -44,4 +45,13 @@ TEST_CASE("TElectronKinematics: scattering angle reproduces Q^2", "[kinematics]"
     CHECK_THAT(elec->GetBeamEnergy(Q2, nu), WithinRel(Ebeam, 1e-12));
     CHECK_THAT(2. * Ebeam * (Ebeam - nu) * (1. - cth), WithinRel(Q2, 1e-6));  // massless electron
   }
+}
+
+// Until 2026-11 the check on the number of variables read (n<2) && (n>4), which is never true.
+TEST_CASE("TKinematics rejects format strings without 2, 3 or 4 variables", "[kinematics]") {
+  const double mA = 11177.93, mA1 = 10255.10;
+  CHECK_THROWS_AS(TKinematics2to2("", "", mA, mA1, MASSP, "qsquared", 1.e06, 600., 150.), std::invalid_argument);
+  CHECK_THROWS_AS(TKinematics2to2("", "", mA, mA1, MASSP, "qsquared:wlab:pklab:costhkcm:phi", 1.e06, 600., 150.),
+                  std::invalid_argument);
+  CHECK_NOTHROW(TKinematics2to2("", "", mA, mA1, MASSP, "qsquared:wlab:pklab", 1.e06, 600., 150.));
 }
