@@ -161,6 +161,17 @@ one commit per bug; no `[known-bug]` tests remain.
   `deepsdis/bonus_F2nfit_allangles` (through `DeuteronCross`), the `incldis` programs (through
   `InclusiveCross` or directly), `threeres` and `increstest`, and `poldeut` (through `Poldeut`). To
   the author's knowledge, none of them was run with MSTW for published results.
+- [x] **FSI integrals in `DeuteronMomDistr` were not converged.** The four 2D `cube_adaptive` FSI
+  integrals (used by `DeuteronCross`) asked for `PREC` = 1e-4 with at most 2000 evaluations, and every
+  call hit that cap. The results were accurate only to ~1e-5–1e-4 (worst for the `sigmaparam` FSI
+  value) and depended on the CPU, so `reg_deuteron_tagged` failed on a second machine. They now use
+  relative precision 1e-6 with at most 2e4 evaluations (error <~1e-6, about 13× slower); the FSI
+  references moved by up to 1e-4 and were re-baselined, with a test tolerance of 5e-6. Published
+  DEEPS/BONuS results were affected only at the 1e-4 level.
+- [x] **Tests used installed libraries.** `CMAKE_BUILD_WITH_INSTALL_RPATH` gave the libraries in
+  `build/lib` the RUNPATH `<repo>/lib`, so a test loaded e.g. `libDIS` from the build tree but its
+  dependencies `libKnockout` and `libGlauber` from the last `make install`. Libraries now use a
+  build-tree RPATH; `make install` still sets `<repo>/lib`.
 - [x] **`progs/deepsdis/b1_calc.cpp` Azz angular factor:** the longitudinal tensor term used
   `1/4 + 3/4 cos θq` instead of d²₀₀(θq) = `1/4 + 3/4 cos 2θq` (the integrand `res[10]` already used
   `cos 2θq`). Fixed in PR #5. Found while reviewing the archived `Alan` branch, which had the same fix.

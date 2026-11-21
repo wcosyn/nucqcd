@@ -33,12 +33,12 @@ TEST_CASE("DeuteronCross: light-cone and VNA, plane wave and FSI", "[tagged]") {
     CHECK_REF(refs, w + "_pwLC", test.getLCCross(kin, 1), 1e-7);
     CHECK_REF(refs, w + "_pwVNAavg", test.getavgVNACross(kin, 1), 1e-7);
     CHECK_REF(refs, w + "_pwVNA", test.getVNACross(kin, 1), 1e-7);
-    CHECK_REF(refs, w + "_fsiVNAavg", test.getavgVNACross(kin, 0), 1e-6);
-    CHECK_REF(refs, w + "_fsiVNA", test.getVNACross(kin, 0), 1e-6);
+    CHECK_REF(refs, w + "_fsiVNAavg", test.getavgVNACross(kin, 0), 5e-6);
+    CHECK_REF(refs, w + "_fsiVNA", test.getVNACross(kin, 0), 5e-6);
     const double sigma = DeuteronCross::sigmaparam(kin.getMassX() * kin.getMassX(), kin.getQ2()) * 10. * HBARC * HBARC;
     CHECK_REF(refs, w + "_sigmaparam_mb", sigma);
     test.setScatter(sigma, 8., -0.5);
-    CHECK_REF(refs, w + "_fsiVNA_sigmaparam", test.getVNACross(kin, 0), 1e-6);
+    CHECK_REF(refs, w + "_fsiVNA_sigmaparam", test.getVNACross(kin, 0), 5e-6);
   }
 }
 
