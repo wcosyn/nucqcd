@@ -661,15 +661,18 @@ void TKinematics::ReadFormatString(const TString format)
 
   // Tokenize the format string
   TObjArray *listOfTokens = format.Tokenize(":");
-  fNVars = listOfTokens->GetEntries();
+  const int nvars = listOfTokens->GetEntries();
 
   // and check the number of variables
-  if( (fNVars<2) && (fNVars>4) ) {
-    cerr << "ERROR in TKinematics::ReadFormatString(const TString):\n"
-	 << "Format string should provide 2, 3 or 4 independent variables: "
-	 << "\"var1:var2[:var3[:var4]]\""  << "\"\n";
-    assert( (fNVars>=2) && (fNVars<=4) );
+  // (until 2026-11 this read (fNVars<2) && (fNVars>4), which is never true, and stopped with an
+  // assert, which does nothing in release builds)
+  if( (nvars<2) || (nvars>4) ) {
+    delete listOfTokens;
+    throw std::invalid_argument(std::string("TKinematics::ReadFormatString: format string '")
+                                + format.Data() + "' should provide 2, 3 or 4 independent variables: "
+                                + "\"var1:var2[:var3[:var4]]\"");
   }
+  fNVars = nvars;
 
   // allocate memory for fFormat and fVar
   if(!fFormat) fFormat = new char[100];
