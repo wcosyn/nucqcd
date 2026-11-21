@@ -102,7 +102,8 @@ if(PARTONS_ENABLED)
     ${PARTONS_LIBRARIES} ${NumA++_LIBRARIES} ${ElementaryUtils_LIBRARIES} sfml-system)
 endif()
 
-find_package(Doxygen)
+# Doxygen (optional, for 'make doc'); Graphviz's dot (optional) adds the class and include graphs
+find_package(Doxygen OPTIONAL_COMPONENTS dot)
 
 # ---- the code ----------------------------------------------------------------------------------
 include(cmake/NucQCD.cmake)
@@ -121,6 +122,14 @@ if(BUILD_TESTING)
 endif()
 
 if(DOXYGEN_FOUND)
+  if(TARGET Doxygen::dot)
+    set(NUCQCD_DOXYGEN_HAVE_DOT YES)
+    get_filename_component(DOXYGEN_DOT_PATH "${DOXYGEN_DOT_EXECUTABLE}" DIRECTORY)
+  else()
+    set(NUCQCD_DOXYGEN_HAVE_DOT NO)
+    set(DOXYGEN_DOT_PATH "")
+    message(STATUS "Graphviz (dot) not found: 'make doc' will not draw class and include graphs")
+  endif()
   configure_file(cmake/doxygen/Doxyfile.in "${PROJECT_BINARY_DIR}/Doxyfile" @ONLY)
   add_custom_target(doc
     COMMAND ${DOXYGEN_EXECUTABLE} "${PROJECT_BINARY_DIR}/Doxyfile"

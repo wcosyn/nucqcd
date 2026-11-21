@@ -194,6 +194,8 @@ one commit per bug; no `[known-bug]` tests remain.
   The Fortran in `DIS/evolution` has `!$omp` directives but was never built with OpenMP.
 - [x] **Doxygen:** `EXTRACT_ALL` is off, so `WARN_IF_UNDOCUMENTED` reports the gaps, written to
   `build/doxygen_warnings.log` by `make doc`. Undocumented entities are no longer in the output.
+  The Doxyfile template was upgraded with `doxygen -u` (Doxygen 1.15; no more obsolete-tag warnings),
+  and CMake sets `HAVE_DOT` only when Graphviz's `dot` is found.
 - [ ] **Doxygen gaps:** with `EXTRACT_ALL` off there are about 1400 warnings, about 1300 of them
   undocumented members, mostly in `Tools` (`TKinematics2to3.h` alone has 300). About 80 are real doc
   errors that were already there: `\param` names that do not match the arguments, unclosed `\f$`
