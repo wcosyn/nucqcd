@@ -8,6 +8,12 @@
 #include <AuxFunction.hpp>
 using namespace std;
 
+// Settings of the 2D FSI integrals (cube_adaptive). With PREC (1e-4) and at most 2000 evaluations
+// every integral hit the evaluation cap, so results were only accurate to ~1e-4 and depended on the
+// CPU (rounding). With these settings the error is <~1e-6 at the cost of ~13x more time (2026-11).
+static const double FSI_EPSREL=1.E-06;
+static const double FSI_MAXEVAL=2.E04;
+
 DeuteronMomDistr::DeuteronMomDistr(std::string name, double mass, int offshells, double sigmain, double betain, double epsilonin,
   double betaoffin, double lambdain, int loop_limit):
 wfname(name),
@@ -282,7 +288,7 @@ double DeuteronMomDistr::getMomDistrfsi(TKinematics2to2 &kin, double phi){
       int res=90;
       unsigned count=0;
     //     res = numint::cube_romb(mdf,lower,upper,1.E-08,PREC,ret,count,0);
-      res = numint::cube_adaptive(mdf,lower,upper,1.E-08,PREC,1E02,2E03,ret,count,0);
+      res = numint::cube_adaptive(mdf,lower,upper,1.E-08,FSI_EPSREL,1E02,FSI_MAXEVAL,ret,count,0);
       result=ret[0];
 //       rombergerN(this,&DeuteronMomDistr::totdens_qt,0.,1.E03,1,&result,PREC,3,10,&qestimate, 
 // 				  &kin,M,spinr, Er,phi,&thestimate);
@@ -331,7 +337,7 @@ double DeuteronMomDistr::getMomDistr_y_fsi(TKinematics2to2 &kin, double phi){
       int res=90;
       unsigned count=0;
     //     res = numint::cube_romb(mdf,lower,upper,1.E-08,PREC,ret,count,0);
-      res = numint::cube_adaptive(mdf,lower,upper,1.E-08,PREC,1E02,2E03,ret,count,0);
+      res = numint::cube_adaptive(mdf,lower,upper,1.E-08,FSI_EPSREL,1E02,FSI_MAXEVAL,ret,count,0);
       result=ret[0];
 //       rombergerN(this,&DeuteronMomDistr::totdens_qt,0.,1.E03,1,&result,PREC,3,10,&qestimate, 
 // 				  &kin,M,spinr, Er,phi,&thestimate);
@@ -371,7 +377,7 @@ double DeuteronMomDistr::getMomDistrfsiLC(LightConeKin2to2 &kin){
       int res=90;
       unsigned count=0;
     //     res = numint::cube_romb(mdf,lower,upper,1.E-08,PREC,ret,count,0);
-      res = numint::cube_adaptive(mdf,lower,upper,1.E-08,PREC,1E02,2E03,ret,count,0);
+      res = numint::cube_adaptive(mdf,lower,upper,1.E-08,FSI_EPSREL,1E02,FSI_MAXEVAL,ret,count,0);
       result=ret[0];
 //       rombergerN(this,&DeuteronMomDistr::totdens_qt,0.,1.E03,1,&result,PREC,3,10,&qestimate, 
 // 				  &kin,M,spinr, Er,phi,&thestimate);
@@ -416,7 +422,7 @@ double DeuteronMomDistr::getAzzDistrfsi(TKinematics2to2 &kin, double phi){
       int res=90;
       unsigned count=0;
     //     res = numint::cube_romb(mdf,lower,upper,1.E-08,PREC,ret,count,0);
-      res = numint::cube_adaptive(mdf,lower,upper,1.E-08,PREC,1E02,2E03,ret,count,0);
+      res = numint::cube_adaptive(mdf,lower,upper,1.E-08,FSI_EPSREL,1E02,FSI_MAXEVAL,ret,count,0);
       result=ret[0];
 //       rombergerN(this,&DeuteronMomDistr::totdens_qt,0.,1.E03,1,&result,PREC,3,10,&qestimate, 
 // 				  &kin,M,spinr, Er,phi,&thestimate);

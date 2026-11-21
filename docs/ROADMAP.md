@@ -154,6 +154,24 @@ one commit per bug; no `[known-bug]` tests remain.
   `NuclStructure` still passed Q² instead of Q to MSTW (fixed in `NucleonStructure` in 2016,
   `2e05c63`), and that its copy constructor and assignment left the MSTW pointer uninitialized. Both
   are fixed. Merging the two classes is part of step 6.
+  **Impact:** only results computed with the `"MSTW"` option through `NuclStructure` were affected;
+  SLAC, CB, Alekhin and the other options were not. No program has `"MSTW"` in its code. The b1
+  programs (`b1_calc`, `b1_calc_comp`) use `NucleonStructure`, so they were correct. The programs that
+  take the structure-function name from the command line and pass it to `NuclStructure` are
+  `deepsdis/bonus_F2nfit_allangles` (through `DeuteronCross`), the `incldis` programs (through
+  `InclusiveCross` or directly), `threeres` and `increstest`, and `poldeut` (through `Poldeut`). To
+  the author's knowledge, none of them was run with MSTW for published results.
+- [x] **FSI integrals in `DeuteronMomDistr` were not converged.** The four 2D `cube_adaptive` FSI
+  integrals (used by `DeuteronCross`) asked for `PREC` = 1e-4 with at most 2000 evaluations, and every
+  call hit that cap. The results were accurate only to ~1e-5–1e-4 (worst for the `sigmaparam` FSI
+  value) and depended on the CPU, so `reg_deuteron_tagged` failed on a second machine. They now use
+  relative precision 1e-6 with at most 2e4 evaluations (error <~1e-6, about 13× slower); the FSI
+  references moved by up to 1e-4 and were re-baselined, with a test tolerance of 5e-6. Published
+  DEEPS/BONuS results were affected only at the 1e-4 level.
+- [x] **Tests used installed libraries.** `CMAKE_BUILD_WITH_INSTALL_RPATH` gave the libraries in
+  `build/lib` the RUNPATH `<repo>/lib`, so a test loaded e.g. `libDIS` from the build tree but its
+  dependencies `libKnockout` and `libGlauber` from the last `make install`. Libraries now use a
+  build-tree RPATH; `make install` still sets `<repo>/lib`.
 - [x] **`progs/deepsdis/b1_calc.cpp` Azz angular factor:** the longitudinal tensor term used
   `1/4 + 3/4 cos θq` instead of d²₀₀(θq) = `1/4 + 3/4 cos 2θq` (the integrand `res[10]` already used
   `cos 2θq`). Fixed in PR #5. Found while reviewing the archived `Alan` branch, which had the same fix.
