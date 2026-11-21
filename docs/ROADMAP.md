@@ -22,8 +22,8 @@ same PR.
 | 1 | Test suite | ✅ done (PR #2) |
 | 2 | Repo hygiene, including branches | ✅ done (PR #4) |
 | 3 | Rename the repository | ✅ done (PR #7, tagged-poldeut PRs #1 and #2) |
-| 4 | Bug fixes | 🔶 listed bugs fixed (PRs #8, #9); He3 normalization to check |
-| 5 | Low-risk modernization | 🔶 `-fopenmp` and Doxygen done |
+| 4 | Bug fixes | 🔶 listed bugs fixed (PRs #8, #9); open: He3 normalization, `TKinematics` format check |
+| 5 | Low-risk modernization | 🔶 `-fopenmp`, Doxygen and Fortran interop done |
 | 6 | Structural refactors | ⬜ |
 | 7 | Unbundle Cuba | ⬜ (can be done any time after step 2) |
 | 8 | Repository README | ⬜ (last) |
@@ -122,6 +122,9 @@ one commit per bug; no `[known-bug]` tests remain.
   `OPEN`. `readwave` also frees its module arrays first, so a wave function can be read twice in one
   process (`He3Cross` for proton and then neutron crashed on the second read). The `He3Cross` test is
   now a regular regression test.
+- [ ] **`TKinematics::ReadFormatString` never rejects a bad number of variables:** the check
+  `(fNVars<2) && (fNVars>4)` is always false (it should be `||`), so format strings with 1 or more
+  than 4 variables are not caught. Found during step 5.
 - [ ] **He3 normalization (lead).** A 6D Vegas integral of Σ|ψ|² d³p₁d³p₂ of `He3wf("AV18")` gave
   0.918 ± 0.007 (Vegas did not reach its target precision), not 1. Check this with a better integral
   (Jacobi coordinates p₁₂, p₃, as used inside `getwavemod_tm.f`) before trusting He3 results. The
@@ -188,8 +191,15 @@ one commit per bug; no `[known-bug]` tests remain.
   - Make the grid cache directory configurable independently of the input directory.
   - Revisit the cache key: the momentum is rounded to 10 MeV (`Glauber/AbstractFsiGrid.cpp:262`).
   - Make cache writes atomic.
-- [ ] **Fortran interop:** stop filling COMMON blocks with `strcpy` into fixed 128-byte buffers
-  (`Tools/NuclStructure.cpp`). Use `ISO_C_BINDING` and bounded copies.
+- [x] **Fortran interop:** file names reached Fortran through unbounded `strcpy`/`strcat` into fixed
+  buffers: the 128-character COMMON block strings of the Alekhin and GRSV code (in both
+  `NuclStructure` and `NucleonStructure`) and the 256-character He3 file name. A path longer than the
+  buffer overwrote memory silently. `Tools/FortranString.hpp` now provides bounded copies that throw
+  `std::length_error`: `to_fortran_string` (blank-padded, no NUL, as Fortran expects) and
+  `to_c_string` (for the `bind(C)` He3 buffer). `TKinematics::ReadFormatString` checks the length
+  of the format string against its 100-character buffer. The COMMON blocks were kept: moving them to
+  `ISO_C_BINDING` would mean rewriting the third-party Fortran, since interoperable strings must be
+  arrays of single characters. `unit_fortran_string` tests the copies and the length checks.
 - [x] **`-fopenmp`:** removed. No C/C++ code contains OpenMP directives, so the flag had no effect.
   The Fortran in `DIS/evolution` has `!$omp` directives but was never built with OpenMP.
 - [x] **Doxygen:** `EXTRACT_ALL` is off, so `WARN_IF_UNDOCUMENTED` reports the gaps, written to
@@ -203,7 +213,9 @@ one commit per bug; no `[known-bug]` tests remain.
   document the classes that programs use. The gaps are also a good task for Claude, one class or library per PR:
   it can write the missing comments from the code and the existing docs, and the warning log shows
   when a class is done. Units, conventions and physics meaning still need the author's review,
-  because the code often does not state them. Also replace the Doxygen main page, which is still
+  because the code often does not state them. Where known, cite in each class the paper or note it
+  implements; candidates come from `manual/manual.tex`, references already in the code comments
+  and the author's publication list, each marked for the author to confirm. Also replace the Doxygen main page, which is still
   titled "Glauber ISI/FSI RMSGA C++ Project" and shares its comment with the Glauber group
   (`Glauber/AbstractFsiGrid.hpp`), together with the README (step 8).
 

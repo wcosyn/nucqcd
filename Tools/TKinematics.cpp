@@ -63,6 +63,8 @@
 // #include <numtoa.h>
 #include <vector>
 #include <cassert>
+#include <stdexcept>
+#include <string>
 
 using std::sqrt;
 using std::cout;
@@ -651,6 +653,11 @@ void TKinematics::ReadFormatString(const TString format)
   // to the 2, 3 or 4 independent kinematical points as specified
   // by the user.
   // Check that the choosen variables make sense.
+
+  // fFormat holds at most 99 characters plus the terminating NUL (see below)
+  if( format.Length() >= 100 )
+    throw std::length_error(std::string("TKinematics::ReadFormatString: format string '")
+                            + format.Data() + "' is longer than 99 characters");
 
   // Tokenize the format string
   TObjArray *listOfTokens = format.Tokenize(":");

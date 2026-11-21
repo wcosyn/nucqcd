@@ -1,4 +1,5 @@
 #include "NuclStructure.hpp"
+#include "FortranString.hpp"
 #include "constants.hpp"
 #include <iostream>
 #include <cmath>
@@ -175,11 +176,9 @@ void NuclStructure::getF_Alekhin(double &F1, double &F2){
     F2=0.;
     return;
   }
-  strcpy(dir_.homedir,dir.c_str());
-  strcpy(dir_.a09file1,dir.c_str());
-  strcpy(dir_.a09file2,dir.c_str());
-  strcat(dir_.a09file1,"/alekhin/a09.sfs_lNNC");
-  strcat(dir_.a09file2,"/alekhin/a09.dsfs_lNNC");
+  nucqcd::to_fortran_string(dir_.homedir,dir);
+  nucqcd::to_fortran_string(dir_.a09file1,dir+"/alekhin/a09.sfs_lNNC");
+  nucqcd::to_fortran_string(dir_.a09file2,dir+"/alekhin/a09.dsfs_lNNC");
   //cout <<dir_.a09file1 << endl;
   int ONE=1;
   int ZERO=0;
@@ -461,8 +460,7 @@ label2:
 
 double NuclStructure::getG1_grsv2000(bool proton, double x, double Q2){
   
-  strcpy(grsvdir_.fileslo,HOMEDIR);
-  strcat(grsvdir_.fileslo,"/grsv/std2000_lo_g1.grid");
+  nucqcd::to_fortran_string(grsvdir_.fileslo,std::string(HOMEDIR)+"/grsv/std2000_lo_g1.grid");
   if(intini_.iini!=1) intini_.iini=0;
   int iset=3;
   double dummy,g1p,g1n;
