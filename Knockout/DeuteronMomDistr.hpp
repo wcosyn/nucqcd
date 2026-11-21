@@ -16,7 +16,16 @@
 #include <numint/numint.hpp>
 #include <LightConeKin2to2.hpp>
 
-/*! \brief Has methods to compute a ton of deuteron momentum distributions (distorted too) */
+/*! \brief Has methods to compute a ton of deuteron momentum distributions (distorted too)
+ *
+ * \note The distorted (FSI) distributions getMomDistrfsi(), getMomDistr_y_fsi(), getMomDistrfsiLC()
+ * and getAzzDistrfsi() each compute a 2D adaptive integral (numint::cube_adaptive) over the
+ * transverse momentum transfer, per deuteron and spectator spin projection, with relative precision
+ * 1e-6 and at most 2e4 evaluations (FSI_EPSREL and FSI_MAXEVAL in DeuteronMomDistr.cpp). Until
+ * 2026-11 they used PREC (1e-4) and at most 2000 evaluations; every integral then stopped at the
+ * evaluation cap, so the results were accurate only to about 1e-5 to 1e-4 and depended on the CPU.
+ * The new settings are about 13 times slower.
+ */
 class DeuteronMomDistr{
   
 public:

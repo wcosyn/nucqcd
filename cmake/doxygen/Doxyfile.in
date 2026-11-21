@@ -398,7 +398,9 @@ LOOKUP_CACHE_SIZE      = 0
 # normally produced when WARNINGS is set to YES.
 # The default value is: NO.
 
-EXTRACT_ALL            = YES
+# NO (2026-11): undocumented entities are left out of the output, and WARN_IF_UNDOCUMENTED
+# lists them in WARN_LOGFILE, so the documentation gaps are visible.
+EXTRACT_ALL            = NO
 
 # If the EXTRACT_PRIVATE tag is set to YES all private members of a class will
 # be included in the documentation.
@@ -731,7 +733,7 @@ WARN_FORMAT            = "$file:$line: $text"
 # messages should be written. If left blank the output is written to standard
 # error (stderr).
 
-WARN_LOGFILE           =
+WARN_LOGFILE           = @PROJECT_BINARY_DIR@/doxygen_warnings.log
 
 #---------------------------------------------------------------------------
 # Configuration options related to the input files
