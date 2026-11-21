@@ -48,10 +48,10 @@ set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
 set(NUCQCD_RELEASE_FLAGS)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   set(NUCQCD_RELEASE_FLAGS -O3 -march=native -mtune=native -pipe)
-  # -fopenmp only for C/C++ (which contain no OpenMP directives, as before). The Fortran in
-  # DIS/evolution does contain !$omp directives but was always built without OpenMP; enabling
-  # it there would also need OpenMP at link time (find_package(OpenMP), OpenMP::OpenMP_Fortran).
-  add_compile_options("$<$<AND:$<CONFIG:Release>,$<COMPILE_LANGUAGE:C,CXX>>:-fopenmp>")
+  # No OpenMP: the C/C++ code contains no OpenMP directives (-fopenmp was passed until 2026-11
+  # without effect). The Fortran in DIS/evolution does contain !$omp directives but was always
+  # built without OpenMP; enabling it there would also need OpenMP at link time
+  # (find_package(OpenMP), OpenMP::OpenMP_Fortran).
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")     # classic icpc
   set(NUCQCD_RELEASE_FLAGS -O3 -shared-intel -fp-model source -unroll -pthread -ipo -xavx)
   if(MPI_ENABLED)
