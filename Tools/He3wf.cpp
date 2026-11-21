@@ -1,4 +1,5 @@
 #include "He3wf.hpp"
+#include "FortranString.hpp"
 #include <iostream>
 #include <cmath>
 #include <cstdarg>
@@ -46,16 +47,16 @@ extern"C"{
 He3wf::He3wf(string wf_name,string dir):mA_set(-1){
   int usecdep=0;
   if(abs(mA_set)!=1) { cerr << "invalid he3 spin value" << endl; assert(1==0);}
-  char *copy = new char[256];
-  if(!wf_name.compare("AV18")) strcpy(he3filename,(dir+"/he_3.av18.form").c_str());
-  else if(!wf_name.compare("AV18-UIX")) strcpy(he3filename,(dir+"/he_3.av18+urb-ix.jmax=6.esuche.cdep_app.fad.c.form").c_str());
-  else if(!wf_name.compare("AV18-TML")) strcpy(he3filename,(dir+"/he_3.av18+tml5156.jmax=6.esuche.cdep_app.fad.c.form").c_str());
-  else if(!wf_name.compare("CDBonn")) strcpy(he3filename,(dir+"/he_3.cdbonn.jmax=6.esuche.cdep_app.fad.form").c_str());
-  else if(!wf_name.compare("CDBonn-TML")) strcpy(he3filename,(dir+"/he_3.cdbonn+tml4784.jmax=6.esuche.cdep_app.fad.form").c_str());
+  string file;
+  if(!wf_name.compare("AV18")) file="/he_3.av18.form";
+  else if(!wf_name.compare("AV18-UIX")) file="/he_3.av18+urb-ix.jmax=6.esuche.cdep_app.fad.c.form";
+  else if(!wf_name.compare("AV18-TML")) file="/he_3.av18+tml5156.jmax=6.esuche.cdep_app.fad.c.form";
+  else if(!wf_name.compare("CDBonn")) file="/he_3.cdbonn.jmax=6.esuche.cdep_app.fad.form";
+  else if(!wf_name.compare("CDBonn-TML")) file="/he_3.cdbonn+tml4784.jmax=6.esuche.cdep_app.fad.form";
   else { cerr << "invalid name for he3 parametrisation function" << endl; assert(1==0);}
+  nucqcd::to_c_string(he3filename,dir+file);
   readhe3wave(&mA_set,&usecdep);
   he3reset(&mA_set,&usecdep);
-  delete []copy;
   
   return;
 
