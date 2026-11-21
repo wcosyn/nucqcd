@@ -55,7 +55,10 @@ function(nucqcd_add_library name)
   add_library(${name} SHARED ${ARG_SOURCES})
   target_include_directories(${name} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
   target_link_libraries(${name} PUBLIC ${ARG_LINK})
-  set_target_properties(${name} PROPERTIES VERSION 1.0.0 SOVERSION 1)
+  # In the build tree a library must find its dependencies in build/lib, not the installed copies
+  # in <prefix>/lib (otherwise the tests load stale libraries until 'make install'); 'make install'
+  # replaces this RPATH with CMAKE_INSTALL_RPATH.
+  set_target_properties(${name} PROPERTIES VERSION 1.0.0 SOVERSION 1 BUILD_WITH_INSTALL_RPATH OFF)
   if(ARG_LINKDEFS)
     nucqcd_root_dictionary(${name} ${ARG_LINKDEFS})
   endif()
