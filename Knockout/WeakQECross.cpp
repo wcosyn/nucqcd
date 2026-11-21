@@ -636,6 +636,8 @@ double WeakQECross::getDiffWeakQECross(TKinematics2to2 &kin, int current, int th
   }  
   //NC
   else{
+     //NOTE: the NC cross section has not been used in any calculation yet and is untested (it segfaulted
+     //until 2026-11); compare with a published NC result before using it.
      //same normalization as the CC branch: G_F^2 E'^2 cos^2(theta/2)/(2 pi^2), the NC form factors
      //(NucleonWeakOperator) carry the factors 1/2 of the Z coupling
      double mott=(1.+electron->GetCosScatterAngle(kin))*

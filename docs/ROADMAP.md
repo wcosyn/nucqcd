@@ -134,7 +134,8 @@ one commit per bug; no `[known-bug]` tests remain.
   The prefactor was also a factor 2 larger than the CC one, although both currents use the same
   G_F/√2 normalization (the NC form factors carry the ½ of the Z coupling); with that fixed, NC/CC ≈ 0.24
   at the test kinematics, as expected. The NC branch was marked "still to be implemented" and had
-  never been validated, so compare with a published NC calculation before using it.
+  never been validated: the NC cross section has not been used in any calculation yet, so it is
+  untested. Compare with a published NC calculation before using it (a note says so in the code).
 - [x] **Constants in `Tools/constants.hpp.in`:** `M_Z` was 10× too large, `MASSn_G` was in MeV,
   `INVHBARC` was 1/197.328 while `HBARC` is 197.327 (`He3wf.cpp` had its own copy), the proton and
   neutron doc comments were swapped, and `M_P`/`M_N`/`M_NUCL` are now aliases of `MASSP`/`MASSN`/`MASSn`
@@ -205,8 +206,10 @@ This is a build-system change only, and the `unit_cuba` tests verify it.
 - [ ] CMake first looks for an installed Cuba (in `CUBA_ROOT`, `~/.local` or the system). If none is
   found, it downloads the release tarball via `ExternalProject` (URL and SHA256 pinned) and builds
   it with the current workarounds (`-std=gnu17`, serial `make`).
-- [ ] The bundled Cuba 4.2.1 carries a patch to `src/suave/Fluct.c` (`MaxL` → `MinL`, step 4). Check
-  whether the release you pin has the fix, or apply the patch in the `ExternalProject` (`PATCH_COMMAND`).
+- [ ] The bundled Cuba 4.2.1 carries a patch to `src/suave/Fluct.c` (`MaxL` → `MinL`, step 4). The
+  latest release, 4.2.2, still has the bug (checked 2026-11-21), so keep the patch as a file in the repo
+  and apply it in the `ExternalProject` (`PATCH_COMMAND`) and in any install script. A system Cuba
+  cannot be patched; consider reporting the bug upstream.
   `unit_cuba` tests Suave with a small flatness, so it catches this.
 - [ ] Keep the `cuba` INTERFACE target name, so nothing that links against it changes. Pin Cuba 4.2.x,
   because the `numint` wrappers rely on the 4.2 API.
