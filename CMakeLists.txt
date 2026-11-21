@@ -48,10 +48,10 @@ set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
 set(NUCQCD_RELEASE_FLAGS)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   set(NUCQCD_RELEASE_FLAGS -O3 -march=native -mtune=native -pipe)
-  # -fopenmp only for C/C++ (which contain no OpenMP directives, as before). The Fortran in
-  # DIS/evolution does contain !$omp directives but was always built without OpenMP; enabling
-  # it there would also need OpenMP at link time (find_package(OpenMP), OpenMP::OpenMP_Fortran).
-  add_compile_options("$<$<AND:$<CONFIG:Release>,$<COMPILE_LANGUAGE:C,CXX>>:-fopenmp>")
+  # No OpenMP: the C/C++ code contains no OpenMP directives (-fopenmp was passed until 2026-11
+  # without effect). The Fortran in DIS/evolution does contain !$omp directives but was always
+  # built without OpenMP; enabling it there would also need OpenMP at link time
+  # (find_package(OpenMP), OpenMP::OpenMP_Fortran).
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")     # classic icpc
   set(NUCQCD_RELEASE_FLAGS -O3 -shared-intel -fp-model source -unroll -pthread -ipo -xavx)
   if(MPI_ENABLED)
@@ -102,7 +102,8 @@ if(PARTONS_ENABLED)
     ${PARTONS_LIBRARIES} ${NumA++_LIBRARIES} ${ElementaryUtils_LIBRARIES} sfml-system)
 endif()
 
-find_package(Doxygen)
+# Doxygen (optional, for 'make doc'); Graphviz's dot (optional) adds the class and include graphs
+find_package(Doxygen OPTIONAL_COMPONENTS dot)
 
 # ---- the code ----------------------------------------------------------------------------------
 include(cmake/NucQCD.cmake)
@@ -121,6 +122,14 @@ if(BUILD_TESTING)
 endif()
 
 if(DOXYGEN_FOUND)
+  if(TARGET Doxygen::dot)
+    set(NUCQCD_DOXYGEN_HAVE_DOT YES)
+    get_filename_component(DOXYGEN_DOT_PATH "${DOXYGEN_DOT_EXECUTABLE}" DIRECTORY)
+  else()
+    set(NUCQCD_DOXYGEN_HAVE_DOT NO)
+    set(DOXYGEN_DOT_PATH "")
+    message(STATUS "Graphviz (dot) not found: 'make doc' will not draw class and include graphs")
+  endif()
   configure_file(cmake/doxygen/Doxyfile.in "${PROJECT_BINARY_DIR}/Doxyfile" @ONLY)
   add_custom_target(doc
     COMMAND ${DOXYGEN_EXECUTABLE} "${PROJECT_BINARY_DIR}/Doxyfile"
