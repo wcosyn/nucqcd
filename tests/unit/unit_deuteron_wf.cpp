@@ -129,3 +129,29 @@ TEST_CASE("Clebsch-Gordan coefficients and spherical harmonics", "[deuteron]") {
   CHECK_THAT(std::abs(WF::SphericalHarmonic(2, 2, th, ph)),
              WithinRel(0.25 * std::sqrt(15. / (2. * PI)) * std::pow(std::sin(th), 2), 1e-13));
 }
+
+TEST_CASE("D-wave conventions: sign of w(r) and W(p), and the Bessel transform between them", "[deuteron]") {
+  // documented in TDeuteron::Wavefunction: u and w have the same sign at large r, W(p) > 0 at low p,
+  // and U, W are the plain Bessel transforms (no factor (-i)^L, which DeuteronPState adds itself)
+  for (const std::string name : {"Paris", "AV18", "CDBonn"}) {
+    auto wf = make_wf(name);
+    CHECK(wf->GetUr(3.) > 0.);
+    CHECK(wf->GetWr(3.) > 0.);
+    CHECK(wf->GetWp(100.) > 0.);
+    for (double p : {50., 150., 300.}) {
+      const double k = p / HBARC;
+      const double f = std::sqrt(2. / PI) / std::pow(HBARC, 1.5);
+      const double U = f * simpson([&](double r) { return wf->GetUr(r) * std::sph_bessel(0, k * r) * r; }, 0., 40., 40000);
+      const double W = f * simpson([&](double r) { return wf->GetWr(r) * std::sph_bessel(2, k * r) * r; }, 0., 40., 40000);
+      CHECK_THAT(U, WithinRel(wf->GetUp(p), 2e-3));
+      CHECK_THAT(W, WithinRel(wf->GetWp(p), 2e-3));
+    }
+    // DeuteronPState: the D wave enters with a minus sign, DeuteronRState with a plus sign
+    // (M=0, both spins up is pure D wave with m_L=-1)
+    const TVector3 dir(std::sin(1.) * std::cos(2.), std::sin(1.) * std::sin(2.), std::cos(1.));
+    const std::complex<double> Y2m1 = TDeuteron::Wavefunction::SphericalHarmonicCos(2, -1, std::cos(1.), 2.);
+    const double cg = TDeuteron::Wavefunction::ClebschGordan(4, -2, 2, 2, 2, 0);
+    CHECK(std::abs(wf->DeuteronPState(0, 1, 1, 150. * dir) - (-wf->GetWp(150.) * cg * Y2m1)) < 1e-12 * wf->GetWp(150.));
+    CHECK(std::abs(wf->DeuteronRState(0, 1, 1, 2. * dir) - (wf->GetWr(2.) * cg * Y2m1)) < 1e-12 * wf->GetWr(2.));
+  }
+}
