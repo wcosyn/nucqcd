@@ -122,14 +122,14 @@ public:
   int getIntegrator() const{return integrator;} /*!< choice of integrator */
   bool getEnable_ROMEA() const{return enable_ROMEA;} /*!< ROMEA instead of Glauber FSI for slow nucleons */
   MeanFieldNucleusThick* getPnucleus() {return pnucl;} /*!< the nucleus */
-  const Matrix<1,4> & getBarcontract0up() const{return barcontract0up;} /*!< bar spinor of the outgoing nucleon (spin up) contracted with the current, photon polarization longitudinal (0) */
-  const Matrix<1,4> & getBarcontractminup() const{return barcontractminup;} /*!< bar spinor of the outgoing nucleon (spin up) contracted with the current, photon polarization transverse - */
-  const Matrix<1,4> & getBarcontractplusup() const{return barcontractplusup;} /*!< bar spinor of the outgoing nucleon (spin up) contracted with the current, photon polarization transverse + */
-  const Matrix<1,4> & getBarcontractzup() const{return barcontractzup;} /*!< bar spinor of the outgoing nucleon (spin up) contracted with the current, photon polarization z */
-  const Matrix<1,4> & getBarcontract0down() const{return barcontract0down;} /*!< bar spinor of the outgoing nucleon (spin down) contracted with the current, photon polarization longitudinal (0) */
-  const Matrix<1,4> & getBarcontractmindown() const{return barcontractmindown;} /*!< bar spinor of the outgoing nucleon (spin down) contracted with the current, photon polarization transverse - */
-  const Matrix<1,4> & getBarcontractplusdown() const{return barcontractplusdown;} /*!< bar spinor of the outgoing nucleon (spin down) contracted with the current, photon polarization transverse + */
-  const Matrix<1,4> & getBarcontractzdown() const{return barcontractzdown;} /*!< bar spinor of the outgoing nucleon (spin down) contracted with the current, photon polarization z */
+  const Matrix<1,4> & getBarcontract0up() const{return barcontract0up;} /*!< bar spinor of the outgoing nucleon (spin up) contracted with the current, polarization vector (1,0,0,0): time component J^0 */
+  const Matrix<1,4> & getBarcontractminup() const{return barcontractminup;} /*!< bar spinor of the outgoing nucleon (spin up) contracted with the current, transverse polarization, helicity -1 with respect to q */
+  const Matrix<1,4> & getBarcontractplusup() const{return barcontractplusup;} /*!< bar spinor of the outgoing nucleon (spin up) contracted with the current, transverse polarization, helicity +1 with respect to q */
+  const Matrix<1,4> & getBarcontractzup() const{return barcontractzup;} /*!< bar spinor of the outgoing nucleon (spin up) contracted with the current, spatial component J^z along q */
+  const Matrix<1,4> & getBarcontract0down() const{return barcontract0down;} /*!< bar spinor of the outgoing nucleon (spin down) contracted with the current, polarization vector (1,0,0,0): time component J^0 */
+  const Matrix<1,4> & getBarcontractmindown() const{return barcontractmindown;} /*!< bar spinor of the outgoing nucleon (spin down) contracted with the current, transverse polarization, helicity -1 with respect to q */
+  const Matrix<1,4> & getBarcontractplusdown() const{return barcontractplusdown;} /*!< bar spinor of the outgoing nucleon (spin down) contracted with the current, transverse polarization, helicity +1 with respect to q */
+  const Matrix<1,4> & getBarcontractzdown() const{return barcontractzdown;} /*!< bar spinor of the outgoing nucleon (spin down) contracted with the current, spatial component J^z along q */
   const Matrix<1,4> & getBarcontract() const{return barcontract;} /*!< contraction of the outgoing-nucleon bar spinor with the current (the last one computed) */
   const NucleonWeakOperator & getJ() const{return *J;} /*!< nucleon current operator of the current calculation */
   TVector3 & getPm() {return pm;} /*!< [MeV] missing momentum of the current calculation */
@@ -209,10 +209,10 @@ private:
     FourVector<double> q; /*!< [MeV] four-momentum of the virtual boson */
     FourVector<double> pi; /*!< [MeV] four-momentum of the initial nucleon */
     FourVector<double> pf; /*!< [MeV] four-momentum of the outgoing nucleon */
-    FourVector<std::complex<double> > polmin; /*!< polarization four-vector of the virtual boson, transverse - */
-    FourVector<std::complex<double> > polplus; /*!< polarization four-vector of the virtual boson, transverse + */
-    FourVector<std::complex<double> > pol0; /*!< polarization four-vector of the virtual boson, longitudinal (0) */
-    FourVector<std::complex<double> > polz; /*!< polarization four-vector of the virtual boson, z */
+    FourVector<std::complex<double> > polmin; /*!< polarization four-vector of the virtual boson, transverse, helicity -1 with respect to q */
+    FourVector<std::complex<double> > polplus; /*!< polarization four-vector of the virtual boson, transverse, helicity +1 with respect to q */
+    FourVector<std::complex<double> > pol0; /*!< polarization four-vector (1,0,0,0) of the virtual boson: picks the time component J^0 */
+    FourVector<std::complex<double> > polz; /*!< unit vector along q: picks the spatial component J^z along q */
     int current; /*!<which current operator */
     
     /*! integrandum 
