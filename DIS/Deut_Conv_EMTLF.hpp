@@ -15,7 +15,11 @@
 
 /**
  * @brief Class implements deuteron LF EMT densities, see draft paper with Adam
- * 
+ *
+ * The light-front deuteron wave function is built from TDeuteron::Wavefunction::DeuteronPState
+ * (through the interpolated copy wf) with a Melosh rotation of the active nucleon (lf_deut), so it
+ * inherits the TDeuteron conventions: D wave with a minus sign, \f$ (-i)^2 W(k) \f$, with W(k) > 0 at
+ * low k (see TDeuteron::Wavefunction).
  */
 class Deut_Conv_EMTLF{
 
