@@ -65,13 +65,14 @@ nkt_mod(nkt_mod)
       break;
     case(3):
       //cout <<"pi-" << endl;
+    // isospin: pi- p = pi+ n and pi- n = pi+ p, so the proton and neutron tables are swapped
 //       setPionGlauberData(p,sigman,beta2n,epsilonn,sigmap,beta2p,epsilonp,dir);
-      sigmap = interpolate(sigmap_array,log10(p),0.01,151,250.);
-      beta2p = interpolate(beta2p_array,log10(p),0.01,151,250.);
-      epsilonp = interpolate(epsp_array,log10(p),0.01,151,250.);
-      sigman = interpolate(sigman_array,log10(p),0.01,151,250.);
-      beta2n = interpolate(beta2n_array,log10(p),0.01,151,250.);
-      epsilonn = interpolate(epsn_array,log10(p),0.01,151,250.);
+      sigmap = interpolate(sigman_array,log10(p),0.01,151,250.);
+      beta2p = interpolate(beta2n_array,log10(p),0.01,151,250.);
+      epsilonp = interpolate(epsn_array,log10(p),0.01,151,250.);
+      sigman = interpolate(sigmap_array,log10(p),0.01,151,250.);
+      beta2n = interpolate(beta2p_array,log10(p),0.01,151,250.);
+      epsilonn = interpolate(epsp_array,log10(p),0.01,151,250.);
       nkt_sq=0.35*0.35*4;
       lc=2*p*HBARC/0.7/1e06;
       mass = MASSPI;
@@ -833,12 +834,13 @@ void FastParticle::interpPionGlauberData(int particletype, double mom, double &s
     break;
   case(3):
     //cout <<"pi-" << endl;
-    sigmap = interpolate(sigmap_array,log10(mom),0.01,151,250.);
-    beta2p = interpolate(beta2p_array,log10(mom),0.01,151,250.);
-    epsilonp = interpolate(epsp_array,log10(mom),0.01,151,250.);
-    sigman = interpolate(sigman_array,log10(mom),0.01,151,250.);
-    beta2n = interpolate(beta2n_array,log10(mom),0.01,151,250.);
-    epsilonn = interpolate(epsn_array,log10(mom),0.01,151,250.);
+    // isospin: pi- p = pi+ n and pi- n = pi+ p, so the proton and neutron tables are swapped
+    sigmap = interpolate(sigman_array,log10(mom),0.01,151,250.);
+    beta2p = interpolate(beta2n_array,log10(mom),0.01,151,250.);
+    epsilonp = interpolate(epsn_array,log10(mom),0.01,151,250.);
+    sigman = interpolate(sigmap_array,log10(mom),0.01,151,250.);
+    beta2n = interpolate(beta2p_array,log10(mom),0.01,151,250.);
+    epsilonn = interpolate(epsp_array,log10(mom),0.01,151,250.);
     break;
   case(4):
     //cout <<"rho0" << endl;

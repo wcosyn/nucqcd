@@ -333,9 +333,9 @@ private:
   double nkt_mod; /*!< [] modification factor of initial CT sigma value (playing around with parameters) */
   /*! \name Pion-nucleon Glauber parameters
    * Tables for a pi+ scattering off a proton (p) or a neutron (n), on the grid log10(p/MeV) = 2.50,
-   * 2.51, ..., 4.00 (151 points, p from 316 MeV to 10 GeV), interpolated linearly. PI_MIN uses them
-   * in the same way as PI_PLUS, without swapping proton and neutron (see docs/ROADMAP.md, step 4);
-   * the rho0 and double-pion types use the average of the proton and neutron tables.
+   * 2.51, ..., 4.00 (151 points, p from 316 MeV to 10 GeV), interpolated linearly. For PI_MIN the
+   * proton and neutron tables are swapped (isospin: pi- p = pi+ n); the rho0 and double-pion types
+   * use the average of the proton and neutron tables.
    */
   ///@{
   static const double sigmap_array[]; /*!< [fm^2] total cross section sigma, pi+ p */
