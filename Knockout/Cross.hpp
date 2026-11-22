@@ -9,8 +9,6 @@
  * [DeuteronMomDistr] <BR>
  * - It has a class to compute amplitudes and cross sections for A(e,e'p) reactions <BR>
  * [Model, Cross] <BR>
- * - It has a class to computed amplitudes and cross sections for A(e,e'NN) reactions (WORK IN PROGRESS!) <BR>
- * [DoubleNModel, DoubleNCross] <BR>
  * - It has classes to compute rho production on a deuteron and a general nucleus <BR>
  * [RhoDeuteron, RhoTCross] <BR>
  * - It has classes to compute weak quasi-elastic knockout on a general nucleus <BR>

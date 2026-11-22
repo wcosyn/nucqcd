@@ -20,7 +20,7 @@
 #include <TKinematics2to3WithLabAngles.h>
 #include <NucleonEMOperator.hpp>
 #include <TVector3.h>
-#include <pair.h>
+#include "pair.h"
 
 #include <string>
 #include <cstdarg>

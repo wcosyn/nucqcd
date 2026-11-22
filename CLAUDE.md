@@ -50,7 +50,7 @@ Libraries build in this order, and each links against the ones before it:
 1. **Integrator** (`libIntegrator`): third-party integration code. `numint/` provides templated Romberg/trapezoid/Clenshaw-Curtis/Fubini routines. `adaptive/cubature.c` provides adaptive cubature. `numint/numint2Cuba.hpp` wraps the `numint::mdfunction` functors for Cuba.
 2. **Tools** (CMake project and library named **MePhys**, `libMePhys`): general physics and math. It includes four-vectors, gamma matrices and spinors, kinematics classes (`TKinematics2to2/2to3`, `TElectronKinematics`, `LightConeKin*`), deuteron wavefunctions (`TDeuteron` plus the `T*PWF` parametrizations), nucleon/nuclear structure functions and PDFs (MSTW, CTEQ, Alekhin, GRSV, mostly Fortran), and `He3wf`.
 3. **Glauber** (`libGlauber`): mean-field nuclei (`MeanFieldNucleus[Thick]`), nucleon EM and weak current operators, `FastParticle` (the ejected particle and its scattering parameters), and the FSI grid hierarchy described below.
-4. **Knockout** (`libKnockout`): quasi-elastic A(e,e'p), 2N knockout, rho/pion transparency, and neutrino QE cross sections. These are built on Glauber grids. `Model`/`Cross` form the main A(e,e'p) pair.
+4. **Knockout** (`libKnockout`): quasi-elastic A(e,e'p), rho/pion transparency, and neutrino QE cross sections. These are built on Glauber grids. `Model`/`Cross` form the main A(e,e'p) pair.
 5. **DIS** (`libDIS`): inclusive and tagged DIS on the deuteron and He3, the polarized deuteron (`Poldeut`), resonances, and the EMT light-front convolution. `DIS/evolution/` is a separate Fortran library, `libEvolution`, for QCD evolution.
 6. **GPD_Partons** (`libGPD`, optional): deuteron vector and transversity GPD convolutions that use PARTONS.
 
