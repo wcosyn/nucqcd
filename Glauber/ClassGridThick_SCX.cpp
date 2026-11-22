@@ -176,16 +176,17 @@ double ClassGridThick_SCX::getInterp(double x[],double& res,double& err){ // x i
     err =  bf_comp*( zf_comp*_errorGrid[bi][zi] + zf*_errorGrid[bi][zi+1] ) + bf*( zf_comp*_errorGrid[bi+1][zi] + zf*_errorGrid[bi+1][zi+1] );
 }
 
-/** integration struct **/
+/** integration struct: integrand of the density along z at impact parameter b **/
 struct F_SCX {
+	/** integrand: minus the density at r = sqrt(b^2+z^2) \param z [fm] \param param pointer to the F_SCX object */
 	static double exec(double z,void* param){
 		struct F_SCX p = *(struct F_SCX*) param;
 		double r = sqrt( p.b*p.b + z*z);
 		return -1.*p.densf(r,p.dens_param); // note the minus sign ;)
 	}
 	double (*densf)(double r,void* p); /**< density function to use **/
-	double b;
-    void* dens_param;
+	double b; /**< [fm] impact parameter */
+    void* dens_param; /**< parameters passed to the density function */
 };
 
 /**calculate the grid factors given (b,z) and density function densf

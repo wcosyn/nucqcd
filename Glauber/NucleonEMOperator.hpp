@@ -172,7 +172,7 @@ public:
 
 protected:
   bool proton; /*!< 1=proton, 0=neutron coupling */
-  int parametrization; /*!< 0=BBA, 1=dipole */
+  int parametrization; /*!< 0=BBA, 1=SLAC dipole, 2=J.J. Kelly, 3=BBBA */
   double Q2; /*!< [MeV^2] fourmomentum sq */
   int Q2index; /*!< used in medium modification, index in the grid in Q2 */
   double Q2_interp; /*!< interpolation variable for Q2 */
@@ -187,15 +187,15 @@ protected:
   
 private:
   
-  void setGE();
-  void setGM();
+  void setGE(); /*!< computes GE at Q^2 with the chosen parametrization */
+  void setGM(); /*!< computes GM at Q^2 with the chosen parametrization */
   /*! gives you a dipole form factor 
    * \param Q2 [MeV^2] fourmomentum sq
    * \return dipole form factor
    */
   double Get_Gdipole(const double Q2); 
-  void setF1();
-  void setF2();
+  void setF1(); /*!< computes F1 = (tau GM + GE)/(1+tau) */
+  void setF2(); /*!< computes kappa F2 = (GM - GE)/(1+tau) */
   
   
   

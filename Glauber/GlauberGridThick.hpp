@@ -204,7 +204,7 @@ private:
    * \param ap variable parameter list
    */
   void intGlauberPhi_bound_ct(const double phi, double *results, va_list ap);
-  double error;
+  double error; /*!< integration error estimate of the cubature integrators */
   /*! struct that is used for integrators (dirty ones)*/
   struct Ftor_all {
     /*! integrandum function */

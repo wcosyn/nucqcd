@@ -77,12 +77,15 @@ public:
   FastParticle(const FastParticle &Copy);
   ~FastParticle(); /*!< Destructor */
   FastParticle& operator=(const FastParticle&);/*!< assignment overloading */
+  /*! particle types: proton and neutron (elastic rescattering), pi+ and pi-, rho0 (and variants
+   * with modified CT parameters), double pion, and protons and neutrons with (semi-classical)
+   * single charge exchange */
   enum Particletype { P_EL=0    , N_EL=1, 
                       PI_PLUS=2 , PI_MIN=3, 
                       RHO0=4    , RHO0_MCT=5,
                       RHO0_LCT=6, DBL_PI=7,
                       P_SCX=8   ,N_SCX=9,
-                      P_CLASS_SCX=10, N_CLASS_SCX=11 }; /*!< enum for particle types so that everythin a bit more readable */
+                      P_CLASS_SCX=10, N_CLASS_SCX=11 }; 
   
   int getParticletype() const{ return particletype;} /*!< get type of particle */
   bool getIncoming() const {return incoming;}/*!<  get if the particle is a beam particle */
@@ -328,12 +331,20 @@ private:
   double Gamma; /*!< [MeV] decay width in rest frame */
   double lc_mod; /*!< [] modification factor of coherence length (playing around with parameters) */
   double nkt_mod; /*!< [] modification factor of initial CT sigma value (playing around with parameters) */
-  static const double sigmap_array[];				      
-  static const double beta2p_array[];
-  static const double epsp_array[];
-  static const double sigman_array[];
-  static const double beta2n_array[];
-  static const double epsn_array[];
+  /*! \name Pion-nucleon Glauber parameters
+   * Tables for a pi+ scattering off a proton (p) or a neutron (n), on the grid log10(p/MeV) = 2.50,
+   * 2.51, ..., 4.00 (151 points, p from 316 MeV to 10 GeV), interpolated linearly. PI_MIN uses them
+   * in the same way as PI_PLUS, without swapping proton and neutron (see docs/ROADMAP.md, step 4);
+   * the rho0 and double-pion types use the average of the proton and neutron tables.
+   */
+  ///@{
+  static const double sigmap_array[]; /*!< [fm^2] total cross section sigma, pi+ p */
+  static const double beta2p_array[]; /*!< [fm^2] slope parameter beta^2, pi+ p */
+  static const double epsp_array[]; /*!< [] ratio of real to imaginary part of the amplitude, pi+ p */
+  static const double sigman_array[]; /*!< [fm^2] total cross section sigma, pi+ n */
+  static const double beta2n_array[]; /*!< [fm^2] slope parameter beta^2, pi+ n */
+  static const double epsn_array[]; /*!< [] ratio of real to imaginary part of the amplitude, pi+ n */
+  ///@}
 
   
 };

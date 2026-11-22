@@ -40,22 +40,25 @@ class ClassGridThick_SCX {
 		/** make sure both bpoints and zpoints are always larger than 2 plz **/
 		ClassGridThick_SCX(double (*densf)(double,void*),void* p,const char* densName,double rmax, FastParticle* fp,int bpoints, int zpoints,char* SHAREDIR);
 		void constructGrid();
-		void printGrid();
-		void printDensityGrid();
+		void printGrid(); /**< prints the grid and its error estimates (b index, z index, value, error), for debugging */
+		void printDensityGrid(); /**< prints the density at the grid points (b index, z index, density), for debugging */
 		void calcP(double b,double z,double& ret,double& err,double (*)(double,void*) );
 		double getInterp(double[],double& res,double& err); // remember x is r,cos\theta and \phi
 		
-		double get_dens_fctr(){ return _dens_fctr; }; 
-        void   set_dens_fctr(double d){ assert(_grid.empty()); _dens_fctr = d; }; /**< this should be called before constructGrid */
+		double get_dens_fctr(){ return _dens_fctr; } /**< correction factor for the normalization of the density */
+        /** sets the correction factor for the normalization of the density; call it before constructGrid \param d factor */
+        void   set_dens_fctr(double d){ assert(_grid.empty()); _dens_fctr = d; };
 		
 		
 	private:
-		double (*_densf)(double r,void* p); // density function, spherical symmetry assumed.
+		double (*_densf)(double r,void* p); /**< density function rho(r, parameters), spherical symmetry assumed */
 		void* _dens_param;    /**< density parameters (void*) pointer */
 		double _rmax;         /**< radius of the system */
 		FastParticle* _fp;    /**< fastparticle: particle on which to calculate SCX probabilities */
-		int _bpoints,_zpoints;/**< number of points in b,z */
-		double _bstep,_zstep; /**< step sizes in b and z for interpolation grid */
+		int _bpoints; /**< number of grid points in b */
+		int _zpoints; /**< number of grid points in z */
+		double _bstep; /**< [fm] step size in b of the interpolation grid */
+		double _zstep; /**< [fm] step size in z of the interpolation grid */
 		double _dens_fctr;    /**< correction for density normalization. Density should be normed to A for A particles...*/
 		std::vector<std::vector<double>> _grid;       /**< SCX probability data goes here */
 		std::vector<std::vector<double>> _errorGrid;  /**< integrator error estimations go here */

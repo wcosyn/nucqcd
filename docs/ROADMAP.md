@@ -172,6 +172,12 @@ one commit per bug; no `[known-bug]` tests remain.
   Knockout) and `Pair`, `Newcoef` (from MePhys) now live in `progs/attic/twonucl` and are compiled
   into `twonucl`; `unit_pair` compiles `pair.cpp` and `newcoef.cpp` from there (`nucqcd_add_test`
   takes `SOURCES`). `RecMosh` (Moshinsky brackets, tested in `unit_moshinsky`) stays in MePhys.
+- [ ] **π⁻ Glauber parameters (found while documenting `FastParticle`).** For `PI_MIN` the constructor
+  takes the π⁺p tables for scattering off protons and the π⁺n tables for neutrons, exactly as for
+  `PI_PLUS`. By isospin π⁻p = π⁺n, and until commit `1666202` (2012-04-23), when the file reads were
+  replaced by static tables, the π⁻ case did swap them (the old call is still there, commented out).
+  No library code or program creates a `PI_MIN` explicitly (`PionTCross` uses π⁺), so no known results
+  are affected. Fix: swap the tables for `PI_MIN`; this changes π⁻ results, so it needs the author's OK.
 - [x] **`WeakQECross` neutral current:** the NC constructor never initialized `lepton`, but
   `getDiffWeakQECross` dereferenced it, so nuclear NC cross sections segfaulted. NC now takes its
   kinematics from the electron object.
@@ -382,6 +388,7 @@ one commit per bug; no `[known-bug]` tests remain.
     `TSpinor.h` 94, `TDeuteron.h` 66, `TInterpolatingWavefunction.h` 52, ...), Knockout 91, Glauber 58,
     DIS 33. One class or library per PR.
     - [x] DIS (`Resonance`, `He3Cross`, `InclusiveCrossRes`, `Deut_Conv_EMTLF`): no warnings left.
+    - [x] Glauber: no warnings left.
 
 ## 6. Structural refactors
 
