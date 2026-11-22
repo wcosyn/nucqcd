@@ -21,7 +21,8 @@ public:
   /*! constructor
    * \param proton photon interacts with proton [1] or neutron [0]
    * \param name string for the structure function parametrization. Possibilities: <BR>
-   * "CB": Christy & Bosted parametrization (see F1F209.f file) <BR>
+   * "CB": Christy & Bosted parametrization (see F1F209.f file), through NuclStructure: SLAC above
+   * W^2 = 9 GeV^2 <BR>
    * "SLAC": SLAC paramtetrization from Bodek <BR>
    * "Alekhin": leading twist parametrization by Alekhin [see PRD 68,014002], also see alekhin.f file <BR>
    */

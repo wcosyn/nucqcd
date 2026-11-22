@@ -20,7 +20,9 @@ public:
   NucleonStructure(); /*!< default constructor, SLAC parametrization taken */
   /*! Constructor
    * \param name Name of the parametriation. Possibilities: <BR>
-   * "CB": Christy & Bosted parametrization (see F1F209.f file)<BR>
+   * "CB": Christy & Bosted parametrization (see F1F209.f file); valid up to W^2 = 25 GeV^2, throws
+   * std::out_of_range above (no switch to SLAC here, unlike NuclStructure, which uses SLAC above
+   * W^2 = 9 GeV^2)<BR>
    * "SLAC": SLAC paramtetrization from Bodek <BR>
    * "Alekhin": leading twist parametrization by Alekhin [see PRD 68,014002], also see alekhin.f file <BR>
    * "CTEQ": F2 based on the pdf's from CTEQ (code from Misak, see cteq.f file) <BR>

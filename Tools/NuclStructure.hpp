@@ -99,7 +99,13 @@
  * A thin wrapper around NucleonStructure: it stores the kinematics and the parametrization, and
  * evaluates them with NucleonStructure::getF_xQW, so the parametrizations are implemented once.
  * x and W^2 can be independent (off-shell nucleons in DeuteronStructure): Christy-Bosted and SLAC
- * use W^2, the others x. Until 2026-11 this class had its own copy of the parametrizations; F1 for
+ * use W^2, the others x.
+ *
+ * \note Christy-Bosted ("CB") is only used up to W^2 = 9 GeV^2 (W = 3 GeV): above it the constructor
+ * replaces it by "SLAC" (Bodek), and getName() then returns "SLAC". DeuteronStructure relies on that
+ * name: for SLAC it builds F1 from F2 itself. NucleonStructure does not switch (there CB is used up to
+ * W^2 = 25 GeV^2 and throws std::out_of_range above), so "CB" through this class and through
+ * NucleonStructure differ above W^2 = 9 GeV^2. Until 2026-11 this class had its own copy of the parametrizations; F1 for
  * SLAC and CTEQ was then infinite, it is now the value of NucleonStructure (from F2 with R1998).
  */
 class NuclStructure{
