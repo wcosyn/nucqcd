@@ -240,11 +240,12 @@ complex<double> AbstractFsiGrid::getInterp(complex<double> ***grid){
  * The file name is the cache key. It contains the particle properties the grid depends on, on the
  * lattice of the bins of FastParticle::gridBinCentre (the particles were moved to their bin
  * centres in addParticle, so the grid in a file is the same whichever kinematics computed it):
- * the momentum in units of 10 MeV, cos theta and phi in units of 0.1, and sigma in mb; for
+ * the momentum in units of 10 MeV, theta and phi in units of 0.1 rad, and sigma in mb; for
  * particles with user-set scattering parameters also beta^2 and epsilon in units of 0.01. Then the
  * grid sizes, the integrator and its precision, and the version of the key. \n
  * Key versions: none (until 2026-11): p truncated to 10 MeV, grid computed at the first
- * kinematics in the bin, no momentum for user-set parameters; key2: bin centres.
+ * kinematics in the bin, no momentum for user-set parameters; key2: bin centres, cos theta in
+ * units of 0.1 (".th"); key3: theta in units of 0.1 rad (".tht").
  */
 void AbstractFsiGrid::setFilenames(string cachedir){
   fsi_filename=cachedir+pnucleus->getNucleusName();
@@ -253,13 +254,13 @@ void AbstractFsiGrid::setFilenames(string cachedir){
     const FastParticle &part=particles[i];
     if(part.getIncoming()) fsi_filename+=".inc";
     fsi_filename+=".Ptype"+to_string(part.getParticletype())+".p"+to_string(lround(part.getP()/10.))
-		  +".th"+to_string(lround(part.getCosTheta()*10))+".ph"+to_string(lround(part.getPhi()*10))
+		  +".tht"+to_string(lround(part.getTheta()*10))+".ph"+to_string(lround(part.getPhi()*10))
 		  +".sigma"+to_string(lround(part.getSigmap()*10.));
     if(part.getUserset()) fsi_filename+=".beta"+to_string(lround(part.getBeta2p()*100.))
 		  +".eps"+to_string(lround(part.getEpsilonp()*100.));
   }
   fsi_filename+=".r"+to_string(getRgrid())+".cth"+to_string(getCthgrid())
-		+".phi"+to_string(getPhigrid())+".prec"+to_string(getPrec()*1.E05)+".intgr"+to_string(getIntegrator())+".key2.dat";
+		+".phi"+to_string(getPhigrid())+".prec"+to_string(getPrec()*1.E05)+".intgr"+to_string(getIntegrator())+".key3.dat";
 //     cout << fsi_filename << endl;
 }
   
