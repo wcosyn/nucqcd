@@ -41,6 +41,17 @@ public:
    * \param Q2 [MeV^2] fourmomentum sq
    */
   void getF_xQ(double &F1, double &F2, const bool proton, const double x, const double Q2) const;
+  /*! Returns the F1 and F2 structure functions for general (off-shell) kinematics, with x and W^2
+   * independent: Christy-Bosted and SLAC (Bodek) use W^2, the other parametrizations x. With the
+   * on-shell W^2 = Q^2(1/x-1) + M^2 this is getF_xQ. Used by NuclStructure.
+   * \param[out] F1 F1 structure function
+   * \param[out] F2 F2 structure function
+   * \param proton 0 neutron, 1 proton
+   * \param x Bjorken x
+   * \param Q2 [MeV^2] fourmomentum sq
+   * \param Wsq [MeV^2] invariant mass squared of the produced X
+   */
+  void getF_xQW(double &F1, double &F2, const bool proton, const double x, const double Q2, const double Wsq) const;
   /*! Returns the F1 structure functions starting from bjorken x and Q^2
    * \param proton 0 neutron, 1 proton
    * \param x Bjorken x
@@ -114,6 +125,12 @@ public:
   static double getG1plusg2_grsv2000(const bool proton, double x, double Q2);
   
 private:
+  /*! F1 and F2 in the SLAC parametrization with an independent W^2 [MeV^2], see getF_xQW */
+  void getF_SLAC_W(double &F1, double &F2, const bool proton, const double x, const double Q2, const double Wsq) const;
+  /*! F2 in the SLAC parametrization (Bodek) with an independent W^2 [MeV^2] */
+  double getF2_SLAC_W(const bool proton, const double x, const double Q2, const double Wsq) const;
+  /*! F1 and F2 in the Christy & Bosted parametrization at Q^2 [MeV^2] and W^2 [MeV^2] (throws above W^2 = 25 GeV^2) */
+  void getF_CB_W(double &F1, double &F2, const bool proton, const double Q2, const double Wsq) const;
   std::string name; /*!< name of the paramtetrization */
   std::string dir; /*!< share dir to read input files */
   c_mstwpdf *mstw; ///< MSTW PDF interpolation object
