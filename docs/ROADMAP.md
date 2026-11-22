@@ -26,7 +26,9 @@ same PR.
 | 5 | Low-risk modernization | ✅ done: `-fopenmp`, Fortran interop (#11), constants (#13, #14), grid cache (#15–#17), ownership (#23), exceptions (#24), Doxygen (#10, #25–#30, #32, #34–#39: no warnings left) |
 | 6 | Structural refactors | ⬜ |
 | 7 | Unbundle Cuba | ⬜ (can be done any time after step 2) |
-| 8 | Repository README | ⬜ (last) |
+| 8 | Repository README | ⬜ (last, after 9 and 10) |
+| 9 | Decouple from ROOT where possible | ⬜ (planned, phases below) |
+| 10 | LHAPDF interface for the nucleon structure functions | ⬜ |
 
 ---
 
@@ -487,3 +489,89 @@ Write this last, after the refactors, so it describes the final layout and uses 
   - a link to `docs/HISTORY.md`
 
   CLAUDE.md and `manual/manual.tex` already contain parts of this.
+
+## 9. Decouple from ROOT where possible
+
+Goal: the libraries (Tools/MePhys, Glauber, Knockout, DIS) build and run without ROOT; ROOT remains
+an optional dependency, only for the programs that need it (fits with Minuit, ROOT files and
+histograms). This removes a large dependency (ROOT 6 with mathmore and minuit2, built with its own C++
+standard) from everything that only computes cross sections.
+
+**Inventory** (2026-11-22, libraries; programs in parentheses):
+
+| ROOT feature | Where | Uses |
+|---|---|---|
+| `TVector3` | Tools (kinematics, spinors, deuteron), Glauber, Knockout, DIS | ~390 (17 programs) |
+| `TLorentzVector` | mostly the Tools kinematics and spinors | ~166 |
+| `TLorentzRotation`, `TRotation`, `TVector2` | kinematics, spinor boosts, `DistMomDistrGrid`, `Rho/PionTCross` | ~85, ~31, ~6 |
+| `TString` | the format-string parsing of `TKinematics*`, `TDeuteron` names | ~114 |
+| `TObject`/`TNamed`, `ClassDef`/`ClassImp`, LinkDef dictionaries, `TRootIOCtor`, `Streamer` | 16 classes (`T*` in Tools, `TMFSpinor`) | ROOT I/O is never used in the libraries |
+| `TMath` | constants and small functions | a few dozen |
+| mathmore: `ROOT::Math::sph_legendre`, `ROOT::Math::Polynomial` | `TDeuteron` (spherical harmonics), `TKinematics2to3WithLabAngles` (quartic roots) | 3 |
+| `TMatrixT`, `TVectorT`, `TDecompLU` | `TYukawaPWF` (a linear solve) | 1 file |
+| Minuit2 / `TF1` / fitting | programs only | ~15 programs (`F2_largex_fit`, `deepsdis` fits, `GPD/diDVCS*`) |
+| `TFile`, `TTree`, histograms, `TCanvas` | programs only | ~5 programs |
+
+**Phases** (each its own PR, full test suite including `slow` after each; values must not change):
+
+1. [ ] **Drop the ROOT dictionaries and base classes.** Remove `ClassDef`/`ClassImp`, the LinkDef
+   files and their `rootcling` step, the `TRootIOCtor` constructors and the hand-written `Streamer`s;
+   replace `TObject`/`TNamed` bases by nothing or a `std::string` name where the name is used. First
+   check that no program writes these objects to a ROOT file. Low risk; removes `rootcling` from the
+   build and the `.pcm` files from `lib/`.
+2. [ ] **Small math.** `TMath` → `<cmath>` and `nucqcd::` constants; `ROOT::Math::sph_legendre` →
+   GSL (`gsl_sf_legendre_sphPlm`, already used in `SphericalHarmonicCos`) or C++17
+   `std::sph_legendre`; `ROOT::Math::Polynomial` roots → `gsl_poly_complex_solve`; the
+   `TMatrixT`/`TDecompLU` solve in `TYukawaPWF` → `gsl_linalg_LU`. Removes the need for mathmore.
+   Low risk; compare the roots and the Yukawa coefficients with the old code in a test.
+3. [ ] **`TString` → `std::string`.** Mostly the format-string parsing of `TKinematics`,
+   `TKinematics2to3` (`Tokenize`, `Contains`, case-insensitive `CompareTo`) and the wave-function names
+   in `TDeuteron`. Medium risk: keep the case-insensitive comparisons; the format-string unit tests
+   cover the parsing.
+4. [ ] **Three- and four-vectors and Lorentz transformations.** Introduce small value types in Tools,
+   e.g. `nucqcd::Vector3`, `nucqcd::LorentzVector`, `nucqcd::Rotation`, `nucqcd::LorentzRotation`, with
+   the subset of the ROOT API that is used (component access, `Mag`, `Mag2`, `Perp`, `Perp2`,
+   `Theta`, `CosTheta`, `Phi`, `Angle`, `Unit`, `Dot`, `Cross`, `RotateX/Y/Z`, `Rotate`, `Boost`,
+   `BoostVector`, `Transform`, `Inverse`, `M`, `M2`, `E`, `P`, `SetXYZM`, `SetPxPyPzE`, `XYvector`,
+   arithmetic), so that the switch is mostly a rename. Before switching, add unit tests that compare
+   every method with ROOT on random inputs (angle ranges: `Phi` in (-pi, pi]; `TLorentzRotation`
+   semantics: active transformations, `a.Transform(b)` = b*a, boost composition order), and keep them
+   while ROOT is still available. `FourVector<double>` already exists for the Dirac algebra; the new
+   `LorentzVector` should convert to and from it. Then convert library by library (Tools kinematics
+   and spinors, then Glauber, Knockout, DIS), with the regression references as the check (they
+   should stay bitwise, or within 1e-14 where the operation order changes). The largest phase.
+5. [ ] **Build system.** `find_package(ROOT)` becomes optional; the `root_libs` interface target is
+   linked only by programs that need it; the libraries and tests no longer link ROOT. The
+   `ROOTConfig`/`thisroot.sh` paragraph in CLAUDE.md and the README change accordingly.
+6. [ ] **Programs.** Fits: keep ROOT for them, or switch to standalone Minuit2 (available as its own
+   CMake project) if a ROOT-free build of those programs is wanted. Programs that write ROOT files or
+   histograms keep ROOT (or move to text output, or to the attic if unused). Mark in `progs/` which
+   programs need ROOT, and build them only when it is found.
+
+Phases 1 and 2 are independent and small; 3 and 4 can go in either order; 5 and 6 come last.
+
+## 10. LHAPDF interface for the nucleon structure functions
+
+Add LHAPDF6 sets as a parametrization in `NucleonStructure` (and so in `NuclStructure`,
+`DeuteronStructure` and the programs that take a structure-function name), the C++ counterpart of
+`LHAPDFStructure` in `taggedpd/nucleon.py` of the poldeut repository.
+
+- [ ] **Physics** (as in poldeut): leading-order parton model, \f$ F_2 = \sum_q e_q^2\, x(q+\bar q) \f$
+  (nf = 5 by default) from an unpolarized set and \f$ g_1 = \frac12\sum_q e_q^2(\Delta q+\Delta\bar q) \f$
+  (nf = 3 by default) from a polarized set; the neutron by isospin (u <-> d); F1 = F2/(2x(1+R)) with R
+  a constant or R1998 (`getr1998`); g1+g2 from the Wandzura-Wilczek relation, tabulated at
+  construction on (x, Q^2) nodes, as for GRSV.
+- [ ] **Interface:** a name such as `"LHAPDF:CT18LO"` (and an optional polarized set and member), or a
+  constructor that takes the set names; `getF_xQ`/`getF_xQW` (x is used; W^2 only by CB and SLAC),
+  `getG1`, `getG1plusg2`. Units: Q^2 in MeV^2 in nucqcd, GeV^2 for `LHAPDF::PDF::xfxQ2`. Outside a
+  set's (x, Q^2) range LHAPDF's own extrapolation is used; say so in the docs.
+- [ ] **Build:** optional, found through `lhapdf-config` or LHAPDF's pkg-config file (LHAPDF is already
+  installed in `~/.local`, with Python bindings, for PARTONS; see `scripts/install_partons.sh`); compile
+  the LHAPDF part only when it is found (like PARTONS), and add it to the install script and CLAUDE.md.
+  PDF sets go to `~/.local/share/LHAPDF` with `lhapdf install <set>`.
+- [ ] **Tests:** as in poldeut (`tests/test_lhapdf.py`): parton-model sums and isospin against direct
+  LHAPDF calls, F1 from F2 and R, the WW table against a direct integration, with CT18LO and
+  NNPDFpol11_100; the tests skip when LHAPDF or the sets are not installed.
+- [ ] Optionally, replace the bundled MSTW grid code (`mstwpdf.h/.cpp`, `share/mstw_grids`) by the
+  LHAPDF set `MSTW2008lo68cl`, after checking that F2 agrees.
+
