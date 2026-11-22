@@ -11,6 +11,7 @@
 #define SIGN(x) ((x>0)-(x<0))
 
 #include <cstdarg>
+#include "ErrorMessage.hpp"
 #include <sstream>
 #include <complex>
 
@@ -39,8 +40,7 @@ template <class T> T interpolate(const T *array, double r, double rstep,int line
   //lines is number of elements in array
 
   if(array==NULL) {
-    std::cerr <<"Array has not been initialized!!!!" << std::endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "Array has not been initialized!!!!" );
   }
   int index=int(floor(r/rstep))-offset;
 

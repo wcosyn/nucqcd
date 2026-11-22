@@ -1,0 +1,63 @@
+// Errors in the libraries are exceptions (Tools/ErrorMessage.hpp); until 2026-11 they printed a
+// message and called exit(1), which ended the program and could not be tested. One or two cases of
+// each kind: std::invalid_argument, std::out_of_range, std::logic_error, std::runtime_error.
+#include <test_support.hpp>
+
+#include <catch2/matchers/catch_matchers_string.hpp>
+
+#include <ErrorMessage.hpp>
+#include <FastParticle.hpp>
+#include <GlauberGridThick.hpp>
+#include <Matrix.h>
+#include <MeanFieldNucleusThick.hpp>
+#include <NucleonStructure.hpp>
+#include <TKinematics2to3.h>
+#include <constants.hpp>
+
+#include <stdexcept>
+#include <string>
+
+using Catch::Matchers::ContainsSubstring;
+
+TEST_CASE("ErrorMessage builds the message with stream syntax", "[errors]") {
+  const std::string msg = nucqcd::ErrorMessage() << "r out of range: " << 12.5 << " fm";
+  CHECK(msg == "r out of range: 12.5 fm");
+  CHECK_THROWS_WITH(throw std::out_of_range(nucqcd::ErrorMessage() << "x = " << 3), "x = 3");
+}
+
+TEST_CASE("invalid options throw std::invalid_argument", "[errors]") {
+  const std::string dir = nucqcd_test::share_dir();
+  CHECK_THROWS_AS(MeanFieldNucleus(42, dir), std::invalid_argument);
+  double F1 = 0., F2 = 0.;
+  CHECK_THROWS_AS(NucleonStructure("nonsense").getF_xQ(F1, F2, true, 0.3, 2.e06), std::invalid_argument);
+  CHECK_THROWS_AS(FastParticle(77, 0, 1000., 0., 0., 1., 0., 1., 1., dir), std::invalid_argument);
+  CHECK_THROWS_AS(TKinematics2to3("", "", 1, TKinematics2to3::kK, "qsquared:wlab:pk", 1.e06, 600., 300., 0.5, 0.5, 0.5),
+                  std::invalid_argument);
+}
+
+TEST_CASE("values outside a grid or parametrization throw std::out_of_range", "[errors]") {
+  const std::string dir = nucqcd_test::share_dir();
+  const MeanFieldNucleusThick carbon(MeanFieldNucleus::C, dir);
+  CHECK_NOTHROW(carbon.getWave_F(0, 0.5 * carbon.getRange()));
+  CHECK_THROWS_AS(carbon.getWave_F(0, carbon.getRange() + 1.), std::out_of_range);
+  CHECK_THROWS_AS(carbon.getProtonDensity(carbon.getRange() + 1.), std::out_of_range);
+  // Christy-Bosted is valid up to W^2 = 25 GeV^2
+  double F1 = 0., F2 = 0.;
+  const NucleonStructure cb("CB");
+  CHECK_NOTHROW(cb.getF_xQ(F1, F2, true, 0.5, 2.e06));
+  CHECK_THROWS_WITH(cb.getF_xQ(F1, F2, true, 0.01, 2.e06), ContainsSubstring("Christy & Bosted"));
+  CHECK_THROWS_AS(cb.getF_xQ(F1, F2, true, 0.01, 2.e06), std::out_of_range);
+  Matrix<2, 2> m;
+  CHECK_THROWS_AS(m(2, 0), std::out_of_range);
+}
+
+TEST_CASE("calls in the wrong order throw std::logic_error", "[errors]") {
+  const std::string dir = nucqcd_test::share_dir();
+  MeanFieldNucleusThick carbon(MeanFieldNucleus::C, dir);
+  GlauberGridThick grid(8, 4, 2, &carbon, 1.E-03, 2, dir);
+  CHECK_THROWS_AS(grid.getFsiGridFull_interp3(1., 0.5, 0.), std::logic_error);  // not filled yet
+}
+
+TEST_CASE("missing input throws std::runtime_error", "[errors]") {
+  CHECK_THROWS_AS(MeanFieldNucleus(MeanFieldNucleus::C, "/nonexistent/share/dir"), std::runtime_error);
+}

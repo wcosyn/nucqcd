@@ -66,6 +66,7 @@
 ////////////////////////////////////////////////////////////////////////
 
 #include "TCstPWF.h"
+#include "ErrorMessage.hpp"
 #include <iostream>
 #include <TMath.h>
 #include <gsl/gsl_sf_bessel.h>
@@ -112,18 +113,16 @@ TCstPWF::TCstPWF(int *order, double *leadingMass, double *stepMass, double *tail
   // Check the arguments
   if(!order || !parU || !parW || !parVT || !parVS || 
      !leadingMass || !stepMass || !tailMass || !exponent) {
-    cerr << "ERROR in TCstPWF::TCstPWF(int*,double* x8): "
-	 << "arrays are NULL.\n";
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TCstPWF::TCstPWF(int*,double* x8): "
+	 << "arrays are NULL.");
   }
     
   for(int i=0; i<4; ++i) {
     // Set the number of terms in the parametrization
     fOrder[i] = order[i];
     if(fOrder[i]<2) {
-      cerr << "ERROR in TCstPWF::TCstPWF(int*,double* x8): "
-	   << "order should be >=2!\n";
-      exit(1);
+      throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TCstPWF::TCstPWF(int*,double* x8): "
+	   << "order should be >=2!");
     }
     // Set the masses and exponents
     fAlpha[i] = leadingMass[i];
@@ -485,9 +484,8 @@ double TCstPWF::GetG(ESpace space, EWave wave, int term, double q) const
     } // else space==kR
   }
   else {
-    cerr << "ERROR in TCstPWF::GetG(ESpace,EWave,int,double): "
-	 << "invalid index." << endl;
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TCstPWF::GetG(ESpace,EWave,int,double): "
+	 << "invalid index." );
   }
 
   return g;

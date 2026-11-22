@@ -1,4 +1,5 @@
 #include <iostream>
+#include <ErrorMessage.hpp>
 #include <cstdlib>
 #include <fstream>
 #include <cmath>
@@ -78,8 +79,7 @@ MeanFieldNucleus::MeanFieldNucleus(const int nucleus, const string & dir){
 
   }
   else{
-    cerr << "nucleus file could not be opened: " << inputfile << endl;    
-    exit(1);
+    throw std::runtime_error(nucqcd::ErrorMessage() << "nucleus file could not be opened: " << inputfile );
   }
   
   //read in F&G grids
@@ -131,8 +131,7 @@ void MeanFieldNucleus::setInputfile(const int nucleus, const string &dir){
     inputfile+="ca48.inp";
     break;
   default:
-    cerr << "invalid nucleus input" << endl;
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "invalid nucleus input" );
   }
 }
 
@@ -174,8 +173,7 @@ void MeanFieldNucleus::setRgridfile(const int nucleus, const string &dir){
     rgridfile+="ca48.radial2.bound";
     break;
   default:
-    cerr << "invalid nucleus input for F&G grid file" << endl;
-    exit(1);
+    throw std::runtime_error(nucqcd::ErrorMessage() << "invalid nucleus input for F&G grid file" );
   }  
 }
 
@@ -215,8 +213,7 @@ void MeanFieldNucleus::setNucleusName(const int nucleus){
     nucleusname= "Ca48";
     break;
   default:
-    cerr << "Implement Other Nucleus!" << endl;
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "Implement Other Nucleus!" );
   }
 }
 
@@ -251,8 +248,7 @@ void MeanFieldNucleus::readRgrids(const int nucleus, const string &dir){
     }
   }
   else{
-    cerr << "rgrids file could not be opened: " << rgridfile << endl;    
-    exit(1);
+    throw std::runtime_error(nucqcd::ErrorMessage() << "rgrids file could not be opened: " << rgridfile );
   }
 }
 /////////////////////////////////////////////////////////
@@ -330,8 +326,7 @@ void MeanFieldNucleus::getWaveFunction(complex<double> *wave, const int shellind
 
 double MeanFieldNucleus::getWave_F(const int shellindex, const double r) const{
   if(r>range){
-    cerr << "r out of range in getWave_F: " << r << " " << r-range << endl;
-    exit(1);
+    throw std::out_of_range(nucqcd::ErrorMessage() << "r out of range in getWave_F: " << r << " " << r-range );
   }
   return interpolate(getF()[shellindex].data(),r,wf_r_step,wf_r_lines,1);  
 }
@@ -339,8 +334,7 @@ double MeanFieldNucleus::getWave_F(const int shellindex, const double r) const{
 
 double MeanFieldNucleus::getWave_G(const int shellindex, const double r) const{
   if(r>range){
-    cerr << "r out of range in getWave_G: " << r << " " << r-range << endl;
-    exit(1);
+    throw std::out_of_range(nucqcd::ErrorMessage() << "r out of range in getWave_G: " << r << " " << r-range );
   }
   return interpolate(getG()[shellindex].data(),r,wf_r_step,wf_r_lines,1);
 }

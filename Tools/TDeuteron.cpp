@@ -10,6 +10,7 @@
 
 
 #include "TDeuteron.h"
+#include "ErrorMessage.hpp"
 #include "TYukawaPWF.h"
 #include "TGrossPWF.h"
 #include "TCstPWF.h"
@@ -1014,11 +1015,9 @@ complex<double> TDeuteron::Wavefunction::DeuteronPStateOff(int deuteronPol, int 
   // with BEGIN_LATEX #dot{p}_{1} = ( #sqrt{#vec{p}_{1}^{2}+M_{1}^{2}},#vec{p}_{1}) END_LATEX the on-shell 4-momentum of particle 1.
   // The labelling particle 1 and 2 is arbitrary in the non-relativistic case (You can do the math).
   if(IsRelativistic()) {
-    cerr << "ERROR in TDeuteron::Wavefunction::DeuteronPState(TSpinor::Polarization&,"
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TDeuteron::Wavefunction::DeuteronPState(TSpinor::Polarization&,"
 	 << " TVector3&&): "
-	 << "has no meaning for relativistic wave functions.\n";
-    assert(1==0);
-    exit(1);
+	 << "has no meaning for relativistic wave functions.");
   }
   if(abs(p.Z())<1.E-09) return 0.;
   
@@ -1075,10 +1074,9 @@ complex<double> TDeuteron::Wavefunction::DeuteronRState(int deuteronPol, int nuc
   //nucleon2pol fixes spectator nucleon polarization (times two)
   
   if(IsRelativistic()) {
-    cerr << "ERROR in TDeuteron::Wavefunction::DeuteronRState(TSpinor::Polarization&,"
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TDeuteron::Wavefunction::DeuteronRState(TSpinor::Polarization&,"
 	 << " TVector3&&): "
-	 << "has no meaning for relativistic wave functions.\n";
-    exit(1);
+	 << "has no meaning for relativistic wave functions.");
   }
 
   
@@ -1230,9 +1228,8 @@ void TDeuteron::Polarization::SetTheta(double theta)
   // Set the polar angle of the spin quantization axis (in rad)
 
   if( theta<0. || theta>TMath::Pi() ) {
-    cerr << "ERROR in TDeuteron::Polarization::SetTheta(double): "
-	 << "polar angle not in range [0,pi].\n";
-    exit(1);
+    throw std::out_of_range(nucqcd::ErrorMessage() << "ERROR in TDeuteron::Polarization::SetTheta(double): "
+	 << "polar angle not in range [0,pi].");
   }
 
   fTheta = theta;
@@ -1250,9 +1247,8 @@ void TDeuteron::Polarization::SetState(int polState)
 {
   // Set the polarization state = -1, 0 or +1
   if( polState>1 || polState<-1 ) {
-    cerr << "ERROR in TDeuteron::Polarization::SetState(int): "
-	 << "polarization state should be -1, 0 or +1.\n";
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TDeuteron::Polarization::SetState(int): "
+	 << "polarization state should be -1, 0 or +1.");
   }
 
   fPolarizationState = polState;

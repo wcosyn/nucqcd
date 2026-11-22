@@ -1,4 +1,5 @@
 #include "NuclStructure.hpp"
+#include "ErrorMessage.hpp"
 #include "FortranString.hpp"
 #include "constants.hpp"
 #include <iostream>
@@ -100,8 +101,7 @@ name(nm),proton(pr), mass(pr?MASSP:MASSN),dir(HOMEDIR){
       Q2=(Wsq-mass*mass)/(1./x-1.);
       break;
     default:
-      cerr << "non supported format in constructor" << endl;
-      exit(1);
+      throw std::invalid_argument(nucqcd::ErrorMessage() << "non supported format in constructor" );
   }
   if(!name.compare("CB")&&(Wsq>9.E06)) name="SLAC";
   if(!name.compare("MSTW")){
@@ -240,8 +240,7 @@ double NuclStructure::getF2_CTEQ(){
 
 void NuclStructure::getF_CB(double &F1, double &F2) const{
   if(Wsq>25.E06){ 
-    cerr << "Invariant mass too big for Christy & Bosted Parametrization!! " << Wsq << endl;
-    exit(1);
+    throw std::out_of_range(nucqcd::ErrorMessage() << "Invariant mass too big for Christy & Bosted Parametrization!! " << Wsq );
   }
   double R_CB;
   double ONE=1.;
@@ -311,7 +310,7 @@ void NuclStructure::getF(double &F1, double &F2){
   else if(!name.compare("CTEQ")) getF_CTEQ(F1,F2);
   else if(!name.compare("HMRS")) getF_HMRS(F1,F2);
   else if(!name.compare("MSTW")) getF_MSTW(F1,F2);
-  else { cerr << "invalid name for structure function" << endl; exit(1);}
+  else { throw std::invalid_argument(nucqcd::ErrorMessage() << "invalid name for structure function" );}
   return;
 }
 

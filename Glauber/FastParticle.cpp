@@ -1,4 +1,5 @@
 #include <iostream>
+#include <ErrorMessage.hpp>
 #include <cstdlib>
 #include <fstream>
 
@@ -168,8 +169,7 @@ nkt_mod(nkt_mod)
       break;
     }
     default:
-      cerr << "Particle type is not yet supported!!: " << particletype << endl;
-      exit(1);
+      throw std::invalid_argument(nucqcd::ErrorMessage() << "Particle type is not yet supported!!: " << particletype );
   }
   E = sqrt(mass*mass+p*p);
   decay_dil = Gamma*sqrt(1.-p*p/(E*E));
@@ -380,8 +380,7 @@ void FastParticle::printParticle() const{
      cout << "rho0" << endl;
      break;
    default:
-     cerr << "Particletypeerror!!!" << endl;
-     exit(1);
+     throw std::invalid_argument(nucqcd::ErrorMessage() << "Particletypeerror!!!" );
  }
  if(incoming) cout << "This is the incoming particle" << endl;
  cout << "Momentum, norm[MeV]=" << getP() << ", theta[deg]=" << getTheta()*RADTODEGR << ", phi[deg]=" << getPhi()*RADTODEGR << endl;
@@ -516,8 +515,7 @@ void FastParticle::setPionGlauberData(double mom, double &sigmatotp, double &bet
     }
     
     else{
-      cerr << "File " << files[i] << " could not be opened" << endl;
-      exit(1);
+      throw std::runtime_error(nucqcd::ErrorMessage() << "File " << files[i] << " could not be opened" );
     }
   }
   
@@ -543,8 +541,7 @@ void FastParticle::setPionGlauberData(double mom, double &sigmatotp, double &bet
     }
     
     else{
-      cerr << "File " << files2[i] << " could not be opened" << endl;
-      exit(1);
+      throw std::runtime_error(nucqcd::ErrorMessage() << "File " << files2[i] << " could not be opened" );
     }
   }
 
@@ -571,8 +568,7 @@ void FastParticle::setPionGlauberData(double mom, double &sigmatotp, double &bet
     }
     
     else{
-      cerr << "File " << files3[i] << " could not be opened" << endl;
-      exit(1);
+      throw std::runtime_error(nucqcd::ErrorMessage() << "File " << files3[i] << " could not be opened" );
     }
   }
 
@@ -851,8 +847,7 @@ void FastParticle::interpPionGlauberData(int particletype, double mom, double &s
     epsilonn = epsilonp = (interpolate(epsn_array,log10(mom),0.01,151,250.)+interpolate(epsp_array,log10(mom),0.01,151,250.))*0.5;
     break;
   default:
-    cerr << "Particle type is not yet supported!!: " << particletype << endl;
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "Particle type is not yet supported!!: " << particletype );
   }
   return;
 }

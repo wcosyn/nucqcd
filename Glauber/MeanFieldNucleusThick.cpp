@@ -1,4 +1,5 @@
 #include <iostream>
+#include <ErrorMessage.hpp>
 #include <cstdlib>
 
 
@@ -95,24 +96,21 @@ void MeanFieldNucleusThick::constructDensity(){
 
 double MeanFieldNucleusThick::getProtonDensity(const double r) const{
   if(r>getRange()){
-    cerr << "r out of range in getWave_Rpart: " << r << endl;
-    exit(1);
+    throw std::out_of_range(nucqcd::ErrorMessage() << "r out of range in getWave_Rpart: " << r );
   }
   return interpolate(protondensity.data(),r,getWF_r_step(),getWF_r_lines(),1); 
 }
 
 double MeanFieldNucleusThick::getNeutronDensity(const double r) const{
   if(r>getRange()){
-    cerr << "r out of range in getWave_Rpart: " << r << endl;
-    exit(1);
+    throw std::out_of_range(nucqcd::ErrorMessage() << "r out of range in getWave_Rpart: " << r );
   }
   return interpolate(neutrondensity.data(),r,getWF_r_step(),getWF_r_lines(),1); 
 }
 
 double MeanFieldNucleusThick::getTotalDensity(const double r) const{
   if(r>getRange()){
-    cerr << "r out of range in getWave_Rpart: " << r << endl;
-    exit(1);
+    throw std::out_of_range(nucqcd::ErrorMessage() << "r out of range in getWave_Rpart: " << r );
   }
   return interpolate(totaldensity.data(),r,getWF_r_step(),getWF_r_lines(),1); 
 }
@@ -125,8 +123,7 @@ double MeanFieldNucleusThick::getDensity(const double r, bool proton) const{
 
 double MeanFieldNucleusThick::getDensity(const double r, const double *density) const{ //get density for r
   if(r>getRange()){
-    cerr << "r out of range in getWave_Rpart: " << r << endl;
-    exit(1);
+    throw std::out_of_range(nucqcd::ErrorMessage() << "r out of range in getWave_Rpart: " << r );
   }
   return interpolate(density,r,getWF_r_step(),getWF_r_lines(),1); 
 }

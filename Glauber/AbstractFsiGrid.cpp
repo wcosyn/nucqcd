@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <ErrorMessage.hpp>
 #include <iostream>
 #include <fstream>
 #include <cmath>
@@ -85,17 +86,14 @@ void AbstractFsiGrid::printParticles() const{
 //add a nucleon that gets knocked out
 void AbstractFsiGrid::addKnockout(const int level, const int m){
   if(level<0||level>pnucleus->getTotalLevels()){
-    cerr<<"invalid knockout level: " << level << endl;
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "invalid knockout level: " << level );
   }
   if(abs(m)>pnucleus->getJ_array()[level]){
-    cerr<<"invalid m level: " <<pnucleus->getJ_array()[level] << " " << m << endl;
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "invalid m level: " <<pnucleus->getJ_array()[level] << " " << m );
   }
   for(size_t i=0;i<knockoutlevels.size();i++){
     if((level==knockoutlevels[i])&&(m==knockoutm[i])) {
-      cerr<<"knockoutlevel is already present!!!" << endl << i+1 << " level: " << knockoutlevels[i] << ", m: " << knockoutm[i] << endl;
-      exit(1);
+      throw std::logic_error(nucqcd::ErrorMessage() << "knockoutlevel is already present!!!" << "\n" << i+1 << " level: " << knockoutlevels[i] << ", m: " << knockoutm[i] );
     }
   }
   if(level<pnucleus->getPLevels()) protonknockout++;
@@ -127,8 +125,7 @@ void AbstractFsiGrid::printKnockout() const{
 //set up inteprolation help variables for r
 void AbstractFsiGrid::setRinterp(const double r){
   if(r>pnucleus->getRange()){
-    cerr << "r out of range in : AbstractFsiGrid::setRinterp" << r << endl;
-    exit(1);
+    throw std::out_of_range(nucqcd::ErrorMessage() << "r out of range in : AbstractFsiGrid::setRinterp" << r );
   }
   rindex = int(floor(r*getInvRstep()));
   if(rindex==getRgrid()) rindex-=1; //take care at high end

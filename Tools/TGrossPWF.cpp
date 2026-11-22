@@ -53,6 +53,7 @@
 ////////////////////////////////////////////////////////////////////////
 
 #include "TGrossPWF.h"
+#include "ErrorMessage.hpp"
 #include <iostream>
 #include <TMath.h>
 #include "constants.hpp"
@@ -76,15 +77,13 @@ TGrossPWF::TGrossPWF(int order, double *alpha, double m0,
   // parU,parW,parVT,parVS = arrays containing parameters BEGIN_LATEX b_{L,n} END_LATEX. [MeV^1/2]
 
   if(!alpha || !parU || !parW || !parVT || !parVS) {
-    cerr << "ERROR in TGrossPWF::TGrossPWF(int,double*,double,double* x4): "
-	 << "double arrays are NULL.\n";
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TGrossPWF::TGrossPWF(int,double*,double,double* x4): "
+	 << "double arrays are NULL.");
   }
 
   if(fOrder<1) {
-    cerr << "ERROR in TGrossPWF::TGrossPWF(int,double*,double,double* x4): "
-	 << "order should be >=1!\n";
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TGrossPWF::TGrossPWF(int,double*,double,double* x4): "
+	 << "order should be >=1!");
   }
   
   for(int i=0; i<3; ++i) fAlpha[i] = alpha[i];

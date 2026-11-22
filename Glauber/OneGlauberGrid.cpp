@@ -1,4 +1,5 @@
 #include <complex>
+#include <ErrorMessage.hpp>
 #include <iostream>
 #include <cstdlib>
 
@@ -34,13 +35,11 @@ complex<double> OneGlauberGrid::getInterp(complex<double> ***grid){
 
 void OneGlauberGrid::addParticle(FastParticle& newparticle){
  if(getParticles().size()!=0){
-   cerr << "You cannot add more than one particle to the Glauber phase for one particle!!!" << endl;
-   exit(1);
+   throw std::invalid_argument(nucqcd::ErrorMessage() << "You cannot add more than one particle to the Glauber phase for one particle!!!" );
  }
  else{
    if(newparticle.getPhi()!=0.||newparticle.getTheta()!=0.){
-     cerr << "phi and theta angles of the particle should be 0 in this special case!!!" << endl;
-     exit(1);
+     throw std::invalid_argument(nucqcd::ErrorMessage() << "phi and theta angles of the particle should be 0 in this special case!!!" );
    }
    else AbstractFsiGrid::addParticle(newparticle);
  }
@@ -85,7 +84,7 @@ void OneGlauberGrid::calcGlauberphasesBoth(const int i, const int j, const int k
 	results[0]=ret[0]; results[1]=ret[1];
 	
       }      
-      else {cerr  << "integrator type not implemented" << endl; exit(1);}
+      else {throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented" );}
       
       fsi_grid[level][mm][i][j][k]=1.-getParticles()[0].getScatterfront(level,getPnucleus())*results[0];
       fsi_ct_grid[level][mm][i][j][k]=1.-getParticles()[0].getScatterfront(level,getPnucleus())*results[1];
@@ -126,7 +125,7 @@ void OneGlauberGrid::calcGlauberphasesCt(const int i, const int j, const int k){
 	results=ret[0];
 	
       }      
-      else {cerr  << "integrator type not implemented" << endl; exit(1);}
+      else {throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented" );}
       
       fsi_ct_grid[level][mm][i][j][k]=1.-getParticles()[0].getScatterfront(level,getPnucleus())*results;
 //       cout << i << " " << j << " " << k << " " << level << " " << mm << fsi_grid[level][mm][i][j][k] << " " << fsi_ct_grid[level][mm][i][j][k] << 

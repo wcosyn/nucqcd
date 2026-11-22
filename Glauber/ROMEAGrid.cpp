@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <ErrorMessage.hpp>
 #include <iostream>
 #include <fstream>
 #include <complex>
@@ -36,8 +37,7 @@ ROMEAGrid::ROMEAGrid(const int r_grid, const int cth_grid, const int phi_grid, M
     }
   }
   else {
-    cerr << "fsi_grid should not be initialized more than once!!!!"<< endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "fsi_grid should not be initialized more than once!!!!");
   }
 }
 
@@ -57,8 +57,7 @@ ROMEAGrid::~ROMEAGrid() {
 //interpolation of the grid after r,cth,phi have been set
 complex < double >ROMEAGrid::getFsiGridFull_interp() {
   if (!filledgrid) {
-    cerr << "You have to fill the grids first!" << endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "You have to fill the grids first!" );
   }
   //sanity check to see that the right amount of knocked out nucleons end up in the final state!
   //if((getTotalProtonOut()==getProtonKnockout())&&(getTotalNeutronOut()==getNeutronKnockout())){
@@ -149,8 +148,7 @@ void ROMEAGrid::constructAllGrids() {
     }
   }
   else {
-    cerr << "Treshold should only be initialized once!" << endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "Treshold should only be initialized once!" );
   }
   
   //fill the arrays!
@@ -229,8 +227,7 @@ void ROMEAGrid::readinFsiGrid(ifstream & infile) {
     }
   }
   else {
-    cerr << "fsi_grid not initialized!!!!" << endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "fsi_grid not initialized!!!!" );
   }
 }
 
@@ -281,7 +278,7 @@ void ROMEAGrid::calcROMEAphase(const int i, const int j, const int k) {
     }
     
   }
-  else {cerr  << "integrator type not implemented" << endl; exit(1);}
+  else {throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented" );}
 //       cout << i << " " << j << " " << k << " " << level << " " << mm << fsi_grid[level][mm][i][j][k] << " " << fsi_ct_grid[level][mm][i][j][k] <<
 //       " " << res << " " << count << endl;
 }

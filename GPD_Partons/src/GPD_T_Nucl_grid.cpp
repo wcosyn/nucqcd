@@ -1,4 +1,5 @@
 #include "GPD_T_Nucl_grid.hpp"
+#include <ErrorMessage.hpp>
 #include "TransGPD_set.hpp"
 
 #include <constants.hpp>
@@ -16,9 +17,7 @@ GPD_T_Nucl_grid::GPD_T_Nucl_grid(const std::string &pdf_name){
     }
     else {
         mstw=NULL;
-        cerr << "you have not chosen a valid pdf set in Deut_Conv_GPD_T::GPD()" << endl;
-        assert(1==0);
-        exit(1);
+        throw std::invalid_argument(nucqcd::ErrorMessage() << "you have not chosen a valid pdf set in Deut_Conv_GPD_T::GPD()" );
     }
     grid_set=false;
     t_grid=0.;

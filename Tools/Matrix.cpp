@@ -13,6 +13,7 @@
 
 
 #include "Matrix.h"
+#include "ErrorMessage.hpp"
 #include <iostream>
 using std::cout; using std::cerr; using std::endl;
 #include <complex>
@@ -34,9 +35,8 @@ Matrix<2,2> sqrt(const Matrix<2,2>& inputMatrix)
   // Test whether the matrix is hermitian
   if( inputMatrix.m[0*2+1] != conj(inputMatrix.m[1*2+0]) )
     {
-      cerr << "ERROR in sqrt(const Matrix<2,2>&): "
-	   << "Only sqrt of hermitian 2x2 matrix implemented." << endl;
-      exit(1);
+      throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in sqrt(const Matrix<2,2>&): "
+	   << "Only sqrt of hermitian 2x2 matrix implemented." );
     }
 
   // Store the matrix in gsl format
@@ -55,9 +55,8 @@ Matrix<2,2> sqrt(const Matrix<2,2>& inputMatrix)
   gsl_matrix_complex *evec = gsl_matrix_complex_alloc(2, 2);
   if ((gsl_eigen_hermv (matrix, eval, evec, w)) != 0) {
     //could not find eigenvalues
-    cerr << "ERROR in sqrt(const Matrix<2,2>&): "
-	 << "Failed at finding eigenvalues and eigenvectors." << endl;
-    exit(1);
+    throw std::runtime_error(nucqcd::ErrorMessage() << "ERROR in sqrt(const Matrix<2,2>&): "
+	 << "Failed at finding eigenvalues and eigenvectors.");
   }
 
   // sort the eigenvalues, take square root and put them into

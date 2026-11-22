@@ -261,8 +261,20 @@ one commit per bug; no `[known-bug]` tests remain.
   `new`/`delete` pairs (scratch arrays in integrands) were left alone. Not covered: the Tools
   classes with hand-written copy operations (`TKinematics2to3`, the `T*PWF` wave functions,
   `GammaStructure`, ...), which were not checked line by line.
-- [ ] **Errors:** replace `exit()` in the libraries (about 295 calls) with exceptions, so errors can be
-  tested and handled. For example, Christy-Bosted calls `exit()` outside its kinematic range.
+- [x] **Errors:** the libraries throw standard exceptions instead of printing to `std::cerr` and calling
+  `exit(1)` (about 270 calls in Tools, Glauber, Knockout, GPD_Partons; DIS had none):
+  `std::invalid_argument` for invalid options, names, format strings and quantum numbers (most of
+  them, including the ~110 format-string checks of `TKinematics2to3`), `std::out_of_range` for values
+  outside a grid or parametrization (r beyond the mean-field grid, Christy-Bosted above W² = 25 GeV²,
+  matrix indices), `std::logic_error` for calls in the wrong order (grids read before they are filled
+  or initialized twice), and `std::runtime_error` for input files that cannot be opened and failed
+  calculations. The messages are unchanged; `Tools/ErrorMessage.hpp` (`nucqcd::ErrorMessage`) builds
+  them with stream syntax. An uncaught exception still ends the program with the message (now via
+  `std::terminate`, so the exit status is that of an abort rather than 1). Exceptions cannot pass
+  through the C and Fortran integrators (Cuba, cubature, GSL), so inside integrands called from there
+  they still end the program. Left as they were: third-party code (Cuba, cubature, MSTW), `TMPI`, and
+  the `STOP`s in the Fortran code. Tested in `unit_errors`. Converted with a script and reviewed per
+  message (CRLF line endings of `WeakQEHadronCurrent.cpp` kept).
 - [x] **Grid cache:**
   - [x] **Cache directory:** `Tools/GridCache.hpp` provides `nucqcd::grid_cache_dir(share)`, which is
     `$NUCQCD_GRID_DIR` if that is set and `share/grids/` otherwise. `AbstractFsiGrid` (and so all

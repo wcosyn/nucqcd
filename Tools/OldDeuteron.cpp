@@ -1,4 +1,5 @@
 #include <cassert>
+#include "ErrorMessage.hpp"
 
 using namespace std;
 
@@ -255,8 +256,7 @@ std::complex<double> OldDeuteron::get_stensor(int dspin, int spinp, int spinn, d
 	      stensor=complex<double>(-3.0*costheta*sintheta*cosphi,3.0*costheta*sintheta*sinphi);
 	      break;
 	    default:
-	      cout << "invalid neutron spin" << endl;
-	      exit(1);
+	      throw std::invalid_argument(nucqcd::ErrorMessage() << "invalid neutron spin" );
 	  }
 	  break;
 	case 1:
@@ -268,13 +268,11 @@ std::complex<double> OldDeuteron::get_stensor(int dspin, int spinp, int spinn, d
 	      stensor=complex<double>(3.0*sintheta*sintheta*cos2phi,-3.0*sintheta*sintheta*sin2phi);
 	      break;
 	    default:
-	      cout << "invalid neutron spin" << endl;
-	      exit(1);
+	      throw std::invalid_argument(nucqcd::ErrorMessage() << "invalid neutron spin" );
 	  }
 	  break;
 	default:
-	  cout << "invalid proton spin" << endl;
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "invalid proton spin" );
       }
       break;
     case 0:
@@ -288,8 +286,7 @@ std::complex<double> OldDeuteron::get_stensor(int dspin, int spinp, int spinn, d
 	      stensor=complex<double>(-(3.0*costheta*costheta-1.0),0.);
 	      break;
 	    default:
-	      cout << "invalid neutron spin" << endl;
-	      exit(1);
+	      throw std::invalid_argument(nucqcd::ErrorMessage() << "invalid neutron spin" );
 	  }
 	  break;
 	  case 1:
@@ -301,13 +298,11 @@ std::complex<double> OldDeuteron::get_stensor(int dspin, int spinp, int spinn, d
 	      stensor=complex<double>(3.0*costheta*sintheta*cosphi,-3.0*costheta*sintheta*sinphi);
 	      break;
 	    default:
-	      cout << "invalid neutron spin" << endl;
-	      exit(1);
+	      throw std::invalid_argument(nucqcd::ErrorMessage() << "invalid neutron spin" );
 	  }
 	  break;
 	default:
-	  cout << "invalid proton spin" << endl;
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "invalid proton spin" );
       }
       stensor*=sqrt(2.);
       break;
@@ -322,8 +317,7 @@ std::complex<double> OldDeuteron::get_stensor(int dspin, int spinp, int spinn, d
 	      stensor=complex<double>(3.0*costheta*sintheta*cosphi,3.0*costheta*sintheta*sinphi);
 	      break;
 	    default:
-	      cout << "invalid neutron spin" << endl;
-	      exit(1);
+	      throw std::invalid_argument(nucqcd::ErrorMessage() << "invalid neutron spin" );
 	  }
 	  break;
 	  case 1:
@@ -335,18 +329,15 @@ std::complex<double> OldDeuteron::get_stensor(int dspin, int spinp, int spinn, d
 	      stensor=complex<double>(3.0*costheta*costheta-1.0,0.);
 	      break;
 	    default:
-	      cout << "invalid neutron spin" << endl;
-	      exit(1);
+	      throw std::invalid_argument(nucqcd::ErrorMessage() << "invalid neutron spin" );
 	  }
 	  break;
 	default:
-	  cout << "invalid proton spin" << endl;
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "invalid proton spin" );
       }
       break;
     default:
-      cout << "invalid deuteron spin" << endl;
-      exit(1);
+      throw std::invalid_argument(nucqcd::ErrorMessage() << "invalid deuteron spin" );
   } 
   return stensor;
  

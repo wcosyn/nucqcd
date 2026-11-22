@@ -14,7 +14,7 @@
 namespace {
 nucqcd_test::RefStore refs("reg_nucleon_structure");
 
-// default grid of (x, Q^2[MeV^2]) points; Christy-Bosted only covers W < ~3 GeV (and calls exit()
+// default grid of (x, Q^2[MeV^2]) points; Christy-Bosted only covers W < ~3 GeV (and throws std::out_of_range
 // outside its range), so it gets its own grid
 const std::vector<double> xs_default = {0.1, 0.3, 0.6}, Q2s_default = {2.e06, 5.e06};
 const std::vector<double> xs_CB = {0.3, 0.5, 0.7}, Q2s_CB = {1.e06, 2.e06};

@@ -12,6 +12,7 @@
 #define FOURVECTOR_H
 
 #include <iostream>
+#include "ErrorMessage.hpp"
 #include <cmath>
 #include "Matrix.h"
 #include "GammaStructure.h"
@@ -167,9 +168,8 @@ T& FourVector<T>::operator[]( int subscript)
     case 3:
       return z;
     default:
-      std::cerr << "subscript(=" << subscript << ") out of range"
-		<< std::endl;
-      exit(1); 
+      throw std::out_of_range(nucqcd::ErrorMessage() << "subscript(=" << subscript << ") out of range"
+		); 
     }
 }
 
@@ -189,9 +189,8 @@ T FourVector<T>::operator[]( int subscript) const
     case 3:
       return z;
     default:
-      std::cerr << "subscript(=" << subscript << ") out of range"
-		<< std::endl;
-      exit(1); 
+      throw std::out_of_range(nucqcd::ErrorMessage() << "subscript(=" << subscript << ") out of range"
+		); 
     }
 }
 

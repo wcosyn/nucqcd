@@ -49,6 +49,7 @@
 ////////////////////////////////////////////////////////////////////////
 
 #include "TYukawaPWF.h"
+#include "ErrorMessage.hpp"
 // #include "Structures.h"
 #include <iostream>
 #include <cstdlib>
@@ -75,15 +76,13 @@ TYukawaPWF::TYukawaPWF(int order, double alpha, double m0,
   // c,d = arrays containing parameters. [fm^1/2]
 
   if(!c || !d) {
-    cerr << "Error in TYukawaPWF::TYukawaPWF(int,double*,double*): "
-	 << "double arrays are NULL!\n";
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "Error in TYukawaPWF::TYukawaPWF(int,double*,double*): "
+	 << "double arrays are NULL!");
   }
 
   if(fOrder<1) {
-    cerr << "Error in TYukawaPWF::TYukawaPWF(int,double*,double*): "
-	 << "order should be >=1!\n";
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "Error in TYukawaPWF::TYukawaPWF(int,double*,double*): "
+	 << "order should be >=1!");
   }
 
   for(int i=0; i<fOrder; ++i) {
@@ -139,15 +138,13 @@ TYukawaPWF::TYukawaPWF(int order, double *c, double *d, double *m)
   // c,d,m = arrays containing parameters. [fm^1/2]
 
   if(!c || !d || !m) {
-    cerr << "Error in TYukawaPWF::TYukawaPWF(int,double*,double*): "
-	 << "double arrays are NULL!\n";
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "Error in TYukawaPWF::TYukawaPWF(int,double*,double*): "
+	 << "double arrays are NULL!");
   }
 
   if(fOrder<1) {
-    cerr << "Error in TYukawaPWF::TYukawaPWF(int,double*,double*): "
-	 << "order should be >=1!\n";
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "Error in TYukawaPWF::TYukawaPWF(int,double*,double*): "
+	 << "order should be >=1!");
   }
 
   for(int i=0; i<fOrder; ++i) {

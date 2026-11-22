@@ -1,4 +1,5 @@
 #include "NucleonStructure.hpp"
+#include "ErrorMessage.hpp"
 #include "FortranString.hpp"
 #include "constants.hpp"
 #include <iostream>
@@ -219,8 +220,7 @@ void NucleonStructure::getF_CB(double &F1, double &F2, const bool proton, const 
   double mass=proton? MASSP:MASSN;
   double Wsq=Q2*(1./x-1.)+mass*mass;
   if(Wsq>25.E06){ 
-    cerr << "Invariant mass too big for Christy & Bosted Parametrization!! " << Wsq << endl;
-    exit(1);
+    throw std::out_of_range(nucqcd::ErrorMessage() << "Invariant mass too big for Christy & Bosted Parametrization!! " << Wsq );
   }
   double R_CB;
   double ONE=1.;
@@ -292,7 +292,7 @@ void NucleonStructure::getF_xQ(double &F1, double &F2,const bool proton, const d
   else if(!name.compare("CTEQ")) getF_CTEQ(F1,F2,proton,x,Q2);
   else if(!name.compare("HMRS")) getF_HMRS(F1,F2,proton,x,Q2);
   else if(!name.compare("MSTW")) getF_MSTW(F1,F2,proton,x,Q2);
-  else { cerr << "invalid name for structure function" << endl; exit(1);}
+  else { throw std::invalid_argument(nucqcd::ErrorMessage() << "invalid name for structure function" );}
   return;
 }
 

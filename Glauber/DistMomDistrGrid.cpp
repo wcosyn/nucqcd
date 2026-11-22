@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <ErrorMessage.hpp>
 #include <iostream>
 #include <fstream>
 #include <gsl/gsl_sf_bessel.h>
@@ -252,8 +253,7 @@ DistMomDistrGrid& DistMomDistrGrid::operator=(const DistMomDistrGrid& rhs)
 //set up inteprolation help variables for r
 void DistMomDistrGrid::setPinterp(const double p){
   if(p>getPmax()){
-    cerr << "p out of range: " << p << endl;
-    exit(1);
+    throw std::out_of_range(nucqcd::ErrorMessage() << "p out of range: " << p );
   }
   pindex = int(floor(p*getInvPstep()));
   if(pindex==getPgrid()) pindex-=1;
@@ -312,8 +312,7 @@ double DistMomDistrGrid::getRhoGridFull_interp(int gridindex){
 
 double DistMomDistrGrid::getRhopwGridFull_interp(double p){
   if(p>getPmax()){
-    cerr << "p out of range in : getRhopwGridFull" << p << endl;
-    exit(1);
+    throw std::out_of_range(nucqcd::ErrorMessage() << "p out of range in : getRhopwGridFull" << p );
   }
   return interpolate(rhopwgrid,p,1./getInvPstep(),getPgrid()+1,0); 
   
@@ -481,7 +480,7 @@ void DistMomDistrGrid::constructAllGrids(TRotation & rot){
           rhoctgrid[l][i][j][k]+=norm(ret[l+number_of_Grids/2]);
 	      }
 	    }      
-	    else {cerr  << "integrator type not implemented" << endl; exit(1);}
+	    else {throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented" );}
 //   	    cout << i << " " << j << " " << k << " " << m << " " << ms << " " << rhogrid[0][i][j][k] << " " << rhogrid[1][i][j][k]<< " " << rhogrid[2][i][j][k]<< " " << rhoctgrid[0][i][j][k]<< " " << res << " " << count << endl;
 	    
 	  }
@@ -593,7 +592,7 @@ void DistMomDistrGrid::constructCtGrid(TRotation & rot){
 		rhoctgrid[l][i][j][k]+=norm(ret[l]);
 	      }
 	    }      
-	    else {cerr  << "integrator type not implemented" << endl; exit(1);}
+	    else {throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented" );}
 // 	    cout << i << " " << j << " " << k << " " << m << " " << ms << " " << rhoctgrid[0][i][j][k] << " " << rhoctgrid[1][i][j][k]<< " " << rhoctgrid[2][i][j][k]<< " " << res << " " << count << endl;
 	  }
 	}
