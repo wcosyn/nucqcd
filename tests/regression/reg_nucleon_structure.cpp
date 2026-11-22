@@ -6,6 +6,7 @@
 
 #include <NuclStructure.hpp>
 #include <NucleonStructure.hpp>
+#include <constants.hpp>
 
 #include <sstream>
 #include <string>
@@ -34,10 +35,10 @@ void check_param(const std::string &name, const std::vector<double> &xs = xs_def
       }
 }
 
-// NuclStructure (used by the deuteron code) and NucleonStructure must give the same F2 (and F1,
-// where NuclStructure defines it: for SLAC and CTEQ it returns inf, and DeuteronStructure builds
-// F1 from F2 itself for SLAC). Until 2026 NuclStructure passed Q^2 instead of Q to MSTW.
-void check_same(const std::string &name, bool with_F1, const std::vector<double> &xs = xs_default,
+// NuclStructure (used by the deuteron code) and NucleonStructure must give the same F1 and F2. Since
+// 2026-11 NuclStructure is a wrapper around NucleonStructure; before, it had its own copy of the
+// parametrizations (with F1 = inf for SLAC and CTEQ, and until 2026 Q^2 instead of Q for MSTW).
+void check_same(const std::string &name, const std::vector<double> &xs = xs_default,
                 const std::vector<double> &Q2s = Q2s_default) {
   NucleonStructure sf(name);
   for (int proton = 0; proton <= 1; proton++)
@@ -48,18 +49,37 @@ void check_same(const std::string &name, bool with_F1, const std::vector<double>
         sf.getF_xQ(F1, F2, proton, x, Q2);
         NuclStructure nsf(proton, Q2, x, 0, name);
         CHECK_THAT(nsf.getF2(), Catch::Matchers::WithinRel(F2, 1e-12));
-        if (with_F1) CHECK_THAT(nsf.getF1(), Catch::Matchers::WithinRel(F1, 1e-12));
+        CHECK_THAT(nsf.getF1(), Catch::Matchers::WithinRel(F1, 1e-12));
       }
 }
 }  // namespace
 
-TEST_CASE("NuclStructure and NucleonStructure agree: SLAC", "[structure]") { check_same("SLAC", false); }
-TEST_CASE("NuclStructure and NucleonStructure agree: Christy-Bosted", "[structure]") {
-  check_same("CB", true, xs_CB, Q2s_CB);
+TEST_CASE("NuclStructure and NucleonStructure agree: SLAC", "[structure]") { check_same("SLAC"); }
+TEST_CASE("NuclStructure and NucleonStructure agree: Christy-Bosted", "[structure]") { check_same("CB", xs_CB, Q2s_CB); }
+TEST_CASE("NuclStructure and NucleonStructure agree: Alekhin", "[structure]") { check_same("Alekhin"); }
+TEST_CASE("NuclStructure and NucleonStructure agree: CTEQ", "[structure]") { check_same("CTEQ"); }
+TEST_CASE("NuclStructure and NucleonStructure agree: MSTW", "[structure]") { check_same("MSTW"); }
+
+TEST_CASE("NuclStructure off-shell kinematics: W^2 independent of x", "[structure]") {
+  // DeuteronStructure passes an off-shell W^2; Christy-Bosted and SLAC (Bodek) use it, the others x.
+  // Checked against the former stand-alone implementation of NuclStructure on 216 points in 2026-11.
+  const double Q2 = 2.e06, x = 0.5, mass = nucqcd::mass_p;
+  const double Wsq_on = Q2 * (1. / x - 1.) + mass * mass, Wsq_off = Wsq_on - 0.3e06;
+  for (const std::string name : {"CB", "SLAC"}) {
+    CAPTURE(name);
+    NucleonStructure sf(name);
+    double F1 = 0., F2 = 0., F1on = 0., F2on = 0.;
+    sf.getF_xQW(F1, F2, true, x, Q2, Wsq_off);
+    sf.getF_xQ(F1on, F2on, true, x, Q2);
+    NuclStructure off(true, Q2, x, Wsq_off, name);
+    CHECK(off.getF2() == F2);
+    CHECK(off.getF1() == F1);
+    CHECK(F2 != F2on);  // W^2 matters for these two
+  }
+  // above W^2 = 9 GeV^2 Christy-Bosted switches to SLAC (DeuteronStructure checks the name)
+  CHECK(NuclStructure(true, 4.e06, 0.2, 0, "CB").getName() == "SLAC");
+  CHECK(NuclStructure(true, 2.e06, 0.5, 0, "CB").getName() == "CB");
 }
-TEST_CASE("NuclStructure and NucleonStructure agree: Alekhin", "[structure]") { check_same("Alekhin", true); }
-TEST_CASE("NuclStructure and NucleonStructure agree: CTEQ", "[structure]") { check_same("CTEQ", false); }
-TEST_CASE("NuclStructure and NucleonStructure agree: MSTW", "[structure]") { check_same("MSTW", true); }
 
 TEST_CASE("NuclStructure MSTW copy and assignment", "[structure]") {
   NuclStructure a(true, 5.e06, 0.3, 0, "MSTW");

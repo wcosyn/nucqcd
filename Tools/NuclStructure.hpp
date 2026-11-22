@@ -79,7 +79,7 @@
 
 
 /*! \file NuclStructure.hpp 
- * \brief Contains declaration of class NuclStructure, contains a variety of nucleon structure function parametrizations
+ * \brief Contains declaration of class NuclStructure: nucleon structure functions at fixed (possibly off-shell) kinematics
  * \author Wim Cosyn
  * \date 29/08/2012
  * 
@@ -89,11 +89,25 @@
 #ifndef NUCLSTRUCTURE_HPP
 #define NUCLSTRUCTURE_HPP
 
-#include <string>
-#include <cmath>
-class c_mstwpdf; //forward declaration
+#include "NucleonStructure.hpp"
 
-/*! \brief A class for a variety of nucleon structure parametrizations.  Has Christy&Bosted / Alekhin (leading twist) / SLAC. */
+#include <cmath>
+#include <string>
+
+/*! \brief Nucleon structure functions at fixed kinematics (Q^2, x and W^2, which may be off-shell)
+ *
+ * A thin wrapper around NucleonStructure: it stores the kinematics and the parametrization, and
+ * evaluates them with NucleonStructure::getF_xQW, so the parametrizations are implemented once.
+ * x and W^2 can be independent (off-shell nucleons in DeuteronStructure): Christy-Bosted and SLAC
+ * use W^2, the others x.
+ *
+ * \note Christy-Bosted ("CB") is only used up to W^2 = 9 GeV^2 (W = 3 GeV): above it the constructor
+ * replaces it by "SLAC" (Bodek), and getName() then returns "SLAC". DeuteronStructure relies on that
+ * name: for SLAC it builds F1 from F2 itself. NucleonStructure does not switch (there CB is used up to
+ * W^2 = 25 GeV^2 and throws std::out_of_range above), so "CB" through this class and through
+ * NucleonStructure differ above W^2 = 9 GeV^2. Until 2026-11 this class had its own copy of the parametrizations; F1 for
+ * SLAC and CTEQ was then infinite, it is now the value of NucleonStructure (from F2 with R1998).
+ */
 class NuclStructure{
   
 public:
@@ -105,35 +119,20 @@ public:
    * [0]: var1 is Q2 [MeV^2] and var2 is Bjorken x [] <BR>
    * [1]: var1 is Q2 [MeV^2] and var2 is W^2 [MeV^2] <BR>
    * [2]: var1 is Bjorken x [] and var2 is W^2 [MeV^2] <BR>
-   * \param name Name of the parametriation. Possibilities: <BR>
-   * "CB": Christy & Bosted parametrization (see F1F209.f file) if invariant mass is >5 GeV, auto switch to SLAC!!!<BR>
-   * "SLAC": SLAC paramtetrization from Bodek <BR>
-   * "Alekhin": leading twist parametrization by Alekhin [see PRD 68,014002], also see alekhin.f file <BR>
-   * "CTEQ": F2 based on the pdf's from CTEQ (code from Misak, see cteq.f file) <BR>
-   * "HMRS": F2 from pdfs from unknown source (Shunzo Kumano is the source, not enough info in his code file, see hmrs-b.f) <BR>
-   * "MSTW": F2 from LO (or nlo etc) from MSTW pdfs (see mstwpdf.h & mstw.cpp) <BR>
+   * (the third variable follows from the on-shell relation W^2 = Q^2(1/x-1) + M^2)
+   * \param name Name of the parametrization, see NucleonStructure: "CB" (Christy & Bosted; above
+   * W^2 = 9 GeV^2 it switches to "SLAC", also in getName), "SLAC", "Alekhin", "CTEQ", "HMRS", "MSTW"
    */
   NuclStructure(const bool proton, double var1, double var2, int switchvar, std::string name);
-  /*! Constructor 
+  /*! Constructor with independent kinematics (off-shell)
    * \param proton proton [1] or neutron [0]
    * \param Q2in [MeV^2] Q^2 of the virtual photon
    * \param xin [] Bjorken x
    * \param Wsqin [MeV^2] invariant mass squared W^2
-   * \param name Name of the parametriation. Possibilities: <BR>
-   * "CB": Christy & Bosted parametrization (see F1F209.f file) if invariant mass is >5 GeV, auto switch to SLAC!!!<BR>
-   * "SLAC": SLAC paramtetrization from Bodek <BR>
-   * "Alekhin": leading twist parametrization by Alekhin [see PRD 68,014002], also see alekhin.f file <BR>
-   * "CTEQ": F2 based on the pdf's from CTEQ (code from Misak, see cteq.f file) <BR>
-   * "HMRS": F2 from pdfs from unknown source (Shunzo Kumano is the source, not enough info in his code file, see hmrs-b.f) <BR>
-   * "MSTW": F2 from LO (or nlo etc) from MSTW pdfs (see mstwpdf.h & mstw.cpp) <BR>
+   * \param name Name of the parametrization, see the other constructor
    */
   NuclStructure(const bool proton, double Q2in, double xin, double Wsqin, std::string name);
 
-  NuclStructure(const NuclStructure&); /*!< Copy Constructor */
-  NuclStructure& operator=(const NuclStructure&); /*!< assignment operator */
-  ~NuclStructure(); /*!< Destructor */
-  
-  
   /*! Returns the F1 and F2 structure functions */
   void getF(double &F1, double &F2);
   double getF1(); /*!< returns the F1 structure function */
@@ -142,116 +141,27 @@ public:
   double getW(){return sqrt(Wsq);} /*!< [MeV] returns the invariant mass of X*/
   bool getProton() const{return proton;} ///< structure functions of the proton (true) or the neutron (false)
   
-  /*! returns the g1 structure function from the grsv2000 parametrization (leading order,  hep-ph/0011215, Tools/grsv2000pdf_g1.f )
-   * \param proton 1=proton 0=neutron
-   * \param x Bjorken x nucleon
-   * \param Q2 [MeV^2] virtual photon four-momentum sq
-   * \return g1n structure functions
-   */
-  static double getG1_grsv2000(const bool proton, double x, double Q2);
-  /*! returns the sigma_L/sigma_T ratio, from SLAC fits (code from Shunzo Kumano, see R199x.f)
-   * This is the 1990 parametrization 0.1 < x < 0.9, 0.6 < Q^2 < 20 GeV^2
-   * L. W. Withlow et al., Phys. Lett. B250 194(1990)
-   * \param x Bjorken x nucleon
-   * \param Q2 [MeV^2] virtual photon four-momentum sq
-   * \return R=sigma_L/sigma_T (indicates scaling violations from Callan-Gross LT relation)
-   */
-  static double getr1990(double x, double Q2);
-  /*! returns the sigma_L/sigma_T ratio, from SLAC fits (code from Shunzo Kumano, see R199x.f)
-   * This is the 1998 parametrization 0.005 < x < 0.86, 0.5 < Q^2 < 130 GeV^2
-   * (E143) K. Abe et al., Phys. Lett B452 194 (1999)
-   * \param x Bjorken x nucleon
-   * \param Q2 [MeV^2] virtual photon four-momentum sq
-   * \return R=sigma_L/sigma_T (indicates scaling violations from Callan-Gross LT relation)
-   */
-  static double getr1998(double x, double Q2);
-
-
-  /*! returns the g1+g2 structure function using the Wandura-Wilczek relation [g1+g2=int dy/y g1(y)] from the grsv2000 parametrization (leading order,  hep-ph/0011215, Tools/grsv2000pdf_g1.f )
-   * This sum of structure functions is related to the transversity pdfs (and higher twist).
-   * \param proton 1=proton 0=neutron
-   * \param x Bjorken x nucleon
-   * \param Q2 [MeV^2] virtual photon four-momentum sq
-   * \return g1+g2 structure functions
-   */
-  static double getG1plusg2_grsv2000(const bool proton, double x, double Q2);
+  /*! g1 from the grsv2000 parametrization, see NucleonStructure::getG1_grsv2000
+   * \param proton 1=proton 0=neutron \param x Bjorken x \param Q2 [MeV^2] \return g1 */
+  static double getG1_grsv2000(const bool proton, double x, double Q2){ return NucleonStructure::getG1_grsv2000(proton,x,Q2); }
+  /*! R = sigma_L/sigma_T, 1990 SLAC fit, see NucleonStructure::getr1990
+   * \param x Bjorken x \param Q2 [MeV^2] \return R */
+  static double getr1990(double x, double Q2){ return NucleonStructure::getr1990(x,Q2); }
+  /*! R = sigma_L/sigma_T, 1998 SLAC fit, see NucleonStructure::getr1998
+   * \param x Bjorken x \param Q2 [MeV^2] \return R */
+  static double getr1998(double x, double Q2){ return NucleonStructure::getr1998(x,Q2); }
+  /*! g1+g2 from grsv2000 with the Wandzura-Wilczek relation, see NucleonStructure::getG1plusg2_grsv2000
+   * \param proton 1=proton 0=neutron \param x Bjorken x \param Q2 [MeV^2] \return g1+g2 */
+  static double getG1plusg2_grsv2000(const bool proton, double x, double Q2){ return NucleonStructure::getG1plusg2_grsv2000(proton,x,Q2); }
   
 private:
-  std::string name; /*!< name of the paramtetrization */
+  std::string name; /*!< name of the parametrization */
   bool proton; /*!< proton [1] or neutron [0] structure functions */
   double mass; /*!< [MeV] nucleon mass */
-  std::string dir; /*!< share dir to read input files */
   double x; /*!< Bjorken x */
   double Q2; /*!< [MeV^2] Q^2 of the virtual photon */
   double Wsq; /*!< [MeV^2] invariant mass squared W^2 */
-  c_mstwpdf *mstw; ///< MSTW PDF interpolation object
-  
-  /*! proton F2 SLAC parametrization
-   * \param massi [GeV] initial mass, off-shell
-   * \param xp bjorken x
-   * \param q2 [GeV^2] Q^2 of virtual photon
-   * \param fm [GeV] invariant mass W
-   * \return F2 of proton
-   */
-  double f2p_b(double massi, double xp, double q2, double fm) const;
-  /*! neutron F2 SLAC parametrization
-   * \param massi [GeV] initial mass, off-shell
-   * \param xp bjorken x
-   * \param q2 [GeV^2] Q^2 of virtual photon
-   * \param fm [GeV] invariant mass W
-   * \return F2 of neutron
-   */
-  double f2n_b(double massi, double xp, double q2, double fm) const;
-  
-  /*! SLAC parametrization helper function
-   * \param wm [GeV] invariant mass
-   * \param qsq [GeV^2] Q^2 of virtual photon
-   * \return something :p
-   */
-  double bodek(double wm, double qsq) const;
-  
-  
-  /*! returns F1 and F2 in the alekhin parametrization
-   * \param[out] F1 F1 structure function
-   * \param[out] F2 F2 structure function
-   */
-  void getF_Alekhin(double &F1, double &F2);
-  double getF1_Alekhin(); /*!< return F1 structure function in the Alekhin parametrization */
-  double getF2_Alekhin(); /*!< return F2 structure function in the Alekhin parametrization */
-  /*! returns F1 and F2 in the SLAC parametrization
-   * \param[out] F1 F1 structure function
-   * \param[out] F2 F2 structure function
-   */
-  void getF_SLAC(double &F1, double &F2) const;
-  double getF1_SLAC() const; /*!< return F1 structure function in the SLAC parametrization */
-  double getF2_SLAC() const; /*!< return F2 structure function in the SLAC parametrization */
-  /*! returns F1 and F2 in the Christy & Bosted parametrization
-   * \param[out] F1 F1 structure function
-   * \param[out] F2 F2 structure function
-   */
-  void getF_CB(double &F1, double &F2) const;
-  double getF1_CB() const;/*!< return F1 structure function in the Christy & Bosted parametrization */
-  double getF2_CB() const;/*!< return F2 structure function in the Chrsity & Bosted parametrization */
-  /*! returns F1 and F2 in the CTEQ parametrization
-   * \param[out] F1 F1 structure function
-   * \param[out] F2 F2 structure function
-   */
-  void getF_CTEQ(double &F1, double &F2);
-  double getF1_CTEQ();/*!< return F1 structure function in the CTEQ parametrization */
-  double getF2_CTEQ();/*!< return F2 structure function in the CTEQ parametrization */
-  
-  /*! returns F1 and F2 in the HRMS-B parametrization
-   * \param[out] F1 F1 structure function
-   * \param[out] F2 F2 structure function
-   */
-  void getF_HMRS(double &F1, double &F2);
-  
- /*! returns F1 and F2 in the MSTW parametrization
-   * \param[out] F1 F1 structure function
-   * \param[out] F2 F2 structure function
-   */
-  void getF_MSTW(double &F1, double &F2);
-  
+  NucleonStructure structure; /*!< the parametrization */
 };
 /*! @} */
 #endif

@@ -451,9 +451,21 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   largely copy-pasted, as are the {plain, Thick} × {CT, Decay} abstract classes.
 - [ ] **Model selection:** use enums or factory registries instead of model-name strings (about 700
   string comparisons). A typo should fail at compile time, not with `exit()` at runtime.
-- [ ] **Merge `NuclStructure` into `NucleonStructure`.** They wrap the same parametrizations and
-  have already drifted apart once (the MSTW scale, step 4). `DeuteronStructure` uses `NuclStructure`
-  and builds F1 for SLAC itself, where `NuclStructure` returns inf.
+- [x] **Merge `NuclStructure` into `NucleonStructure`.** The parametrizations are now implemented
+  once, in `NucleonStructure`; `NuclStructure` keeps its interface (about 20 programs,
+  `DeuteronStructure`, `DeuteronCross`, `Poldeut` use it unchanged) and is a thin wrapper that stores
+  the kinematics. `NuclStructure` takes x and W^2 independently (off-shell nucleons in
+  `DeuteronStructure`), which `NucleonStructure` did not support: it now has `getF_xQW` (Christy-Bosted
+  and SLAC use W^2, the others x; `getF_xQ` calls it with the on-shell W^2). The CB → SLAC switch above
+  W^2 = 9 GeV^2 (and its effect on `getName`) is kept. Checked against the former stand-alone
+  `NuclStructure` on 216 points (six parametrizations, proton and neutron, mostly off-shell): F2, F1
+  and the name agree to 1e-13. **One value change (author's decision):** F1 for SLAC and CTEQ through
+  `NuclStructure` was infinite (`1./0.`) and is now the `NucleonStructure` value
+  F2(1+gamma^2)/(2x(1+R1998)); this only affects paths that gave inf/NaN (CTEQ in
+  `DeuteronStructure`, programs asking for F1 with SLAC or CTEQ); `DeuteronStructure` with SLAC builds
+  its own F1 and is unchanged. Also fixed: `NucleonStructure::operator=` leaked its MSTW object. About
+  500 duplicated lines removed. Tested in `reg_nucleon_structure` (F1 now compared for all
+  parametrizations, and a new off-shell case).
 - [ ] **Very long files and functions:** break them up, for example `Tools/TKinematics2to3.cpp`
   (6.8k lines, one function of about 1.3k lines) and `Glauber/NucleonEMOperator.cpp` (4.2k lines).
 

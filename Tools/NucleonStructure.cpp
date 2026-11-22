@@ -133,6 +133,7 @@ NucleonStructure& NucleonStructure::operator=(const NucleonStructure& rhs){
   if(this!=&rhs) { // avoid self-assignment
     name=rhs.name;
     dir=rhs.dir;
+    delete mstw; // was leaked until 2026-11
     if(!name.compare("MSTW")){
       string file= string(nucqcd::share_dir)+"/mstw_grids/mstw2008lo.00.dat";
       mstw = new c_mstwpdf(file,false,true);
@@ -196,7 +197,19 @@ void NucleonStructure::getF_SLAC(double &F1, double &F2, const bool proton, cons
 double NucleonStructure::getF2_SLAC(const bool proton, const double x, const double Q2) const{
   double mass = proton? nucqcd::mass_p:nucqcd::mass_n;
   double Wsq=Q2*(1./x-1.)+mass*mass;
+  return getF2_SLAC_W(proton,x,Q2,Wsq);
+}
+
+double NucleonStructure::getF2_SLAC_W(const bool proton, const double x, const double Q2, const double Wsq) const{
+  double mass = proton? nucqcd::mass_p:nucqcd::mass_n;
   return proton? f2p_b(mass*1.E-03, x,Q2*1.E-06, sqrt(Wsq*1.E-06)):f2n_b(mass*1.E-03, x,Q2*1.E-06, sqrt(Wsq*1.E-06));
+}
+
+void NucleonStructure::getF_SLAC_W(double &F1, double &F2, const bool proton, const double x, const double Q2, const double Wsq) const{
+  F2=getF2_SLAC_W(proton,x,Q2,Wsq);
+  double R=getr1998(x,Q2);
+  double gamma2=pow(2*(proton? nucqcd::mass_p:nucqcd::mass_n)*x,2.)/Q2;
+  F1=F2/2./x/(R+1)*(1+gamma2);
 }
 
 void NucleonStructure::getF_CTEQ(double &F1, double &F2, const bool proton, const double x, const double Q2) const{
@@ -219,6 +232,10 @@ double NucleonStructure::getF2_CTEQ(const bool proton, const double x, const dou
 void NucleonStructure::getF_CB(double &F1, double &F2, const bool proton, const double x, const double Q2) const{
   double mass=proton? nucqcd::mass_p:nucqcd::mass_n;
   double Wsq=Q2*(1./x-1.)+mass*mass;
+  getF_CB_W(F1,F2,proton,Q2,Wsq);
+}
+
+void NucleonStructure::getF_CB_W(double &F1, double &F2, const bool proton, const double Q2, const double Wsq) const{
   if(Wsq>25.E06){ 
     throw std::out_of_range(nucqcd::ErrorMessage() << "Invariant mass too big for Christy & Bosted Parametrization!! " << Wsq );
   }
@@ -286,9 +303,14 @@ void NucleonStructure::getF_MSTW(double &F1,double &F2,const bool proton, const 
 
 
 void NucleonStructure::getF_xQ(double &F1, double &F2,const bool proton, const double x, const double Q2) const{
-  if(!name.compare("SLAC")) getF_SLAC(F1,F2,proton,x,Q2);
+  double mass=proton? nucqcd::mass_p:nucqcd::mass_n;
+  getF_xQW(F1,F2,proton,x,Q2,Q2*(1./x-1.)+mass*mass);
+}
+
+void NucleonStructure::getF_xQW(double &F1, double &F2,const bool proton, const double x, const double Q2, const double Wsq) const{
+  if(!name.compare("SLAC")) getF_SLAC_W(F1,F2,proton,x,Q2,Wsq);
   else if(!name.compare("Alekhin")) getF_Alekhin(F1,F2,proton,x,Q2);
-  else if(!name.compare("CB")) getF_CB(F1,F2,proton,x,Q2);
+  else if(!name.compare("CB")) getF_CB_W(F1,F2,proton,Q2,Wsq);
   else if(!name.compare("CTEQ")) getF_CTEQ(F1,F2,proton,x,Q2);
   else if(!name.compare("HMRS")) getF_HMRS(F1,F2,proton,x,Q2);
   else if(!name.compare("MSTW")) getF_MSTW(F1,F2,proton,x,Q2);
