@@ -68,10 +68,10 @@ namespace PRL99_072501 {
 			double omega    = Eei - Eef;
 			TVector3 q      = ei - ef;
 			double Q2       = q.Mag2() - omega*omega; // Q^2 = q^2 - w^2
-			double xB       = Q2/(2.*MASSP*omega);	
+			double xB       = Q2/(2.*nucqcd::mass_p*omega);	
 			TVector3 e_p2   = get_e_p2(); // random direction for e_p2
 			TVector3 p1     = get_p1();
-			double E1       = sqrt( MASSP*MASSP + p1.Mag2() );
+			double E1       = sqrt( nucqcd::mass_p*nucqcd::mass_p + p1.Mag2() );
 			TVector3 k1     = p1-q;
 			double ek1_ep2  = k1.Unit().Dot(e_p2); // (e_{k1} \cdot e_{p2})
 			//   -----------------------   //
@@ -84,8 +84,8 @@ namespace PRL99_072501 {
 			ev.xB          = xB;
 			ev.Q2          = Q2;
 			ev.omega       = omega;
-			ev.mass1       = MASSP;
-			ev.mass2       = MASSP;
+			ev.mass1       = nucqcd::mass_p;
+			ev.mass2       = nucqcd::mass_p;
 			ev.k1          = k1;
 			ev.p1          = p1;
 			ev.q           = q;
@@ -179,7 +179,7 @@ namespace PRL99_072501 {
 		TVector3 p2   = TVector3();
 		p2.SetMagThetaPhi(1.,th,phi); // unit vector, mag = 1, angles
 		if (KIN_SETTING == 350 || KIN_SETTING == 450 || KIN_SETTING == 550 )
-			p2.RotateY(-99.*DEGRTORAD); //
+			p2.RotateY(-99.*nucqcd::deg_to_rad); //
 		else
 			fprintf(stderr,"KIN SETTING %d NOT SUPPORTED!\n",KIN_SETTING);
 		assert( std::fabs(1.-p2.Mag()) < 1e-10); // check if e_p2 is indeed unit vector, can be removed if found to never fail
@@ -198,7 +198,7 @@ namespace PRL99_072501 {
 		ef.RotateX((1.-2.*v)*vacc);
 		//ef *= 3762. + (2.*w - 1)*0.04*3762. ; // ef varied by +- 4%
 		ef *= 3762.; // fixed ef
-		ef.RotateY(DEGRTORAD*19.5); // rotate to 20.3 degrees, now pointing in right mean direction
+		ef.RotateY(nucqcd::deg_to_rad*19.5); // rotate to 20.3 degrees, now pointing in right mean direction
 		return ef;
 	}
 
@@ -217,13 +217,13 @@ namespace PRL99_072501 {
 		
 		if (KIN_SETTING==350) {     
 			p *= 1450 + (2.*w-1.)*0.04*1450; // 4 % spread on p
-			p.RotateY(DEGRTORAD*(-40.1)); //  now pointing in right mean direction
+			p.RotateY(nucqcd::deg_to_rad*(-40.1)); //  now pointing in right mean direction
 		} else if (KIN_SETTING==450) {  
 			p *= 1420 + (2.*w-1.)*0.04*1420; // 4 % spread on p
-			p.RotateY(DEGRTORAD*(-35.8)); //  now pointing in right mean direction
+			p.RotateY(nucqcd::deg_to_rad*(-35.8)); //  now pointing in right mean direction
 		} else if (KIN_SETTING==550) {  // 750 MEV SETTINGS
 			p*= 1360  + (2.*w-1.)*0.04*1360; // 4 % spread on p
-			p.RotateY(DEGRTORAD*(-32.)); //  now pointing in the right mean direction
+			p.RotateY(nucqcd::deg_to_rad*(-32.)); //  now pointing in the right mean direction
 		} else {
 			fprintf(stderr,"KIN SETTING %d NOT SUPPORTED\n",KIN_SETTING);
 		}

@@ -150,13 +150,13 @@ int main(int argc, char** argv) {
         TwoVector_Nucl gimme_xs_2meson(pGPDService, pGPDModel, pRunningAlphaStrongModule);
         vector< double > results(2,0.);
 
-        double Ep=sqrt(MASSP_G*MASSP_G+p_beam*p_beam);
-        double s_eN = MASSP_G*MASSP_G + 2.*El_beam*(Ep+p_beam);
+        double Ep=sqrt(nucqcd::mass_p_GeV*nucqcd::mass_p_GeV+p_beam*p_beam);
+        double s_eN = nucqcd::mass_p_GeV*nucqcd::mass_p_GeV + 2.*El_beam*(Ep+p_beam);
 
         // cout << "sq_s_eN " << sqrt(s_eN) << endl;
         // cout << "sq_s_gN " << sqrt(s_gN) << endl;
         // cout << "x " << Q2in/s_eN/y << endl;
-        double ximax = sqrt(1./(1.-4.*MASSP_G*MASSP_G/t_N));
+        double ximax = sqrt(1./(1.-4.*nucqcd::mass_p_GeV*nucqcd::mass_p_GeV/t_N));
         //cout << 2.*ximax/(1+ximax)*s2 << " " << ximax << " " << s2 << endl;
         
         double s2array[5] = {6.,10.,25.,50.,100.};
@@ -174,14 +174,14 @@ int main(int argc, char** argv) {
                     double trho_2meson = -(2.+((2.*ximax)/(1.-ximax)*s2-2.)/10.*i);
                     double xi_2meson= (1-s2/(s2-trho_2meson))/(1+s2/(s2-trho_2meson));
 
-                    //cout << t_N << " " << -4.*MASSP_G*MASSP_G*xi*xi/(1-xi*xi) << endl;
+                    //cout << t_N << " " << -4.*nucqcd::mass_p_GeV*nucqcd::mass_p_GeV*xi*xi/(1-xi*xi) << endl;
                     double s1_dvcs=s_gN*Q2out/s2;
                     double s1_2meson = 2.*xi_2meson*(s_gN+Q2in)/(1.+xi_2meson)-Q2in;
-                    //t_N = -4.*MASSP_G*MASSP_G*xi*xi/(1-xi*xi);  //put t_n equal to tmin
+                    //t_N = -4.*nucqcd::mass_p_GeV*nucqcd::mass_p_GeV*xi*xi/(1-xi*xi);  //put t_n equal to tmin
                     
                     cout << y << " " << Q2in << " " << Q2in/s_eN/y /* bjorken x */ << " " << s2 << " " << t_N << " ";
                     cout << Q2out << " " << s1_dvcs/s_gN << " " << s2/s1_dvcs << " " << xi_didvcs << " ";
-                    if ((t_N>-4.*MASSP_G*MASSP_G*xi_didvcs*xi_didvcs/(1-xi_didvcs*xi_didvcs)) || s2>0.5*s1_dvcs){
+                    if ((t_N>-4.*nucqcd::mass_p_GeV*nucqcd::mass_p_GeV*xi_didvcs*xi_didvcs/(1-xi_didvcs*xi_didvcs)) || s2>0.5*s1_dvcs){
                         cout << "0. 0. 0. 0. 0. 0. " << endl;
                     }
                     else{
@@ -194,7 +194,7 @@ int main(int argc, char** argv) {
                     //comparison code for twomeson production
 
                     // cout << trho_2meson << " " << s1_2meson/s_gN << " " << s2/s1_dvcs << " " << xi_2meson << " ";
-                    // if((t_N>-4.*MASSP_G*MASSP_G*xi_2meson*xi_2meson/(1-xi_2meson*xi_2meson)) || s2>0.5*s1_2meson){
+                    // if((t_N>-4.*nucqcd::mass_p_GeV*nucqcd::mass_p_GeV*xi_2meson*xi_2meson/(1-xi_2meson*xi_2meson)) || s2>0.5*s1_2meson){
                     //     cout << "0. 0. " << endl;
                     // }
                     // else{

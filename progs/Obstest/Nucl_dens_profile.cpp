@@ -36,10 +36,10 @@ int main(int argc, char *argv[])
   double Ein=600.;
   double Eout=atof(argv[4]);
   int shell=atoi(argv[2]);
-  double thetae=atof(argv[3])*DEGRTORAD;
-  double phi = atof(argv[5])*DEGRTORAD;
+  double thetae=atof(argv[3])*nucqcd::deg_to_rad;
+  double phi = atof(argv[5])*nucqcd::deg_to_rad;
   int mmod = atoi(argv[6]);
-  //double thetap=atof(argv[3])*DEGRTORAD;
+  //double thetap=atof(argv[3])*nucqcd::deg_to_rad;
   double omega=Ein-Eout;
 //   int medium=atoi(argv[4]);
   
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
   int thick=1;//atoi(argv[9]);
   int maxEval=20000;//atoi(argv[10]);
   
-  string homedir=HOMEDIR;
+  string homedir=nucqcd::share_dir;
   MeanFieldNucleusThick nucleus(MeanFieldNucleus::TypeNames.at(nucleus_name),homedir);
   TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ein);
   
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
   double Q2=qvec*qvec-omega*omega;
   double thetaq=atan2(-sin(thetae)*Eout,Ein-Eout*cos(thetae));
 
-  cout << "thetaq: " << thetaq*RADTODEGR << endl; 
+  cout << "thetaq: " << thetaq*nucqcd::rad_to_deg << endl; 
   cout << "Q2: " << Q2*1.E-06 << endl;
 
   Cross obs(*elec,&nucleus,prec,integrator,homedir,screening,scr);
@@ -76,11 +76,11 @@ int main(int argc, char *argv[])
   
   
     TKinematics2to2 kin("","",nucleus.getMassA(),nucleus.getMassA_min_proton()+nucleus.getExcitation()[shell]
-		,MASSP,"qsquared:wlab:pklab",Q2,omega,pm);
+		,nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
     // cout << i << endl;
     if(kin.IsPhysical()){
-        cout << kin.GetKlab() << " " << kin.GetWlab() << " " << kin.GetPYlab() << " " << acos(kin.GetCosthYlab())*RADTODEGR 
-      << " " << kin.GetPklab() << " " << acos(kin.GetCosthklab())*RADTODEGR << " ";
+        cout << kin.GetKlab() << " " << kin.GetWlab() << " " << kin.GetPYlab() << " " << acos(kin.GetCosthYlab())*nucqcd::rad_to_deg 
+      << " " << kin.GetPklab() << " " << acos(kin.GetCosthklab())*nucqcd::rad_to_deg << " ";
 
     numint::vector_d cross=numint::vector_d(5,0.);
     obs.getAllDiffCross(cross,kin,2,shell,1,phi,20000,1,0, 1.,1.);
@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
     numint::vector_d asymm=numint::vector_d(40,0.);
     obs.getAllObs_xyz(asymm, kin, 2, shell, 1, mmod, phi, 20000, 1,1.,1.);
     NucleonEMOperator nuclFF(Q2,1,0);
-    double free_ratio = -2.*MASSP/(Ein+Eout)/tan(thetae/2.)*nuclFF.getGE()/nuclFF.getGM();
+    double free_ratio = -2.*nucqcd::mass_p/(Ein+Eout)/tan(thetae/2.)*nuclFF.getGE()/nuclFF.getGM();
     
     cout << asymm[37]/asymm[39] << " " << asymm[5]/asymm[7] << " " << free_ratio << endl;
     // obs.getAllObs_tnl(asymm, kin, 2, shell, 1, 0, phi, 20000, 1,1.,1.);

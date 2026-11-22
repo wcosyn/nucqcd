@@ -35,8 +35,8 @@ int main(int argc, char *argv[])
 
     DeuteronCross test("paris",proton,"SLAC",sigmain,betain,-0.5,8.,1.2,offshellset,looplimit);
 
-    double psmin = alpha_s*MASSD/2.;
-    double psplus = 2.*(pT*pT+MASSN*MASSN)/alpha_s/MASSD;
+    double psmin = alpha_s*nucqcd::mass_d/2.;
+    double psplus = 2.*(pT*pT+nucqcd::mass_n*nucqcd::mass_n)/alpha_s/nucqcd::mass_d;
     double Es = 0.5*(psmin+psplus);
     double psz = 0.5*(psplus-psmin);
 
@@ -44,22 +44,22 @@ int main(int argc, char *argv[])
 
     double ps = sqrt(psz*psz+pT*pT);
 
-    double nu = Q2/(2.*xb*MASSP);
+    double nu = Q2/(2.*xb*nucqcd::mass_p);
     cout << "nu " << nu << endl;
     double qvec = sqrt(Q2+nu*nu);
 
-    double Eioff = MASSD-Es;
+    double Eioff = nucqcd::mass_d-Es;
     double massoff2 = Eioff*Eioff-ps*ps;
 
     double Wsq = pow(nu+Eioff,2.)-qvec*qvec-ps*ps+2.*qvec*psz;
 
     double xprime = Q2/(Wsq-massoff2+Q2);
 
-    cout << ps*1.E-03 << " "<< theta*RADTODEGR << " " << sqrt(Wsq)*1.E-03 << " " << xprime << endl;
+    cout << ps*1.E-03 << " "<< theta*nucqcd::rad_to_deg << " " << sqrt(Wsq)*1.E-03 << " " << xprime << endl;
     sigmain= DeuteronCross::sigmaparam(Wsq,Q2);  // get sigma parameter
-    //cout << sigmain*10.*HBARC*HBARC << endl;
+    //cout << sigmain*10.*nucqcd::hbarc*nucqcd::hbarc << endl;
     //cout << 53.444 << endl;
-    test.setScatter(sigmain*10.*HBARC*HBARC,8.,-0.5);
+    test.setScatter(sigmain*10.*nucqcd::hbarc*nucqcd::hbarc,8.,-0.5);
     for (int i=0;i<5;i+=1){
         double costhetar=-0.975+i*0.05;
         double pw=0.,fsi=0.;

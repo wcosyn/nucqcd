@@ -58,7 +58,7 @@ number_of_Grids(pfsi_grid->getNumber_of_grids()){
   invcthstep=cthgrid/2.;
   invphistep=0.5*phigrid/PI;
   if(pfsigrid!=NULL){
-    mass = getShellindex()<getPfsigrid()->getPnucleus()->getPLevels()? MASSP:MASSN;
+    mass = getShellindex()<getPfsigrid()->getPnucleus()->getPLevels()? nucqcd::mass_p:nucqcd::mass_n;
     rhogrid=new double***[number_of_Grids/2];
     rhoctgrid=new double***[number_of_Grids/2];
     for(int i=0;i<number_of_Grids/2;i++){
@@ -345,7 +345,7 @@ void DistMomDistrGrid::printRhopw_grid(){
     cout << p << " " << getRhopwGridFull_interp(p) << endl;    
 //     tot +=p*p*getRhopwGridFull_interp(p);
   }
-//   tot*=4.*PI/getInvPstep()*pow(INVHBARC,3.);
+//   tot*=4.*PI/getInvPstep()*pow(nucqcd::inv_hbarc,3.);
 //   cout << "tot " << tot << endl;
 }
   
@@ -357,7 +357,7 @@ void DistMomDistrGrid::printRho_grid(int gridindex){
       double costheta = -2.*j/getCthgrid()+1.;
       for(int k=0;k<=getPhigrid();k++){
 	double phi = k/getInvPhistep();	
-	cout << p << " " << costheta << " " << phi*RADTODEGR << " " << getRhoGridFull_interp3(gridindex,p,costheta,phi) << endl;
+	cout << p << " " << costheta << " " << phi*nucqcd::rad_to_deg << " " << getRhoGridFull_interp3(gridindex,p,costheta,phi) << endl;
       }
     }
   }
@@ -491,7 +491,7 @@ void DistMomDistrGrid::constructAllGrids(TRotation & rot){
 	  rhoctgrid[l][i][j][k]/=pow(2.*PI,3.)/2.;
 	}
 	//r=0 symmetry shortcut
-// 	cout << p_hit << " " << costheta_hit << " " << phi_hit*RADTODEGR << " " << rhogrid[0][i][j][k] << " " << rhogrid[1][i][j][k]<< " " << rhogrid[2][i][j][k]<< " " << rhoctgrid[0][i][j][k]<< endl;
+// 	cout << p_hit << " " << costheta_hit << " " << phi_hit*nucqcd::rad_to_deg << " " << rhogrid[0][i][j][k] << " " << rhogrid[1][i][j][k]<< " " << rhogrid[2][i][j][k]<< " " << rhoctgrid[0][i][j][k]<< endl;
 	if(i==0){
 	  for(j=0;j<=getCthgrid();j++){
 	    for(k=0;k<=getPhigrid();k++){
@@ -656,7 +656,7 @@ void DistMomDistrGrid::constructCtGrid(TRotation & rot){
 void DistMomDistrGrid::intRhoRpw(const double r, double *result, va_list ap){
   
   *result= r*getPfsigrid()->getPnucleus()->getWave_G(getShellindex(),r)
-	*gsl_sf_bessel_jl(getPfsigrid()->getPnucleus()->getL_array()[getShellindex()],p_hit*r*INVHBARC);
+	*gsl_sf_bessel_jl(getPfsigrid()->getPnucleus()->getL_array()[getShellindex()],p_hit*r*nucqcd::inv_hbarc);
 }
 // void DistMomDistrGrid::intRhoCosTheta(const double costheta, complex<double> *results, va_list ap){
 //   
@@ -693,7 +693,7 @@ void DistMomDistrGrid::intRhoRpw(const double r, double *result, va_list ap){
 //   sincos(phi,&sinphi,&cosphi);
 //   
 //   TMFSpinor wave(*getPfsigrid()->getPnucleus(),getShellindex(),m,r,costheta,phi);
-//   complex<double> exp_pr=exp(-INVHBARC*pvec_hit*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)*I_UNIT)
+//   complex<double> exp_pr=exp(-nucqcd::inv_hbarc*pvec_hit*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)*nucqcd::i_unit)
 // 			  *(Upm_bar*wave);  
 // 
 //   for(int i=0;i<number_of_Grids;i++) results[i]=exp_pr*getPfsigrid()->getFsiGridN_interp1(i,phi);
@@ -711,7 +711,7 @@ void DistMomDistrGrid::intRhoRpw(const double r, double *result, va_list ap){
 //   TMFSpinor wave(*getPfsigrid()->getPnucleus(),getShellindex(),m,r,costheta,phi);
 //   
 //   
-//   complex<double> exp_pr=exp(-INVHBARC*pvec_hit*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)*I_UNIT)
+//   complex<double> exp_pr=exp(-nucqcd::inv_hbarc*pvec_hit*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)*nucqcd::i_unit)
 // 			  *(Upm_bar*wave);  
 // 
 //   for(int i=0;i<number_of_Grids/2;i++) results[i]=exp_pr*getPfsigrid()->getFsiGridN_interp1(i+number_of_Grids/2,phi);
@@ -806,7 +806,7 @@ void DistMomDistrGrid::klaas_distint(numint::vector_z &results, double r, double
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
   TMFSpinor wave(*grid.getPfsigrid()->getPnucleus(),grid.getShellindex(),m,r,costheta,phi);
-  complex<double> exp_pr=exp(-INVHBARC*((grid.getPvec_hit())*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta))*I_UNIT)
+  complex<double> exp_pr=exp(-nucqcd::inv_hbarc*((grid.getPvec_hit())*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta))*nucqcd::i_unit)
 			  *((grid.getUpm_bar())*wave);  
   for(int i=0;i<grid.number_of_Grids;i++) results[i]=exp_pr*grid.getPfsigrid()->getFsiGridN_interp3(i,r,costheta,phi);
   for(int i=0;i<grid.number_of_Grids;i++) results[i]*=r;
@@ -821,7 +821,7 @@ void DistMomDistrGrid::klaas_distint_ct(numint::vector_z &results, double r, dou
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
   TMFSpinor wave(*grid.getPfsigrid()->getPnucleus(),grid.getShellindex(),m,r,costheta,phi);
-  complex<double> exp_pr=exp(-INVHBARC*((grid.getPvec_hit())*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta))*I_UNIT)
+  complex<double> exp_pr=exp(-nucqcd::inv_hbarc*((grid.getPvec_hit())*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta))*nucqcd::i_unit)
 			  *((grid.getUpm_bar())*wave);  
 
   for(int i=0;i<grid.number_of_Grids/2;i++) results[i]=exp_pr*

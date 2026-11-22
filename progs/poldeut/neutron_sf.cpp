@@ -1,6 +1,6 @@
 // Tabulates the neutron structure functions used by the tagged-DIS plot scripts
 // (~/Calculations/poldeut/results/neutron_SF*.txt).
-// Replaces the commented-out block at the top of poldeut.cpp, which used MASSn_G
+// Replaces the commented-out block at the top of poldeut.cpp, which used nucqcd::mass_nucleon_GeV
 // (defined in MeV in constants.hpp despite the _G suffix).
 //
 // run like  > neutron_sf [nx]     (nx = number of x points per Q2, x = 0.002*j, j=1..nx)
@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
   int nx = (argc > 1) ? atoi(argv[1]) : 100;
   const bool neutron = 0;
   const double R = 0.18;
-  const double mN = MASSn * 1.E-03;   // average nucleon mass [GeV]
+  const double mN = nucqcd::mass_nucleon * 1.E-03;   // average nucleon mass [GeV]
 
   NucleonStructure nucl("SLAC");
   cout << "output is for neutron SF: Q2[GeV^2]|x|F1|F2|FT|FL|g1|g1+g2 (WW approx)" << endl;

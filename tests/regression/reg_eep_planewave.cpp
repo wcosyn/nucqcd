@@ -23,14 +23,14 @@ void check_nucleus(const char *name) {
   std::unique_ptr<TElectronKinematics> elec(TElectronKinematics::CreateWithBeamEnergy(3245.));
   Cross obs(*elec, &nucl, 1.E-05, 2, dir, false, 1.);
   for (double pm : {50., 150., 250.}) {
-    TKinematics2to2 kin("", "", nucl.getMassA(), nucl.getMassA_min_proton(), MASSP, "qsquared:wlab:pklab", 1.8E06,
+    TKinematics2to2 kin("", "", nucl.getMassA(), nucl.getMassA_min_proton(), nucqcd::mass_p, "qsquared:wlab:pklab", 1.8E06,
                         1000., pm);
     std::ostringstream base;
     base << name << "_pm" << pm;
     for (int current : {1, 2}) {
       std::ostringstream key;
       key << base.str() << "_cc" << current;
-      CHECK_REF(refs, key.str() + "_free", obs.getElCross(kin, current, 0., 2000) * HBARC * HBARC, 1e-8, 1e-30);
+      CHECK_REF(refs, key.str() + "_free", obs.getElCross(kin, current, 0., 2000) * nucqcd::hbarc * nucqcd::hbarc, 1e-8, 1e-30);
     }
     for (int shell = 0; shell < nucl.getPLevels(); shell++)
       for (double phi : {0., PI}) {

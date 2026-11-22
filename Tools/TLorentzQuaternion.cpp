@@ -172,7 +172,7 @@ void TLorentzQuaternion::SetBoost(const double betaX,
   const double sinhksi2 = sqrt( (1./sqrt(1.-beta*beta) - 1.)/2. );
 
   fQ0 = complex<double>(coshksi2);
-  if( fabs(beta)>STRANGEUFLOW ) {
+  if( fabs(beta)>nucqcd::strange_underflow ) {
     fQ1 = complex<double>(0.,betaX/beta*sinhksi2);
     fQ2 = complex<double>(0.,betaY/beta*sinhksi2);
     fQ3 = complex<double>(0.,betaZ/beta*sinhksi2);
@@ -184,7 +184,7 @@ void TLorentzQuaternion::SetRotation(const double theta, const TVector3& axis)
 {
   // Create a rotation over angle 'theta' around axis defined by 'axis'
   const double norm = axis.Mag();
-  if( fabs(norm)<STRANGEUFLOW ) {
+  if( fabs(norm)<nucqcd::strange_underflow ) {
     cerr << "ERROR in TLorentzQuaternion::SetRotation(const double, "
 	 << "const TVector3&): "
 	 << "invalid rotation axis." << endl;
@@ -404,10 +404,10 @@ TVector3 TLorentzQuaternion::operator*(const TVector3& v) const
 //_____________________________________________________________________
 bool TLorentzQuaternion::IsIdentity() const
 {
-  return (fabs(fQ1.real())<STRANGEUFLOW) && (fabs(fQ1.imag())<STRANGEUFLOW)
-    && (fabs(fQ2.real())<STRANGEUFLOW) && (fabs(fQ2.imag())<STRANGEUFLOW)
-    && (fabs(fQ3.real())<STRANGEUFLOW) && (fabs(fQ3.imag())<STRANGEUFLOW)
-    && (fabs(fQ0.imag())<STRANGEUFLOW) && (fabs(fQ0.real()-1.)<STRANGEUFLOW);
+  return (fabs(fQ1.real())<nucqcd::strange_underflow) && (fabs(fQ1.imag())<nucqcd::strange_underflow)
+    && (fabs(fQ2.real())<nucqcd::strange_underflow) && (fabs(fQ2.imag())<nucqcd::strange_underflow)
+    && (fabs(fQ3.real())<nucqcd::strange_underflow) && (fabs(fQ3.imag())<nucqcd::strange_underflow)
+    && (fabs(fQ0.imag())<nucqcd::strange_underflow) && (fabs(fQ0.real()-1.)<nucqcd::strange_underflow);
 }
 
 //_____________________________________________________________________
@@ -464,7 +464,7 @@ void TLorentzQuaternion::Decompose(double& theta, TVector3& axis,
 				+r.fQ2.real()*r.fQ2.real()
 				+r.fQ3.real()*r.fQ3.real());
   theta = 2.*atan2(sintheta2,r.fQ0.real());
-  if( fabs(sintheta2)>STRANGEUFLOW )
+  if( fabs(sintheta2)>nucqcd::strange_underflow )
     axis = TVector3(r.fQ1.real()/sintheta2,
 		    r.fQ2.real()/sintheta2,
 		    r.fQ3.real()/sintheta2);
@@ -476,7 +476,7 @@ void TLorentzQuaternion::Decompose(double& theta, TVector3& axis,
 			       +b.fQ2.imag()*b.fQ2.imag()
 			       +b.fQ3.imag()*b.fQ3.imag());
   const double beta = tanh(2.*log(b.fQ0.real()+sinhksi2));
-  if( fabs(sinhksi2)>STRANGEUFLOW)
+  if( fabs(sinhksi2)>nucqcd::strange_underflow)
     boost = TVector3(beta*b.fQ1.imag()/sinhksi2,
 		     beta*b.fQ2.imag()/sinhksi2,
 		     beta*b.fQ3.imag()/sinhksi2 );

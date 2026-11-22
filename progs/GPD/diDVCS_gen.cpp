@@ -314,8 +314,8 @@ void GenerateEvents(double EneL, double EneH, int nevents, int ndec, DiDVCS & gi
         double s_gN = y*s;
         double xi = (q2 +s_gN*(q2p/s2))/(2.*s_gN+q2 -s_gN*(q2p/s2));
         double s1 = s_gN*q2p/s2;
-        if ((tN>-4.*MASSP_G*MASSP_G*xi*xi/(1-xi*xi))) { cerr << "Invalid kinematics, t is larger than t_min." << endl;
-                                cout << q2p << " " << xi << " " << -4.*MASSP_G*MASSP_G*xi*xi/(1-xi*xi) << " " << tN << endl;}
+        if ((tN>-4.*nucqcd::mass_p_GeV*nucqcd::mass_p_GeV*xi*xi/(1-xi*xi))) { cerr << "Invalid kinematics, t is larger than t_min." << endl;
+                                cout << q2p << " " << xi << " " << -4.*nucqcd::mass_p_GeV*nucqcd::mass_p_GeV*xi*xi/(1-xi*xi) << " " << tN << endl;}
 
         vector< double > results(4,0.);
         gimme_xs.getCross_DiDVCS(results, 2., trho, tN, q2, q2p, s2, s, y, 1.E04,0);

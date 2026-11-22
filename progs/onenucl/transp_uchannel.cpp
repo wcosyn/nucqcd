@@ -71,20 +71,20 @@ void int_r3(numint::vector_z & res, double r, double costheta, double phi, MeanF
 int main(int argc, char *argv[])
 {
   
-  string homedir=HOMEDIR;
+  string homedir=nucqcd::share_dir;
   //kinematics input
   double Q2=atof(argv[1])*1.E06; // input in GeV^2 [8.0,9.4,11.4,14.2]
   double Ein=10.6*1.E03;  //input in GeV 10.6 fixed
   double Eout = atof(argv[2])*1.E03; // scattered electron momentum [MeV]
-  double thetae = atof(argv[3])*DEGRTORAD; // electron scatt angle
+  double thetae = atof(argv[3])*nucqcd::deg_to_rad; // electron scatt angle
   double pN = atof(argv[4])*1.E03; // outgoing proton momentum [MeV]
-  double EN = sqrt(MASSP*MASSP+pN*pN);
-  double thetaN = atof(argv[5])*DEGRTORAD; // final proton scatt angle (hall lab frame)
+  double EN = sqrt(nucqcd::mass_p*nucqcd::mass_p+pN*pN);
+  double thetaN = atof(argv[5])*nucqcd::deg_to_rad; // final proton scatt angle (hall lab frame)
   int nucl = atoi(argv[7]);
 
   //calculate kinematics
   double omega=Ein-Eout;
-  double x=Q2/(2.*MASSP*omega);
+  double x=Q2/(2.*nucqcd::mass_p*omega);
   //double q=sqrt(Q2+omega*omega);
 
   double qx = -Eout*sin(thetae);
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
   //     double costheta = -1+2.*i/20.;
   //     double phi = 2.*PI*j/20.;
   //     TKinematics2to3 kin("","",7,TKinematics2to3::kN,"qsquared:wlab:pn:thn:kycosthkcm:kyphikcm",Q2,omega,EN,thetaN,costheta,phi,
-  //               Nucleus.getMassA(), MASSP, M_PI0, Nucleus.getMassA_min_proton()+Nucleus.getExcitation()[1]);
+  //               Nucleus.getMassA(), nucqcd::mass_p, nucqcd::mass_pi0, Nucleus.getMassA_min_proton()+Nucleus.getExcitation()[1]);
   //     if(kin.IsPhysical()){
   //       double pm=kin.GetPy();
   //       double u = kin.GetTng();
@@ -135,8 +135,8 @@ int main(int argc, char *argv[])
 
 
   //proton momentum is input
-  OneGlauberGrid grid(120,36,&Nucleus,prec,2,HOMEDIR);
-  FastParticle proton(0, 0, pN,0.,0.,Q2*1.E-06,0.,lc_mod, nkt_mod, HOMEDIR);
+  OneGlauberGrid grid(120,36,&Nucleus,prec,2,nucqcd::share_dir);
+  FastParticle proton(0, 0, pN,0.,0.,Q2*1.E-06,0.,lc_mod, nkt_mod, nucqcd::share_dir);
   grid.clearParticles();
   grid.addParticle(proton);
   grid.updateGrids();
@@ -238,7 +238,7 @@ void adap_intpiCM(numint::vector_d & results, double costhetapiCM, double phipiC
     // K is the pion
     // Y is the A-1 residual nucleus
     TKinematics2to3 kin("","",7,TKinematics2to3::kN,"qsquared:wlab:pn:thn:kycosthkcm:kyphikcm",Q2,omega,EN,thetaN,costhetapiCM,phipiCM,
-                pNucleus->getMassA(), MASSP, M_PI0, pNucleus->getMassA_min_proton()+pNucleus->getExcitation()[shell]);
+                pNucleus->getMassA(), nucqcd::mass_p, nucqcd::mass_pi0, pNucleus->getMassA_min_proton()+pNucleus->getExcitation()[shell]);
 
     if(!kin.IsPhysical()){
         double pm=kin.GetPy();
@@ -255,8 +255,8 @@ void adap_intpiCM(numint::vector_d & results, double costhetapiCM, double phipiC
       results[3*pNucleus->getPLevels()+1]+=cross[1];
       results[3*pNucleus->getPLevels()+2]+=cross[2];
       // cout << 2*shell << " " << 2*shell+1 << " " << 2*pNucleus->getTotalLevels() << " " << 2*pNucleus->getTotalLevels()+1 << endl;
-      // cout << "0 " << shell << " " << costhetacm << " " << pm << " "  << acos(kin.GetCosthklab())*RADTODEGR << " " 
-      // << acos(kin.GetCosthYlab())*RADTODEGR << " " << kin.GetPklab() << " " << kin.GetPYlab() 
+      // cout << "0 " << shell << " " << costhetacm << " " << pm << " "  << acos(kin.GetCosthklab())*nucqcd::rad_to_deg << " " 
+      // << acos(kin.GetCosthYlab())*nucqcd::rad_to_deg << " " << kin.GetPklab() << " " << kin.GetPYlab() 
       // << " " << kin.GetKlab() << " " << kin.GetWlab() <<  " " << results[3*shell] << " " << results[3*shell+2] << endl;
        cout << results[3*shell] << " " << results[3*shell+1] << " " << results[3*shell+2] <<  endl;
     }
@@ -273,8 +273,8 @@ void  getDiffCross(std::vector<double> &cross, MeanFieldNucleusThick * pnucleus,
                                                 *lambda(pkin->GetSkn(),pow(pkin->GetMn(),2.), -pkin->GetQsquared())
                                                 /lambda(pkin->GetStot(),pow(pkin->GetMd(),2.),-pkin->GetQsquared()));
   //extra 1/2pi because of dsigmaT/2pi
-  double gamma = ALPHA/(4.*PI*PI*PI)*(pelec->GetBeamEnergy(pkin->GetQsquared(),pkin->GetWlab())-pkin->GetWlab())
-                  /pelec->GetBeamEnergy(pkin->GetQsquared(),pkin->GetWlab())*(pkin->GetSkn()-MASSP*MASSP)/(2.*MASSP)/pkin->GetQsquared()
+  double gamma = nucqcd::alpha_em/(4.*PI*PI*PI)*(pelec->GetBeamEnergy(pkin->GetQsquared(),pkin->GetWlab())-pkin->GetWlab())
+                  /pelec->GetBeamEnergy(pkin->GetQsquared(),pkin->GetWlab())*(pkin->GetSkn()-nucqcd::mass_p*nucqcd::mass_p)/(2.*nucqcd::mass_p)/pkin->GetQsquared()
                   /(1-pelec->GetEpsilon(pkin->GetQsquared(),pkin->GetWlab()));
   double sigmaT = getSigmaT(pkin->GetTng()*1.E-06,pkin->GetQsquared()*1.E-06);
 
@@ -306,8 +306,8 @@ void rhoD(std::vector<double> &cross, MeanFieldNucleusThick * pnucleus, TKinemat
   //cout << "post " << pN[0] << " " << pN[1] << " " << pN[2] << endl;
   TVector3 pmiss = -pkin->GetY3();
   pmiss.RotateY(-thetaN);
-  FourVector<double> pmiss4(sqrt(MASSP*MASSP+pmiss.Mag2()),pmiss[0],pmiss[1],pmiss[2]);
-  TSpinor spinoru(pmiss4,MASSP,TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity);
+  FourVector<double> pmiss4(sqrt(nucqcd::mass_p*nucqcd::mass_p+pmiss.Mag2()),pmiss[0],pmiss[1],pmiss[2]);
+  TSpinor spinoru(pmiss4,nucqcd::mass_p,TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity);
   cout << pmiss.CosTheta() << " " << pmiss.Phi() << " ";
 
   for(int m=-pnucleus->getJ_array()[shellindex];m<=pnucleus->getJ_array()[shellindex];m+=2){
@@ -351,7 +351,7 @@ void int_r3(numint::vector_z & results, double r, double costheta, double phi, M
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
   TMFSpinor wave(*pnucleus,shellindex,mindex,r,costheta,phi);
-  complex<double> exp_pr=r*exp(-I_UNIT*INVHBARC*(pmiss*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
+  complex<double> exp_pr=r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(pmiss*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
   complex<double> temp = TSpinor::Bar(*pspinoru)*wave;
   for(int i=0; i<3; i++) results[i] = temp*exp_pr;
   results[0]*=pgrid->getFsiGridFull_interp3(r,costheta,phi);
@@ -365,7 +365,7 @@ void int_r3(numint::vector_z & results, double r, double costheta, double phi, M
 // void getBound(double &high, double &low, MeanFieldNucleusThick &nucleus, double Q2, double omega, int shell){
 //   TKinematics2to2 kin("","",nucleus.getMassA(),
 // 		      (shell<nucleus.getPLevels()? nucleus.getMassA_min_proton(): nucleus.getMassA_min_neutron())+nucleus.getExcitation()[shell],
-// 		      MASSP,"qsquared:wlab:costhkcm",Q2,omega,(high+low)/2.);
+// 		      nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,(high+low)/2.);
 //   double pm=kin.GetPklab();
 //   if(pm<300.) low=(high+low)/2.;
 //   else high=(high+low)/2.;

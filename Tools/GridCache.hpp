@@ -5,7 +5,7 @@
  *
  * \details Glauber FSI grids, momentum-distribution grids and classical SCX grids are expensive to
  * compute, so they are written to a cache directory and read back on later runs. By default the
- * cache is the grids/ subdirectory of the share directory passed to the classes (usually HOMEDIR).
+ * cache is the grids/ subdirectory of the share directory passed to the classes (usually nucqcd::share_dir).
  * The environment variable NUCQCD_GRID_DIR overrides it, so the cache can live elsewhere (for
  * example on scratch space, or per job) while the input data are still read from share/.
  *
@@ -28,7 +28,7 @@
 namespace nucqcd {
 
 /*! Directory of the grid cache, with a trailing '/'.
- * \param share_dir the share directory passed to the physics classes (usually HOMEDIR)
+ * \param share_dir the share directory passed to the physics classes (usually nucqcd::share_dir)
  * \return $NUCQCD_GRID_DIR if that is set and not empty, otherwise share_dir + "/grids/"
  */
 std::string grid_cache_dir(const std::string &share_dir);

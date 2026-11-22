@@ -426,9 +426,18 @@ one commit per bug; no `[known-bug]` tests remain.
 
 Do these one at a time, running the full test suite (including `slow`) after each.
 
-- [ ] **Constants macros:** replace the macro uses with the `nucqcd::` names, then remove the macros
-  (except `PI` until `numint` drops its own). Other values are also older PDG values (e.g. the
-  proton mass 938.27231 versus 938.27209 in PDG 2024); updating them changes results.
+- [x] **Constants macros:** all uses of the macro aliases (about 1700, in 143 files: libraries,
+  programs, tests) are replaced by the `nucqcd::` names, and the aliases are removed from
+  `constants.hpp.in`, including `HOMEDIR` (now `nucqcd::share_dir`). Only `PI` is left, a literal,
+  until `numint` drops its own. Done with a script that skips string literals and keeps line
+  endings; `progs/GPD/diDVCS_gen_gridonly.cpp` keeps its own `#define ALPHA` (same value).
+  `ClassGridThick_SCX` takes its share directory as `const char*` (it took `char*`, which only
+  accepted the string literal `HOMEDIR` by a GCC extension). Values are unchanged: all tests,
+  including `slow`, pass with the same references. `unit_constants` now fails to compile if an old
+  alias comes back.
+- [ ] **Update the constants to current PDG values** (split off from the item above): several values
+  are older PDG values (e.g. the proton mass 938.27231 versus 938.27209 in PDG 2024); updating them
+  changes results, so it needs the author's OK.
 - [ ] **Split `Tools` (library `MePhys`)** into coherent parts:
   - math and Lorentz algebra
   - kinematics

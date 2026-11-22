@@ -98,7 +98,7 @@ void GlauberGridThick_SCX::clearKnockout(){
 complex<double> GlauberGridThick_SCX::getFrontFactor(){ // energy/density dependent constant prefactor
 	complex<double> scatfront = (_fp.getParticletype() == 8) ? _fp.getScatterfront(false) : _fp.getScatterfront(true); // 8 means proton, if so scatterfront of scattering with neutron (0) else _fp is neutron, take scattering with proton (1)
 	const double densfctr = (_fp.getParticletype()==8) ? _ndens_fctr : _pdens_fctr;
-	return 2.*scatfront*densfctr*exp(I_UNIT*_arbitraryPhase);
+	return 2.*scatfront*densfctr*exp(nucqcd::i_unit*_arbitraryPhase);
 }
 
 void GlauberGridThick_SCX::constructGlauberGrid(){

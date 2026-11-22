@@ -108,7 +108,7 @@ class TKinematics : public TNamed
   double        GetT() const           { return fT; } ///< [MeV^2] Mandelstam t = (q - p_K)^2
   double        GetTMin() const; ///< [MeV^2] minimum value of -t
   double        GetU() const           { return fU; } ///< [MeV^2] Mandelstam u = (q - p_Y)^2
-  double        GetXb() const          { return fXb; } ///< Bjorken x = Q^2/(2 M_N omega_lab)
+  double        GetXb() const          { return fXb; } ///< Bjorken x = Q^2/(2 nucqcd::mass_n omega_lab)
   double        GetPhi() const         { return fPhi; } ///< [rad] angle between the lepton and the hadron plane
   double        GetPhiMin() const      { return fPhiMin; } ///< [rad] lower limit of phi for observables integrated over phi, see SetPhiLimits
   bool          IsPhysical() const     { return fIsPhysical; } ///< does the current point lie in the physical region?
@@ -134,7 +134,7 @@ class TKinematics : public TNamed
   void          UpdateKinematics(); ///< solves the kinematics for the current values of the independent variables
   // Underflow parameter for TKinematics
   virtual 
-    double      Underflow() const { return STRANGEUFLOW; } ///< underflow parameter (STRANGEUFLOW)
+    double      Underflow() const { return nucqcd::strange_underflow; } ///< underflow parameter (nucqcd::strange_underflow)
 
  private:
   void          InitializeArrays(); ///< resizes the member vectors to the number of independent variables, all constant

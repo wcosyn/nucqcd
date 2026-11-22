@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     int thick=1;//atoi(argv[9]);
     int maxEval=20000;//atoi(argv[10]);
     
-    string homedir=HOMEDIR;
+    string homedir=nucqcd::share_dir;
     MeanFieldNucleusThick nucleus(MeanFieldNucleus::TypeNames.at(nucleus_name),homedir);
     
     cout << "L of shell: " << nucleus.getL_array()[shell] << endl;
@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
 
     for (size_t i = 0; i < columns[0].size(); ++i) {
         double Eout = columns[14][i]*1.E03;
-        double thetae = columns[15][i]*DEGRTORAD;
+        double thetae = columns[15][i]*nucqcd::deg_to_rad;
         double Ein = columns[0][i]*1.E03;
         double pm = abs(columns[1][i])*1.E03;
 
@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
         double thetaq_sample = columns[5][i]; // degrees
         double pvec_sample = columns[8][i]*1.E03; // [MeV]
         double thetapq_sample = columns[10][i]; // degrees
-        double phi = columns[11][i]*DEGRTORAD; // radians
+        double phi = columns[11][i]*nucqcd::deg_to_rad; // radians
 
         double theta_pm_beam = columns[12][i]; // degrees
 
@@ -134,16 +134,16 @@ int main(int argc, char *argv[])
         double Q2=qvec*qvec-omega*omega;
         double thetaq=atan2(sin(thetae)*Eout,Ein-Eout*cos(thetae));
 
-        //   cout << "thetaq: " << thetaq*RADTODEGR << endl; 
+        //   cout << "thetaq: " << thetaq*nucqcd::rad_to_deg << endl; 
         //   cout << "Q2: " << Q2*1.E-06 << endl;
 
-        //double Emiss_model = nucleus.getMassA_min_proton()+nucleus.getExcitation()[shell]+MASSP-nucleus.getMassA();
+        //double Emiss_model = nucleus.getMassA_min_proton()+nucleus.getExcitation()[shell]+nucqcd::mass_p-nucleus.getMassA();
 
         TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ein);
         Cross obs(*elec,&nucleus,prec,integrator,homedir,screening,scr);
         //mass Amin1 is tweaked to correspond to exp sample Emiss
-        TKinematics2to2 kin("","",nucleus.getMassA(),Emiss_sample-MASSP+nucleus.getMassA(),
-	    	MASSP,"qsquared:wlab:pklab",Q2,omega,pm);
+        TKinematics2to2 kin("","",nucleus.getMassA(),Emiss_sample-nucqcd::mass_p+nucleus.getMassA(),
+	    	nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
 
         // cout << "q|omega|nucl_p|nucl_thetaq|pm|pm_thetaq|";
         // cout << "Px/Pz PWIA" << " " << "Px/Pz RMSGA" << " " << "Px/Pz free" << endl;
@@ -154,9 +154,9 @@ int main(int argc, char *argv[])
         //this follows the columns in Tim Kolar's files (more or less)
         if(kin.IsPhysical()){
             outputFile << Ein << " " << pm << " " << Emiss_sample << " " << virt_sample << " " << //Emiss_model << " " << 
-            Q2_sample << " " << Q2*1.E-06 << " " << thetaq_sample << " " << thetaq*RADTODEGR << " " << 
-            kin.GetPYlab() << " " << pvec_sample << " " << acos(kin.GetCosthYlab())*RADTODEGR << " " << thetapq_sample << " " << phi*RADTODEGR << " "
-            << acos(kin.GetCosthklab())*RADTODEGR << " " << theta_pm_beam << " ";
+            Q2_sample << " " << Q2*1.E-06 << " " << thetaq_sample << " " << thetaq*nucqcd::rad_to_deg << " " << 
+            kin.GetPYlab() << " " << pvec_sample << " " << acos(kin.GetCosthYlab())*nucqcd::rad_to_deg << " " << thetapq_sample << " " << phi*nucqcd::rad_to_deg << " "
+            << acos(kin.GetCosthklab())*nucqcd::rad_to_deg << " " << theta_pm_beam << " ";
         
 
 
@@ -166,7 +166,7 @@ int main(int argc, char *argv[])
         numint::vector_d asymm=numint::vector_d(40,0.);
         obs.getAllObs_xyz(asymm, kin, 2, shell, 1, mmod, phi, 20000, 1,1.,1.);
         NucleonEMOperator nuclFF(Q2,1,0);
-        double free_ratio = -2.*MASSP/(Ein+Eout)/tan(thetae/2.)*nuclFF.getGE()/nuclFF.getGM();
+        double free_ratio = -2.*nucqcd::mass_p/(Ein+Eout)/tan(thetae/2.)*nuclFF.getGE()/nuclFF.getGM();
         
         outputFile << asymm[32] << " " << asymm[37] << " " << asymm[39] << " " <<  asymm[37]/asymm[39] << " " 
         << asymm[0] << " " << asymm[5] << " " << asymm[7] << " " << asymm[5]/asymm[7] << " " << free_ratio << " "; //endl;

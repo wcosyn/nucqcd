@@ -27,7 +27,7 @@ double Cross::getElCross(TKinematics2to2 &kin, int current, double phi, int maxE
   double Q2overkk=Q2/qvec/qvec;
   double tan2=electron.GetTan2HalfAngle(kin);
   //mott cross section
-  mott=(ALPHA*ALPHA*(electron.GetCosScatterAngle(kin)+1.)*pow(electron.GetBeamEnergy(kin)-kin.GetWlab(),2.))/Q2/Q2*2.;
+  mott=(nucqcd::alpha_em*nucqcd::alpha_em*(electron.GetCosScatterAngle(kin)+1.)*pow(electron.GetBeamEnergy(kin)-kin.GetWlab(),2.))/Q2/Q2*2.;
   reacmodel=new Model(pnucl,prec,integrator,homedir,maxEval,getUsersigma(),getSigmascreening());
 
   //electron kinematic factors
@@ -83,7 +83,7 @@ double Cross::getDiffCross(TKinematics2to2 &kin, int current, int thick, int SRC
 	+sqrt(kin.GetHyperonMass()*kin.GetHyperonMass()+kin.GetPYlab()*kin.GetPYlab())
 	    *(1-qvec*kin.GetCosthYlab()/kin.GetPYlab()))) :
 	    kin.GetHyperonMass()*kin.GetMesonMass()*kin.GetPkcm()/(8*pow(PI,3.)*kin.GetW());
-  mott=(ALPHA*ALPHA*(electron.GetCosScatterAngle(kin)+1.)*pow(electron.GetBeamEnergy(kin)-kin.GetWlab(),2.))/Q2/Q2*2.;
+  mott=(nucqcd::alpha_em*nucqcd::alpha_em*(electron.GetCosScatterAngle(kin)+1.)*pow(electron.GetBeamEnergy(kin)-kin.GetWlab(),2.))/Q2/Q2*2.;
   reacmodel=new Model(pnucl,prec,integrator,homedir,maxEval,getUsersigma(),getSigmascreening());
   
   kinfactors[0]=pow(Q2overkk,2.); //v_L
@@ -119,7 +119,7 @@ double Cross::getDiffCross(TKinematics2to2 &kin, int current, int thick, int SRC
   result=kinfactors[0]*response[0][0]+kinfactors[1]*response[0][1]+(phiavg?0:kinfactors[2]*response[0][2]*cos(2.*phi)+kinfactors[3]*response[0][3]*cos(phi));
   delete reacmodel;
 //   cout << mott << " " << frontfactor << " " << result << endl;
-  return mott*frontfactor*result/HBARC; 
+  return mott*frontfactor*result/nucqcd::hbarc; 
   
 }
 
@@ -141,7 +141,7 @@ void  Cross::getAllDiffCross(std::vector<double> &cross, TKinematics2to2 &kin, i
       /abs(sqrt(kin.GetMesonMass()*kin.GetMesonMass()+kin.GetPklab()*kin.GetPklab())+sqrt(kin.GetHyperonMass()*kin.GetHyperonMass()+kin.GetPYlab()*kin.GetPYlab())
 	    *(1-qvec*kin.GetCosthYlab()/kin.GetPYlab()))) :
 	    kin.GetHyperonMass()*kin.GetMesonMass()*kin.GetPkcm()/(8*pow(PI,3.)*kin.GetW());
-  mott=(ALPHA*ALPHA*(electron.GetCosScatterAngle(kin)+1.)*pow(electron.GetBeamEnergy(kin)-kin.GetWlab(),2.))/Q2/Q2*2.;
+  mott=(nucqcd::alpha_em*nucqcd::alpha_em*(electron.GetCosScatterAngle(kin)+1.)*pow(electron.GetBeamEnergy(kin)-kin.GetWlab(),2.))/Q2/Q2*2.;
   reacmodel=new Model(pnucl,prec,integrator,homedir, maxEval, getUsersigma(),getSigmascreening());
   
   kinfactors[0]=pow(Q2overkk,2.);
@@ -173,7 +173,7 @@ void  Cross::getAllDiffCross(std::vector<double> &cross, TKinematics2to2 &kin, i
   }
   //combine everything, factor 2 because of symmetry!
   for(int j=0;j<total;j++) cross[j]=2.*(kinfactors[0]*response[j][0]+kinfactors[1]*response[j][1]
-		    +(phiavg?0:kinfactors[2]*response[j][2]*cos(2.*phi)+kinfactors[3]*response[j][3]*cos(phi)))*mott*frontfactor/HBARC;
+		    +(phiavg?0:kinfactors[2]*response[j][2]*cos(2.*phi)+kinfactors[3]*response[j][3]*cos(phi)))*mott*frontfactor/nucqcd::hbarc;
   // cout << response[0][0] << " " << response[4][0] << " " << response[0][1] << " " << response[4][1] << " " << kinfactors[0] << " " << kinfactors[1] << " " << mott << " " << frontfactor << " " << cross[0] << " " << cross[4] << endl;
   delete reacmodel;
   
@@ -199,7 +199,7 @@ void  Cross::getAllObs_tnl(std::vector<double> &obs, TKinematics2to2 &kin, int c
       /abs(sqrt(kin.GetMesonMass()*kin.GetMesonMass()+kin.GetPklab()*kin.GetPklab())+sqrt(kin.GetHyperonMass()*kin.GetHyperonMass()+kin.GetPYlab()*kin.GetPYlab())
 	    *(1-qvec*kin.GetCosthYlab()/kin.GetPYlab()))) :
 	    kin.GetHyperonMass()*kin.GetMesonMass()*kin.GetPkcm()/(8*pow(PI,3.)*kin.GetW());
-  mott=(ALPHA*ALPHA*(electron.GetCosScatterAngle(kin)+1.)*pow(electron.GetBeamEnergy(kin)-kin.GetWlab(),2.))/Q2/Q2*2.;
+  mott=(nucqcd::alpha_em*nucqcd::alpha_em*(electron.GetCosScatterAngle(kin)+1.)*pow(electron.GetBeamEnergy(kin)-kin.GetWlab(),2.))/Q2/Q2*2.;
   reacmodel=new Model(pnucl,prec,integrator,homedir, maxEval, getUsersigma(),getSigmascreening());
   
   kinfactors[0]=pow(Q2overkk,2.); //v_LL
@@ -273,16 +273,16 @@ void  Cross::getAllObs_tnl(std::vector<double> &obs, TKinematics2to2 &kin, int c
 
 	  //exploited parity symmetry here (just one matrix sum of the two above)
 	  responsematrix[j][0]+=Matrix<2,2>(norm(J[j](0,0))+norm(J[j](1,0)),
-					    2.*imag(J[j](1,0)*conj(J[j](0,0)))*I_UNIT,
-					    2.*imag(J[j](0,0)*conj(J[j](1,0)))*I_UNIT,
+					    2.*imag(J[j](1,0)*conj(J[j](0,0)))*nucqcd::i_unit,
+					    2.*imag(J[j](0,0)*conj(J[j](1,0)))*nucqcd::i_unit,
 					    norm(J[j](0,0))+norm(J[j](1,0))); //W_L
 	  responsematrix[j][1]+=Matrix<2,2>(norm(J[j](0,1))+norm(J[j](0,2))+norm(J[j](1,1))+norm(J[j](1,2)),
-					    2.*imag(J[j](1,1)*conj(J[j](0,1))+J[j](1,2)*conj(J[j](0,2)))*I_UNIT,
-					    2.*imag(J[j](0,1)*conj(J[j](1,1))+J[j](0,2)*conj(J[j](1,2)))*I_UNIT,
+					    2.*imag(J[j](1,1)*conj(J[j](0,1))+J[j](1,2)*conj(J[j](0,2)))*nucqcd::i_unit,
+					    2.*imag(J[j](0,1)*conj(J[j](1,1))+J[j](0,2)*conj(J[j](1,2)))*nucqcd::i_unit,
 					    norm(J[j](0,1))+norm(J[j](0,2))+norm(J[j](1,1))+norm(J[j](1,2)));//W_T
 	  responsematrix[j][2]+=Matrix<2,2>(J[j](1,2)*conj(J[j](1,1))+J[j](0,1)*conj(J[j](0,2)),
-					    2.*imag(J[j](1,2)*conj(J[j](0,1)))*I_UNIT,
-					    2.*imag(J[j](0,2)*conj(J[j](1,1)))*I_UNIT,
+					    2.*imag(J[j](1,2)*conj(J[j](0,1)))*nucqcd::i_unit,
+					    2.*imag(J[j](0,2)*conj(J[j](1,1)))*nucqcd::i_unit,
 					    J[j](0,2)*conj(J[j](0,1))+J[j](1,1)*conj(J[j](1,2))); //W_TT 
 	  responsematrix[j][3]+=Matrix<2,2>(J[j](1,0)*conj(J[j](1,1))-J[j](0,0)*conj(J[j](0,2)),
 					    J[j](1,0)*conj(J[j](0,1))+J[j](0,0)*conj(J[j](1,2)),
@@ -341,11 +341,11 @@ void  Cross::getAllObs_tnl(std::vector<double> &obs, TKinematics2to2 &kin, int c
     obs[8*i+6] = (-2.*kinfactors[4]*imag(responsespin[i][4][2]-responsespin[i][3][2])*sin(phi))/obs[8*i]; //P'n
     obs[8*i+7] = (2.*kinfactors[4]*real(responsespin[i][4][3]+responsespin[i][3][3])*cos(phi)
 		  +kinfactors[5]*real(responsespin[i][5][3]))/obs[8*i]; //P'l
-    obs[8*i]*=mott*frontfactor/HBARC;
+    obs[8*i]*=mott*frontfactor/nucqcd::hbarc;
   }
   //combine everything, factor 2 because of symmetry!
 //   for(int j=0;j<total_grid;j++) cross[j]=2.*(kinfactors[0]*response[j][0]+kinfactors[1]*response[j][1]
-// 		    +kinfactors[2]*response[j][2]*cos(2.*phi)+kinfactors[3]*response[j][3]*cos(phi))*mott*frontfactor/HBARC;
+// 		    +kinfactors[2]*response[j][2]*cos(2.*phi)+kinfactors[3]*response[j][3]*cos(phi))*mott*frontfactor/nucqcd::hbarc;
   delete reacmodel;
   for(int i=0;i<total_grid;++i){
     for(int j=0;j<6;++j) delete [] responsespin[i][j];
@@ -463,7 +463,7 @@ void Cross::klaas_densr(numint::vector_d & results, double costheta, double phi,
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
   //includes phase space!
-  complex<double> exp_pr=r*exp(-I_UNIT*INVHBARC*(pm*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
+  complex<double> exp_pr=r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(pm*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
   for(int m=1;m<=cross.getPnucl()->getJ_array()[shellindex];m+=2){
     TMFSpinor wave(*(cross.getPnucl()),shellindex,m,r,costheta,phi);
     grid->clearKnockout();
@@ -559,7 +559,7 @@ void Cross::klaas_densr_ctheta(numint::vector_d & results, double phi, Cross & c
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
   //includes phase space!
-  complex<double> exp_pr=r*sintheta*exp(-I_UNIT*INVHBARC*(pm*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
+  complex<double> exp_pr=r*sintheta*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(pm*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
   for(int m=1;m<=cross.getPnucl()->getJ_array()[shellindex];m+=2){
     TMFSpinor wave(*(cross.getPnucl()),shellindex,m,r,costheta,phi);
     grid->clearKnockout();
@@ -642,7 +642,7 @@ void Cross::klaas_phid(numint::vector_z & results, double r, double costheta, do
   sincos(phi,&sinphi,&cosphi);
   TMFSpinor wave(*(cross.getPnucl()),shell,m,r,costheta,phi);
   //includes phase space!
-  complex<double> exp_pr=r*exp(-I_UNIT*INVHBARC*(pm*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
+  complex<double> exp_pr=r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(pm*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
   results[0]= exp_pr*(spinor*wave);
   for(int i=1;i<total; ++i) results[i] = results[0];
   for(int i=0;i<(total-1);++i) results[i]*=grid->getFsiGridN_interp3(i,r,costheta,phi);

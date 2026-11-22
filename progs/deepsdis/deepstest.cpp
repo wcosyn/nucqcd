@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 //   TVector3 sp2(100.,-100.,100.);
 //   TVector3 spcm=sp1+sp2;
 //   TVector3 beam(5000.*cos(-1.),0.,5000.*sin(-1.));
-//   LightConeKin2to3 kinkin(MASSHE3,2.E06,MASSP,MASSP,0.,4.E03,sp1,sp2,beam,spcm);
+//   LightConeKin2to3 kinkin(nucqcd::mass_he3,2.E06,nucqcd::mass_p,nucqcd::mass_p,0.,4.E03,sp1,sp2,beam,spcm);
 //   string a="AV18";
 //   He3Cross test2("AV18","/home/wim/Code/share","SLAC",proton);
 //   cout << test2.getCross(kinkin) << endl;

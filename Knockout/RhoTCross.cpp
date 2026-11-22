@@ -40,13 +40,13 @@ void RhoTCross::getCrosst(double *results, const double Ebeam, const double Q2, 
   double epsilon = 1./(1.+2.*(1.+nu*nu/Q2)
 		     *((1.-fScatterAngle)/(1.+fScatterAngle)));
   
-//   double A = (t+Q2-MASSRHO*MASSRHO*1.E-06)*0.5;
+//   double A = (t+Q2-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06)*0.5;
 //   double MA=getNucleusthick().getMassA()*1.E-03;
 //   double C0=nu+MA;
-//   double pzrho=(MA*MA+qvec*qvec-C0*C0-MASSRHO*MASSRHO*1.E-06-2.*C0*A/nu)/(2.*qvec*(1.-C0/nu));
+//   double pzrho=(MA*MA+qvec*qvec-C0*C0-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06-2.*C0*A/nu)/(2.*qvec*(1.-C0/nu));
 //   double Erho = (pzrho*qvec-A)/nu;
-//   double pxrho = sqrt(Erho*Erho-pzrho*pzrho-MASSRHO*MASSRHO*1.E-06); //pxrho defines x-axis (so only positive sqrt is considered)
-//   double prho = sqrt(Erho*Erho-MASSRHO*MASSRHO*1.E-06); //pxrho defines x-axis (so only positive sqrt is considered)
+//   double pxrho = sqrt(Erho*Erho-pzrho*pzrho-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06); //pxrho defines x-axis (so only positive sqrt is considered)
+//   double prho = sqrt(Erho*Erho-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06); //pxrho defines x-axis (so only positive sqrt is considered)
 //   if(std::isnan(pxrho)) pxrho=0.;
 //   double pAz=qvec-pzrho;
 //   double z=Erho/nu;
@@ -85,7 +85,7 @@ void RhoTCross::getCrosst(double *results, const double Ebeam, const double Q2, 
     for(int i=0;i<nrofcross;++i) results[i]=ret[i];
     if(ret[2]*1.E-04>abserror) {abserror=ret[2]*1.E-04; }
   }
-  for(int i=0;i<nrofcross;i++) results[i]*= ALPHA*(Ebeam-nu)/(2.*pow(2.*PI,2.)*Ebeam*Q2*(1.-epsilon))*pow(INVHBARC*1.E03,3.)/nucleusthick.getA()/(2.*qvec);
+  for(int i=0;i<nrofcross;i++) results[i]*= nucqcd::alpha_em*(Ebeam-nu)/(2.*pow(2.*PI,2.)*Ebeam*Q2*(1.-epsilon))*pow(nucqcd::inv_hbarc*1.E03,3.)/nucleusthick.getA()/(2.*qvec);
 //   cout << nu << " " << t << " " << results[0] << " " << res << " " << count << " " << abserror << " " << endl;
 }
 
@@ -142,20 +142,20 @@ void RhoTCross::intPhit(const double phi, double *results, va_list ap){
   for(int i=0;i<nucleusthick.getTotalLevels();i++){
     double massi = nucleusthick.getMassA()-nucleusthick.getMassA_min_1(i)-nucleusthick.getExcitation()[i];
     massi*=1.E-03;
-    double mN = i<nucleusthick.getPLevels()? MASSP:MASSN;
+    double mN = i<nucleusthick.getPLevels()? nucqcd::mass_p:nucqcd::mass_n;
     mN*=1.E-03;
     //determine kinematics
-    double A = (t+Q2-MASSRHO*MASSRHO*1.E-06)*0.5;
+    double A = (t+Q2-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06)*0.5;
     double C0 = nu+massi;
     double Cz = qvec+pm*costheta;
     double Cy = pm*sintheta*sinphi;
     double Cx = pm*sintheta*cosphi;
     double s = C0*C0-Cz*Cz-Cx*Cx-Cy*Cy; //mandelstam 
-    double D = (s-mN*mN+MASSRHO*MASSRHO*1.E-06)/2.+C0*A/nu;
+    double D = (s-mN*mN+nucqcd::mass_rho*nucqcd::mass_rho*1.E-06)/2.+C0*A/nu;
     double E = Cz-C0*qvec/nu;
     double a = E*E-Q2*Cx*Cx/(nu*nu);
     double b = 2.*(D*E+A*qvec*Cx*Cx/(nu*nu));
-    double c = D*D-A*A*Cx*Cx/(nu*nu)+Cx*Cx*MASSRHO*MASSRHO*1.E-06;
+    double c = D*D-A*A*Cx*Cx/(nu*nu)+Cx*Cx*nucqcd::mass_rho*nucqcd::mass_rho*1.E-06;
     double discr = b*b-4.*a*c;
     if(discr>-1.E-09){
       //zero discriminant
@@ -164,7 +164,7 @@ void RhoTCross::intPhit(const double phi, double *results, va_list ap){
 	double Erho = (pzrho*qvec-A)/nu;
 	//check cuts
 	if(nocuts||Erho/nu>0.9){
-	  double pxrho = sqrt(Erho*Erho-pzrho*pzrho-MASSRHO*MASSRHO*1.E-06); //pxrho defines x-axis (so only positive sqrt is considered)
+	  double pxrho = sqrt(Erho*Erho-pzrho*pzrho-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06); //pxrho defines x-axis (so only positive sqrt is considered)
 	  if(std::isnan(pxrho)) pxrho=0.;//underflow
 	  if((SIGN(D+E*pzrho)==SIGN(-Cx*pxrho))||pxrho==0.){ 
 	    double prho = sqrt(pzrho*pzrho+pxrho*pxrho);
@@ -182,10 +182,10 @@ void RhoTCross::intPhit(const double phi, double *results, va_list ap){
 	discr = sqrt(discr);
 	double pzrho = (-b+discr)/(2.*a);
 	double Erho = (pzrho*qvec-A)/nu;
-	double t = -Q2 + MASSRHO*MASSRHO*1.E-06-2*Erho*nu+2.*qvec*pzrho;
+	double t = -Q2 + nucqcd::mass_rho*nucqcd::mass_rho*1.E-06-2*Erho*nu+2.*qvec*pzrho;
 	//check cuts
 	if(nocuts||Erho/nu>0.9){
-	  double pxrho = sqrt(Erho*Erho-pzrho*pzrho-MASSRHO*MASSRHO*1.E-06);//pxrho defines x-axis (so only positive sqrt is considered)
+	  double pxrho = sqrt(Erho*Erho-pzrho*pzrho-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06);//pxrho defines x-axis (so only positive sqrt is considered)
 	  if(std::isnan(pxrho)) pxrho=0.;//underflow
 	  if((SIGN(D+E*pzrho)==SIGN(-Cx*pxrho))||pxrho==0.){ 
 	    double prho = sqrt(pzrho*pzrho+pxrho*pxrho);
@@ -201,10 +201,10 @@ void RhoTCross::intPhit(const double phi, double *results, va_list ap){
 	}
 	pzrho = (-b-discr)/(2.*a);
 	Erho = (pzrho*qvec-A)/nu;
-	t = -Q2 + MASSRHO*MASSRHO*1.E-06-2*Erho*nu+2.*qvec*pzrho;
+	t = -Q2 + nucqcd::mass_rho*nucqcd::mass_rho*1.E-06-2*Erho*nu+2.*qvec*pzrho;
 	//check cuts
 	if(nocuts||Erho/nu>0.9){
-	  double pxrho = sqrt(Erho*Erho-pzrho*pzrho-MASSRHO*MASSRHO*1.E-06);//pxrho defines x-axis (so only positive sqrt is considered)
+	  double pxrho = sqrt(Erho*Erho-pzrho*pzrho-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06);//pxrho defines x-axis (so only positive sqrt is considered)
 	  if(std::isnan(pxrho)) pxrho=0.;//underflow
 	  if((SIGN(D+E*pzrho)==SIGN(-Cx*pxrho))||pxrho==0.){ 
 	    double prho = sqrt(pzrho*pzrho+pxrho*pxrho);
@@ -232,7 +232,7 @@ void RhoTCross::getCrossz(double *results, const double Ebeam,  const double Q2,
 		     *((1.-fScatterAngle)/(1.+fScatterAngle)));
   
   double Erho=nu*z;
-  double prho=sqrt(Erho*Erho-MASSRHO*MASSRHO*1.E-06);
+  double prho=sqrt(Erho*Erho-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06);
   
 //   double MA=getNucleusthick().getMassA()*1.E-03;
 //   double EA=-Erho+MA+nu;
@@ -243,7 +243,7 @@ void RhoTCross::getCrossz(double *results, const double Ebeam,  const double Q2,
 //   if(std::isnan(pxrho)) pxrho=0.;
 //   double pxA=-pxrho;
 //   double pzA=qvec-pzrho;
-//   double t = -Q2+MASSRHO*MASSRHO*1.E-06-2.*Erho*nu+2.*qvec*pzrho;
+//   double t = -Q2+nucqcd::mass_rho*nucqcd::mass_rho*1.E-06-2.*Erho*nu+2.*qvec*pzrho;
 //   if(t>-0.1||t<-0.4){for(int i=0;i<nrofcross;i++) results[i]=0.;}
 //   else for(int i=0;i<nrofcross;i++){ results[i]=nu;}
 //   return;
@@ -278,7 +278,7 @@ void RhoTCross::getCrossz(double *results, const double Ebeam,  const double Q2,
     if(ret[2]*1.E-04>abserror)  {abserror=ret[2]*1.E-04; }
   }
   
-  for(int i=0;i<nrofcross;i++) results[i]*= ALPHA*(Ebeam-nu)/(2.*pow(2.*PI,2.)*Ebeam*Q2*(1.-epsilon))*pow(INVHBARC*1.E03,3.)/nucleusthick.getA()*nu/qvec;
+  for(int i=0;i<nrofcross;i++) results[i]*= nucqcd::alpha_em*(Ebeam-nu)/(2.*pow(2.*PI,2.)*Ebeam*Q2*(1.-epsilon))*pow(nucqcd::inv_hbarc*1.E03,3.)/nucleusthick.getA()*nu/qvec;
 //   cout << nu << " " << z << " " << results[0] << " " << res << " " << count << " " << abserror << endl;
   
 }
@@ -335,7 +335,7 @@ void RhoTCross::intPhiz(const double phi, double *results, va_list ap){
     //offshell initial energy
     double massi = nucleusthick.getMassA()-nucleusthick.getMassA_min_1(i)-nucleusthick.getExcitation()[i];
     massi*=1.E-03;
-    double mN = i<nucleusthick.getPLevels()? MASSP:MASSN;
+    double mN = i<nucleusthick.getPLevels()? nucqcd::mass_p:nucqcd::mass_n;
     mN*=1.E-03;
     double C0 = nu+massi;
     double Cz = qvec+pm*costheta;
@@ -353,7 +353,7 @@ void RhoTCross::intPhiz(const double phi, double *results, va_list ap){
     if(discr>-1.E-09){
       if(abs(discr)<1.E-09) {
 	double pzrho = -b/(2.*a);
-	double t =  -Q2 + MASSRHO*MASSRHO*1.E-06-2*Erho*nu+2.*qvec*pzrho;
+	double t =  -Q2 + nucqcd::mass_rho*nucqcd::mass_rho*1.E-06-2*Erho*nu+2.*qvec*pzrho;
 	//check cuts
 	if(nocuts||(t<-0.1&&t>-0.4)){
 	  double pxrho = sqrt(prho*prho-pzrho*pzrho); //pxrho defines x-axis (so only positive sqrt is considered)     
@@ -372,7 +372,7 @@ void RhoTCross::intPhiz(const double phi, double *results, va_list ap){
       else{
 	discr = sqrt(discr);
 	double pzrho = (-b+discr)/(2.*a);
-	double t =  -Q2 + MASSRHO*MASSRHO*1.E-06-2*Erho*nu+2.*qvec*pzrho;
+	double t =  -Q2 + nucqcd::mass_rho*nucqcd::mass_rho*1.E-06-2*Erho*nu+2.*qvec*pzrho;
 	//check cuts
 	if(nocuts||(t<-0.1&&t>-0.4)){
 	  double pxrho = sqrt(prho*prho-pzrho*pzrho);//pxrho defines x-axis (so only positive sqrt is considered)  
@@ -389,7 +389,7 @@ void RhoTCross::intPhiz(const double phi, double *results, va_list ap){
 	  }
 	}
 	pzrho = (-b-discr)/(2.*a);
-	t =  -Q2 + MASSRHO*MASSRHO*1.E-06-2*Erho*nu+2.*qvec*pzrho;
+	t =  -Q2 + nucqcd::mass_rho*nucqcd::mass_rho*1.E-06-2*Erho*nu+2.*qvec*pzrho;
 	//check cuts
 	if(nocuts||(t<-0.1&&t>-0.4)){
 	  double pxrho = sqrt(prho*prho-pzrho*pzrho);//pxrho defines x-axis (so only positive sqrt is considered)  	  
@@ -476,20 +476,20 @@ void RhoTCross::klaas_rho_t(numint::vector_d & results, double pm, double costhe
   for(int i=0;i<cross.getNucleusthick().getTotalLevels();i++){
     double massi = cross.getNucleusthick().getMassA()-cross.getNucleusthick().getMassA_min_1(i)-cross.getNucleusthick().getExcitation()[i];
     massi*=1.E-03;
-    double mN = i<cross.getNucleusthick().getPLevels()? MASSP:MASSN;
+    double mN = i<cross.getNucleusthick().getPLevels()? nucqcd::mass_p:nucqcd::mass_n;
     mN*=1.E-03;
     //determine kinematics
-    double A = (t+Q2-MASSRHO*MASSRHO*1.E-06)*0.5;
+    double A = (t+Q2-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06)*0.5;
     double C0 = nu+massi;
     double Cz = qvec+pm*costheta;
     double Cy = pm*sintheta*sinphi;
     double Cx = pm*sintheta*cosphi;
     double s = C0*C0-Cz*Cz-Cx*Cx-Cy*Cy; //mandelstam 
-    double D = (s-mN*mN+MASSRHO*MASSRHO*1.E-06)/2.+C0*A/nu;
+    double D = (s-mN*mN+nucqcd::mass_rho*nucqcd::mass_rho*1.E-06)/2.+C0*A/nu;
     double E = Cz-C0*qvec/nu;
     double a = E*E-Q2*Cx*Cx/(nu*nu);
     double b = 2.*(D*E+A*qvec*Cx*Cx/(nu*nu));
-    double c = D*D-A*A*Cx*Cx/(nu*nu)+Cx*Cx*MASSRHO*MASSRHO*1.E-06;
+    double c = D*D-A*A*Cx*Cx/(nu*nu)+Cx*Cx*nucqcd::mass_rho*nucqcd::mass_rho*1.E-06;
     double discr = b*b-4.*a*c;
     if(discr>-1.E-09){
       //zero discriminant
@@ -498,7 +498,7 @@ void RhoTCross::klaas_rho_t(numint::vector_d & results, double pm, double costhe
 	double Erho = (pzrho*qvec-A)/nu;
 	//check cuts
 	if(cross.getNocuts()||Erho/nu>0.9){
-	  double pxrho = sqrt(Erho*Erho-pzrho*pzrho-MASSRHO*MASSRHO*1.E-06);//pxrho defines x-axis (so only positive sqrt is considered)     
+	  double pxrho = sqrt(Erho*Erho-pzrho*pzrho-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06);//pxrho defines x-axis (so only positive sqrt is considered)     
 	  if(std::isnan(pxrho)) pxrho=0.; //underflow
 	  if((SIGN(D+E*pzrho)==SIGN(-Cx*pxrho))||pxrho==0.){ 
 	    double prho = sqrt(pzrho*pzrho+pxrho*pxrho);
@@ -518,7 +518,7 @@ void RhoTCross::klaas_rho_t(numint::vector_d & results, double pm, double costhe
 	double Erho = (pzrho*qvec-A)/nu;
 	//check cuts
 	if(cross.getNocuts()||Erho/nu>0.9){
-	  double pxrho = sqrt(Erho*Erho-pzrho*pzrho-MASSRHO*MASSRHO*1.E-06);//pxrho defines x-axis (so only positive sqrt is considered)     
+	  double pxrho = sqrt(Erho*Erho-pzrho*pzrho-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06);//pxrho defines x-axis (so only positive sqrt is considered)     
 	  if(std::isnan(pxrho)) pxrho=0.;//underflow
 	  if((SIGN(D+E*pzrho)==SIGN(-Cx*pxrho))||pxrho==0.){ 
 	    double prho = sqrt(pzrho*pzrho+pxrho*pxrho);
@@ -535,7 +535,7 @@ void RhoTCross::klaas_rho_t(numint::vector_d & results, double pm, double costhe
 	Erho = (pzrho*qvec-A)/nu;
 	//check cuts
 	if(cross.getNocuts()||Erho/nu>0.9){
-	  double pxrho = sqrt(Erho*Erho-pzrho*pzrho-MASSRHO*MASSRHO*1.E-06);//pxrho defines x-axis (so only positive sqrt is considered)     
+	  double pxrho = sqrt(Erho*Erho-pzrho*pzrho-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06);//pxrho defines x-axis (so only positive sqrt is considered)     
 	  if(std::isnan(pxrho)) pxrho=0.;//underflow
 	  if((SIGN(D+E*pzrho)==SIGN(-Cx*pxrho))||pxrho==0.){ 
 	    double prho = sqrt(pzrho*pzrho+pxrho*pxrho);
@@ -570,7 +570,7 @@ void RhoTCross::klaas_rho_z(numint::vector_d & results, double pm, double costhe
     //offshell initial energy
     double massi = cross.getNucleusthick().getMassA()-cross.getNucleusthick().getMassA_min_1(i)-cross.getNucleusthick().getExcitation()[i];
     massi*=1.E-03;
-    double mN = i<cross.getNucleusthick().getPLevels()? MASSP:MASSN;
+    double mN = i<cross.getNucleusthick().getPLevels()? nucqcd::mass_p:nucqcd::mass_n;
     mN*=1.E-03;
     double C0 = nu+massi;
     double Cz = qvec+pm*costheta;
@@ -588,7 +588,7 @@ void RhoTCross::klaas_rho_z(numint::vector_d & results, double pm, double costhe
     if(discr>-1.E-09){
       if(abs(discr)<1.E-09) {
 	double pzrho = -b/(2.*a);
-	double t =  -Q2 + MASSRHO*MASSRHO*1.E-06-2*Erho*nu+2.*qvec*pzrho;
+	double t =  -Q2 + nucqcd::mass_rho*nucqcd::mass_rho*1.E-06-2*Erho*nu+2.*qvec*pzrho;
 	//check cuts
 	if(cross.getNocuts()||(t<-0.1&&t>-0.4)){
 	  double pxrho = sqrt(prho*prho-pzrho*pzrho);//pxrho defines x-axis (so only positive sqrt is considered)           
@@ -607,7 +607,7 @@ void RhoTCross::klaas_rho_z(numint::vector_d & results, double pm, double costhe
       else{
 	discr = sqrt(discr);
 	double pzrho = (-b+discr)/(2.*a);
-	double t =  -Q2 + MASSRHO*MASSRHO*1.E-06-2*Erho*nu+2.*qvec*pzrho;
+	double t =  -Q2 + nucqcd::mass_rho*nucqcd::mass_rho*1.E-06-2*Erho*nu+2.*qvec*pzrho;
 	//check cuts
 	if(cross.getNocuts()||(t<-0.1&&t>-0.4)){
 	  double pxrho = sqrt(prho*prho-pzrho*pzrho);//pxrho defines x-axis (so only positive sqrt is considered)     
@@ -624,7 +624,7 @@ void RhoTCross::klaas_rho_z(numint::vector_d & results, double pm, double costhe
 	  }
 	}
 	pzrho = (-b-discr)/(2.*a);
-	t =  -Q2 + MASSRHO*MASSRHO*1.E-06-2*Erho*nu+2.*qvec*pzrho;
+	t =  -Q2 + nucqcd::mass_rho*nucqcd::mass_rho*1.E-06-2*Erho*nu+2.*qvec*pzrho;
 	//check cuts
 	if(cross.getNocuts()||(t<-0.1&&t>-0.4)){
 	  double pxrho = sqrt(prho*prho-pzrho*pzrho);//pxrho defines x-axis (so only positive sqrt is considered)     

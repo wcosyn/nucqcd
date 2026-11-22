@@ -218,7 +218,7 @@ class TDeuteron
     virtual ~Polarization();
     Polarization& operator=(const Polarization&); ///< assignment
 
-    bool operator==(const Polarization&); ///< same angles (within STRANGEUFLOW) and state
+    bool operator==(const Polarization&); ///< same angles (within nucqcd::strange_underflow) and state
     operator int() const; ///< the state times two (2m)
     //TString HashName() const;
 

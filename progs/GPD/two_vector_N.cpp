@@ -125,7 +125,7 @@ int main(int argc, char** argv) {
 
         //Testing chiral even GPDs
 
-        // double mandelstam_t= -4.*MASSP_G*MASSP_G*xi*xi/(1-xi*xi);//tmin [GeV^2]
+        // double mandelstam_t= -4.*nucqcd::mass_p_GeV*nucqcd::mass_p_GeV*xi*xi/(1-xi*xi);//tmin [GeV^2]
         // double scale=1.;
         // for(int i =-50;i<=50;i++){
         //     double x=i*0.01;

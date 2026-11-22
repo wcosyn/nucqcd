@@ -159,7 +159,7 @@ void GlauberGrid::print_grid(int gridindex) {
           phi = 0.;
         setinterp(r,costheta,phi);
         complex < double >value = getFsiGridN_interp(gridindex);
-        cout << r << " " << costheta << " " << phi * RADTODEGR << " " << real(value) << " " << imag(value) << endl;
+        cout << r << " " << costheta << " " << phi * nucqcd::rad_to_deg << " " << real(value) << " " << imag(value) << endl;
       }
     }
   }
@@ -253,7 +253,7 @@ void GlauberGrid::constructAllGrids() {
             fsi_grid[getPnucleus()->getTotalLevels()][0][i][j][k] *= pow(fsi_grid[getPnucleus()->getTotalLevels() - 1][getPnucleus()->getFinalMNeutron()][i][j][k], 2.);
             fsi_ct_grid[getPnucleus()->getTotalLevels()][0][i][j][k] *= pow(fsi_ct_grid[getPnucleus()->getTotalLevels() - 1][getPnucleus()->getFinalMNeutron()][i][j][k], 2.);
           }
-          //cout << r_hit << " " << theta_hit*RADTODEGR << " " << phi_hit*RADTODEGR << " " << fsi_grid[getPnucleus()->getTotalLevels()][0][i][j][k] << endl;
+          //cout << r_hit << " " << theta_hit*nucqcd::rad_to_deg << " " << phi_hit*nucqcd::rad_to_deg << " " << fsi_grid[getPnucleus()->getTotalLevels()][0][i][j][k] << endl;
 
           if (abs(fsi_ct_grid[getPnucleus()->getTotalLevels()][0][i][j][k]) > 0.999999 && abs(fsi_grid[getPnucleus()->getTotalLevels()][0][i][j][k]) > 0.999999) {
             treshold[j][k] = 1;
@@ -275,7 +275,7 @@ void GlauberGrid::constructAllGrids() {
                 }
                 fsi_grid[getPnucleus()->getTotalLevels()][0][i][j][k] = fsi_grid[getPnucleus()->getTotalLevels()][0][0][0][0];
                 fsi_ct_grid[getPnucleus()->getTotalLevels()][0][i][j][k] = fsi_ct_grid[getPnucleus()->getTotalLevels()][0][0][0][0];
-                //cout << r_hit << " " << theta_hit*RADTODEGR << " " << phi_hit*RADTODEGR << " " << fsi_grid[getPnucleus()->getTotalLevels()][0][i][j][k] << endl;
+                //cout << r_hit << " " << theta_hit*nucqcd::rad_to_deg << " " << phi_hit*nucqcd::rad_to_deg << " " << fsi_grid[getPnucleus()->getTotalLevels()][0][i][j][k] << endl;
               }
             }
           }
@@ -290,7 +290,7 @@ void GlauberGrid::constructAllGrids() {
               }
               fsi_grid[getPnucleus()->getTotalLevels()][0][i][j][k] = fsi_grid[getPnucleus()->getTotalLevels()][0][i][j][0];
               fsi_ct_grid[getPnucleus()->getTotalLevels()][0][i][j][k] = fsi_ct_grid[getPnucleus()->getTotalLevels()][0][i][j][0];
-              //cout << r_hit << " " << theta_hit*RADTODEGR << " " << phi_hit*RADTODEGR << " " << fsi_grid[getPnucleus()->getTotalLevels()][0][i][j][k] << endl;
+              //cout << r_hit << " " << theta_hit*nucqcd::rad_to_deg << " " << phi_hit*nucqcd::rad_to_deg << " " << fsi_grid[getPnucleus()->getTotalLevels()][0][i][j][k] << endl;
             }
           }
         }
@@ -302,7 +302,7 @@ void GlauberGrid::constructAllGrids() {
               fsi_ct_grid[s][mm][i][j][k] = 1.;
             }
           }
-          //cout << r_hit << " " << theta_hit*RADTODEGR << " " << phi_hit*RADTODEGR << " " << fsi_grid[getPnucleus()->getTotalLevels()][0][i][j][k] << endl;
+          //cout << r_hit << " " << theta_hit*nucqcd::rad_to_deg << " " << phi_hit*nucqcd::rad_to_deg << " " << fsi_grid[getPnucleus()->getTotalLevels()][0][i][j][k] << endl;
         }
       }
     }

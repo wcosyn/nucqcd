@@ -68,7 +68,7 @@ void TwoVector_Deut::getCross_twovector(std::vector<double> & results, const dou
     double alpha_s = pRunningAlphaStrongModule->compute(scale*scale); //scale is 1 GeV^2
     int Nc=3; //number of colors
     double CF=(Nc*Nc-1)/2./Nc;
-    double mandelstam_t= -4.*MASSD_G*MASSD_G*xi*xi/(1-xi*xi);//tmin [GeV^2]
+    double mandelstam_t= -4.*nucqcd::mass_d_GeV*nucqcd::mass_d_GeV*xi*xi/(1-xi*xi);//tmin [GeV^2]
 //    mandelstam_t=floor(mandelstam_t*100.)/100.;
     mandelstam_t*=1.1;
 
@@ -107,10 +107,10 @@ void TwoVector_Deut::getCross_twovector(std::vector<double> & results, const dou
             //prefactors Eq (14) Enberg et al., not including s factor since it drops out in xsection
             // sqrt(1-xi^2) compensated  in the helicity amplitudes
             integral[index] *= 16.*PI*PI*alpha_s*f_lowermeson*xi*CF/Nc/psq/psq; //prefactors Eq (14) Enberg et al.
-            if(gammapol==TwoVector_Deut::kgammaL) integral[index] *= -2.*PI*alpha_s*sqrt(Q2)/Nc/sqrt(2.)*frho0*sqrt(ALPHA*4.*PI); //prefactors Eq (17) Enberg et al.
-            if(gammapol==TwoVector_Deut::kgammaT) integral[index] *= PI*alpha_s*sqrt(psq)/Nc/sqrt(2.)*frho0*sqrt(ALPHA*4.*PI); //prefactors Eq (17) Enberg et al.
+            if(gammapol==TwoVector_Deut::kgammaL) integral[index] *= -2.*PI*alpha_s*sqrt(Q2)/Nc/sqrt(2.)*frho0*sqrt(nucqcd::alpha_em*4.*PI); //prefactors Eq (17) Enberg et al.
+            if(gammapol==TwoVector_Deut::kgammaT) integral[index] *= PI*alpha_s*sqrt(psq)/Nc/sqrt(2.)*frho0*sqrt(nucqcd::alpha_em*4.*PI); //prefactors Eq (17) Enberg et al.
             results[index]+=norm(integral[index])/256./pow(PI,3.)/xi/(1+xi)*((helampmax==4&&helamps!=1)?2:1); // Enberg et al Eq (12), corrected phase space factor!
-            // if(index==0) cout << "new " << helamps << " " << 16.*PI*PI*alpha_s*f_lowermeson*xi*CF/Nc/psq/psq << " " << -2.*PI*alpha_s*sqrt(Q2)/Nc/sqrt(2.)*frho0*sqrt(ALPHA*4.*PI)
+            // if(index==0) cout << "new " << helamps << " " << 16.*PI*PI*alpha_s*f_lowermeson*xi*CF/Nc/psq/psq << " " << -2.*PI*alpha_s*sqrt(Q2)/Nc/sqrt(2.)*frho0*sqrt(nucqcd::alpha_em*4.*PI)
             // << " " << norm(integral[index])/256./pow(PI,3.)/xi/(1+xi)*((helampmax==4&&helamps!=1)?2:1) << " " << ((helampmax==4&&helamps!=1)?2:1) << endl;
         }
     }

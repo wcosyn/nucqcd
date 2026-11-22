@@ -31,14 +31,14 @@ int main(int argc, char *argv[])
   int thick=1;//atoi(argv[9]);
   int maxEval=20000;//atoi(argv[10]);
   
-  string homedir=HOMEDIR;
+  string homedir=nucqcd::share_dir;
 
   MeanFieldNucleusThick Carbon(nucleus,homedir);
-  TKinematics2to2 kin("","",Carbon.getMassA(),Carbon.getMassA_min_proton(),MASSP,"qsquared:wlab:pklab",Q2,omega,pm);
+  TKinematics2to2 kin("","",Carbon.getMassA(),Carbon.getMassA_min_proton(),nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
 //   TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(4627.);  //Monaghan Data
   TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(3245.); //Dutta Data
   Cross obs(*elec,&Carbon,prec,integrator,homedir,screening,scr);
-  double free=obs.getElCross(kin,2,0.,2E03)*HBARC*HBARC;
+  double free=obs.getElCross(kin,2,0.,2E03)*nucqcd::hbarc*nucqcd::hbarc;
   vector<double> cross;
 
 // comparison with pascal's code (input_compare_onenucl.dat input file) 
@@ -46,11 +46,11 @@ int main(int argc, char *argv[])
 //   double crossp=obs.getDiffCross(kin, 2, 0, 0, 0, 1, 1, 0.,2E05,1);
 //   double crosss=obs.getDiffCross(kin, 2, 0, 0, 0, 1,0,0.,2E04,1);
 //   cout << kin.GetKlab() << " " << kin.GetWlab() << " " << kin.GetPYlab() << " " << 
-//   acos(kin.GetCosthYlab())*RADTODEGR << " " << kin.GetPklab() << " " << acos(kin.GetCosthklab())*RADTODEGR << endl;
+//   acos(kin.GetCosthYlab())*nucqcd::rad_to_deg << " " << kin.GetPklab() << " " << acos(kin.GetCosthklab())*nucqcd::rad_to_deg << endl;
 //   cout << sqrt(Q2+omega*omega) << " " << crossp << " " << crosss << endl;
 
   MeanFieldNucleusThick Fe(3,homedir);
-  TKinematics2to2 kin2("","",Fe.getMassA(),Fe.getMassA_min_proton(),MASSP,"qsquared:wlab:pklab",Q2,omega,pm);
+  TKinematics2to2 kin2("","",Fe.getMassA(),Fe.getMassA_min_proton(),nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
   Cross obs2(*elec,&Fe,prec,integrator,homedir,screening,scr);
   obs2.getDiffCross(kin2, 2, 0, 0, 0, 1, 0, 0.,2E04,1,0,1.,1.);
   obs2.getDiffCross(kin2, 2, 0, 0, 0, 1, 1, 0.,2E04,1,0,1.,1.);
@@ -64,13 +64,13 @@ int main(int argc, char *argv[])
   
 
  /* obs.getAllDiffCross(cross,kin,2,1,thick,0.,maxEval,1);
-  cout << kin.GetKlab() << " " << kin.GetWlab() << " " << kin.GetPYlab() << " " << acos(kin.GetCosthYlab())*RADTODEGR << " " << kin.GetPklab() << " " <<  
+  cout << kin.GetKlab() << " " << kin.GetWlab() << " " << kin.GetPYlab() << " " << acos(kin.GetCosthYlab())*nucqcd::rad_to_deg << " " << kin.GetPklab() << " " <<  
       cross[0] << " " << cross[1] << " " << cross[4] << " " << free << " " << cross[0]/free << " " << cross[1]/free << endl;
   
       
-  free=obs.getElCross(kin,2,PI,2E03)*HBARC*HBARC;
+  free=obs.getElCross(kin,2,PI,2E03)*nucqcd::hbarc*nucqcd::hbarc;
   obs.getAllDiffCross(cross,kin,2,1,thick,PI,maxEval,1);
-  cout << kin.GetKlab() << " " << kin.GetWlab() << " " << kin.GetPYlab() << " " << acos(kin.GetCosthYlab())*RADTODEGR << " " << -kin.GetPklab() << " " <<  
+  cout << kin.GetKlab() << " " << kin.GetWlab() << " " << kin.GetPYlab() << " " << acos(kin.GetCosthYlab())*nucqcd::rad_to_deg << " " << -kin.GetPklab() << " " <<  
       cross[0] << " " << cross[1] << " " << cross[4] << " " << free << " " << cross[0]/free << " " << cross[1]/free << endl;
  */     
       
@@ -90,8 +90,8 @@ int main(int argc, char *argv[])
 // // //   double crosspct=obs.getDiffCross(kin, 0, 1, 0, 1, 0.);
 // // //   double crosspsrcct=obs.getDiffCross(kin, 1, 1, 0, 1, 0.);
 // // //   double crossppw=obs.getDiffCross(kin, 0, 0, 1, 1, 0.);
-// // //   cout << free/HBARC/HBARC << endl;
-//   cout << kin.GetKlab() << " " << kin.GetWlab() << " " << kin.GetPYlab() << " " << acos(kin.GetCosthYlab())*RADTODEGR << " " << kin.GetPklab() << " " <<  
+// // //   cout << free/nucqcd::hbarc/nucqcd::hbarc << endl;
+//   cout << kin.GetKlab() << " " << kin.GetWlab() << " " << kin.GetPYlab() << " " << acos(kin.GetCosthYlab())*nucqcd::rad_to_deg << " " << kin.GetPklab() << " " <<  
 //       crossp << " " << crosspsrc << " " << free << " " << crossp/free << " " << crosspsrc/free << endl;
 // 
 //       //   cout << crossp << " " << crosss << " " << crosspsrc << " " << crosspct << " " << crosspsrcct << " " << crossppw << endl;

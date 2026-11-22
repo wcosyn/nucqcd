@@ -39,15 +39,15 @@ nkt_mod(nkt_mod)
       //cout << "proton" << endl;
       setGlauberParameters(p,sigmap,beta2p,epsilonp,sigman,beta2n,epsilonn);
       nkt_sq=0.35*0.35*9;
-      lc=2*p*HBARC/1./1e06;
-      mass = MASSP;     
+      lc=2*p*nucqcd::hbarc/1./1e06;
+      mass = nucqcd::mass_p;     
       break;
     case(1):
       //cout <<"neutron" << endl;
       setGlauberParameters(p,sigman,beta2n,epsilonn,sigmap,beta2p,epsilonp);
       nkt_sq=0.35*0.35*9;
-      lc=2*p*HBARC/1./1e06;
-      mass = MASSN;
+      lc=2*p*nucqcd::hbarc/1./1e06;
+      mass = nucqcd::mass_n;
       break;
     case(2):
       //cout <<"pi+" << endl;
@@ -60,8 +60,8 @@ nkt_mod(nkt_mod)
       beta2n = interpolate(beta2n_array,log10(p),0.01,151,250.);
       epsilonn = interpolate(epsn_array,log10(p),0.01,151,250.);
       nkt_sq=0.35*0.35*4;
-      lc=2*p*HBARC/0.7/1e06;
-      mass = MASSPI;
+      lc=2*p*nucqcd::hbarc/0.7/1e06;
+      mass = nucqcd::mass_pi;
       break;
     case(3):
       //cout <<"pi-" << endl;
@@ -74,8 +74,8 @@ nkt_mod(nkt_mod)
       beta2n = interpolate(beta2p_array,log10(p),0.01,151,250.);
       epsilonn = interpolate(epsp_array,log10(p),0.01,151,250.);
       nkt_sq=0.35*0.35*4;
-      lc=2*p*HBARC/0.7/1e06;
-      mass = MASSPI;
+      lc=2*p*nucqcd::hbarc/0.7/1e06;
+      mass = nucqcd::mass_pi;
       break;
     case(4):
       //cout <<"rho0" << endl;
@@ -84,8 +84,8 @@ nkt_mod(nkt_mod)
       beta2n=beta2p = (interpolate(beta2n_array,log10(p),0.01,151,250.)+interpolate(beta2p_array,log10(p),0.01,151,250.))*0.5;
       epsilonn = epsilonp = (interpolate(epsn_array,log10(p),0.01,151,250.)+interpolate(epsp_array,log10(p),0.01,151,250.))*0.5;
       nkt_sq=0.35*0.35*4;
-      lc=2*p*HBARC/0.7/1e06;
-      mass = MASSRHO;
+      lc=2*p*nucqcd::hbarc/0.7/1e06;
+      mass = nucqcd::mass_rho;
       sigma_decay_n=sigma_decay_p=sigman+sigmap;
       break;
     case(5):
@@ -95,8 +95,8 @@ nkt_mod(nkt_mod)
       beta2n=beta2p = (interpolate(beta2n_array,log10(p),0.01,151,250.)+interpolate(beta2p_array,log10(p),0.01,151,250.))*0.5;
       epsilonn = epsilonp = (interpolate(epsn_array,log10(p),0.01,151,250.)+interpolate(epsp_array,log10(p),0.01,151,250.))*0.5;
       nkt_sq=0.35*0.35*4;
-      lc=2*p*HBARC/0.5/1e06;
-      mass = MASSRHO;
+      lc=2*p*nucqcd::hbarc/0.5/1e06;
+      mass = nucqcd::mass_rho;
       sigma_decay_n=sigma_decay_p=sigman+sigmap;
       break;
     case(6):
@@ -106,8 +106,8 @@ nkt_mod(nkt_mod)
       beta2n=beta2p = (interpolate(beta2n_array,log10(p),0.01,151,250.)+interpolate(beta2p_array,log10(p),0.01,151,250.))*0.5;
       epsilonn = epsilonp = (interpolate(epsn_array,log10(p),0.01,151,250.)+interpolate(epsp_array,log10(p),0.01,151,250.))*0.5;
       nkt_sq=0.35*0.35*4;
-      lc=2*p*HBARC/1./1e06;
-      mass = MASSRHO;
+      lc=2*p*nucqcd::hbarc/1./1e06;
+      mass = nucqcd::mass_rho;
       sigma_decay_n=sigma_decay_p=sigman+sigmap;
       break;
     case(7):
@@ -117,8 +117,8 @@ nkt_mod(nkt_mod)
       beta2n=beta2p = (interpolate(beta2n_array,log10(p),0.01,151,250.)+interpolate(beta2p_array,log10(p),0.01,151,250.))*0.5;
       epsilonn = epsilonp = (interpolate(epsn_array,log10(p),0.01,151,250.)+interpolate(epsp_array,log10(p),0.01,151,250.))*0.5;
       nkt_sq=0.35*0.35*4;
-      lc=2*p*HBARC/1./1e06;
-      mass = MASSPI*2.;
+      lc=2*p*nucqcd::hbarc/1./1e06;
+      mass = nucqcd::mass_pi*2.;
 //       sigma_decay_n=sigma_decay_p=sigman+sigmap;
       break;
      case(8):
@@ -129,8 +129,8 @@ nkt_mod(nkt_mod)
       beta2n = 1.740000;//1.74; // fm^2
       beta2p = 1.740000;//1.74; // fm^2
       nkt_sq=0.35*0.35*9;
-      lc=2*p*HBARC/1./1e06;
-      mass = MASSP;     
+      lc=2*p*nucqcd::hbarc/1./1e06;
+      mass = nucqcd::mass_p;     
       break;
     case(9):
       //initial neutron charge exchange
@@ -140,33 +140,33 @@ nkt_mod(nkt_mod)
       beta2n = 1.740000;//1.74; // fm^2
       beta2p = 1.740000;//1.74; // fm^2
       nkt_sq=0.35*0.35*9;
-      lc=2*p*HBARC/1./1e06;
-      mass = MASSN;
+      lc=2*p*nucqcd::hbarc/1./1e06;
+      mass = nucqcd::mass_n;
       break;
     case(P_CLASS_SCX): // Fastparticle parameters for classical CX, only use sigma's no profile functions here (no betas)
     {
-      E = sqrt(MASSP*MASSP+p*p);
-      double MTARG  = MASSN; // type of target is opposite (neutron<->proton) from fastparticle
-      double s      = MASSP*MASSP + MASSN*MASSN + E*MTARG; // calculate the s mandelstam variable. Assume frozen spectator has ~ zero momentum.
-      double s800   = MASSP*MASSP + MASSN*MASSN + (801.9 + MASSN)*MTARG; // s mandelstam if kinetic energy of neutron beam particle is 801.9 MeV
+      E = sqrt(nucqcd::mass_p*nucqcd::mass_p+p*p);
+      double MTARG  = nucqcd::mass_n; // type of target is opposite (neutron<->proton) from fastparticle
+      double s      = nucqcd::mass_p*nucqcd::mass_p + nucqcd::mass_n*nucqcd::mass_n + E*MTARG; // calculate the s mandelstam variable. Assume frozen spectator has ~ zero momentum.
+      double s800   = nucqcd::mass_p*nucqcd::mass_p + nucqcd::mass_n*nucqcd::mass_n + (801.9 + nucqcd::mass_n)*MTARG; // s mandelstam if kinetic energy of neutron beam particle is 801.9 MeV
       sigman = 0.424*s800/s; // < add realistic value here (momentum dependent) fm^2
       sigmap = 0.; // no SCX between two protons
       beta2n = -666.; // not used
       beta2p = -666.; // not used
-      mass   = MASSP;
+      mass   = nucqcd::mass_p;
       break;
     }
     case(N_CLASS_SCX): // Fastparticle parameters for classical CX, only use sigma's no profile functions here (no betas)
     {
-      E = sqrt(MASSN*MASSN+p*p);
-      double MTARG  = MASSP; // type of target is opposite (neutron<->proton) from fastparticle
-      double s      = MASSP*MASSP + MASSN*MASSN + E*MTARG; // calculate the s mandelstam variable. Assume frozen spectator has ~ zero momentum.
-      double s800   = MASSP*MASSP + MASSN*MASSN + (801.9 + MASSN)*MTARG; // s mandelstam if kinetic energy of neutron beam particle is 801.9 MeV
+      E = sqrt(nucqcd::mass_n*nucqcd::mass_n+p*p);
+      double MTARG  = nucqcd::mass_p; // type of target is opposite (neutron<->proton) from fastparticle
+      double s      = nucqcd::mass_p*nucqcd::mass_p + nucqcd::mass_n*nucqcd::mass_n + E*MTARG; // calculate the s mandelstam variable. Assume frozen spectator has ~ zero momentum.
+      double s800   = nucqcd::mass_p*nucqcd::mass_p + nucqcd::mass_n*nucqcd::mass_n + (801.9 + nucqcd::mass_n)*MTARG; // s mandelstam if kinetic energy of neutron beam particle is 801.9 MeV
       sigman = 0.; // no SCX between two neutrons
       sigmap = 0.424*s800/s; // < add realistic value here (momentum dependent) fm^2
       beta2n = -666.; // not used
       beta2p = -666.; // not used
-      mass   = MASSN;
+      mass   = nucqcd::mass_n;
       break;
     }
     default:
@@ -303,20 +303,20 @@ double FastParticle::getBetasq(int level, MeanFieldNucleus *pnucleus) const{
 
 complex<double> FastParticle::getScatterfront(int level, MeanFieldNucleus *pnucleus) const{
   assert(!(particletype==8 || particletype==9)); // if this fails, you should be using getScatterfront(bool proton)
-  return getSigma(level,pnucleus)*(1.-I_UNIT*getEpsilon(level,pnucleus))
+  return getSigma(level,pnucleus)*(1.-nucqcd::i_unit*getEpsilon(level,pnucleus))
 			  /(4.*PI*getBetasq(level,pnucleus));
 }
 
 complex<double> FastParticle::getScatterfront(bool proton) const{
   if (particletype==8 || particletype==9){ // if you wonder where the below formulas come from. Ask Camille Colle, he has pdf describing everything
 	  assert( (particletype==8 && proton==false) || (particletype==9 && proton==true)); // make sure you are doing pn scattering!
-	  const double MTARG  = (particletype==8)? MASSN : MASSP; // type of target is opposite (neutron<->proton) from fastparticle 
-	  const double s      = MASSP*MASSP + MASSN*MASSN + getE()*MTARG; // calculate the s mandelstam variable. Assume frozen spectator has ~ zero momentum.
-	  const double s800   = MASSP*MASSP + MASSN*MASSN + (801.9 + MASSN)*MTARG; // s mandelstam if kinetic energy of neutron beam particle is 801.9 MeV
+	  const double MTARG  = (particletype==8)? nucqcd::mass_n : nucqcd::mass_p; // type of target is opposite (neutron<->proton) from fastparticle 
+	  const double s      = nucqcd::mass_p*nucqcd::mass_p + nucqcd::mass_n*nucqcd::mass_n + getE()*MTARG; // calculate the s mandelstam variable. Assume frozen spectator has ~ zero momentum.
+	  const double s800   = nucqcd::mass_p*nucqcd::mass_p + nucqcd::mass_n*nucqcd::mass_n + (801.9 + nucqcd::mass_n)*MTARG; // s mandelstam if kinetic energy of neutron beam particle is 801.9 MeV
 	  const double B      = 3.65*sqrt( s800/s ); // fm^2
-	  return -I_UNIT*B/(4.*PI*getBetasq(0)); //*exp(I_UNIT*PI*0.5); // <- actually there is an arbitrary phase factor here!, note that this is dimless B is in fm^2 and Betasq too, beta2p and beta2n are the same here, hence we just call it with 0
+	  return -nucqcd::i_unit*B/(4.*PI*getBetasq(0)); //*exp(nucqcd::i_unit*PI*0.5); // <- actually there is an arbitrary phase factor here!, note that this is dimless B is in fm^2 and Betasq too, beta2p and beta2n are the same here, hence we just call it with 0
   } else {
-	  return getSigma(proton)*(1.-I_UNIT*getEpsilon(proton))/(4.*PI*getBetasq(proton));
+	  return getSigma(proton)*(1.-nucqcd::i_unit*getEpsilon(proton))/(4.*PI*getBetasq(proton));
   }
 }
 
@@ -347,13 +347,13 @@ double FastParticle::getCT_decay_sigma(double z, bool proton) const{
 
 }
 double FastParticle::getDecay_sigma(double z, int level, MeanFieldNucleus *pnucleus) const{
-    double a=exp(-getDecay_dil()*(z-getHitz())*INVHBARC);
+    double a=exp(-getDecay_dil()*(z-getHitz())*nucqcd::inv_hbarc);
     return a + getSigma_decay(level,pnucleus)/getSigma(level,pnucleus)*(1.-a);
   
 }
     
 double FastParticle::getDecay_sigma(double z, bool proton) const{
-    double a=exp(-getDecay_dil()*(z-getHitz())*INVHBARC);
+    double a=exp(-getDecay_dil()*(z-getHitz())*nucqcd::inv_hbarc);
     return a + getSigma_decay(proton)/getSigma(proton)*(1.-a);
   
 }
@@ -384,7 +384,7 @@ void FastParticle::printParticle() const{
      throw std::invalid_argument(nucqcd::ErrorMessage() << "Particletypeerror!!!" );
  }
  if(incoming) cout << "This is the incoming particle" << endl;
- cout << "Momentum, norm[MeV]=" << getP() << ", theta[deg]=" << getTheta()*RADTODEGR << ", phi[deg]=" << getPhi()*RADTODEGR << endl;
+ cout << "Momentum, norm[MeV]=" << getP() << ", theta[deg]=" << getTheta()*nucqcd::rad_to_deg << ", phi[deg]=" << getPhi()*nucqcd::rad_to_deg << endl;
  cout << "Scattering Parameters with proton:" << endl << "sigma[fm^2]: " << getSigmap() << 
   ", beta^2[fm^2]: " << getBeta2p() << ", epsilon: " << getEpsilonp() << endl; 
  cout << "Scattering Parameters with neutron:" << endl << "sigma[fm^2]: " << getSigman() << 
@@ -670,21 +670,21 @@ void FastParticle::setPionGlauberData(double mom, double &sigmatotp, double &bet
     a=fitdata(betadata[0][0],betadata[0][1],betadata[0][2],0,47,11,chi2);
     beta2n=0.;
     for(int i=0;i<11;i++) beta2n+=a[i]*pow(logp,i);
-    beta2n = beta2n*pow(HBARC/1000.,2.);
+    beta2n = beta2n*pow(nucqcd::hbarc/1000.,2.);
     delete [] a;
   }
   else if(logp<=0.6){
     a=fitdata(betadata[0][0],betadata[0][1],betadata[0][2],40,105,11,chi2);
     beta2n=0.;
     for(int i=0;i<11;i++) beta2n+=a[i]*pow(logp,i);
-    beta2n = beta2n*pow(HBARC/1000.,2.);
+    beta2n = beta2n*pow(nucqcd::hbarc/1000.,2.);
     delete [] a;
   }
   else{
     a=fitdata(betadata[0][0],betadata[0][1],betadata[0][2],102,lines3[0]-1,5,chi2);
     beta2n=0.;
     for(int i=0;i<5;i++) beta2n+=a[i]*pow(logp,i);
-    beta2n = beta2n*pow(HBARC/1000.,2.);
+    beta2n = beta2n*pow(nucqcd::hbarc/1000.,2.);
     delete [] a;
   }    
 
@@ -775,14 +775,14 @@ void FastParticle::setPionGlauberData(double mom, double &sigmatotp, double &bet
     a=fitdata(betadata[1][0],betadata[1][1],betadata[1][2],0,52,8,chi2);
     beta2p=0.;
     for(int i=0;i<8;i++) beta2p+=a[i]*pow(logp,i);
-    beta2p=beta2p*pow(HBARC/1000.,2.);
+    beta2p=beta2p*pow(nucqcd::hbarc/1000.,2.);
     delete [] a;
   }
   else{
     a=fitdata(betadata[1][0],betadata[1][1],betadata[1][2],46,lines3[1]-1,8,chi2);
     beta2p=0.;
     for(int i=0;i<8;i++) beta2p+=a[i]*pow(logp,i);
-    beta2p=beta2p*pow(HBARC/1000.,2.);
+    beta2p=beta2p*pow(nucqcd::hbarc/1000.,2.);
     delete [] a;
   }
 
@@ -884,7 +884,7 @@ FastParticle FastParticle::gridBinCentre() const{
 
 void FastParticle::setScatter(double sigma, double beta, double eps, double p_dil){
   setSigma(sigma);
-  beta2n=beta2p=beta*pow(HBARC/1000.,2.);
+  beta2n=beta2p=beta*pow(nucqcd::hbarc/1000.,2.);
   epsilonn=epsilonp=eps;
   decay_dil = Gamma*sqrt(1.-p_dil*p_dil/(mass*mass+p_dil*p_dil));
   userset=1;

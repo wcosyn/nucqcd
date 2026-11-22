@@ -434,7 +434,7 @@ double TCstPWF::GetG(ESpace space, EWave wave, int term, double q) const
     } 
 
     else {
-      if(q<STRANGEUFLOW) // G(r) does not converge nicely
+      if(q<nucqcd::strange_underflow) // G(r) does not converge nicely
 	return 0.;
       
       q /= fgHbarc; // convert position [fm] -> [MeV^-1]
@@ -468,7 +468,7 @@ double TCstPWF::GetG(ESpace space, EWave wave, int term, double q) const
     }
 
     else {
-      if(q<STRANGEUFLOW) // G(r) does not converge nicely
+      if(q<nucqcd::strange_underflow) // G(r) does not converge nicely
 	return 0.;
       
       q /= fgHbarc; // convert position [fm] -> [MeV^-1]

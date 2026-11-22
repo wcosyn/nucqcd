@@ -57,7 +57,7 @@ Tests do not use `share/` directly. The fixture `share_sandbox` (re)creates `bui
   `NUCQCD_GRID_DIR`, so a cache directory set in your environment is not used either)
 
 Pass `nucqcd_test::share_dir()` wherever a class takes a `dir`/`homedir`. Classes that use the
-compiled-in `HOMEDIR` (MSTW, GRSV) only read from `share/`.
+compiled-in `nucqcd::share_dir` (MSTW, GRSV) only read from `share/`.
 
 ## Known bugs
 

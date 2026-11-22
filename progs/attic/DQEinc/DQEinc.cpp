@@ -38,14 +38,14 @@ int main(int argc, char *argv[])
       TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ein);
 
   //     cout << "q " << qvec << " " << nu << " " << Q2/4./Ein/(Ein-nu) << " " << Ein << endl;
-      //TKinematics2to2 kin("","",MASSD,MASSP,Wprime,"qsquared:wlab:pklab",1.8E06,nu,pr);
+      //TKinematics2to2 kin("","",nucqcd::mass_d,nucqcd::mass_p,Wprime,"qsquared:wlab:pklab",1.8E06,nu,pr);
       double pw_direct=0.,pw_cross=0.,fsi1=0.,fsi2=0.,fsioff1=0.,fsioff2=0.,fsioffPV1=0.,fsioffPV2=0.,noemer=1.;
       //azz have to be divided by the unpolarized cross section afterwards by user!!!!
       double azz_direct=0., azz_cross=0.,azz_fsi1=0.,azz_fsi2=0.,azz_fsioff1=0.,azz_fsioff2=0.;  
       double f2_1,f2_2;
       for(int proton=0;proton<=1;++proton){
 	
-	double nu=Q2/(2.*(proton?MASSP:MASSN)*x);
+	double nu=Q2/(2.*(proton?nucqcd::mass_p:nucqcd::mass_n)*x);
 	double qvec=sqrt(Q2+nu*nu);
 	double Eout=Ein-nu;
 	double thetae=2.*asin(sqrt(Q2/(4.*Ein*Eout)));

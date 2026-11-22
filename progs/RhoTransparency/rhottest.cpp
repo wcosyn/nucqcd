@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
   double **results = new double*[n];  
   for(int i=0;i<n;i++) results[i] = new double[NROFRES];
 
-  RhoTCross test = RhoTCross(nucleus,400.,HOMEDIR,nocuts,0,0.,1.E-02,2,1E04,0.,4);
+  RhoTCross test = RhoTCross(nucleus,400.,nucqcd::share_dir,nocuts,0,0.,1.E-02,2,1E04,0.,4);
   
   for(int i=TMPI::Rank(); i<n; i += TMPI::NumberOfProcesses() ) {
     int j = i/4;

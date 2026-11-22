@@ -38,14 +38,14 @@ int main(int argc, char *argv[])
 //   string homedir="/home/wim/Code/share";
 // 
 //   MeanFieldNucleusThick Carbon(nucleus,homedir);
-//   TKinematics2to2 kin("","",Carbon.getMassA(),Carbon.getMassA_min_proton(),MASSP,"qsquared:wlab:pklab",Q2,omega,pm);
+//   TKinematics2to2 kin("","",Carbon.getMassA(),Carbon.getMassA_min_proton(),nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
 //   TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ein);
 //   Cross obs(*elec,&Carbon,prec,integrator,homedir,screening,scr);
-//   double free=obs.getElCross(kin,2,PI)*HBARC*HBARC;
+//   double free=obs.getElCross(kin,2,PI)*nucqcd::hbarc*nucqcd::hbarc;
 //   vector<double> cross;
 // 
 // //   obs.getAllDiffCross(cross,kin,2,1,thick,0.,maxEval,1);
-//   cout << kin.GetKlab() << " " << kin.GetWlab() << " " << kin.GetPYlab() << " " << acos(kin.GetCosthYlab())*RADTODEGR << " " << kin.GetPklab() << " "  
+//   cout << kin.GetKlab() << " " << kin.GetWlab() << " " << kin.GetPYlab() << " " << acos(kin.GetCosthYlab())*nucqcd::rad_to_deg << " " << kin.GetPklab() << " "  
 //       /*<< cross[0] << " " << cross[1] << " " << cross[thick?4:2] << " " << free << " " << cross[0]/free << " " << cross[1]/free << endl*/;
 // 
 //   vector<double> observ;
@@ -72,8 +72,8 @@ int main(int argc, char *argv[])
   double Ein=600.;
   double Eout=atof(argv[3]);
   int shell=atoi(argv[1]);
-  double thetae=atof(argv[2])*DEGRTORAD;
-  //double thetap=atof(argv[3])*DEGRTORAD;
+  double thetae=atof(argv[2])*nucqcd::deg_to_rad;
+  //double thetap=atof(argv[3])*nucqcd::deg_to_rad;
   double omega=Ein-Eout;
   int medium=atoi(argv[4]);
   
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
   int thick=1;//atoi(argv[9]);
   int maxEval=20000;//atoi(argv[10]);
   
-  string homedir=HOMEDIR;
+  string homedir=nucqcd::share_dir;
   MeanFieldNucleusThick Carbon(nucleus,homedir);
   TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ein);
   
@@ -94,11 +94,11 @@ int main(int argc, char *argv[])
   double thetaq=atan2(-sin(thetae)*Eout,Ein-Eout*cos(thetae));
   //thetap-=thetaq;
 //   double A=omega+Carbon.getMassA();
-//   double B=pow(Carbon.getMassA_min_proton()+Carbon.getExcitation()[shell],2.)+qvec*qvec-A*A-MASSP*MASSP;
+//   double B=pow(Carbon.getMassA_min_proton()+Carbon.getExcitation()[shell],2.)+qvec*qvec-A*A-nucqcd::mass_p*nucqcd::mass_p;
 //   double D=2.*qvec*cos(thetap);
 //   double a=4.*A*A-D*D;
 //   double b=2.*B*D;
-//   double c=4.*A*A*MASSP*MASSP-B*B;
+//   double c=4.*A*A*nucqcd::mass_p*nucqcd::mass_p-B*B;
 //   double discr=b*b-4.*a*c;
 //   if(discr<0.) cout << "discr <0" << endl;
 //   double Pp1=(-b+sqrt(discr))/(2.*a);
@@ -108,16 +108,16 @@ int main(int argc, char *argv[])
 //     double pmz=qvec-Pp1*cos(thetap);
 //     double EAmin1=sqrt(pow(Carbon.getMassA_min_proton()+Carbon.getExcitation()[shell],2.)+pmx*pmx+pmz*pmz);
 //     double pm=sqrt(pmx*pmx+pmz*pmz);
-//     double Ep=sqrt(MASSP*MASSP+Pp1*Pp1);
-//     cout << thetae*RADTODEGR << " " << thetaq*RADTODEGR << " " << thetap*RADTODEGR << " " << Pp1 << " " << pm << " " << atan2(pmx,pmz)*RADTODEGR << " " << A << " " << Ep+EAmin1 << endl;
+//     double Ep=sqrt(nucqcd::mass_p*nucqcd::mass_p+Pp1*Pp1);
+//     cout << thetae*nucqcd::rad_to_deg << " " << thetaq*nucqcd::rad_to_deg << " " << thetap*nucqcd::rad_to_deg << " " << Pp1 << " " << pm << " " << atan2(pmx,pmz)*nucqcd::rad_to_deg << " " << A << " " << Ep+EAmin1 << endl;
 //   }
 //   if((SIGN(B-D*Pp2)==-1)){
 //     double pmx=-Pp2*sin(thetap);
 //     double pmz=qvec-Pp2*cos(thetap);
 //     double EAmin1=sqrt(pow(Carbon.getMassA_min_proton()+Carbon.getExcitation()[shell],2.)+pmx*pmx+pmz*pmz);
 //     double pm=sqrt(pmx*pmx+pmz*pmz);
-//     double Ep=sqrt(MASSP*MASSP+Pp2*Pp2);
-//     cout << thetae*RADTODEGR << " " << thetaq*RADTODEGR << " " << thetap*RADTODEGR << " " << Pp2 << " " << pm << " " << atan2(pmx,pmz)*RADTODEGR << " " << A << " " << Ep+EAmin1 << endl;
+//     double Ep=sqrt(nucqcd::mass_p*nucqcd::mass_p+Pp2*Pp2);
+//     cout << thetae*nucqcd::rad_to_deg << " " << thetaq*nucqcd::rad_to_deg << " " << thetap*nucqcd::rad_to_deg << " " << Pp2 << " " << pm << " " << atan2(pmx,pmz)*nucqcd::rad_to_deg << " " << A << " " << Ep+EAmin1 << endl;
 //   }
   
   
@@ -126,24 +126,24 @@ int main(int argc, char *argv[])
   
   
     TKinematics2to2 kin("","",Carbon.getMassA(),Carbon.getMassA_min_proton()+Carbon.getExcitation()[shell]
-		,MASSP,"qsquared:wlab:pklab",Q2,omega,pm);
+		,nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
     if(kin.IsPhysical()&&kin.GetPYlab()<801.6&&kin.GetPYlab()>534.4){
         Cross obs(*elec,&Carbon,prec,integrator,homedir,screening,scr);
-      double free0=obs.getElCross(kin,2,0.,maxEval)*HBARC*HBARC;
+      double free0=obs.getElCross(kin,2,0.,maxEval)*nucqcd::hbarc*nucqcd::hbarc;
 //       obs.printDensity_profile(kin,shell,thick,maxEval);
       
       vector<double> observ;
       obs.getAllObs_xyz(observ,kin,2,shell,thick,medium,0.,maxEval,1,1.,1.);
       
-     cout << kin.GetKlab() << " " << kin.GetWlab() << " " << kin.GetPYlab() << " " << acos(kin.GetCosthYlab())*RADTODEGR 
-      << " " << kin.GetPklab() << " " << acos(kin.GetCosthklab())*RADTODEGR << " ";
+     cout << kin.GetKlab() << " " << kin.GetWlab() << " " << kin.GetPYlab() << " " << acos(kin.GetCosthYlab())*nucqcd::rad_to_deg 
+      << " " << kin.GetPklab() << " " << acos(kin.GetCosthklab())*nucqcd::rad_to_deg << " ";
       for(int i=0;i<5;i+=4) cout << observ[i*8] << " " << observ[i*8+3] << " " << observ[i*8+5] << " " << observ[i*8+7]<< " ";
       cout << free0*1.E-09 << endl;
       
-      cout << kin.GetKlab() << " " << kin.GetWlab() << " " << kin.GetPYlab() << " " << acos(kin.GetCosthYlab())*RADTODEGR 
-      << " " << -kin.GetPklab() << " " << acos(kin.GetCosthklab())*RADTODEGR << " ";
+      cout << kin.GetKlab() << " " << kin.GetWlab() << " " << kin.GetPYlab() << " " << acos(kin.GetCosthYlab())*nucqcd::rad_to_deg 
+      << " " << -kin.GetPklab() << " " << acos(kin.GetCosthklab())*nucqcd::rad_to_deg << " ";
       
-      double free180=obs.getElCross(kin,2,PI,maxEval)*HBARC*HBARC;
+      double free180=obs.getElCross(kin,2,PI,maxEval)*nucqcd::hbarc*nucqcd::hbarc;
       obs.getAllObs_xyz(observ,kin,2,shell,thick,medium,PI,maxEval,1,1.,1.);
       for(int i=0;i<5;i+=4) cout << observ[i*8] << " " << observ[i*8+3] << " " << observ[i*8+5] << " " << observ[i*8+7]<< " ";
       cout << free180*1.E-09 << endl;

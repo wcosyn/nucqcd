@@ -47,10 +47,10 @@ int main(int argc, char *argv[])
   MeanFieldNucleusThick nucl(nucleus,homedir);
   DistMomDistrGrid *pgrid[nucl.getTotalLevels()];
   double prho=3E03;
-  double ppi=sqrt((MASSRHO*MASSRHO+prho*prho)/4.-MASSPI*MASSPI);
+  double ppi=sqrt((nucqcd::mass_rho*nucqcd::mass_rho+prho*prho)/4.-nucqcd::mass_pi*nucqcd::mass_pi);
   double ppiz=prho/2.;
   double thetapi=2.*acos(ppiz/ppi);
-  cout << thetapi*RADTODEGR << endl;
+  cout << thetapi*nucqcd::rad_to_deg << endl;
   
   
   if(ppion<4){ //2 pion decay  (1) both pions 
@@ -71,12 +71,12 @@ int main(int argc, char *argv[])
     }
   }
   if(ppion==4){ //second way of including 2 pions
-    double Erho=sqrt(MASSRHO*MASSRHO+prho*prho);
+    double Erho=sqrt(nucqcd::mass_rho*nucqcd::mass_rho+prho*prho);
     double beta=-prho/Erho;
     double gamma=1./sqrt(1-beta*beta);
-    double ppicm=sqrt(MASSRHO*MASSRHO/4.-MASSPI*MASSPI);
-    double Epicm=sqrt(MASSPI*MASSPI+ppicm*ppicm);
-    double theta=45*DEGRTORAD;
+    double ppicm=sqrt(nucqcd::mass_rho*nucqcd::mass_rho/4.-nucqcd::mass_pi*nucqcd::mass_pi);
+    double Epicm=sqrt(nucqcd::mass_pi*nucqcd::mass_pi+ppicm*ppicm);
+    double theta=45*nucqcd::deg_to_rad;
     double ppiz=(ppicm*cos(theta)-beta*Epicm)*gamma;
     double ppiz2=(-ppicm*cos(theta)-beta*Epicm)*gamma;
     double ppiperp=ppicm*sin(theta);

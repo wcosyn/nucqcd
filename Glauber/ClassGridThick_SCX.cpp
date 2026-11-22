@@ -15,7 +15,7 @@
  * @param zpoints    : number of grid points in impact parameter z
  * @param SHAREDIR   : share directory; the grid is cached in SHAREDIR/grids/, or in $NUCQCD_GRID_DIR if that is set
  **/
-ClassGridThick_SCX::ClassGridThick_SCX(double (*densf)(double,void*),void* dens_param, const char* densName, double rmax, FastParticle* fp,int bpoints,int zpoints,char* SHAREDIR) : 
+ClassGridThick_SCX::ClassGridThick_SCX(double (*densf)(double,void*),void* dens_param, const char* densName, double rmax, FastParticle* fp,int bpoints,int zpoints,const char* SHAREDIR) : 
 	_densf(densf),
 	_dens_param(dens_param),
 	_rmax(rmax),

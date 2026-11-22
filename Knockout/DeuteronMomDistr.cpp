@@ -1,6 +1,6 @@
 #include "DeuteronMomDistr.hpp"
 
-#define MASS_N (MASSP+MASSN)*0.5
+#define MASS_N (nucqcd::mass_p+nucqcd::mass_n)*0.5
 
 #include <cassert>
 #include <cmath>
@@ -8,7 +8,7 @@
 #include <AuxFunction.hpp>
 using namespace std;
 
-// Settings of the 2D FSI integrals (cube_adaptive). With PREC (1e-4) and at most 2000 evaluations
+// Settings of the 2D FSI integrals (cube_adaptive). With nucqcd::integration_prec (1e-4) and at most 2000 evaluations
 // every integral hit the evaluation cap, so results were only accurate to ~1e-4 and depended on the
 // CPU (rounding). With these settings the error is <~1e-6 at the cost of ~13x more time (2026-11).
 static const double FSI_EPSREL=1.E-06;
@@ -17,13 +17,13 @@ static const double FSI_MAXEVAL=2.E04;
 DeuteronMomDistr::DeuteronMomDistr(std::string name, double mass, int offshells, double sigmain, double betain, double epsilonin,
   double betaoffin, double lambdain, int loop_limit):
 wfname(name),
-sigma(sigmain/10.*INVHBARC*INVHBARC),  //to MeV^-2
+sigma(sigmain/10.*nucqcd::inv_hbarc*nucqcd::inv_hbarc),  //to MeV^-2
 beta(betain*1.E-06), // to MeV^-2
 epsilon(epsilonin),
 betaoff(betaoffin*1.E-06),// to MeV^-2
 lambda(lambdain*1.E+06), // to MeV^2
 massi(mass),
-massr(massi==MASSP? MASSN:MASSP),
+massr(massi==nucqcd::mass_p? nucqcd::mass_n:nucqcd::mass_p),
 przprime(-9999.),
 offshellset(offshells),
 looplimit(loop_limit)
@@ -127,7 +127,7 @@ DeuteronMomDistr::~DeuteronMomDistr(){
 
 //input in [mb],[GeV-2],[]
 void DeuteronMomDistr::setScatter(double sigmain, double betain, double epsin){
- sigma=sigmain*0.1*INVHBARC*INVHBARC;// to MeV^-2
+ sigma=sigmain*0.1*nucqcd::inv_hbarc*nucqcd::inv_hbarc;// to MeV^-2
  beta=betain*1.E-06;// to MeV^-2
  epsilon=epsin;
  return; 
@@ -136,10 +136,10 @@ void DeuteronMomDistr::setScatter(double sigmain, double betain, double epsin){
 double DeuteronMomDistr::getLCMomDistrpw(TKinematics2to2 &kin) const{
   //kaon translates to spectator nucleon
   double pwtotal=0.;
-  double alpha=2.*(kin.GetEklab()-kin.GetPklab()*kin.GetCosthklab())/MASSD; //lightcone alpha_s=(E-p_z)/M_n
+  double alpha=2.*(kin.GetEklab()-kin.GetPklab()*kin.GetCosthklab())/nucqcd::mass_d; //lightcone alpha_s=(E-p_z)/M_n
   double sintheta=sqrt(1.-kin.GetCosthklab()*kin.GetCosthklab());
   double pt=kin.GetPklab()*sintheta;
-  double k=sqrt((M_NUCL*M_NUCL+pt*pt)/(alpha*(2.-alpha))-M_NUCL*M_NUCL); //lightcone momentum rescaling
+  double k=sqrt((nucqcd::mass_nucleon*nucqcd::mass_nucleon+pt*pt)/(alpha*(2.-alpha))-nucqcd::mass_nucleon*nucqcd::mass_nucleon); //lightcone momentum rescaling
   double k_z=sqrt(k*k-pt*pt);
 //   for(int M=-2;M<=2;M+=2){
 //     for(int spinr=-1;spinr<=1;spinr+=2){
@@ -153,17 +153,17 @@ double DeuteronMomDistr::getLCMomDistrpw(TKinematics2to2 &kin) const{
 //   //cout << kin.GetMesonMass() << " " << kin.GetPklab() << " " << kin.GetCosthklab() << endl;
 //   pwtotal*=2./3.;
   //relativistic normalization
-//   cout << k << " " << kin.GetPklab() << " " << sqrt(M_NUCL*M_NUCL+k*k)/(2.-alpha)/kin.GetEklab() << " " << alpha << endl;
+//   cout << k << " " << kin.GetPklab() << " " << sqrt(nucqcd::mass_nucleon*nucqcd::mass_nucleon+k*k)/(2.-alpha)/kin.GetEklab() << " " << alpha << endl;
   return (pow(wf.GetUp(k),2.)+pow(wf.GetWp(k),2.))/(4.*PI)*sqrt(massr*massr+k*k)/pow(2.-alpha,2.)/kin.GetEklab(); 
 }
 // 
 double DeuteronMomDistr::getLCMomDistrpw(TVector3 p) const{
   double pwtotal=0.;
   double E=sqrt(p.Mag2()+massr*massr);
-  double alpha=2.*(E-p[2])/MASSD; //lightcone alpha_s=(E-p_z)/M_n
+  double alpha=2.*(E-p[2])/nucqcd::mass_d; //lightcone alpha_s=(E-p_z)/M_n
   double pt2=p[0]*p[0]+p[1]*p[1];
-  double k=sqrt((M_NUCL*M_NUCL+pt2)/(alpha*(2.-alpha))-M_NUCL*M_NUCL); //lightcone momentum rescaling
-  double k_z=(1-alpha)*sqrt(M_NUCL*M_NUCL+k*k);
+  double k=sqrt((nucqcd::mass_nucleon*nucqcd::mass_nucleon+pt2)/(alpha*(2.-alpha))-nucqcd::mass_nucleon*nucqcd::mass_nucleon); //lightcone momentum rescaling
+  double k_z=(1-alpha)*sqrt(nucqcd::mass_nucleon*nucqcd::mass_nucleon+k*k);
 //   for(int M=-2;M<=2;M+=2){
 //     for(int spinr=-1;spinr<=1;spinr+=2){
 //       complex<double> wave=wf.DeuteronPState(M, -1, spinr, TVector3(pt,
@@ -176,9 +176,9 @@ double DeuteronMomDistr::getLCMomDistrpw(TVector3 p) const{
 //   //cout << kin.GetMesonMass() << " " << kin.GetPklab() << " " << kin.GetCosthklab() << endl;
 //   pwtotal*=2./3.;
   //relativistic normalization
-//   cout << k << " " << kin.GetPklab() << " " << sqrt(M_NUCL*M_NUCL+k*k)/(2.-alpha)/kin.GetEklab() << " " << alpha << endl;
+//   cout << k << " " << kin.GetPklab() << " " << sqrt(nucqcd::mass_nucleon*nucqcd::mass_nucleon+k*k)/(2.-alpha)/kin.GetEklab() << " " << alpha << endl;
 //   cout << p.Mag() << " " << k << " " << k_z << " " << alpha << " " << (pow(wf.GetUp(k),2.)+pow(wf.GetWp(k),2.))/(4.*PI)*sqrt(massr*massr+k*k)/(2.-alpha)/E 
-//   << " " << (pow(wf.GetUp(p.Mag()),2.)+pow(wf.GetWp(p.Mag()),2.))/(4.*PI)*MASSD/(2.*(MASSD-E)) << " " << MASSD/(2.*(MASSD-E)) << " " << sqrt(massr*massr+k*k)/(2.-alpha)/E << endl; 
+//   << " " << (pow(wf.GetUp(p.Mag()),2.)+pow(wf.GetWp(p.Mag()),2.))/(4.*PI)*nucqcd::mass_d/(2.*(nucqcd::mass_d-E)) << " " << nucqcd::mass_d/(2.*(nucqcd::mass_d-E)) << " " << sqrt(massr*massr+k*k)/(2.-alpha)/E << endl; 
   return (pow(wf.GetUp(k),2.)+pow(wf.GetWp(k),2.))/(4.*PI)*sqrt(massr*massr+k*k)/pow(2.-alpha,2.)/E; 
 }
 
@@ -199,7 +199,7 @@ double DeuteronMomDistr::getMomDistrpw(TKinematics2to2 &kin) const{
 //   pwtotal*=2./3.;
   //relativistic normalization
   return (pow(wf.GetUp(kin.GetPklab()),2.)+pow(wf.GetWp(kin.GetPklab()),2.))/(4.*PI)
-	    *MASSD/(2.*(MASSD-kin.GetEklab()));
+	    *nucqcd::mass_d/(2.*(nucqcd::mass_d-kin.GetEklab()));
 }
 
 double DeuteronMomDistr::getMomDistrpwLC(LightConeKin2to2 &kin) const{
@@ -225,7 +225,7 @@ double DeuteronMomDistr::getAzzDistrpw(TKinematics2to2 &kin) const{
   //cout << kin.GetMesonMass() << " " << kin.GetPklab() << " " << kin.GetCosthklab() << endl;
   pwtotal*=2./3.;
   //relativistic normalization
-  return pwtotal*MASSD/(2.*(MASSD-sqrt(kin.GetPklab()*kin.GetPklab()+kin.GetMesonMass()*kin.GetMesonMass())));
+  return pwtotal*nucqcd::mass_d/(2.*(nucqcd::mass_d-sqrt(kin.GetPklab()*kin.GetPklab()+kin.GetMesonMass()*kin.GetMesonMass())));
 }
 
 
@@ -239,7 +239,7 @@ double DeuteronMomDistr::getMomDistrpw(TVector3 pvec) const{
 //   }
 //   //cout << kin.GetMesonMass() << " " << kin.GetPklab() << " " << kin.GetCosthklab() << endl;
 //   pwtotal*=2./3.;
-  return (pow(wf.GetUp(pvec.Mag()),2.)+pow(wf.GetWp(pvec.Mag()),2.))/(4.*PI)*MASSD/(2.*(MASSD-sqrt(pvec.Mag2()+massr*massr)));
+  return (pow(wf.GetUp(pvec.Mag()),2.)+pow(wf.GetWp(pvec.Mag()),2.))/(4.*PI)*nucqcd::mass_d/(2.*(nucqcd::mass_d-sqrt(pvec.Mag2()+massr*massr)));
 }
 
 
@@ -253,7 +253,7 @@ complex<double> DeuteronMomDistr::getMomDistrpwcoh(TVector3 pvec,TVector3 pvec2,
     }
   }
   //cout << kin.GetMesonMass() << " " << kin.GetPklab() << " " << kin.GetCosthklab() << endl;
-  return total*MASSD/(2.*sqrt((MASSD-sqrt(pvec.Mag2()+massr*massr))*(MASSD-sqrt(pvec2.Mag2()+massr*massr))));
+  return total*nucqcd::mass_d/(2.*sqrt((nucqcd::mass_d-sqrt(pvec.Mag2()+massr*massr))*(nucqcd::mass_d-sqrt(pvec2.Mag2()+massr*massr))));
 }
 
 
@@ -287,19 +287,19 @@ double DeuteronMomDistr::getMomDistrfsi(TKinematics2to2 &kin, double phi){
       F.f=DeuteronMomDistr::FSI_int;
       int res=90;
       unsigned count=0;
-    //     res = numint::cube_romb(mdf,lower,upper,1.E-08,PREC,ret,count,0);
+    //     res = numint::cube_romb(mdf,lower,upper,1.E-08,nucqcd::integration_prec,ret,count,0);
       res = numint::cube_adaptive(mdf,lower,upper,1.E-08,FSI_EPSREL,1E02,FSI_MAXEVAL,ret,count,0);
       result=ret[0];
-//       rombergerN(this,&DeuteronMomDistr::totdens_qt,0.,1.E03,1,&result,PREC,3,10,&qestimate, 
+//       rombergerN(this,&DeuteronMomDistr::totdens_qt,0.,1.E03,1,&result,nucqcd::integration_prec,3,10,&qestimate, 
 // 				  &kin,M,spinr, Er,phi,&thestimate);
-      wave+=I_UNIT/(32.*PI*PI*kin.GetKlab()*sqrt(Er))*result/sqrt(MASSD/(2.*(MASSD-Er)));
+      wave+=nucqcd::i_unit/(32.*PI*PI*kin.GetKlab()*sqrt(Er))*result/sqrt(nucqcd::mass_d/(2.*(nucqcd::mass_d-Er)));
 
       fsitotal+=norm(wave);
     }
   }
   //cout << kin.GetMesonMass() << " " << kin.GetPklab() << " " << kin.GetCosthklab() << endl;
   fsitotal*=2./3.;  //factor 2 because of symmetry in spin_i
-  return fsitotal*MASSD/(2.*(MASSD-Er));
+  return fsitotal*nucqcd::mass_d/(2.*(nucqcd::mass_d-Er));
 }
 
 
@@ -336,20 +336,20 @@ double DeuteronMomDistr::getMomDistr_y_fsi(TKinematics2to2 &kin, double phi){
       F.f=DeuteronMomDistr::FSI_y_int;
       int res=90;
       unsigned count=0;
-    //     res = numint::cube_romb(mdf,lower,upper,1.E-08,PREC,ret,count,0);
+    //     res = numint::cube_romb(mdf,lower,upper,1.E-08,nucqcd::integration_prec,ret,count,0);
       res = numint::cube_adaptive(mdf,lower,upper,1.E-08,FSI_EPSREL,1E02,FSI_MAXEVAL,ret,count,0);
       result=ret[0];
-//       rombergerN(this,&DeuteronMomDistr::totdens_qt,0.,1.E03,1,&result,PREC,3,10,&qestimate, 
+//       rombergerN(this,&DeuteronMomDistr::totdens_qt,0.,1.E03,1,&result,nucqcd::integration_prec,3,10,&qestimate, 
 // 				  &kin,M,spinr, Er,phi,&thestimate);
-      wavedown+=I_UNIT/(32.*PI*PI*kin.GetKlab()*sqrt(Er))*ret[0]/sqrt(MASSD/(2.*(MASSD-Er)));
-      waveup+=I_UNIT/(32.*PI*PI*kin.GetKlab()*sqrt(Er))*ret[0]/sqrt(MASSD/(2.*(MASSD-Er)));
+      wavedown+=nucqcd::i_unit/(32.*PI*PI*kin.GetKlab()*sqrt(Er))*ret[0]/sqrt(nucqcd::mass_d/(2.*(nucqcd::mass_d-Er)));
+      waveup+=nucqcd::i_unit/(32.*PI*PI*kin.GetKlab()*sqrt(Er))*ret[0]/sqrt(nucqcd::mass_d/(2.*(nucqcd::mass_d-Er)));
 
       fsitotal+=2.*imag(conj(waveup)*wavedown);
     }
   }
   //cout << kin.GetMesonMass() << " " << kin.GetPklab() << " " << kin.GetCosthklab() << endl;
   fsitotal*=1./3.; 
-  return fsitotal*MASSD/(2.*(MASSD-Er));
+  return fsitotal*nucqcd::mass_d/(2.*(nucqcd::mass_d-Er));
 }
 
 
@@ -376,12 +376,12 @@ double DeuteronMomDistr::getMomDistrfsiLC(LightConeKin2to2 &kin){
       F.f=DeuteronMomDistr::FSILC_int;
       int res=90;
       unsigned count=0;
-    //     res = numint::cube_romb(mdf,lower,upper,1.E-08,PREC,ret,count,0);
+    //     res = numint::cube_romb(mdf,lower,upper,1.E-08,nucqcd::integration_prec,ret,count,0);
       res = numint::cube_adaptive(mdf,lower,upper,1.E-08,FSI_EPSREL,1E02,FSI_MAXEVAL,ret,count,0);
       result=ret[0];
-//       rombergerN(this,&DeuteronMomDistr::totdens_qt,0.,1.E03,1,&result,PREC,3,10,&qestimate, 
+//       rombergerN(this,&DeuteronMomDistr::totdens_qt,0.,1.E03,1,&result,nucqcd::integration_prec,3,10,&qestimate, 
 // 				  &kin,M,spinr, Er,phi,&thestimate);
-      wave+=I_UNIT*kin.getAlpha_i()/(16*PI*PI*kin.getPA_plus()*(kin.getA_mu()[0]+kin.getQ_mu()[0]
+      wave+=nucqcd::i_unit*kin.getAlpha_i()/(16*PI*PI*kin.getPA_plus()*(kin.getA_mu()[0]+kin.getQ_mu()[0]
       -kin.getA_mu()[3]-kin.getQ_mu()[3])/sqrt(2.))*result;
       fsitotal+=norm(wave);
     }
@@ -421,19 +421,19 @@ double DeuteronMomDistr::getAzzDistrfsi(TKinematics2to2 &kin, double phi){
       F.f=DeuteronMomDistr::FSI_int;
       int res=90;
       unsigned count=0;
-    //     res = numint::cube_romb(mdf,lower,upper,1.E-08,PREC,ret,count,0);
+    //     res = numint::cube_romb(mdf,lower,upper,1.E-08,nucqcd::integration_prec,ret,count,0);
       res = numint::cube_adaptive(mdf,lower,upper,1.E-08,FSI_EPSREL,1E02,FSI_MAXEVAL,ret,count,0);
       result=ret[0];
-//       rombergerN(this,&DeuteronMomDistr::totdens_qt,0.,1.E03,1,&result,PREC,3,10,&qestimate, 
+//       rombergerN(this,&DeuteronMomDistr::totdens_qt,0.,1.E03,1,&result,nucqcd::integration_prec,3,10,&qestimate, 
 // 				  &kin,M,spinr, Er,phi,&thestimate);
-      wave-=I_UNIT/(32.*PI*PI*kin.GetKlab()*sqrt(Er))*result/sqrt(MASSD/(2.*(MASSD-Er)));  //minus sign!!!
+      wave-=nucqcd::i_unit/(32.*PI*PI*kin.GetKlab()*sqrt(Er))*result/sqrt(nucqcd::mass_d/(2.*(nucqcd::mass_d-Er)));  //minus sign!!!
 
       fsitotal+=(M==0?-2.:1.)*norm(wave);
     }
   }
   //cout << kin.GetMesonMass() << " " << kin.GetPklab() << " " << kin.GetCosthklab() << endl;
   fsitotal*=2./3.;
-  return fsitotal*MASSD/(2.*(MASSD-Er));
+  return fsitotal*nucqcd::mass_d/(2.*(nucqcd::mass_d-Er));
 }
 
 void DeuteronMomDistr::FSI_int(numint::vector_z & result, double qt, double qphi, DeuteronMomDistr &momdistr,
@@ -463,8 +463,8 @@ void DeuteronMomDistr::FSI_int(numint::vector_z & result, double qt, double qphi
   +pow(momdistr.massr*momdistr.massr-momdistr.Wxprime2,2.));
   double offshellness=0.;
   if(momdistr.offshellset==0){
-    double massdiff=(MASSD-Erprime)*(MASSD-Erprime)-pprime*pprime-momdistr.massi*momdistr.massi
-      +2.*kin.GetWlab()*(MASSD-Erprime-momdistr.massi)+2.*kin.GetKlab()*momdistr.przprime;
+    double massdiff=(nucqcd::mass_d-Erprime)*(nucqcd::mass_d-Erprime)-pprime*pprime-momdistr.massi*momdistr.massi
+      +2.*kin.GetWlab()*(nucqcd::mass_d-Erprime-momdistr.massi)+2.*kin.GetKlab()*momdistr.przprime;
     offshellness=exp(momdistr.beta*massdiff);
   }
   if(momdistr.offshellset==1) {
@@ -479,7 +479,7 @@ void DeuteronMomDistr::FSI_int(numint::vector_z & result, double qt, double qphi
   TVector3 vecprime(pprime*sinthetaprime*cosphiprime,pprime*sinthetaprime*sinphiprime,pprime*costhetaprime);
   result[0] = qt*chi*momdistr.scatter(t)*(momdistr.wf.DeuteronPState(M, -1, spinr, vecprime)
  	 +(offshellness*(abs(offshellness)<1.E-05?1.:momdistr.wfref->DeuteronPStateOff(M, -1, spinr, vecprime))))
-	*sqrt(MASSD/(2.*(MASSD-Erprime)*Erprime));
+	*sqrt(nucqcd::mass_d/(2.*(nucqcd::mass_d-Erprime)*Erprime));
   
   
 
@@ -512,8 +512,8 @@ void DeuteronMomDistr::FSI_y_int(numint::vector_z & result, double qt, double qp
   +pow(momdistr.massr*momdistr.massr-momdistr.Wxprime2,2.));
   double offshellness=0.;
   if(momdistr.offshellset==0){
-    double massdiff=(MASSD-Erprime)*(MASSD-Erprime)-pprime*pprime-momdistr.massi*momdistr.massi
-      +2.*kin.GetWlab()*(MASSD-Erprime-momdistr.massi)+2.*kin.GetKlab()*momdistr.przprime;
+    double massdiff=(nucqcd::mass_d-Erprime)*(nucqcd::mass_d-Erprime)-pprime*pprime-momdistr.massi*momdistr.massi
+      +2.*kin.GetWlab()*(nucqcd::mass_d-Erprime-momdistr.massi)+2.*kin.GetKlab()*momdistr.przprime;
     offshellness=exp(momdistr.beta*massdiff);
   }
   if(momdistr.offshellset==1) {
@@ -528,10 +528,10 @@ void DeuteronMomDistr::FSI_y_int(numint::vector_z & result, double qt, double qp
   TVector3 vecprime(pprime*sinthetaprime*cosphiprime,pprime*sinthetaprime*sinphiprime,pprime*costhetaprime);
   result[0] = qt*chi*momdistr.scatter(t)*(momdistr.wf.DeuteronPState(M, -1, spinr, vecprime)
  	 +(offshellness*(abs(offshellness)<1.E-05?1.:momdistr.wfref->DeuteronPStateOff(M, -1, spinr, vecprime))))
-	*sqrt(MASSD/(2.*(MASSD-Erprime)*Erprime));
+	*sqrt(nucqcd::mass_d/(2.*(nucqcd::mass_d-Erprime)*Erprime));
   result[1] = qt*chi*momdistr.scatter(t)*(momdistr.wf.DeuteronPState(M, 1, spinr, vecprime)
  	 +(offshellness*(abs(offshellness)<1.E-05?1.:momdistr.wfref->DeuteronPStateOff(M, 1, spinr, vecprime))))
-	*sqrt(MASSD/(2.*(MASSD-Erprime)*Erprime));
+	*sqrt(nucqcd::mass_d/(2.*(nucqcd::mass_d-Erprime)*Erprime));
 
 }
 
@@ -633,7 +633,7 @@ void DeuteronMomDistr::FSILC_int(numint::vector_z & result, double qt, double qp
 //   double *pthestimate = va_arg(ap,double*);
 //   
 // 
-//   rombergerN(this,&DeuteronMomDistr::totdens_qphi,0.,2*PI,1,result,PREC,3,10,pthestimate,pkin,qt,M,spinr,Er,phi);
+//   rombergerN(this,&DeuteronMomDistr::totdens_qphi,0.,2*PI,1,result,nucqcd::integration_prec,3,10,pthestimate,pkin,qt,M,spinr,Er,phi);
 //   *result*=qt;
 //   
 // }
@@ -664,7 +664,7 @@ void DeuteronMomDistr::FSILC_int(numint::vector_z & result, double qt, double qp
 //   double chi=sqrt(pkin->GetS()*pkin->GetS()-2.*pkin->GetS()*(Wxprime2+massr*massr)+pow(massr*massr-Wxprime2,2.));
 //   double offshellness=0.;
 //   if(offshellset==0){
-//     double massdiff=(MASSD-Erprime)*(MASSD-Erprime)-pprime*pprime-massi*massi+2.*pkin->GetWlab()*(MASSD-Erprime-massi)+2.*pkin->GetKlab()*przprime;
+//     double massdiff=(nucqcd::mass_d-Erprime)*(nucqcd::mass_d-Erprime)-pprime*pprime-massi*massi+2.*pkin->GetWlab()*(nucqcd::mass_d-Erprime-massi)+2.*pkin->GetKlab()*przprime;
 //     offshellness=exp(beta*massdiff);
 //   }
 //   if(offshellset==1) {
@@ -677,7 +677,7 @@ void DeuteronMomDistr::FSILC_int(numint::vector_z & result, double qt, double qp
 //   TVector3 vecprime(pprime*sinthetaprime*cosphiprime,pprime*sinthetaprime*sinphiprime,pprime*costhetaprime);
 //   *result = chi*scatter(t)*(wf.DeuteronPState(M, -1, spinr, vecprime)
 //  	 +(offshellness*wfref->DeuteronPStateOff(M, -1, spinr, vecprime)))
-// 	*sqrt(MASSD/(2.*(MASSD-Erprime)*Erprime));
+// 	*sqrt(nucqcd::mass_d/(2.*(nucqcd::mass_d-Erprime)*Erprime));
 //   
 // }
 
@@ -687,10 +687,10 @@ void DeuteronMomDistr::get_przprime(double pt2, double Er, TKinematics2to2 & kin
     double f_Erprime=sqrt(massr*massr+pt2+przprime*przprime);  //guess for on-shell energy of initial spectator
     //guess for invariant mass initial X'
     double f_Wxprime2=kin.GetWlab()*kin.GetWlab()-kin.GetKlab()*kin.GetKlab()
-		      +pow(MASSD-f_Erprime,2.)-pt2-przprime*przprime
-		      +2.*kin.GetWlab()*(MASSD-f_Erprime)+2.*kin.GetKlab()*przprime;
+		      +pow(nucqcd::mass_d-f_Erprime,2.)-pt2-przprime*przprime
+		      +2.*kin.GetWlab()*(nucqcd::mass_d-f_Erprime)+2.*kin.GetKlab()*przprime;
 		      
-    double f_przprime=kin.GetPklab()*kin.GetCosthklab()-(kin.GetWlab()+MASSD)/kin.GetKlab()*(Er-f_Erprime);  //new value for przprime 
+    double f_przprime=kin.GetPklab()*kin.GetCosthklab()-(kin.GetWlab()+nucqcd::mass_d)/kin.GetKlab()*(Er-f_Erprime);  //new value for przprime 
     //add mass diff term if necessary
     if((kin.GetHyperonMass()*kin.GetHyperonMass())>f_Wxprime2)
       f_przprime-=((kin.GetHyperonMass()*kin.GetHyperonMass())-f_Wxprime2)/(2.*kin.GetKlab());
@@ -806,7 +806,7 @@ void DeuteronMomDistr::get_k_z_prime(TVector3 &k_perp_prime, LightConeKin2to2 & 
 
 
 complex<double> DeuteronMomDistr::scatter(double t){
-  return sigma*(I_UNIT+epsilon)*exp(beta*t/2.); 
+  return sigma*(nucqcd::i_unit+epsilon)*exp(beta*t/2.); 
 }
 
 //all in MeV!
@@ -822,16 +822,16 @@ double DeuteronMomDistr::getMomDistrfsi(TVector3 pvec, double nu, double qvec, d
 //       complex<double> wave=wf.DeuteronPState(M, -1, spinr, pvec);
 //       complex<double> result;
 //       double qestimate=0.,thestimate=0.;
-//       rombergerN(this,&DeuteronMomDistr::totdens_qt_simple,0.,1.E03,1,&result,PREC,3,6,&qestimate, 
+//       rombergerN(this,&DeuteronMomDistr::totdens_qt_simple,0.,1.E03,1,&result,nucqcd::integration_prec,3,6,&qestimate, 
 // 				  &pvec, M,spinr, Er,nu,qvec,s,massother, &thestimate);
-//       wave+=I_UNIT/(32.*PI*PI*qvec*sqrt(Er))*result/sqrt(MASSD/(2.*(MASSD-Er)));
+//       wave+=nucqcd::i_unit/(32.*PI*PI*qvec*sqrt(Er))*result/sqrt(nucqcd::mass_d/(2.*(nucqcd::mass_d-Er)));
 // 
 //       fsitotal+=norm(wave);
 //     }
 //   }
 //   //cout << kin.GetMesonMass() << " " << kin.GetPklab() << " " << kin.GetCosthklab() << endl;
 //   fsitotal*=2./3.;
-//   return fsitotal*MASSD/(2.*(MASSD-Er));
+//   return fsitotal*nucqcd::mass_d/(2.*(nucqcd::mass_d-Er));
 }
 // 
 // 
@@ -848,7 +848,7 @@ double DeuteronMomDistr::getMomDistrfsi(TVector3 pvec, double nu, double qvec, d
 //   double *pthestimate = va_arg(ap,double*);
 //   
 // 
-//   rombergerN(this,&DeuteronMomDistr::totdens_qphi_simple,0.,2*PI,1,result,PREC,3,5,
+//   rombergerN(this,&DeuteronMomDistr::totdens_qphi_simple,0.,2*PI,1,result,nucqcd::integration_prec,3,5,
 // 	      pthestimate,p_pvec,qt,M,spinr,Er,nu,qvec,massother);
 //   *result*=qt;
 //   
@@ -869,13 +869,13 @@ double DeuteronMomDistr::getMomDistrfsi(TVector3 pvec, double nu, double qvec, d
 //   double prt=p_pvec->Mag()*sqrt(1.-p_pvec->CosTheta()*p_pvec->CosTheta()); //pr'_t
 //   double pt2=prt*prt+qt*qt-2.*prt*qt*cos(qphi-p_pvec->Phi()); //perp mom of initial spectator
 // 
-//   przprime = p_pvec->Z()-(nu+MASSD)/qvec*(Er-sqrt(massr*massr+pt2));
+//   przprime = p_pvec->Z()-(nu+nucqcd::mass_d)/qvec*(Er-sqrt(massr*massr+pt2));
 //   double pprime = sqrt(pt2+przprime*przprime);
 //   double thetaprime= acos(przprime/pprime);
 //   if(std::isnan(thetaprime)) thetaprime=SIGN(przprime);
 //   double phiprime=atan2(prt*sin(p_pvec->Phi())-qt*sin(qphi),prt*cos(p_pvec->Phi())-qt*cos(qphi));
 //   double Erprime=sqrt(massr*massr+pprime*pprime);
-//   if(Erprime>MASSD){
+//   if(Erprime>nucqcd::mass_d){
 //     *result=0.;
 //     return;
 //   }
@@ -887,7 +887,7 @@ double DeuteronMomDistr::getMomDistrfsi(TVector3 pvec, double nu, double qvec, d
 //   TVector3 vecprime(pprime*sinthetaprime*cosphiprime,pprime*sinthetaprime*sinphiprime,pprime*costhetaprime);
 //   if(std::isnan(vecprime.Mag())) cout << pt2 << " " << przprime << " " << pprime << " " << thetaprime << " " << phiprime << " " << Erprime << endl;
 //   *result = chi*scatter(t)*(wf.DeuteronPState(M, -1, spinr, vecprime))
-// 	*sqrt(MASSD/(2.*(MASSD-Erprime)*Erprime));
+// 	*sqrt(nucqcd::mass_d/(2.*(nucqcd::mass_d-Erprime)*Erprime));
 //   
 // }
 // 

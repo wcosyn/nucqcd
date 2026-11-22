@@ -572,7 +572,7 @@ void Model::getAllMatrixEl(TKinematics2to2 &tk, Matrix<2,3> *matrixel, int shell
 //   sincos(phi,&sinphi,&cosphi);
 //   
 //   results[total-1]= barcontract*TMFSpinor(*pnucl,shell,mm,r,costheta,phi)*
-//     exp(-INVHBARC*pm*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)*I_UNIT);
+//     exp(-nucqcd::inv_hbarc*pm*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)*nucqcd::i_unit);
 //   for(int i=0;i<total-1;++i) results[i]=results[total-1]*gridthick.getFsiGridN_interp1(i,phi);
 //   
 //   return;
@@ -588,7 +588,7 @@ void Model::getAllMatrixEl(TKinematics2to2 &tk, Matrix<2,3> *matrixel, int shell
 //   double cosphi,sinphi;
 //   sincos(phi,&sinphi,&cosphi);
 //   TMFSpinor wave(*pnucl,shell,mm,r,costheta,phi);
-//   complex<double> exp_pr=exp(-INVHBARC*pm*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)*I_UNIT);
+//   complex<double> exp_pr=exp(-nucqcd::inv_hbarc*pm*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)*nucqcd::i_unit);
 //   results[1]=results[0]= barcontract0down*wave*exp_pr;
 //   results[2]=results[3]= barcontractmindown*wave*exp_pr;
 //   results[4]=results[5]= barcontractplusdown*wave*exp_pr;
@@ -626,7 +626,7 @@ void Model::klaas_one_amp(numint::vector_z & results, double r, double costheta,
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
   TMFSpinor wave(*(model.getPnucleus()),model.getShell(),model.getM(),r,costheta,phi);
-  complex<double> exp_pr=exp(-I_UNIT*INVHBARC*(model.getPm()*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
+  complex<double> exp_pr=exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(model.getPm()*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
   results[1]=results[0]= exp_pr*(model.getBarcontract0down()*wave);
   results[2]=results[3]= exp_pr*(model.getBarcontractmindown()*wave);
   results[4]=results[5]= exp_pr*(model.getBarcontractplusdown()*wave);
@@ -668,7 +668,7 @@ void Model::klaas_all_amp(numint::vector_z & results, double r, double costheta,
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
   TMFSpinor wave(*(model.getPnucleus()),model.getShell(),model.getM(),r,costheta,phi);
-  complex<double> exp_pr=r*exp(-I_UNIT*INVHBARC*(model.getPm()*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
+  complex<double> exp_pr=r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(model.getPm()*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
   results[0*total_grid]= exp_pr*(model.getBarcontract0down()*wave);
   results[1*total_grid]= exp_pr*(model.getBarcontractmindown()*wave);
   results[2*total_grid]= exp_pr*(model.getBarcontractplusdown()*wave);
@@ -704,7 +704,7 @@ void Model::klaas_all_amp_medium(numint::vector_z & results, double r, double co
   sincos(phi,&sinphi,&cosphi);
   TMFSpinor wave(*(model.getPnucleus()),model.getShell(),model.getM(),r,costheta,phi);
   //includes phase space r
-  complex<double> exp_pr=r*exp(-I_UNIT*INVHBARC*(model.getPm()*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
+  complex<double> exp_pr=r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(model.getPm()*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
   results[0*total]= exp_pr*(spindown*Jcontr0*wave);
   results[1*total]= exp_pr*(spindown*Jcontrmin*wave);
   results[2*total]= exp_pr*(spindown*Jcontrplus*wave);
@@ -758,7 +758,7 @@ void Model::klaas_all_angular(numint::vector_z & results, double costheta, doubl
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
   TMFSpinor wave(*(model.getPnucleus()),model.getShell(),model.getM(),r,costheta,phi);
-  complex<double> exp_pr=exp(-I_UNIT*INVHBARC*(model.getPm()*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
+  complex<double> exp_pr=exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(model.getPm()*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
   results[0*total]= exp_pr*(model.getBarcontract0down()*wave);
   results[1*total]= exp_pr*(model.getBarcontractmindown()*wave);
   results[2*total]= exp_pr*(model.getBarcontractplusdown()*wave);
@@ -784,7 +784,7 @@ void Model::klaas_mult_amp(numint::vector_z & results, double r, double costheta
   
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
-  results[total-1]= r*exp(-I_UNIT*INVHBARC*(model.getPm()*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)))
+  results[total-1]= r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(model.getPm()*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)))
 	      *(model.getBarcontract()*TMFSpinor(*(model.getPnucleus()),model.getShell(),model.getM(),r,costheta,phi));
   for(int i=0;i<total-1;++i) results[i]=results[total-1]*model.getThickGrid()->getFsiGridN_interp3(i,r,costheta,phi);
   return;

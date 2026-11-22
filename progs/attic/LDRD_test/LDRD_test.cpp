@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
   double Q2=0.1E06; //[MeV^2]
   
   
-  LightConeKin2to2 kinLC(MASSD,Q2,MASSP,vecpd,qvec,vecps,veckin);   //constants are defined in constants.hpp
+  LightConeKin2to2 kinLC(nucqcd::mass_d,Q2,nucqcd::mass_p,vecpd,qvec,vecps,veckin);   //constants are defined in constants.hpp
 
   int offshellset = 3; //no offshell, see DeuteronCross constructor [offshell effects are pretty small in this model so 3==no offshell is safe choice]
   int looplimit = 1; //fsi loop tries, see DeuteronCross constructor
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
   cout << "changing sigma parameter " << endl;
   //take sigma parameter from deeps fits, this should not be used for masses much bigger than the resonance region! 
   // (as we are doing here, bad example ;-) )
-  double sigma_deeps=DeuteronCross::sigmaparam(kinLC.getMassX()*kinLC.getMassX(),kinLC.getQ2())*10.*HBARC*HBARC; //MeV-2 to mb!!
+  double sigma_deeps=DeuteronCross::sigmaparam(kinLC.getMassX()*kinLC.getMassX(),kinLC.getQ2())*10.*nucqcd::hbarc*nucqcd::hbarc; //MeV-2 to mb!!
   cout << "new sigma [mb]: " << sigma_deeps << endl;
   test.setScatter(sigma_deeps,betain,epsin);  //set the new scattering parameters
   fsiVNAavg=test.getavgVNACross(kinLC,0);
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
   TVector3 spcm=sp1+sp2;
   TVector3 beam(5000.*cos(-1.),0.,5000.*sin(-1.));
   //collinear kinematics, lab frame
-  LightConeKin2to3 kinkin(MASSHE3,2.E06,MASSP,MASSP,0.,4.E03,sp1,sp2,beam,spcm);
+  LightConeKin2to3 kinkin(nucqcd::mass_he3,2.E06,nucqcd::mass_p,nucqcd::mass_p,0.,4.E03,sp1,sp2,beam,spcm);
   string he3wf = "AV18"; // he3 wf name, see He3wf constructor documentation
   He3Cross test2(he3wf,homedir,strucfunc,proton);
   cout << "He3 " << test2.getCross(kinkin) << endl;

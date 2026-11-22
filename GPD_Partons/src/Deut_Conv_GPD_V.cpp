@@ -42,8 +42,8 @@ vector< complex<double> > Deut_Conv_GPD_V::helamps_to_FFs_V(const double xi, con
 
     vector< complex<double> > FFs(3,0.);
     //symmetric frame, with momentum transfer in x,z plane, so phi=0
-    double t0=-4.*MASSD_G*MASSD_G*xi*xi/(1-xi*xi); // GeV^2
-    double D=(t0-t)/(4.*MASSD_G*MASSD_G); // GeV^2
+    double t0=-4.*nucqcd::mass_d_GeV*nucqcd::mass_d_GeV*xi*xi/(1-xi*xi); // GeV^2
+    double D=(t0-t)/(4.*nucqcd::mass_d_GeV*nucqcd::mass_d_GeV); // GeV^2
     //cout << "1/D " << 1/D << endl;
     FFs.at(0)=helamps[0]+helamps[2];
 
@@ -59,9 +59,9 @@ vector< complex<double> > Deut_Conv_GPD_V::FFs_to_helamps_V(const double xi, con
     vector< complex<double> > helamps(5,0.);
     //symmetric frame, with momentum transfer in x,z plane, so phi=0
 
-    double t0=-4.*MASSD_G*MASSD_G*xi*xi/(1-xi*xi); // GeV^2
-    double D=(t0-t)/(4.*MASSD_G*MASSD_G); // GeV^2
-    // cout << (t0-t)*1.E-06 << " " << MASSD*1.E-03 << endl;
+    double t0=-4.*nucqcd::mass_d_GeV*nucqcd::mass_d_GeV*xi*xi/(1-xi*xi); // GeV^2
+    double D=(t0-t)/(4.*nucqcd::mass_d_GeV*nucqcd::mass_d_GeV); // GeV^2
+    // cout << (t0-t)*1.E-06 << " " << nucqcd::mass_d*1.E-03 << endl;
     helamps.at(0)=FFs[0]+D*FFs[2];
 
     helamps.at(1)=sqrt(2.*D*(1-xi*xi))/(1+xi)*(FFs[0]-(1.-xi)/2.*(FFs[1])+(D*(1.-xi*xi)-xi)/(1.-xi*xi)*FFs[2]);
@@ -74,8 +74,8 @@ vector< complex<double> > Deut_Conv_GPD_V::helamps_to_gpds_V(const double xi, co
 
     vector< complex<double> > gpds(5,0.);
     //symmetric frame, with momentum transfer in x,z plane, so phi=0
-    double t0=-4.*MASSD_G*MASSD_G*xi*xi/(1-xi*xi); //[GeV^2]
-    double D=(t0-t)/(4.*MASSD_G*MASSD_G); //[]  D as in Berger et al PRL (after Eq. (18))
+    double t0=-4.*nucqcd::mass_d_GeV*nucqcd::mass_d_GeV*xi*xi/(1-xi*xi); //[GeV^2]
+    double D=(t0-t)/(4.*nucqcd::mass_d_GeV*nucqcd::mass_d_GeV); //[]  D as in Berger et al PRL (after Eq. (18))
     gpds.at(0)=1./3./pow(1.-xi*xi,2.)*(3.*pow(xi,4.)-7.*xi*xi+2-2.*D*(1-xi*xi))*helamps[0]  //++
                 +1./3./(1-xi*xi)*helamps[1]                                                 //00
         -sqrt(2./D*(1+xi)/(1-xi))/3./pow(1.-xi*xi,2.)*(D*(1.-xi*xi)+xi)*helamps[2]          //0+
@@ -131,9 +131,9 @@ vector< complex<double> > Deut_Conv_GPD_V::gpds_to_helamps_V(const double xi, co
     vector< complex<double> > helamps(5,0.);
     //symmetric frame, with momentum transfer in x,z plane, so phi=0
 
-    double t0=-4.*MASSD_G*MASSD_G*xi*xi/(1-xi*xi); //[GeV^2]
-    double D=(t0-t)/(4.*MASSD_G*MASSD_G); //[]  D as in Berger et al PRL (after Eq. (18))
-    // cout << (t0-t)*1.E-06 << " " << MASSD*1.E-03 << endl;
+    double t0=-4.*nucqcd::mass_d_GeV*nucqcd::mass_d_GeV*xi*xi/(1-xi*xi); //[GeV^2]
+    double D=(t0-t)/(4.*nucqcd::mass_d_GeV*nucqcd::mass_d_GeV); //[]  D as in Berger et al PRL (after Eq. (18))
+    // cout << (t0-t)*1.E-06 << " " << nucqcd::mass_d*1.E-03 << endl;
     helamps.at(0)=gpds[0]+D*gpds[2]-1./3.*gpds[4];  //++
 
     //++
@@ -157,8 +157,8 @@ vector< complex<double> > Deut_Conv_GPD_V::helamps_to_gpds_A(const double xi, co
     //See Cano/Pire Appendix A.2
     vector< complex<double> > gpds(4,0.);
     //symmetric frame, with momentum transfer in x,z plane, so phi=0
-    double t0=-4.*MASSD_G*MASSD_G*xi*xi/(1-xi*xi); //[GeV^2]
-    double D=(t0-t)/(4.*MASSD_G*MASSD_G); //[]  D as in Berger et al PRL (after Eq. (18))
+    double t0=-4.*nucqcd::mass_d_GeV*nucqcd::mass_d_GeV*xi*xi/(1-xi*xi); //[GeV^2]
+    double D=(t0-t)/(4.*nucqcd::mass_d_GeV*nucqcd::mass_d_GeV); //[]  D as in Berger et al PRL (after Eq. (18))
 
     gpds.at(0) = 1./(1+D*(1-xi*xi))*helamps[0]  //++
                 -(1+xi)*sqrt(2.*D*(1-xi*xi))/(2.*xi*(1+D*(1-xi*xi)))*helamps[2] //0+
@@ -190,8 +190,8 @@ vector< complex<double> > Deut_Conv_GPD_V::gpds_to_helamps_A(const double xi, co
     vector< complex<double> > helamps(5,0.);
     //symmetric frame, with momentum transfer in x,z plane, so phi=0
 
-    double t0=-4.*MASSD_G*MASSD_G*xi*xi/(1-xi*xi); //[GeV^2]
-    double D=(t0-t)/(4.*MASSD_G*MASSD_G); //[]  D as in Berger et al PRL (after Eq. (18))
+    double t0=-4.*nucqcd::mass_d_GeV*nucqcd::mass_d_GeV*xi*xi/(1-xi*xi); //[GeV^2]
+    double D=(t0-t)/(4.*nucqcd::mass_d_GeV*nucqcd::mass_d_GeV); //[]  D as in Berger et al PRL (after Eq. (18))
     helamps.at(0)=gpds[0]+4.*D*(gpds[1]+xi*gpds[2]);  // ++
     helamps.at(1)=0.; // 00  always zero due to parity
 
@@ -213,9 +213,9 @@ void Deut_Conv_GPD_V::int_k3(numint::vector_z & res, double alpha1, double kperp
     res=numint::vector_z(1,0.);
     //cout << x << " " << xi << " " << t << " " << scale << " " << deltax << " " << pold_in << endl;
     //All momenta/energies MeV!!!!
-    double Ek=sqrt((MASSn*MASSn+kperp*kperp)/alpha1/(2.-alpha1)); 
+    double Ek=sqrt((nucqcd::mass_nucleon*nucqcd::mass_nucleon+kperp*kperp)/alpha1/(2.-alpha1)); 
     double kz=(alpha1-1.)*Ek;
-    double knorm=sqrt(Ek*Ek-MASSn*MASSn);
+    double knorm=sqrt(Ek*Ek-nucqcd::mass_nucleon*nucqcd::mass_nucleon);
     // cout << alpha1 << " " << kperp << " " << Ek << " " << knorm << endl;
     if(knorm>1.E03) {return;}
 
@@ -224,8 +224,8 @@ void Deut_Conv_GPD_V::int_k3(numint::vector_z & res, double alpha1, double kperp
     double alphaprime=(alpha1*(1+xi)-4.*xi)/(1-xi);
 
     double xi_n=xi/(alpha1/2.*(1+xi)-xi);
-    double t0_n=-4.*MASSn*MASSn*xi_n*xi_n/(1-xi_n*xi_n); //[MeV^2]
-    // double t0=-4.*MASSD*MASSD*xi*xi/(1-xi*xi);
+    double t0_n=-4.*nucqcd::mass_nucleon*nucqcd::mass_nucleon*xi_n*xi_n/(1-xi_n*xi_n); //[MeV^2]
+    // double t0=-4.*nucqcd::mass_d*nucqcd::mass_d*xi*xi/(1-xi*xi);
     if(t>t0_n) return;
     
     double x_n=x/(alpha1/2.*(1+xi)-xi);
@@ -237,7 +237,7 @@ void Deut_Conv_GPD_V::int_k3(numint::vector_z & res, double alpha1, double kperp
     double kyprime=kperp*sinkphi;
 
     double kperpprime=sqrt(kxprime*kxprime+kyprime*kyprime);
-    double Ekprime = sqrt((MASSn*MASSn+kperpprime*kperpprime)/(alphaprime*(2.-alphaprime)));
+    double Ekprime = sqrt((nucqcd::mass_nucleon*nucqcd::mass_nucleon+kperpprime*kperpprime)/(alphaprime*(2.-alphaprime)));
     double kzprime = (alphaprime -1)*Ekprime;
     TVector3 k_in(kperp*coskphi,kperp*sinkphi,kz);
     TVector3 k_out(kxprime, kyprime, kzprime);
@@ -345,9 +345,9 @@ void Deut_Conv_GPD_V::int_k3_FF(numint::vector_z & res, double alpha1, double kp
     res=numint::vector_z(1,0.);
 
     //all momenta etc in MeV!!!
-    double Ek=sqrt((MASSn*MASSn+kperp*kperp)/alpha1/(2.-alpha1));
+    double Ek=sqrt((nucqcd::mass_nucleon*nucqcd::mass_nucleon+kperp*kperp)/alpha1/(2.-alpha1));
     double kz=(alpha1-1.)*Ek;
-    double knorm=sqrt(Ek*Ek-MASSn*MASSn);
+    double knorm=sqrt(Ek*Ek-nucqcd::mass_nucleon*nucqcd::mass_nucleon);
     // cout << alpha1 << " " << kperp << " " << Ek << " " << knorm << endl;
     if(knorm>1.E03) {return;}
 
@@ -358,8 +358,8 @@ void Deut_Conv_GPD_V::int_k3_FF(numint::vector_z & res, double alpha1, double kp
 
     double xi_n=xi/(alpha1/2.*(1+xi)-xi);
     if(abs(xi_n)>1.) return;
-    double t0_n=-4.*MASSn*MASSn*xi_n*xi_n/(1-xi_n*xi_n);  //[MeV^2]
-    // double t0=-4.*MASSD*MASSD*xi*xi/(1-xi*xi);
+    double t0_n=-4.*nucqcd::mass_nucleon*nucqcd::mass_nucleon*xi_n*xi_n/(1-xi_n*xi_n);  //[MeV^2]
+    // double t0=-4.*nucqcd::mass_d*nucqcd::mass_d*xi*xi/(1-xi*xi);
     if(t>t0_n) return;
     
     //cout << "int " << x << " " << xi << " " << x_n << " " << xi_n << " " << xi/x << " " << xi_n/x_n << endl;
@@ -370,7 +370,7 @@ void Deut_Conv_GPD_V::int_k3_FF(numint::vector_z & res, double alpha1, double kp
     //cout << "x " << kperp*coskphi << " " << kxprime << " " << kperp*sinkphi << " " << kyprime << " " << deltax << endl;
 
     double kperpprime=sqrt(kxprime*kxprime+kyprime*kyprime);
-    double Ekprime = sqrt((MASSn*MASSn+kperpprime*kperpprime)/(alphaprime*(2.-alphaprime)));
+    double Ekprime = sqrt((nucqcd::mass_nucleon*nucqcd::mass_nucleon+kperpprime*kperpprime)/(alphaprime*(2.-alphaprime)));
     double kzprime = (alphaprime -1)*Ekprime;
     TVector3 k_in(kperp*coskphi,kperp*sinkphi,kz);
     TVector3 k_out(kxprime, kyprime, kzprime);
@@ -429,15 +429,15 @@ complex<double> Deut_Conv_GPD_V::getGPD_even_nucl(const int sigma_in, const int 
     // helicity amplitudes directly of the correlators (no factors involved, see Diehl Eq.54)
 
     // cout << "nucl " << xi << " " << gpd_nucl.getHtildeT_singlet(model) << " " << gpd_nucl.getET_singlet(model) << endl;
-    double kinfac=sqrt(t0-t)/MASSn; // t in MeV^2
+    double kinfac=sqrt(t0-t)/nucqcd::mass_nucleon; // t in MeV^2
     if(sigma_in==sigma_out) {
         //cout << "GPD helamps " << sqrt(1-xi*xi)*gpd_H << " " << xi*xi/sqrt(1-xi*xi)*gpd_E << " " << sqrt(1-xi*xi)*gpd_H - xi*xi/sqrt(1-xi*xi)*gpd_E << " " << sqrt(1-xi*xi) << " " << gpd_H <<  " " << xi*xi/sqrt(1-xi*xi) << " " << gpd_E << endl; 
         return (sqrt(1-xi*xi)*gpd_H - xi*xi/sqrt(1-xi*xi)*gpd_E)*(gpdvector? 1. : sigma_in);
     }
 
     else{
-        if(sigma_in==-1) return -exp(-I_UNIT*phi)*kinfac/2.*gpd_E*(gpdvector? 1.:-xi) ;
-        else return exp(I_UNIT*phi)*kinfac/2.*gpd_E*(gpdvector?1.:xi) ;
+        if(sigma_in==-1) return -exp(-nucqcd::i_unit*phi)*kinfac/2.*gpd_E*(gpdvector? 1.:-xi) ;
+        else return exp(nucqcd::i_unit*phi)*kinfac/2.*gpd_E*(gpdvector?1.:xi) ;
     }
 }
 
@@ -446,7 +446,7 @@ complex<double> Deut_Conv_GPD_V::getGPD_even_nucl(const int sigma_in, const int 
 vector<double> Deut_Conv_GPD_V::calc_NR_ffs(double t){
     double Q2=-t;
     double Q=sqrt(Q2);
-    double eta = -t/4./MASSD_G/MASSD_G;
+    double eta = -t/4./nucqcd::mass_d_GeV/nucqcd::mass_d_GeV;
 
     Deut_Conv_GPD_V::Ftor_conv_FF_nr F;
     F.gpd=this;
@@ -468,7 +468,7 @@ vector<double> Deut_Conv_GPD_V::calc_NR_ffs(double t){
     double GsE = proton.getGE()+neutron.getGE();
     double GsM = proton.getGM()+neutron.getGM();
     double GC = GsE*out[0];
-    double GM = MASSD/2./MASSP*(GsM*out[2]+GsE*out[3]);
+    double GM = nucqcd::mass_d/2./nucqcd::mass_p*(GsM*out[2]+GsE*out[3]);
     double GQ = GsE*out[1]; 
 
     return vector<double> {GC,GM,GQ};
@@ -487,8 +487,8 @@ void Deut_Conv_GPD_V::int_r(numint::vector_d & res, double r, Deut_Conv_GPD_V &g
     double densM2 = sqrt(2.)*U*W+W*W;
     double densE = 3./2.*W*W;
 
-    double x = sqrt(-t)*r/2./HBARC*1.E03;
-    double eta = -t/4./MASSD_G/MASSD_G;
+    double x = sqrt(-t)*r/2./nucqcd::hbarc*1.E03;
+    double eta = -t/4./nucqcd::mass_d_GeV/nucqcd::mass_d_GeV;
 
     double j0 = sin(x)/x;
     double j2 = (3./x/x-1.)*j0-3.*cos(x)/x/x;
@@ -499,7 +499,7 @@ void Deut_Conv_GPD_V::int_r(numint::vector_d & res, double r, Deut_Conv_GPD_V &g
     res[1] = densT*j2/eta;
     res[2] = densM0*j0+densM2*j2;
     res[3] = densE*(j0+j2);
-    if(x==0.) res[1] = densT*r*r*MASSD*MASSD/HBARC/HBARC/sqrt(50.)/2.;
+    if(x==0.) res[1] = densT*r*r*nucqcd::mass_d*nucqcd::mass_d/nucqcd::hbarc/nucqcd::hbarc/sqrt(50.)/2.;
     if(isnan(res[0])) cout << "bla " <<  r << " " << j0 << " " << densU << endl;
     return;
 }
@@ -507,7 +507,7 @@ void Deut_Conv_GPD_V::int_r(numint::vector_d & res, double r, Deut_Conv_GPD_V &g
 
 vector< complex<double> > Deut_Conv_GPD_V::gpd_conv(const double xi, const double x, const double t, const double scale, const bool gpdvector){
     if(fabs(x)>1.) { return vector< complex<double> >(5,0.); cout << x << endl;}
-    double t0=-4.*MASSD_G*MASSD_G*xi*xi/(1-xi*xi);  //GeV^2
+    double t0=-4.*nucqcd::mass_d_GeV*nucqcd::mass_d_GeV*xi*xi/(1-xi*xi);  //GeV^2
     double Delta_perp=sqrt((t0-t)*(1-xi*xi)); //symmetric frame where \bar{P}^perp=0  //GeV
     
     Deut_Conv_GPD_V::Ftor_conv F;
@@ -606,7 +606,7 @@ vector< complex<double> > Deut_Conv_GPD_V::gpd_conv(const double xi, const doubl
 }
 
 vector< complex<double> > Deut_Conv_GPD_V::FF_conv(const double xi, const double t){
-    double t0=-4.*MASSD_G*MASSD_G*xi*xi/(1-xi*xi); //[GeV^2]
+    double t0=-4.*nucqcd::mass_d_GeV*nucqcd::mass_d_GeV*xi*xi/(1-xi*xi); //[GeV^2]
     double Delta_perp=sqrt((t0-t)*(1-xi*xi)); //symmetric frame where \bar{P}^perp=0 [GeV!!!!]
     
     Deut_Conv_GPD_V::Ftor_conv_FF F;
@@ -687,10 +687,10 @@ vector< complex<double> > Deut_Conv_GPD_V::FF_conv(const double xi, const double
 
 vector< complex<double> > Deut_Conv_GPD_V::lf_deut(const double Ek, const TVector3& k, const vector< complex<double> > &nonrelwf){
     vector< complex<double> > wf_out(4,0.);
-    wf_out[0]=((k[2]+Ek+MASSn)*nonrelwf.at(0)+(-k[0]-I_UNIT*k[1])*nonrelwf.at(1))/sqrt(2.*(Ek+MASSn)*(Ek+k[2]));
-    wf_out[1]=((k[2]+Ek+MASSn)*nonrelwf.at(1)+(k[0]-I_UNIT*k[1])*nonrelwf.at(0))/sqrt(2.*(Ek+MASSn)*(Ek+k[2]));
-    wf_out[2]=((k[2]+Ek+MASSn)*nonrelwf.at(2)+(-k[0]-I_UNIT*k[1])*nonrelwf.at(3))/sqrt(2.*(Ek+MASSn)*(Ek+k[2]));
-    wf_out[3]=((k[2]+Ek+MASSn)*nonrelwf.at(3)+(k[0]-I_UNIT*k[1])*nonrelwf.at(2))/sqrt(2.*(Ek+MASSn)*(Ek+k[2]));
+    wf_out[0]=((k[2]+Ek+nucqcd::mass_nucleon)*nonrelwf.at(0)+(-k[0]-nucqcd::i_unit*k[1])*nonrelwf.at(1))/sqrt(2.*(Ek+nucqcd::mass_nucleon)*(Ek+k[2]));
+    wf_out[1]=((k[2]+Ek+nucqcd::mass_nucleon)*nonrelwf.at(1)+(k[0]-nucqcd::i_unit*k[1])*nonrelwf.at(0))/sqrt(2.*(Ek+nucqcd::mass_nucleon)*(Ek+k[2]));
+    wf_out[2]=((k[2]+Ek+nucqcd::mass_nucleon)*nonrelwf.at(2)+(-k[0]-nucqcd::i_unit*k[1])*nonrelwf.at(3))/sqrt(2.*(Ek+nucqcd::mass_nucleon)*(Ek+k[2]));
+    wf_out[3]=((k[2]+Ek+nucqcd::mass_nucleon)*nonrelwf.at(3)+(k[0]-nucqcd::i_unit*k[1])*nonrelwf.at(2))/sqrt(2.*(Ek+nucqcd::mass_nucleon)*(Ek+k[2]));
     
     return wf_out;
 
@@ -703,7 +703,7 @@ Deut_GPD_V_set Deut_Conv_GPD_V::getDeut_GPD_V_set(const double x, const double x
     if(xi!=xi_grid||t!=t_grid||grid_set==false||ERBL!=ERBL_set|| gridsize!=grid_size || gridvector!=grid_vector){
         if(grid!=NULL) delete [] grid;
         grid = new Deut_GPD_V_set[gridsize+1];
-        std::string filename = string(HOMEDIR)+"/gpd_deutgrids/"+(gridvector? "V" : "A")+"_grid."+to_string(gpdmodel_id)+".xi"+to_string(xi)
+        std::string filename = string(nucqcd::share_dir)+"/gpd_deutgrids/"+(gridvector? "V" : "A")+"_grid."+to_string(gpdmodel_id)+".xi"+to_string(xi)
             +".t"+to_string(t)+".mu"+to_string(scale)+".ERBL"+to_string(ERBL)+".size"+to_string(gridsize);
         ifstream infile(filename.c_str());
         if(!infile.is_open()){
@@ -766,7 +766,7 @@ Deut_GPD_V_set Deut_Conv_GPD_V::getDeut_GPD_V_set_full(const double x, const dou
     if(xi!=xi_grid||t!=t_grid||grid_set==false|| gridsize!=grid_size|| gridvector != grid_vector){
         if(grid!=NULL) delete [] grid;
         grid = new Deut_GPD_V_set[gridsize+1];
-        std::string filename = string(HOMEDIR)+"/gpd_deutgrids/"+(gridvector? "V" : "A")+"_grid_full."+to_string(gpdmodel_id)+".xi"+to_string(xi)
+        std::string filename = string(nucqcd::share_dir)+"/gpd_deutgrids/"+(gridvector? "V" : "A")+"_grid_full."+to_string(gpdmodel_id)+".xi"+to_string(xi)
             +".t"+to_string(t)+".mu"+to_string(scale)+".size"+to_string(gridsize);
         ifstream infile(filename.c_str());
         if(!infile.is_open()){
@@ -848,7 +848,7 @@ vector< complex<double> > Deut_Conv_GPD_V::getDeut_CFF_hel_V_set(const double xi
         input.index = amp_index;
         gsl_integration_qawc(&F, -1., 1., xi, epsabs, epsrel, 10000, w, &result[amp_index], &error[amp_index]);
         //cout << amp_index << " " << result[amp_index] << " " << error[amp_index] << endl;
-        CFFs[amp_index] = -result[amp_index] + I_UNIT*PI*(imagpart.getAmp(amp_index));
+        CFFs[amp_index] = -result[amp_index] + nucqcd::i_unit*PI*(imagpart.getAmp(amp_index));
     }
     
     return CFFs;

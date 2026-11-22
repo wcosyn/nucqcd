@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
     for(int Windex=0;Windex<5;Windex++){
       double Wprime = 0.5*(data::W[Windex]+data::W[Windex+1]);
       DeuteronCross test(wf,proton,strucname,sigmaparam(Wprime,Q2,q2dep),betain,-0.5,8.,1.2,offshellset,1E03);
-      double xref=Q2/(Wprime*Wprime-MASSN*MASSN+Q2);
+      double xref=Q2/(Wprime*Wprime-nucqcd::mass_n*nucqcd::mass_n+Q2);
       NuclStructure strfunction(proton,Q2,xref,0,strucname);
       NuclStructure strfunction2(!proton,Q2,xref,0,strucname);
       double F2refn, F2refp;
@@ -110,10 +110,10 @@ int main(int argc, char *argv[])
 	for(int psindex=0;psindex<4;psindex++){
 	  double ps = 0.5*(data::ps[psindex]+data::ps[psindex+1]);
 	  
-	  double Er=sqrt(ps*ps+MASSP*MASSP);
-	  double Einoff=MASSD-Er;
+	  double Er=sqrt(ps*ps+nucqcd::mass_p*nucqcd::mass_p);
+	  double Einoff=nucqcd::mass_d-Er;
 	  double massoff=sqrt(Einoff*Einoff-ps*ps);
-	  double tprime = MASSN*MASSN-massoff*massoff;
+	  double tprime = nucqcd::mass_n*nucqcd::mass_n-massoff*massoff;
 	  
 	  int beamindex = 0;
 	  double Ebeam = data::Ebeam[beamindex]; //[0,1]
@@ -659,12 +659,12 @@ void get_norm_final(bool q2dep, int beamindex,int psindex, string struc, double 
 double sigmaparam(double W, double Q2, bool Q2dep){
   if(!Q2dep||Q2<1.8E06){
       if(abs(W*W-1.232*1.232E06)<2.5E5) return 65;
-  return (25.3*1.E-06*2.3+53*(sqrt(W*W>5.76E06?5.76E06:W*W)-MASSP)*1.E-03)
+  return (25.3*1.E-06*2.3+53*(sqrt(W*W>5.76E06?5.76E06:W*W)-nucqcd::mass_p)*1.E-03)
 	/(1.8);
   }
   else{ 
     if(abs(W*W-1.232*1.232E06)<2.5E5) return 65.*1.8E06/Q2;
-    return (25.3*1.E-06*2.3+53*(sqrt(W*W>5.76E06?5.76E06:W*W)-MASSP)*1.E-03)
+    return (25.3*1.E-06*2.3+53*(sqrt(W*W>5.76E06?5.76E06:W*W)-nucqcd::mass_p)*1.E-03)
 	  /(1.E-06*Q2);
   }
 }

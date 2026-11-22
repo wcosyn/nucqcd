@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
      
     
  
-  double nu=Q2/(2.*MASSn*x);
+  double nu=Q2/(2.*nucqcd::mass_nucleon*x);
   double Eout=Ein-nu;
   double qvec=sqrt(Q2+nu*nu);
   double y=nu/Ein;

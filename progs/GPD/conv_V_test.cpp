@@ -48,7 +48,7 @@ int main(int argc, char *argv[]){
     bool setE = atoi(argv[7]);
     string GPD_model = argv[8];  // "GPDMMS13" or "GPDVGG99" or "GPDGK16" or "GPDGK16Numerical"
     // cout << "xi " << xi << " t " << t << " model " << model << endl;
-    // cout << -4.*MASSD*MASSD*xi*xi/(1-xi*xi)-t << endl;
+    // cout << -4.*nucqcd::mass_d*nucqcd::mass_d*xi*xi/(1-xi*xi)-t << endl;
 
  string arg_names[9]={"exec name:", 
                             "deuteron wave function name [AV18, CD-Bonn, Paris, WJC1, WJC2]:",
@@ -135,9 +135,9 @@ int main(int argc, char *argv[]){
         // 0.48 -> xi 0.1364 -> tmin = -0.267
         // 0.6 -> xi 0.176 -> tmin = -0.45
     //     double xi = x/(4.-x);
-    //     double t0=-4.*MASSD_G*MASSD_G*xi*xi/(1-xi*xi); // GeV^2
-    //     // double D=(t0-t)/(4.*MASSD_G*MASSD_G); // GeV^2
-    //     //cout << "ximax " << sqrt(-t)/(sqrt(4.*MASSD_G*MASSD_G-t)) <<  endl;
+    //     double t0=-4.*nucqcd::mass_d_GeV*nucqcd::mass_d_GeV*xi*xi/(1-xi*xi); // GeV^2
+    //     // double D=(t0-t)/(4.*nucqcd::mass_d_GeV*nucqcd::mass_d_GeV); // GeV^2
+    //     //cout << "ximax " << sqrt(-t)/(sqrt(4.*nucqcd::mass_d_GeV*nucqcd::mass_d_GeV-t)) <<  endl;
 	// //cout << "tmin " << t0 << endl;
 
     //     //for(int i=0; i<=10; i++){
@@ -199,7 +199,7 @@ int main(int argc, char *argv[]){
         // for (int i=0;i<=200;i++){
         //     double Q = i*2./200.;
         //     double t = -Q*Q;
-        //     double eta = -t/4./MASSD/MASSD*1.E06;
+        //     double eta = -t/4./nucqcd::mass_d/nucqcd::mass_d*1.E06;
         //     vector<double> FF = test.calc_NR_ffs(t);
         //     double G1 = FF[0]-2./3.*eta*FF[2];
         //     double G3 = (FF[2]-G1+FF[1])/(1.+eta);
@@ -223,8 +223,8 @@ int main(int argc, char *argv[]){
         //      vector< complex<double> > FFs = Deut_Conv_GPD_V::helamps_to_FFs_V(xi,t,hels);
             
         //      double FM = FFs[1].real();
-        //      double FQ = (FFs[0].real()-FFs[1].real()+(1.-t/4./MASSD/MASSD*1.E06)*FFs[2].real());
-        //      double FC = (FFs[0].real()-t/4./MASSD/MASSD*1.E06*FQ*2./3.);
+        //      double FQ = (FFs[0].real()-FFs[1].real()+(1.-t/4./nucqcd::mass_d/nucqcd::mass_d*1.E06)*FFs[2].real());
+        //      double FC = (FFs[0].real()-t/4./nucqcd::mass_d/nucqcd::mass_d*1.E06*FQ*2./3.);
             
         //     for(int j=0;j<3;j++) cout << FFs[j].real() << " ";
         //     cout << FC << " "<< FM << " " << FQ << " ";
@@ -235,8 +235,8 @@ int main(int argc, char *argv[]){
         //     // vector< complex<double> > hel = Deut_Conv_GPD_V::gpds_to_helamps_V(xi,t,gpd);
 
         //     double GM = gpd[1].real();
-        //     double GQ = (gpd[0].real()-gpd[1].real()+(1.-t/4./MASSD/MASSD*1.E06)*gpd[2].real());
-        //     double GC = (gpd[0].real()-t/4./MASSD/MASSD*1.E06*GQ);
+        //     double GQ = (gpd[0].real()-gpd[1].real()+(1.-t/4./nucqcd::mass_d/nucqcd::mass_d*1.E06)*gpd[2].real());
+        //     double GC = (gpd[0].real()-t/4./nucqcd::mass_d/nucqcd::mass_d*1.E06*GQ);
             
         //     //for(int j=0;j<5;j++) cout << out[j].real() << " ";
         //     for(int j=0;j<5;j++) cout << gpd[j].real() << " ";
@@ -249,10 +249,10 @@ int main(int argc, char *argv[]){
 
 
 
-        double t0=-4.*MASSD_G*MASSD_G*xi*xi/(1-xi*xi); // GeV^2
-        double D=(t0-t)/(4.*MASSD_G*MASSD_G); // GeV^2
+        double t0=-4.*nucqcd::mass_d_GeV*nucqcd::mass_d_GeV*xi*xi/(1-xi*xi); // GeV^2
+        double D=(t0-t)/(4.*nucqcd::mass_d_GeV*nucqcd::mass_d_GeV); // GeV^2
         cout << endl << endl << "xi " << xi << " t [GeV^2] " << t <<  endl;
-        cout << "ximax " << sqrt(-t)/(sqrt(4.*MASSD_G*MASSD_G-t)) << " D " << D << endl;
+        cout << "ximax " << sqrt(-t)/(sqrt(4.*nucqcd::mass_d_GeV*nucqcd::mass_d_GeV-t)) << " D " << D << endl;
         NucleonEMOperator proton(-t*1.E06,1,0), neutron(-t*1.E06,0,0);
         //cout << proton.getF1() << " " << proton.getF2() << " " << neutron.getF1() << " " << neutron.getF2() << endl;
         cout << "nucleon F1 and F2 isoscalar avg " << (proton.getF1()+neutron.getF1())/2. << " " <<  (proton.getF2()+neutron.getF2())/2. << endl << endl << endl;

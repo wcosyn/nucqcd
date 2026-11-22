@@ -70,7 +70,7 @@ int main(int argc, char *argv[]){
         sum4+=k*k*(pow(wf4.U(k),2.)+pow(wf4.W(k),2.))/5.;
         sum5+=k*k*(pow(wf.GetUp(k),2.)+pow(wf.GetWp(k),2.))/4./PI/5.;
         omega+=k*k*(pow(wf.GetWp(k),2.))/4./PI/5.;
-        double x = k/MASSn;
+        double x = k/nucqcd::mass_nucleon;
         double Ai_equal=(-x+sqrt(1+pow(x,2.))*asinh(x))/pow(x,3.);
         double Bi_equal=(x*sqrt(1+pow(x,2.))-asinh(x))/pow(x,3.);
         ISL_approx+=k*k*(wf.GetUp(k)-wf.GetWp(k)/sqrt(2.))*(1./3.*(wf.GetUp(k)-wf.GetWp(k)/sqrt(2.))+2./3.*(wf.GetUp(k)+sqrt(2.)*wf.GetWp(k)))/4./PI/5.;
@@ -80,9 +80,9 @@ int main(int argc, char *argv[]){
         if(k>0) ST_unapprox+=k*k*(wf.GetUp(k)-wf.GetWp(k)/sqrt(2.))*(Bi_equal*(wf.GetUp(k)-wf.GetWp(k)/sqrt(2.))+Ai_equal*(wf.GetUp(k)+sqrt(2.)*wf.GetWp(k)))/4./PI/5.;
         double Ai_diff=-PI*(2.+(pow(x,2.)-2)*sqrt(1+pow(x,2.)))/pow(x,3.)/4.;
         double Bi_diff=PI*(2.+x*x-2.*sqrt(1+x*x))/pow(x,3.)/4.;
-        eps_SL_approx+=k*k*(wf.GetUp(k)-wf.GetWp(k)/sqrt(2.))*((-3.*PI*k/MASSn/16.)*(wf.GetUp(k)-wf.GetWp(k)/sqrt(2.))-(PI*k/MASSn/16.)*(wf.GetUp(k)+sqrt(2.)*wf.GetWp(k)))/4./PI/5.;
+        eps_SL_approx+=k*k*(wf.GetUp(k)-wf.GetWp(k)/sqrt(2.))*((-3.*PI*k/nucqcd::mass_nucleon/16.)*(wf.GetUp(k)-wf.GetWp(k)/sqrt(2.))-(PI*k/nucqcd::mass_nucleon/16.)*(wf.GetUp(k)+sqrt(2.)*wf.GetWp(k)))/4./PI/5.;
         if(k>0) eps_SL_unapprox+=k*k*(wf.GetUp(k)-wf.GetWp(k)/sqrt(2.))*(Ai_diff*(wf.GetUp(k)-wf.GetWp(k)/sqrt(2.))-Bi_diff*(wf.GetUp(k)+sqrt(2.)*wf.GetWp(k)))/4./PI/5.;
-        eps_ST_approx+=k*k*(wf.GetUp(k)-wf.GetWp(k)/sqrt(2.))*((PI*k/MASSn/16.)*(wf.GetUp(k)-wf.GetWp(k)/sqrt(2.))+(3.*PI*k/MASSn/16.)*(wf.GetUp(k)+sqrt(2.)*wf.GetWp(k)))/4./PI/5.;
+        eps_ST_approx+=k*k*(wf.GetUp(k)-wf.GetWp(k)/sqrt(2.))*((PI*k/nucqcd::mass_nucleon/16.)*(wf.GetUp(k)-wf.GetWp(k)/sqrt(2.))+(3.*PI*k/nucqcd::mass_nucleon/16.)*(wf.GetUp(k)+sqrt(2.)*wf.GetWp(k)))/4./PI/5.;
         if(k>0) eps_ST_unapprox+=k*k*(wf.GetUp(k)-wf.GetWp(k)/sqrt(2.))*(Bi_diff*(wf.GetUp(k)-wf.GetWp(k)/sqrt(2.))-Ai_diff*(wf.GetUp(k)+sqrt(2)*wf.GetWp(k)))/4./PI/5.;
         ST_perp+=k*k*(wf.GetUp(k)-wf.GetWp(k)/sqrt(2.))*(wf.GetUp(k)+sqrt(2.)*wf.GetWp(k))/4./PI/5.;
 
@@ -119,19 +119,19 @@ int main(int argc, char *argv[]){
         for(int j=0;j<=1000;j+=2){
             double pt=j;
             double p = sqrt(pz*pz+pt*pt);
-            double Ep= sqrt(pz*pz+pt*pt+MASSn*MASSn);
+            double Ep= sqrt(pz*pz+pt*pt+nucqcd::mass_nucleon*nucqcd::mass_nucleon);
             double kt= pt;
-            double alpha = 2.*(Ep+pz)/MASSD;
-            double E = sqrt((kt*kt+MASSn*MASSn)/(alpha*(2.-alpha)));
+            double alpha = 2.*(Ep+pz)/nucqcd::mass_d;
+            double E = sqrt((kt*kt+nucqcd::mass_nucleon*nucqcd::mass_nucleon)/(alpha*(2.-alpha)));
             double kz=E*(alpha-1);
             double k= sqrt(kt*kt+kz*kz);
             if (k>1000) cout << pz << " " << pt << " nan nan nan nan nan nan nan nan nan" << endl;
             else{
                 double perp_densdenom = wf.GetUp(k)*wf.GetUp(k)+wf.GetWp(k)*wf.GetWp(k)-0.5*(1.-3.*kz*kz/k/k)*(wf.GetUp(k)*wf.GetWp(k)/sqrt(2.)+wf.GetWp(k)*wf.GetWp(k)/4.);
-                double perp_densnomboth = (wf.GetUp(k)-wf.GetWp(k)/sqrt(2.))*(wf.GetUp(k)*(1.+kt*kt/(2.*MASSn*(E+MASSn)))-wf.GetWp(k)*(-1.-kz*kz/k/k+E*kt*kt/(2.*MASSn*k*k))/sqrt(2.));
-                double perp_densnomg2 = (wf.GetUp(k)-wf.GetWp(k)/sqrt(2.))*(wf.GetUp(k)*(kt*kt*(E+MASSn-kz)/(MASSn*(E+MASSn)*(E-kz)))-wf.GetWp(k)*(kt*kt*(k*k-kz*(E+2.*MASSn))/(MASSn*k*k*(E-kz)))/sqrt(2.));
+                double perp_densnomboth = (wf.GetUp(k)-wf.GetWp(k)/sqrt(2.))*(wf.GetUp(k)*(1.+kt*kt/(2.*nucqcd::mass_nucleon*(E+nucqcd::mass_nucleon)))-wf.GetWp(k)*(-1.-kz*kz/k/k+E*kt*kt/(2.*nucqcd::mass_nucleon*k*k))/sqrt(2.));
+                double perp_densnomg2 = (wf.GetUp(k)-wf.GetWp(k)/sqrt(2.))*(wf.GetUp(k)*(kt*kt*(E+nucqcd::mass_nucleon-kz)/(nucqcd::mass_nucleon*(E+nucqcd::mass_nucleon)*(E-kz)))-wf.GetWp(k)*(kt*kt*(k*k-kz*(E+2.*nucqcd::mass_nucleon))/(nucqcd::mass_nucleon*k*k*(E-kz)))/sqrt(2.));
                 double par_densdenom= wf.GetUp(k)*wf.GetUp(k)+wf.GetWp(k)*wf.GetWp(k)+(1.-3.*kz*kz/k/k)*(wf.GetUp(k)*wf.GetWp(k)/sqrt(2.)+wf.GetWp(k)*wf.GetWp(k)/4.);
-                double par_densnom = (wf.GetUp(k)-wf.GetWp(k)/sqrt(2.))*(wf.GetUp(k)*(1.-kt*kt/(E-kz)/(E+MASSn))-wf.GetWp(k)*(1.-(E+2.*MASSn)*kt*kt/k/k/(E-kz))/sqrt(2.));
+                double par_densnom = (wf.GetUp(k)-wf.GetWp(k)/sqrt(2.))*(wf.GetUp(k)*(1.-kt*kt/(E-kz)/(E+nucqcd::mass_nucleon))-wf.GetWp(k)*(1.-(E+2.*nucqcd::mass_nucleon)*kt*kt/k/k/(E-kz))/sqrt(2.));
                 cout << pz << " " << pt << " " << par_densnom/par_densdenom << " " << perp_densnomboth/perp_densdenom << " " << perp_densnomg2/perp_densdenom <<
                  "  "<< (par_densnom+par_densdenom)/2./par_densdenom << " " << (perp_densnomboth+perp_densdenom)/2./perp_densdenom << " " <<  (perp_densnomg2+perp_densdenom)/2./perp_densdenom << 
                  "  "<< (-par_densnom+par_densdenom)/2./par_densdenom << " " << (-perp_densnomboth+perp_densdenom)/2./perp_densdenom << " " <<  (-perp_densnomg2+perp_densdenom)/2./perp_densdenom << 
@@ -142,7 +142,7 @@ int main(int argc, char *argv[]){
     */
 
     cout << "single test" << endl;
-    cout << wf.DeuteronPState(0,1,1,TVector3(100.*sin(1)*cos(2),100.*sin(1)*sin(2),100.*cos(1))) << " " << -wf.GetWp(100.)*3./2.*cos(1.)*sin(1.)*exp(-I_UNIT*2.)/sqrt(4.*PI) << endl << endl;
+    cout << wf.DeuteronPState(0,1,1,TVector3(100.*sin(1)*cos(2),100.*sin(1)*sin(2),100.*cos(1))) << " " << -wf.GetWp(100.)*3./2.*cos(1.)*sin(1.)*exp(-nucqcd::i_unit*2.)/sqrt(4.*PI) << endl << endl;
 
     double tpol=0.;
     double tpol2=0.;
@@ -180,15 +180,15 @@ int main(int argc, char *argv[]){
     //FT radial functions
     double testsum=0.,rad=1.;
     for(int i=1;i<=1000;i++){
-        testsum+=i*i*sin(i*rad*INVHBARC)/(i*rad*INVHBARC)*wf.GetUp(i);
+        testsum+=i*i*sin(i*rad*nucqcd::inv_hbarc)/(i*rad*nucqcd::inv_hbarc)*wf.GetUp(i);
     }
-    cout << testsum*sqrt(2./PI)*pow(INVHBARC,3./2.) << " " << wf.GetUr(rad)/rad << endl;
+    cout << testsum*sqrt(2./PI)*pow(nucqcd::inv_hbarc,3./2.) << " " << wf.GetUr(rad)/rad << endl;
     double testsum2=0.;
     for(int i=1;i<=1000;i++){
-        double xx=i*rad*INVHBARC;
+        double xx=i*rad*nucqcd::inv_hbarc;
         testsum2+=i*i*((3/(xx*xx)-1)*sin(xx)/xx-3.*cos(xx)/(xx*xx))*wf.GetWp(i);
     }
-    cout << testsum2*sqrt(2./PI)*pow(INVHBARC,3./2.) << " " << wf.GetWr(rad)/rad << endl;
+    cout << testsum2*sqrt(2./PI)*pow(nucqcd::inv_hbarc,3./2.) << " " << wf.GetWr(rad)/rad << endl;
 
     struct Ftor {  //Carbon
 
@@ -247,16 +247,16 @@ void int_3d(numint::vector_z &res, double r, double costheta, double phi, TDeute
     double cosphi=cos(phi);
     double sinphi=sin(phi);
     double sintheta =sqrt(1.-costheta*costheta);
-    complex<double> expf=exp(-I_UNIT*(pvec[0]*r*sintheta*cosphi+pvec[1]*r*sintheta*sinphi+pvec[2]*r*costheta)*INVHBARC);
+    complex<double> expf=exp(-nucqcd::i_unit*(pvec[0]*r*sintheta*cosphi+pvec[1]*r*sintheta*sinphi+pvec[2]*r*costheta)*nucqcd::inv_hbarc);
     for(int dspin=-2;dspin<=2;dspin+=2){
         for(int pspin=-1;pspin<=1;pspin+=2){
             for(int nspin=-1;nspin<=1;nspin+=2){
                 // d3dnorm+=norm(wf.DeuteronRState(dspin,nspin,pspin,TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
                 // res[1+(dspin+2)/2*4+(pspin+1)+(nspin+1)/2]=expf
-                //     *r*wf.DeuteronRState(dspin,nspin,pspin,TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta))*pow(2.*PI*HBARC,-3./2.);
+                //     *r*wf.DeuteronRState(dspin,nspin,pspin,TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta))*pow(2.*PI*nucqcd::hbarc,-3./2.);
                  d3dnorm+=norm(wf.DeuteronRState(dspin,nspin,pspin,TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
                 res[1+(dspin+2)/2*4+(pspin+1)+(nspin+1)/2]=expf
-                    *r*wf.DeuteronRState(dspin,nspin,pspin,TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta))*pow(2.*PI*HBARC,-3./2.);
+                    *r*wf.DeuteronRState(dspin,nspin,pspin,TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta))*pow(2.*PI*nucqcd::hbarc,-3./2.);
            }
         }
     }

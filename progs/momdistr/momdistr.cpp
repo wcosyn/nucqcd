@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
   for(int i=0;i<40;i++){
     double tot=0.;
     int totsh=0;
-    double p=0.05*i*HBARC;
+    double p=0.05*i*nucqcd::hbarc;
     cout << 0.05*i << " ";
     for(int shell=0;shell < Nucleus.getTotalLevels() ; shell++){
 	Ftor F;
@@ -73,13 +73,13 @@ int main(int argc, char *argv[])
       cout << tot << endl;
       k+=p*p*tot;
   }
-   //cout << k*pow(INVHBARC,3)*3. << endl;
+   //cout << k*pow(nucqcd::inv_hbarc,3)*3. << endl;
 }
 
 void adap_intr(numint::vector_z & results, double r, MeanFieldNucleusThick *pNucleus, int shell, double p){
    results = vector<complex<double> >(2,0.);
    //upper component G has orbital angular momentum l, lower component F has lbar
-   results[0]= r*gsl_sf_bessel_jl(pNucleus->getL_array()[shell],p*r*INVHBARC)*pNucleus->getWave_G(shell,r);
-   results[1]= r*gsl_sf_bessel_jl(pNucleus->getLbar_array()[shell],p*r*INVHBARC)*pNucleus->getWave_F(shell,r);
+   results[0]= r*gsl_sf_bessel_jl(pNucleus->getL_array()[shell],p*r*nucqcd::inv_hbarc)*pNucleus->getWave_G(shell,r);
+   results[1]= r*gsl_sf_bessel_jl(pNucleus->getLbar_array()[shell],p*r*nucqcd::inv_hbarc)*pNucleus->getWave_F(shell,r);
    
 }

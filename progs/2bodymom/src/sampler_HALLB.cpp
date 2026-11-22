@@ -99,7 +99,7 @@ void HALLB::generateKinematics(std::vector<struct Event>& events, unsigned n, Me
 		/** xB,Q2,omega **/
 		double xB,Q2;
 		s.sample(xB,Q2);
-		double omega = Q2/(2.*MASSP*xB);
+		double omega = Q2/(2.*nucqcd::mass_p*xB);
 		/** |q| **/
 		double qmag = sqrt( omega*omega + Q2 );
 		/** Pcm **/
@@ -126,8 +126,8 @@ void HALLB::generateKinematics(std::vector<struct Event>& events, unsigned n, Me
 		
 		e.shellindex1 = shellindex1;
 		e.shellindex2 = shellindex2;
-		e.mass1       = (type1==0)? MASSP : MASSN;
-		e.mass2       = (type2==0)? MASSP : MASSN;
+		e.mass1       = (type1==0)? nucqcd::mass_p : nucqcd::mass_n;
+		e.mass2       = (type2==0)? nucqcd::mass_p : nucqcd::mass_n;
 		e.type1       = type1; // 0 is for proton
 		e.type2       = type2; // 0 is for proton
 			
@@ -186,7 +186,7 @@ bool HALLB::cut(Event& e){
 	return     ( e.xB > 1.2)
 		&& ( e.k1.Mag() > 300.)
 		&& ( e.p2.Mag() > 350.)
-		&& ( e.p1.Angle(e.q) < 25*DEGRTORAD)
+		&& ( e.p1.Angle(e.q) < 25*nucqcd::deg_to_rad)
 		&& ( e.p1.Mag() / e.q.Mag() >= 0.60);
 		//&& ( e.p1.Mag() / e.q.Mag() < 0.96);
 }

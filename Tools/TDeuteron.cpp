@@ -805,7 +805,7 @@ FourVector<GammaStructure> TDeuteron::Wavefunction::Vertex(const FourVector<doub
   //
   // The scalar form factors of the vertex are linked to the radial wave functions. See Eq.(46) in PRD 20(1979)2361.
 
-  static double mass = (M_P + M_N)/2.; // average nucleon mass
+  static double mass = (nucqcd::mass_p + nucqcd::mass_n)/2.; // average nucleon mass
 
   // momentum 4vector of particle 1
   FourVector<double> p1 = pD - p2;
@@ -817,7 +817,7 @@ FourVector<GammaStructure> TDeuteron::Wavefunction::Vertex(const FourVector<doub
   // in the rest frame of the deuteron.
   double ep;
   double p;
-  if( (Abs(pD[1])<STRANGEUFLOW) && (Abs(pD[2])<STRANGEUFLOW) && (Abs(pD[3])<STRANGEUFLOW) ) {
+  if( (Abs(pD[1])<nucqcd::strange_underflow) && (Abs(pD[2])<nucqcd::strange_underflow) && (Abs(pD[3])<nucqcd::strange_underflow) ) {
     // We are in the rest frame
     ep = p2[0];
     p = Sqrt( p2[1]*p2[1] + p2[2]*p2[2] + p2[3]*p2[3] );
@@ -1042,9 +1042,9 @@ complex<double> TDeuteron::Wavefunction::DeuteronPStateOff(int deuteronPol, int 
       -SphericalHarmonicCos(2,deuteronPol/2-mS,0.,p.Phi())
       *p.Perp2()/(p.Z()*p.Z())*Wpoff2);
       
-  //cout << GetUpoff(p)*p.Z()/HBARC*sqrt(1.E09) << " " << GetWpoff1(p)*p.Z()/HBARC*sqrt(1.E09)  << " " << GetWpoff1(p)*p.Z()/HBARC*sqrt(1.E09)
+  //cout << GetUpoff(p)*p.Z()/nucqcd::hbarc*sqrt(1.E09) << " " << GetWpoff1(p)*p.Z()/nucqcd::hbarc*sqrt(1.E09)  << " " << GetWpoff1(p)*p.Z()/nucqcd::hbarc*sqrt(1.E09)
       
-  return -I_UNIT*p.Z()/HBARC*state;
+  return -nucqcd::i_unit*p.Z()/nucqcd::hbarc*state;
 }
 //_____________________________________________________________________
 complex<double> TDeuteron::Wavefunction::DeuteronPStateOff(int deuteronPol, int nucleon2Pol,
@@ -1215,8 +1215,8 @@ bool TDeuteron::Polarization::operator==(const Polarization& rhs)
   // Comparison
 
   return 
-    fabs(fTheta-rhs.fTheta)<STRANGEUFLOW &&
-    fabs(fPhi-rhs.fPhi)<STRANGEUFLOW &&
+    fabs(fTheta-rhs.fTheta)<nucqcd::strange_underflow &&
+    fabs(fPhi-rhs.fPhi)<nucqcd::strange_underflow &&
     fPolarizationState==rhs.fPolarizationState;
 }
 

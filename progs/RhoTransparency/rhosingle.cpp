@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
   
   double *results = new double[NROFRES];
 
-  RhoTCross test = RhoTCross(nucleus,400,HOMEDIR,nocuts,0,0.,1.E-04,2,1E04,0.,4);
+  RhoTCross test = RhoTCross(nucleus,400,nucqcd::share_dir,nocuts,0,0.,1.E-04,2,1E04,0.,4);
   
   double nu = nu_min + j*(nu_max-nu_min)/7.;
   if(torz){

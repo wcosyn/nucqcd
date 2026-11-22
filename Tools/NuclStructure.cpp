@@ -83,7 +83,7 @@ extern "C"{
 
 
 NuclStructure::NuclStructure(bool pr, double var1, double var2, int switchvar, std::string nm="SLAC"):
-name(nm),proton(pr), mass(pr?MASSP:MASSN),dir(HOMEDIR){
+name(nm),proton(pr), mass(pr?nucqcd::mass_p:nucqcd::mass_n),dir(nucqcd::share_dir){
   switch(switchvar){
     case 0:
       Q2=var1;
@@ -105,7 +105,7 @@ name(nm),proton(pr), mass(pr?MASSP:MASSN),dir(HOMEDIR){
   }
   if(!name.compare("CB")&&(Wsq>9.E06)) name="SLAC";
   if(!name.compare("MSTW")){
-    string file= string(HOMEDIR)+"/mstw_grids/mstw2008lo.00.dat";
+    string file= string(nucqcd::share_dir)+"/mstw_grids/mstw2008lo.00.dat";
     mstw = new c_mstwpdf(file,false,true);
     mstw->update(x,sqrt(Q2)*1.E-03); //c_mstwpdf takes Q [GeV], not Q^2
   }
@@ -116,10 +116,10 @@ name(nm),proton(pr), mass(pr?MASSP:MASSN),dir(HOMEDIR){
 
 }
 NuclStructure::NuclStructure(bool pr, double Q2in, double xin, double Wsqin, std::string nm="SLAC"):
-name(nm),proton(pr), mass(pr?MASSP:MASSN),dir(HOMEDIR),x(xin),Q2(Q2in),Wsq(Wsqin){
+name(nm),proton(pr), mass(pr?nucqcd::mass_p:nucqcd::mass_n),dir(nucqcd::share_dir),x(xin),Q2(Q2in),Wsq(Wsqin){
   if(!name.compare("CB")&&(Wsq>9.E06)) name="SLAC";
   if(!name.compare("MSTW")){
-    string file= string(HOMEDIR)+"/mstw_grids/mstw2008lo.00.dat";
+    string file= string(nucqcd::share_dir)+"/mstw_grids/mstw2008lo.00.dat";
     mstw = new c_mstwpdf(file,false,true);
     mstw->update(x,sqrt(Q2)*1.E-03); //c_mstwpdf takes Q [GeV], not Q^2
   }
@@ -142,7 +142,7 @@ NuclStructure::NuclStructure(const NuclStructure& rhs){
   Wsq=rhs.Wsq;
   mstw=NULL;
   if(rhs.mstw){
-    mstw = new c_mstwpdf(string(HOMEDIR)+"/mstw_grids/mstw2008lo.00.dat",false,true);
+    mstw = new c_mstwpdf(string(nucqcd::share_dir)+"/mstw_grids/mstw2008lo.00.dat",false,true);
     mstw->update(x,sqrt(Q2)*1.E-03);
   }
 }
@@ -159,7 +159,7 @@ NuclStructure& NuclStructure::operator=(const NuclStructure& rhs){
     delete mstw;
     mstw=NULL;
     if(rhs.mstw){
-      mstw = new c_mstwpdf(string(HOMEDIR)+"/mstw_grids/mstw2008lo.00.dat",false,true);
+      mstw = new c_mstwpdf(string(nucqcd::share_dir)+"/mstw_grids/mstw2008lo.00.dat",false,true);
       mstw->update(x,sqrt(Q2)*1.E-03);
     }
   }
@@ -249,7 +249,7 @@ void NuclStructure::getF_CB(double &F1, double &F2) const{
   double WSQ=Wsq*1.E-06;
   if(proton) f1f2in09_(&ONE, &ZERO, &QSQ, &WSQ, &F1, &F2, &R_CB);
   else f1f2in09_(&ZERO, &ONE, &QSQ, &WSQ, &F1, &F2, &R_CB);
-//   cout << F1 << " " << F2 << " " << QSQ << " " << WSQ << " " << 1./(1.+(WSQ-MASSN*MASSN*1.E-06)/QSQ) << endl;
+//   cout << F1 << " " << F2 << " " << QSQ << " " << WSQ << " " << 1./(1.+(WSQ-nucqcd::mass_n*nucqcd::mass_n*1.E-06)/QSQ) << endl;
   return;
 }
 
@@ -292,11 +292,11 @@ void NuclStructure::getF_MSTW(double &F1,double &F2){
   bbar=mstw->parton(-5,x,qgev);
   if(proton){ 
     F2=1./9.*(4.*(u+ubar)+(d+dbar)+(s+sbar)+4*(c+cbar)+(b+bbar));
-    F1=1./(2.*x)/(1.+getr1998(x,Q2))*(1.+4.*MASSP*MASSP*x*x/Q2)*F2;
+    F1=1./(2.*x)/(1.+getr1998(x,Q2))*(1.+4.*nucqcd::mass_p*nucqcd::mass_p*x*x/Q2)*F2;
   }
   else{
     F2=1./9.*((u+ubar)+4.*(d+dbar)+(s+sbar)+4*(c+cbar)+(b+bbar));
-    F1=1./(2.*x)/(1.+getr1998(x,Q2))*(1.+4.*MASSN*MASSN*x*x/Q2)*F2;
+    F1=1./(2.*x)/(1.+getr1998(x,Q2))*(1.+4.*nucqcd::mass_n*nucqcd::mass_n*x*x/Q2)*F2;
   }
 //   cout << x << " " << q2gev << " " << F1 << " " << F2 << endl;
 }
@@ -459,7 +459,7 @@ label2:
 
 double NuclStructure::getG1_grsv2000(bool proton, double x, double Q2){
   
-  nucqcd::to_fortran_string(grsvdir_.fileslo,std::string(HOMEDIR)+"/grsv/std2000_lo_g1.grid");
+  nucqcd::to_fortran_string(grsvdir_.fileslo,std::string(nucqcd::share_dir)+"/grsv/std2000_lo_g1.grid");
   if(intini_.iini!=1) intini_.iini=0;
   int iset=3;
   double dummy,g1p,g1n;

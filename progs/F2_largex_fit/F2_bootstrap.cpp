@@ -443,7 +443,7 @@ void Process_Data(bool sys, bool SLAC, bool hixcut, default_random_engine & gene
   for(int i=0;i<fomin_data::datapoints;i++){
     if(fomin_data::A[i]==12){
       double nu = (fomin_data::Ein[i]-fomin_data::Eout[i]);
-      double Q2 = 4.*fomin_data::Ein[i]*fomin_data::Eout[i]*pow(sin(fomin_data::theta[i]*DEGRTORAD*0.5),2.);
+      double Q2 = 4.*fomin_data::Ein[i]*fomin_data::Eout[i]*pow(sin(fomin_data::theta[i]*nucqcd::deg_to_rad*0.5),2.);
       double x= Q2/(2.*11.174862401/12*nu);
       double nachtmann = 2.*x/(1.+sqrt(1+Q2/nu/nu));
       //cout << nu << " " << Q2*1.E-06 << " " << x  << " " << nachtmann << endl;

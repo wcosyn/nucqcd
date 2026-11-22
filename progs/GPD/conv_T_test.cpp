@@ -21,7 +21,7 @@ int main(int argc, char *argv[]){
     int ERBL = atoi(argv[5]);
     double scale=atof(argv[6]);
     // cout << "xi " << xi << " t " << t << " model " << model << endl;
-    // cout << -4.*MASSD*MASSD*xi*xi/(1-xi*xi)-t << endl;
+    // cout << -4.*nucqcd::mass_d*nucqcd::mass_d*xi*xi/(1-xi*xi)-t << endl;
     // for(int i=0;i<5;i++){
     //     vector< complex<double> > hel(5,0.);
     //     hel[i]=1.;

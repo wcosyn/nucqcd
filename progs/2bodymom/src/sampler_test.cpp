@@ -6,7 +6,7 @@
 #include "2bodymom.hpp"
 
 #ifndef SHAREDIR
-#define SHAREDIR HOMEDIR
+#define SHAREDIR nucqcd::share_dir
 #endif
 
 int main(int argc, char* argv[]){

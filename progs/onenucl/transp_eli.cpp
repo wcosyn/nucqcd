@@ -31,7 +31,7 @@ double diffcross(MeanFieldNucleusThick& nuc,int level,double pm, double Q2, doub
     /** ========= **/
     
     
-    TKinematics2to2 kin("kinematics_name","kinematics_title",nuc.getMassA(),nuc.getMassA_min_proton(),MASSP,"qsquared:wlab:pklab",Q2,omega,pm);
+    TKinematics2to2 kin("kinematics_name","kinematics_title",nuc.getMassA(),nuc.getMassA_min_proton(),nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
     TElectronKinematics* elec = TElectronKinematics::CreateWithBeamEnergy(Ebeam);
     Cross cross(*elec,&nuc,abserr,2,getShareDir(),user_sigma,screening);
     
@@ -43,7 +43,7 @@ void run(MeanFieldNucleusThick& nuc, double Q2,double pf){
     
     /** SETTINGS **/
     double xB    = 0.8;
-    double omega = Q2/(2.*MASSP*xB);
+    double omega = Q2/(2.*nucqcd::mass_p*xB);
     double q     = sqrt(Q2 + omega*omega);
     double Ebeam = 5014.; // HALLB beam energy,
     

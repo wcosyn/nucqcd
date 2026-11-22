@@ -12,7 +12,7 @@ using namespace std;
 
 
 DeuteronStructure::DeuteronStructure(const bool pr, std::string nm)
-:proton(pr),name(nm),massi(pr?MASSP:MASSN){
+:proton(pr),name(nm),massi(pr?nucqcd::mass_p:nucqcd::mass_n){
   
 }
 
@@ -52,8 +52,8 @@ double DeuteronStructure::getLeptonSSA_sf(TKinematics2to2 &kin, TElectronKinemat
 
 void DeuteronStructure::getStructureFunctions(TKinematics2to2 &kin, double &FL, double &FT, 
 					      double &FTT, double &FTL,double Einoff) const{
-  double alphaq=(kin.GetWlab()-kin.GetKlab())/(MASSD/2.);
-  double alphai=(Einoff+kin.GetPklab()*kin.GetCosthklab())/(MASSD/2.);  //vec{pi}=-vec{pr} in PW!
+  double alphaq=(kin.GetWlab()-kin.GetKlab())/(nucqcd::mass_d/2.);
+  double alphai=(Einoff+kin.GetPklab()*kin.GetCosthklab())/(nucqcd::mass_d/2.);  //vec{pi}=-vec{pr} in PW!
   double pt=kin.GetPklab()*sqrt(1.-kin.GetCosthklab()*kin.GetCosthklab());
   if(std::isnan(pt)) pt=0.;
   double cosdelta=kin.GetWlab()/kin.GetKlab();
@@ -90,8 +90,8 @@ void DeuteronStructure::getStructureFunctions(TKinematics2to2 &kin, double &FL, 
 
 void DeuteronStructure::getStructureFunctions(TKinematics2to2 &kin, double &FL, double &FT, double &FTT, 
 					      double &FTL, double &F2, double Einoff) const{
-  double alphaq=(kin.GetWlab()-kin.GetKlab())/(MASSD/2.);
-  double alphai=(Einoff+kin.GetPklab()*kin.GetCosthklab())/(MASSD/2.);  //vec{pi}=-vec{pr} in PW!
+  double alphaq=(kin.GetWlab()-kin.GetKlab())/(nucqcd::mass_d/2.);
+  double alphai=(Einoff+kin.GetPklab()*kin.GetCosthklab())/(nucqcd::mass_d/2.);  //vec{pi}=-vec{pr} in PW!
   double pt=kin.GetPklab()*sqrt(1.-kin.GetCosthklab()*kin.GetCosthklab());
   if(std::isnan(pt)) pt=0.;
   double cosdelta=kin.GetWlab()/kin.GetKlab();
@@ -129,8 +129,8 @@ void DeuteronStructure::getStructureFunctions(TKinematics2to2 &kin, double &FL, 
 
 void DeuteronStructure::getStructureFunctions_off (TKinematics2to2 &kin, double &FL, double &FT, double &FTT, double &FTL,
 						   double Wsq, double Einoff) const{
-  double alphaq=(kin.GetWlab()-kin.GetKlab())/(MASSD/2.);
-  double alphai=(Einoff+kin.GetPklab()*kin.GetCosthklab())/(MASSD/2.);  //vec{pi}=-vec{pr} in PW!
+  double alphaq=(kin.GetWlab()-kin.GetKlab())/(nucqcd::mass_d/2.);
+  double alphai=(Einoff+kin.GetPklab()*kin.GetCosthklab())/(nucqcd::mass_d/2.);  //vec{pi}=-vec{pr} in PW!
   double pt=kin.GetPklab()*sqrt(1.-kin.GetCosthklab()*kin.GetCosthklab());
   double cosdelta=kin.GetWlab()/kin.GetKlab();
   double sindelta2=kin.GetQsquared()/(kin.GetKlab()*kin.GetKlab());
@@ -224,8 +224,8 @@ double DeuteronStructure::getavgStructureLC(LightConeKin2to2 &kin) const{
 //   cout << "LCstruc " << F1 << " " << F2 << endl;
 //   cout << x_i << " " << xoffshell << endl;
   return 2.*kin.getXN()*F2/kin.getQ2()*(-(mi_off2+kin.getQ2()/4./pow(kin.getXN(),2.))
-	+(2*kin.getEpsilon()+1.)*pow(MASSD*MASSD+(1.-2.*kin.getZs()*kin.getXN())*kin.getQ2()/(2.*kin.getXA()*kin.getXN()),2.)
-	  /(MASSD*MASSD+kin.getQ2()/kin.getXA()/kin.getXA()))+2.*(1-kin.getEpsilon())*F1;
+	+(2*kin.getEpsilon()+1.)*pow(nucqcd::mass_d*nucqcd::mass_d+(1.-2.*kin.getZs()*kin.getXN())*kin.getQ2()/(2.*kin.getXA()*kin.getXN()),2.)
+	  /(nucqcd::mass_d*nucqcd::mass_d+kin.getQ2()/kin.getXA()/kin.getXA()))+2.*(1-kin.getEpsilon())*F1;
   
 
 }

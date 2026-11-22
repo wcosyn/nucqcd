@@ -70,7 +70,7 @@ TEST_CASE("RMSGA A(e,e'p) cross section for carbon (default 120x36x5 grids)", "[
   MeanFieldNucleusThick carbon(MeanFieldNucleus::C, dir);
   std::unique_ptr<TElectronKinematics> elec(TElectronKinematics::CreateWithBeamEnergy(3245.));
   Cross obs(*elec, &carbon, 1.E-03, 2, dir, false, 1.);
-  TKinematics2to2 kin("", "", carbon.getMassA(), carbon.getMassA_min_proton(), MASSP, "qsquared:wlab:pklab", 1.8E06,
+  TKinematics2to2 kin("", "", carbon.getMassA(), carbon.getMassA_min_proton(), nucqcd::mass_p, "qsquared:wlab:pklab", 1.8E06,
                       1000., 150.);
   for (int shell = 0; shell < carbon.getPLevels(); shell++) {
     std::ostringstream key;

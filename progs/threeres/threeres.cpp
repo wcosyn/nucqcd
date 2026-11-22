@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
     Resonance res3=Resonance(atof(argv[11])*1.E03,gamma,atof(argv[7]), atof(argv[8]));
     for(int i=1;i<bla;i++){
       double x=1./bla*i;
-      //TKinematics2to2 kin("","",MASSD,MASSP,Wprime,"qsquared:wlab:pklab",1.8E06,nu,pr);
+      //TKinematics2to2 kin("","",nucqcd::mass_d,nucqcd::mass_p,Wprime,"qsquared:wlab:pklab",1.8E06,nu,pr);
       TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ein);
       double teller=0.,fsi1=0.,fsi2=0.,noemer=0.;
       for(int proton=0;proton<=1;++proton){
@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 	noemer+=nucleon.getF2();
 	//cout << noemer << endl;
       }
-      cout << x << " " << (Q2*(1./x-1.)+MASSP*MASSP)/1.E06 << " " <<  teller/noemer << " " << (teller-fsi1)/noemer << " " << (teller-fsi2)/noemer << endl;
+      cout << x << " " << (Q2*(1./x-1.)+nucqcd::mass_p*nucqcd::mass_p)/1.E06 << " " <<  teller/noemer << " " << (teller-fsi1)/noemer << " " << (teller-fsi2)/noemer << endl;
     }
     
 }

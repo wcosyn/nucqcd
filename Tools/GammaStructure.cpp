@@ -1042,7 +1042,7 @@ ostream& operator<<(ostream& output, const GammaStructure& gamma)
   
   for(int i=0; i<15; i++) {
     if(gamma.comp[index] == i) {
-      if (abs(gamma.compCoeff[index]) >= STRANGEUFLOW)
+      if (abs(gamma.compCoeff[index]) >= nucqcd::strange_underflow)
 	output << gamma.compCoeff[index];
       else
 	output << complex<double>(0.0);
@@ -1053,7 +1053,7 @@ ostream& operator<<(ostream& output, const GammaStructure& gamma)
       output << complex<double>(0.0);
     output << ",";
   }
-  if(gamma.comp[index] == 15 && abs(gamma.compCoeff[index]) >=  STRANGEUFLOW)
+  if(gamma.comp[index] == 15 && abs(gamma.compCoeff[index]) >=  nucqcd::strange_underflow)
     output << gamma.compCoeff[index];
   else
     output << complex<double>(0.0);

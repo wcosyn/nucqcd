@@ -29,9 +29,9 @@ void Deut_Conv_EMTLF::int_k3(numint::vector_z & res, double alpha1, double kperp
 
 
     //All momenta/energies MeV!!!!
-    double Ek=sqrt((MASSn*MASSn+kperp*kperp)/alpha1/(2.-alpha1)); 
+    double Ek=sqrt((nucqcd::mass_nucleon*nucqcd::mass_nucleon+kperp*kperp)/alpha1/(2.-alpha1)); 
     double kz=(alpha1-1.)*Ek;
-    double knorm=sqrt(Ek*Ek-MASSn*MASSn);
+    double knorm=sqrt(Ek*Ek-nucqcd::mass_nucleon*nucqcd::mass_nucleon);
     // cout << alpha1 << " " << kperp << " " << Ek << " " << knorm << endl;
     if(knorm>1.E03) {return;}
 
@@ -46,11 +46,11 @@ void Deut_Conv_EMTLF::int_k3(numint::vector_z & res, double alpha1, double kperp
     double kyprime=kperp*sinkphi;
 
     double kperpprime=sqrt(kxprime*kxprime+kyprime*kyprime);
-    double Ekprime = sqrt((MASSn*MASSn+kperpprime*kperpprime)/(alphaprime*(2.-alphaprime)));
+    double Ekprime = sqrt((nucqcd::mass_nucleon*nucqcd::mass_nucleon+kperpprime*kperpprime)/(alphaprime*(2.-alphaprime)));
     double kzprime = (alphaprime -1)*Ekprime;
     TVector3 k_in(kperp*coskphi,kperp*sinkphi,kz);
     TVector3 k_out(kxprime, kyprime, kzprime);
-    complex<double> p1R = (kperp*coskphi+kxprime)/2.+I_UNIT*(kperp*sinkphi+kyprime)/2.;
+    complex<double> p1R = (kperp*coskphi+kxprime)/2.+nucqcd::i_unit*(kperp*sinkphi+kyprime)/2.;
     complex<double> p1L = conj(p1R);
     if(k_out.Mag2()>1.E06) {return;}
 
@@ -108,9 +108,9 @@ void Deut_Conv_EMTLF::int_k3_real(numint::vector_d & res, double alpha1, double 
 
 
     //All momenta/energies MeV!!!!
-    double Ek=sqrt((MASSn*MASSn+kperp*kperp)/alpha1/(2.-alpha1)); 
+    double Ek=sqrt((nucqcd::mass_nucleon*nucqcd::mass_nucleon+kperp*kperp)/alpha1/(2.-alpha1)); 
     double kz=(alpha1-1.)*Ek;
-    double knorm=sqrt(Ek*Ek-MASSn*MASSn);
+    double knorm=sqrt(Ek*Ek-nucqcd::mass_nucleon*nucqcd::mass_nucleon);
     // cout << alpha1 << " " << kperp << " " << Ek << " " << knorm << endl;
     if(knorm>1.E03) {return;}
 
@@ -125,11 +125,11 @@ void Deut_Conv_EMTLF::int_k3_real(numint::vector_d & res, double alpha1, double 
     double kyprime=kperp*sinkphi;
 
     double kperpprime=sqrt(kxprime*kxprime+kyprime*kyprime);
-    double Ekprime = sqrt((MASSn*MASSn+kperpprime*kperpprime)/(alphaprime*(2.-alphaprime)));
+    double Ekprime = sqrt((nucqcd::mass_nucleon*nucqcd::mass_nucleon+kperpprime*kperpprime)/(alphaprime*(2.-alphaprime)));
     double kzprime = (alphaprime -1)*Ekprime;
     TVector3 k_in(kperp*coskphi,kperp*sinkphi,kz);
     TVector3 k_out(kxprime, kyprime, kzprime);
-    complex<double> p1R = (kperp*coskphi+kxprime)/2.+I_UNIT*(kperp*sinkphi+kyprime)/2.;
+    complex<double> p1R = (kperp*coskphi+kxprime)/2.+nucqcd::i_unit*(kperp*sinkphi+kyprime)/2.;
     complex<double> p1L = conj(p1R);
     if(k_out.Mag2()>1.E06) {return;}
 
@@ -192,14 +192,14 @@ vector< complex<double> > Deut_Conv_EMTLF::getGFF_nucl(const int sigma_in, const
     }
 
     else{
-        res[0] = (sigma_in==1?-1.:1.)*sqrt(-t)/(2.*MASSn)*pow(alpha_1/2.,2.)*(GFF_A-2.*GFF_J);
-        //res[1] = (sigma_in==1?1.:-1.)*p1R/MASSn*alpha_1/2.*(GFF_A+(sigma_in==1?-2:(p1L/p1R-1.))*GFF_J); //+R
-        //res[1] = (sigma_in==1?-1.:+1.)*p1L/MASSn*alpha_1/2.*(GFF_A+(sigma_in==-1?-2:(p1R/p1L-1.))*GFF_J); //+L
-        res[1] = (sigma_in==1?1.:-1.)*p1R/MASSn*alpha_1/4.*(GFF_A+(sigma_in==1?-2:(p1L/p1R-1.))*GFF_J)
-                + (sigma_in==1?-1.:+1.)*p1L/MASSn*alpha_1/4.*(GFF_A+(sigma_in==-1?-2:(p1R/p1L-1.))*GFF_J); //+L +R average
-        //res[2] = (sigma_in==1?-1.:1.)*sqrt(-t)/(2.*MASSn)*(4.*p1R*p1L*GFF_A+t*GFF_D)-2.*(p1R-p1L)*sqrt(-t)/MASSn*GFF_J*(sigma_in==1?p1R:p1L); //RL
-        res[2] = (sigma_in==1?-1.:1.)*sqrt(-t)/(2.*MASSn)*(-4.*p1R*p1R*GFF_A+t*GFF_D)-4.*sqrt(-t)*p1R/MASSn*GFF_J*(sigma_in==1?p1R:p1L); //RR
-        //res[2] = (sigma_in==1?-1.:1.)*sqrt(-t)/(2.*MASSn)*(-4.*p1L*p1L*GFF_A+t*GFF_D)+4.*sqrt(-t)*p1L/MASSn*GFF_J*(sigma_in==1?p1R:p1L); //LL
+        res[0] = (sigma_in==1?-1.:1.)*sqrt(-t)/(2.*nucqcd::mass_nucleon)*pow(alpha_1/2.,2.)*(GFF_A-2.*GFF_J);
+        //res[1] = (sigma_in==1?1.:-1.)*p1R/nucqcd::mass_nucleon*alpha_1/2.*(GFF_A+(sigma_in==1?-2:(p1L/p1R-1.))*GFF_J); //+R
+        //res[1] = (sigma_in==1?-1.:+1.)*p1L/nucqcd::mass_nucleon*alpha_1/2.*(GFF_A+(sigma_in==-1?-2:(p1R/p1L-1.))*GFF_J); //+L
+        res[1] = (sigma_in==1?1.:-1.)*p1R/nucqcd::mass_nucleon*alpha_1/4.*(GFF_A+(sigma_in==1?-2:(p1L/p1R-1.))*GFF_J)
+                + (sigma_in==1?-1.:+1.)*p1L/nucqcd::mass_nucleon*alpha_1/4.*(GFF_A+(sigma_in==-1?-2:(p1R/p1L-1.))*GFF_J); //+L +R average
+        //res[2] = (sigma_in==1?-1.:1.)*sqrt(-t)/(2.*nucqcd::mass_nucleon)*(4.*p1R*p1L*GFF_A+t*GFF_D)-2.*(p1R-p1L)*sqrt(-t)/nucqcd::mass_nucleon*GFF_J*(sigma_in==1?p1R:p1L); //RL
+        res[2] = (sigma_in==1?-1.:1.)*sqrt(-t)/(2.*nucqcd::mass_nucleon)*(-4.*p1R*p1R*GFF_A+t*GFF_D)-4.*sqrt(-t)*p1R/nucqcd::mass_nucleon*GFF_J*(sigma_in==1?p1R:p1L); //RR
+        //res[2] = (sigma_in==1?-1.:1.)*sqrt(-t)/(2.*nucqcd::mass_nucleon)*(-4.*p1L*p1L*GFF_A+t*GFF_D)+4.*sqrt(-t)*p1L/nucqcd::mass_nucleon*GFF_J*(sigma_in==1?p1R:p1L); //LL
     }
     return res;
 }
@@ -313,10 +313,10 @@ vector< double > Deut_Conv_EMTLF::EMT_conv_real(const double t){
 
 vector< complex<double> > Deut_Conv_EMTLF::lf_deut(const double Ek, const TVector3& k, const vector< complex<double> > &nonrelwf){
     vector< complex<double> > wf_out(4,0.);
-    wf_out[0]=((k[2]+Ek+MASSn)*nonrelwf.at(0)+(-k[0]-I_UNIT*k[1])*nonrelwf.at(1))/sqrt(2.*(Ek+MASSn)*(Ek+k[2]));
-    wf_out[1]=((k[2]+Ek+MASSn)*nonrelwf.at(1)+(k[0]-I_UNIT*k[1])*nonrelwf.at(0))/sqrt(2.*(Ek+MASSn)*(Ek+k[2]));
-    wf_out[2]=((k[2]+Ek+MASSn)*nonrelwf.at(2)+(-k[0]-I_UNIT*k[1])*nonrelwf.at(3))/sqrt(2.*(Ek+MASSn)*(Ek+k[2]));
-    wf_out[3]=((k[2]+Ek+MASSn)*nonrelwf.at(3)+(k[0]-I_UNIT*k[1])*nonrelwf.at(2))/sqrt(2.*(Ek+MASSn)*(Ek+k[2]));
+    wf_out[0]=((k[2]+Ek+nucqcd::mass_nucleon)*nonrelwf.at(0)+(-k[0]-nucqcd::i_unit*k[1])*nonrelwf.at(1))/sqrt(2.*(Ek+nucqcd::mass_nucleon)*(Ek+k[2]));
+    wf_out[1]=((k[2]+Ek+nucqcd::mass_nucleon)*nonrelwf.at(1)+(k[0]-nucqcd::i_unit*k[1])*nonrelwf.at(0))/sqrt(2.*(Ek+nucqcd::mass_nucleon)*(Ek+k[2]));
+    wf_out[2]=((k[2]+Ek+nucqcd::mass_nucleon)*nonrelwf.at(2)+(-k[0]-nucqcd::i_unit*k[1])*nonrelwf.at(3))/sqrt(2.*(Ek+nucqcd::mass_nucleon)*(Ek+k[2]));
+    wf_out[3]=((k[2]+Ek+nucqcd::mass_nucleon)*nonrelwf.at(3)+(k[0]-nucqcd::i_unit*k[1])*nonrelwf.at(2))/sqrt(2.*(Ek+nucqcd::mass_nucleon)*(Ek+k[2]));
     
     return wf_out;
 

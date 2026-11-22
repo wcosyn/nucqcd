@@ -133,7 +133,7 @@ double getCross_DiDVCS_interp(const double scale, const double t_rho, const doub
     double alpha_s = 0.306039; //scale is 2 GeV^2
     int Nc=3; //number of colors
     double CF=(Nc*Nc-1)/2./Nc;
-    //double mandelstam_t= -4.*MASSP_G*MASSP_G*xi*xi/(1-xi*xi);//tmin [GeV^2]
+    //double mandelstam_t= -4.*nucqcd::mass_p_GeV*nucqcd::mass_p_GeV*xi*xi/(1-xi*xi);//tmin [GeV^2]
 
     //kinematics
     double s_gN = s_eN*y;
@@ -141,18 +141,18 @@ double getCross_DiDVCS_interp(const double scale, const double t_rho, const doub
     double xi = (Q2in +s_gN*(Q2out/s2))/(2.*s_gN+Q2in -s_gN*(Q2out/s2));
 //    cout << "xi =" << xi << endl;
 
-    double K = pow(2,7.)*PI*PI*ALPHA*CF*CF*alpha_s*alpha_s/8.; //[dimensionless]
+    double K = pow(2,7.)*PI*PI*nucqcd::alpha_em*CF*CF*alpha_s*alpha_s/8.; //[dimensionless]
     
     complex<double> CFF_H, CFF_E;
     CFF_interpolate(CFF_H, CFF_E,Q2out/Q2in,xi,t_N,grid);
     //cout << "CFF " << CFF_H << " " << CFF_E << endl;
     double CFF_asympt = pow(3.*sqrt(2.)*K*frho0/Q2in/sqrt(Q2in*Q2out),2.)*((1-xi*xi)*norm(CFF_H)
-                        -2.*xi*xi*((conj(CFF_H)*CFF_E).real())-(xi*xi+t_N/4./MASSP_G/MASSP_G)*norm(CFF_E)); //[GeV^-6]
+                        -2.*xi*xi*((conj(CFF_H)*CFF_E).real())-(xi*xi+t_N/4./nucqcd::mass_p_GeV/nucqcd::mass_p_GeV)*norm(CFF_E)); //[GeV^-6]
 
-    double result = CFF_asympt*ALPHA/pow(1+xi,2.)/(48*pow(2.*PI,4.)*Q2out*(s2-t_rho)); //[GeV-10]
+    double result = CFF_asympt*nucqcd::alpha_em/pow(1+xi,2.)/(48*pow(2.*PI,4.)*Q2out*(s2-t_rho)); //[GeV-10]
     result *=0.389379E06; // photoprod cross section [nb GeV-8]
     double epsilon = (1-y)/(1-y+y*y/2.);
-    result *= ALPHA/2./PI*y/Q2in/(1-epsilon); //electroproduction [nb GeV-10]
+    result *= nucqcd::alpha_em/2./PI*y/Q2in/(1-epsilon); //electroproduction [nb GeV-10]
     return result;
 }
 
@@ -379,8 +379,8 @@ void GenerateEvents(double EneL, double EneH, int nevents, int ndec, DiDVCS & gi
             double s_gN = y*s;
             double xi = (q2 +s_gN*(q2p/s2))/(2.*s_gN+q2 -s_gN*(q2p/s2));
             double s1 = s_gN*q2p/s2;
-            if ((tN>-4.*MASSP_G*MASSP_G*xi*xi/(1-xi*xi))) { cerr << "Invalid kinematics, t is larger than t_min." << endl;
-                                    cout << q2p << " " << xi << " " << -4.*MASSP_G*MASSP_G*xi*xi/(1-xi*xi) << " " << tN << endl;}
+            if ((tN>-4.*nucqcd::mass_p_GeV*nucqcd::mass_p_GeV*xi*xi/(1-xi*xi))) { cerr << "Invalid kinematics, t is larger than t_min." << endl;
+                                    cout << q2p << " " << xi << " " << -4.*nucqcd::mass_p_GeV*nucqcd::mass_p_GeV*xi*xi/(1-xi*xi) << " " << tN << endl;}
 
             vector< double > results(4,0.);
             gimme_xs.getCross_DiDVCS(results, 2., trho, tN, q2, q2p, s2, s, y, 1.E04,0);

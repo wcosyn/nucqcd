@@ -26,7 +26,7 @@ double DoubleNCross::getDiffCross(const TKinematics2to3 &kin, bool SRC, bool CT,
 //   frontfactor=kin.GetHyperonMass()*kin.GetMesonMass()*kin.GetPYlab()/(8*pow(PI,3.))
 //       /abs(sqrt(kin.GetMesonMass()*kin.GetMesonMass()+kin.GetPklab()+kin.GetPklab())+sqrt(kin.GetHyperonMass()*kin.GetHyperonMass()+kin.GetPYlab()*kin.GetPYlab())
 // 	    *(1-qvec*kin.GetCosthYlab()/kin.GetPYlab()));
-  mott=(ALPHA*ALPHA*(electron.GetCosScatterAngle(kin)+1.)*pow(electron.GetBeamEnergy(kin)-kin.GetWlab(),2.))/Q2/Q2*2.; 
+  mott=(nucqcd::alpha_em*nucqcd::alpha_em*(electron.GetCosScatterAngle(kin)+1.)*pow(electron.GetBeamEnergy(kin)-kin.GetWlab(),2.))/Q2/Q2*2.; 
   reacmodel=new DoubleNModel(pnucl,pw,SRC,CT, corr, particletype1, particletype2, prec,integrator,homedir);
   kinfactors[0]=pow(Q2overkk,2.);
   kinfactors[1]=tan2+Q2overkk/2.;
@@ -63,7 +63,7 @@ double DoubleNCross::getDiffCross(const TKinematics2to3 &kin, bool SRC, bool CT,
   result=kinfactors[0]*response[0]+kinfactors[1]*response[1]+kinfactors[2]*(response[2]*cos(2.*phi)+response[3]*sin(2.*phi))
 	  +kinfactors[3]*(response[4]*cos(phi)+response[5]*cos(phi));
   delete reacmodel;
-  return mott*result/HBARC;//mott*frontfactor*result/HBARC; 
+  return mott*result/nucqcd::hbarc;//mott*frontfactor*result/nucqcd::hbarc; 
   
 }
 

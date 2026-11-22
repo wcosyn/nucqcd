@@ -25,13 +25,13 @@ void adap_intPm(numint::vector_d &, double costhetacm,Cross* pObs, MeanFieldNucl
 int main(int argc, char *argv[])
 {
   
-  string homedir=HOMEDIR;
+  string homedir=nucqcd::share_dir;
   //kinematics input
   double Q2=atof(argv[3])*1.E06; // input in GeV^2 [8.0,9.4,11.4,14.2]
   double Ein=atof(argv[2])*1.E03;  //input in GeV [6.4,10.6,10.6,10.6]
   
   //calculate kinematics
-  double omega=Q2/(2.*MASSn);  //Bjorken x was chosen super close tot 1 in exp kinematics
+  double omega=Q2/(2.*nucqcd::mass_nucleon);  //Bjorken x was chosen super close tot 1 in exp kinematics
   double q=sqrt(Q2+omega*omega);
   cout << Q2 << " " << omega << " " << q << " " << Q2/4./Ein/(Ein-omega) << endl;
   
@@ -170,7 +170,7 @@ void adap_intPm(numint::vector_d & results, double costhetacm,Cross* pObs, MeanF
     if(costhetacm<cthmax[shell]){
       TKinematics2to2 kin("","",pNucleus->getMassA(),
         pNucleus->getMassA_min_proton()+pNucleus->getExcitation()[shell],
-        MASSP,"qsquared:wlab:costhkcm",Q2,omega,costhetacm);
+        nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,costhetacm);
       double pm=kin.GetPklab();
       if(!kin.IsPhysical()){
         // for(int i=0;i<5;i++) results[i]+=0.;
@@ -186,8 +186,8 @@ void adap_intPm(numint::vector_d & results, double costhetacm,Cross* pObs, MeanF
       results[3*pNucleus->getTotalLevels()+1]+=cross[thick?2:1];
       results[3*pNucleus->getTotalLevels()+2]+=cross[thick?4:2];
       // cout << 2*shell << " " << 2*shell+1 << " " << 2*pNucleus->getTotalLevels() << " " << 2*pNucleus->getTotalLevels()+1 << endl;
-      // cout << "0 " << shell << " " << costhetacm << " " << pm << " "  << acos(kin.GetCosthklab())*RADTODEGR << " " 
-      // << acos(kin.GetCosthYlab())*RADTODEGR << " " << kin.GetPklab() << " " << kin.GetPYlab() 
+      // cout << "0 " << shell << " " << costhetacm << " " << pm << " "  << acos(kin.GetCosthklab())*nucqcd::rad_to_deg << " " 
+      // << acos(kin.GetCosthYlab())*nucqcd::rad_to_deg << " " << kin.GetPklab() << " " << kin.GetPYlab() 
       // << " " << kin.GetKlab() << " " << kin.GetWlab() <<  " " << results[3*shell] << " " << results[3*shell+2] << endl;
     }  
   }
@@ -196,7 +196,7 @@ void adap_intPm(numint::vector_d & results, double costhetacm,Cross* pObs, MeanF
     if(costhetacm<cthmax[shell]){
       TKinematics2to2 kin("","",pNucleus->getMassA(),
         pNucleus->getMassA_min_neutron()+pNucleus->getExcitation()[shell],
-        MASSN,"qsquared:wlab:costhkcm",Q2,omega,costhetacm);
+        nucqcd::mass_n,"qsquared:wlab:costhkcm",Q2,omega,costhetacm);
       double pm=kin.GetPklab();
       if(!kin.IsPhysical()){
         //for(int i=5;i<10;i++) results[i]+=0.;
@@ -213,8 +213,8 @@ void adap_intPm(numint::vector_d & results, double costhetacm,Cross* pObs, MeanF
       results[3*pNucleus->getTotalLevels()+4]+=cross[thick?2:1];
       results[3*pNucleus->getTotalLevels()+5]+=cross[thick?4:2];
       // cout << 2*shell << " " << 2*shell+1 << " " << 2*pNucleus->getTotalLevels()+2 << " " << 2*pNucleus->getTotalLevels()+3 << endl;
-      // cout << "1 " << shell << " " << costhetacm << " " << pm << " "  << acos(kin.GetCosthklab())*RADTODEGR << " " 
-      // << acos(kin.GetCosthYlab())*RADTODEGR << " " << kin.GetPklab() << " " << kin.GetPYlab() 
+      // cout << "1 " << shell << " " << costhetacm << " " << pm << " "  << acos(kin.GetCosthklab())*nucqcd::rad_to_deg << " " 
+      // << acos(kin.GetCosthYlab())*nucqcd::rad_to_deg << " " << kin.GetPklab() << " " << kin.GetPYlab() 
       // << " " << kin.GetKlab() << " " << kin.GetWlab() << " "  << results[3*shell] << " " << results[3*shell+2] << endl;
     }
     
@@ -228,7 +228,7 @@ void adap_intPm(numint::vector_d & results, double costhetacm,Cross* pObs, MeanF
 void getBound(double &high, double &low, MeanFieldNucleusThick &nucleus, double Q2, double omega, int shell){
   TKinematics2to2 kin("","",nucleus.getMassA(),
 		      (shell<nucleus.getPLevels()? nucleus.getMassA_min_proton(): nucleus.getMassA_min_neutron())+nucleus.getExcitation()[shell],
-		      MASSP,"qsquared:wlab:costhkcm",Q2,omega,(high+low)/2.);
+		      nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,(high+low)/2.);
   double pm=kin.GetPklab();
   if(pm<300.) low=(high+low)/2.;
   else high=(high+low)/2.;

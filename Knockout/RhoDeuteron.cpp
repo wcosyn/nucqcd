@@ -2,7 +2,7 @@
 #include <AuxFunction.hpp>
 #include <FastParticle.hpp>
 #include <Utilfunctions.hpp>
-#define MASS_N (MASSP+MASSN)*0.5E-03
+#define MASS_N (nucqcd::mass_p+nucqcd::mass_n)*0.5E-03
 
 using namespace std;
 
@@ -35,7 +35,7 @@ void RhoDeuteron::getCrosst(double *result, const double Ebeam, const double Q2,
   if(integrator==0){
     double pmestimate=0.,cthestimate=0.,phiestimate=0.;
     // rombergerN(this,&RhoDeuteron::intPmt,0.,pmax*1.E-03,2,
-		// result,PREC,3,7,&pmestimate,Q2,nu,qvec,t,&cthestimate, &phiestimate);
+		// result,nucqcd::integration_prec,3,7,&pmestimate,Q2,nu,qvec,t,&cthestimate, &phiestimate);
   }
   else if(integrator==1||integrator==2){
     numint::vector_d ret(2,0.);
@@ -61,7 +61,7 @@ void RhoDeuteron::getCrosst(double *result, const double Ebeam, const double Q2,
   }
     
     
-  for(int i=0;i<2;i++) result[i]*=ALPHA*(Ebeam-nu)/(pow(2.*PI,2.)*Ebeam*Q2*(1.-epsilon)*MASSD*1.E-03)*1.E09/(2.*qvec);
+  for(int i=0;i<2;i++) result[i]*=nucqcd::alpha_em*(Ebeam-nu)/(pow(2.*PI,2.)*Ebeam*Q2*(1.-epsilon)*nucqcd::mass_d*1.E-03)*1.E09/(2.*qvec);
   cout << nu << " " << t << " " << result[0] << " " << result[1] << " " << res << " " << count << " " << abserror << " " << endl;
 }
 
@@ -79,7 +79,7 @@ void RhoDeuteron::intPmt(const double pm, double *result, va_list ap){
   }
   double EN = sqrt(MASS_N*MASS_N+pm*pm);
   // rombergerN(this,&RhoDeuteron::intCosThetat,-1.,1.,2,
-	//     result,PREC,3,7,pcthestimate, pm, Q2,nu,qvec,t,EN,pphiestimate);
+	//     result,nucqcd::integration_prec,3,7,pcthestimate, pm, Q2,nu,qvec,t,EN,pphiestimate);
     for(int i=0;i<2;i++) result[i]*=2.*pm*pm;
   
 }
@@ -95,7 +95,7 @@ void RhoDeuteron::intCosThetat(const double costheta, double *result, va_list ap
   
   double sintheta = sqrt(1.-costheta*costheta);
   // rombergerN(this,&RhoDeuteron::intPhit,0.,PI,2,
-	//     result,PREC,3,7,pphiestimate,pm, costheta, sintheta, Q2,nu,qvec,t,EN);
+	//     result,nucqcd::integration_prec,3,7,pphiestimate,pm, costheta, sintheta, Q2,nu,qvec,t,EN);
  
 }
 
@@ -112,30 +112,30 @@ void RhoDeuteron::intPhit(const double phi, double *result, va_list ap){
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
   TVector3 pmvec = TVector3(pm*sintheta*cosphi*1.E03,pm*sintheta*sinphi*1.E03,pm*costheta*1.E03);  
-  double Eoff = MASSD*1.E-03-EN;
+  double Eoff = nucqcd::mass_d*1.E-03-EN;
   
   for(int i=0;i<2;i++) result[i]=0.;
   
   //ALL IN GeV to avoid some numeric overflow almost zero shit!
-  double A = (t+Q2-MASSRHO*MASSRHO*1.E-06)*0.5;
-  double C0 = nu+MASSD*1.E-03-EN;
+  double A = (t+Q2-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06)*0.5;
+  double C0 = nu+nucqcd::mass_d*1.E-03-EN;
   double Cz = qvec-pm*costheta;
   double Cy = -pm*sintheta*sinphi;
   double Cx = -pm*sintheta*cosphi;
   double s = C0*C0-Cz*Cz-Cx*Cx-Cy*Cy; //mandelstam rhoN system
-  double D = (s-MASS_N*MASS_N+MASSRHO*MASSRHO*1.E-06)/2.+C0*A/nu;
+  double D = (s-MASS_N*MASS_N+nucqcd::mass_rho*nucqcd::mass_rho*1.E-06)/2.+C0*A/nu;
   double E = Cz-C0*qvec/nu;
   double a = E*E-Q2*Cx*Cx/(nu*nu);
   double b = 2.*(D*E+A*qvec*Cx*Cx/(nu*nu));
-  double c = D*D-A*A*Cx*Cx/(nu*nu)+Cx*Cx*MASSRHO*MASSRHO*1.E-06;
+  double c = D*D-A*A*Cx*Cx/(nu*nu)+Cx*Cx*nucqcd::mass_rho*nucqcd::mass_rho*1.E-06;
   double discr = b*b-4.*a*c;
   if(discr>-1.E-09){
     if(abs(discr)<1.E-09){
       double pzrho=-b/(2.*a);
       double Erho = (pzrho*qvec-A)/nu;
-      double tt = -Q2 + MASSRHO*MASSRHO*1.E-06-2*Erho*nu+2.*qvec*pzrho;
+      double tt = -Q2 + nucqcd::mass_rho*nucqcd::mass_rho*1.E-06-2*Erho*nu+2.*qvec*pzrho;
       if(nocuts||Erho/nu>0.9){
-	double pxrho = sqrt(Erho*Erho-pzrho*pzrho-MASSRHO*MASSRHO*1.E-06);
+	double pxrho = sqrt(Erho*Erho-pzrho*pzrho-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06);
 	if(!std::isnan(pxrho)){
 	  double prho = sqrt(pzrho*pzrho+pxrho*pxrho);
 // 	  double costhetarho = pzrho/prho;
@@ -158,9 +158,9 @@ void RhoDeuteron::intPhit(const double phi, double *result, va_list ap){
       discr = sqrt(discr);
       double pzrho = (-b+discr)/(2.*a);
       double Erho = (pzrho*qvec-A)/nu;
-      double tt = -Q2 + MASSRHO*MASSRHO*1.E-06-2*Erho*nu+2.*qvec*pzrho;
+      double tt = -Q2 + nucqcd::mass_rho*nucqcd::mass_rho*1.E-06-2*Erho*nu+2.*qvec*pzrho;
       if(nocuts||Erho/nu>0.9){
-	double pxrho = sqrt(Erho*Erho-pzrho*pzrho-MASSRHO*MASSRHO*1.E-06);
+	double pxrho = sqrt(Erho*Erho-pzrho*pzrho-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06);
 	if(SIGN(D+E*pzrho)==SIGN(-Cx*pxrho)){
 	  double prho = sqrt(pzrho*pzrho+pxrho*pxrho);
 // 	  double costhetarho = pzrho/prho;
@@ -180,9 +180,9 @@ void RhoDeuteron::intPhit(const double phi, double *result, va_list ap){
       }
       pzrho = (-b-discr)/(2.*a);
       Erho = (pzrho*qvec-A)/nu;
-      tt = -Q2 + MASSRHO*MASSRHO*1.E-06-2*Erho*nu+2.*qvec*pzrho;
+      tt = -Q2 + nucqcd::mass_rho*nucqcd::mass_rho*1.E-06-2*Erho*nu+2.*qvec*pzrho;
       if(nocuts||Erho/nu>0.9){
-	double pxrho = sqrt(Erho*Erho-pzrho*pzrho-MASSRHO*MASSRHO*1.E-06);
+	double pxrho = sqrt(Erho*Erho-pzrho*pzrho-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06);
 	if(SIGN(D+E*pzrho)==SIGN(-Cx*pxrho)){
 	  double prho = sqrt(pzrho*pzrho+pxrho*pxrho);
 // 	  double costhetarho = pzrho/prho;
@@ -213,13 +213,13 @@ void RhoDeuteron::getCrossz(double *result, const double Ebeam,  const double Q2
   double epsilon = 1./(1.+2.*(1.+nu*nu/Q2)
 		     *((1.-fScatterAngle)/(1.+fScatterAngle)));
   double Erho=nu*z;
-  double prho=sqrt(Erho*Erho-MASSRHO*MASSRHO*1.E-06);
+  double prho=sqrt(Erho*Erho-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06);
   int res=90;
   unsigned count=0;
   if(integrator==0){
     double pmestimate=0.,cthestimate=0.,phiestimate=0.;
     rombergerN(this,&RhoDeuteron::intPmz,0.,pmax*1.E-03,2,
-		result,PREC,3,7,&pmestimate,Q2,nu,qvec,Erho,prho,&cthestimate, &phiestimate);
+		result,nucqcd::integration_prec,3,7,&pmestimate,Q2,nu,qvec,Erho,prho,&cthestimate, &phiestimate);
    }
   else if(integrator==1||integrator==2){
     numint::vector_d ret(2,0.);
@@ -245,7 +245,7 @@ void RhoDeuteron::getCrossz(double *result, const double Ebeam,  const double Q2
   }
   
  
-  for(int i=0;i<2;i++) result[i]*=ALPHA*(Ebeam-nu)/(pow(2.*PI,2.)*Ebeam*Q2*(1.-epsilon)*MASSD*1.E-03)*1.E09*nu/qvec;
+  for(int i=0;i<2;i++) result[i]*=nucqcd::alpha_em*(Ebeam-nu)/(pow(2.*PI,2.)*Ebeam*Q2*(1.-epsilon)*nucqcd::mass_d*1.E-03)*1.E09*nu/qvec;
    cout << nu << " " << z << " " << result[0] << " " << result[1] << " " << res << " " << count << " " << abserror << " " << endl;
  
 }
@@ -264,7 +264,7 @@ void RhoDeuteron::intPmz(const double pm, double *result, va_list ap){
   }
   double EN = sqrt(MASS_N*MASS_N+pm*pm);
   rombergerN(this,&RhoDeuteron::intCosThetaz,-1.,1.,2,
-	    result,PREC,3,7,pcthestimate, pm, Q2,nu,qvec,Erho,prho,EN,pphiestimate);
+	    result,nucqcd::integration_prec,3,7,pcthestimate, pm, Q2,nu,qvec,Erho,prho,EN,pphiestimate);
   for(int i=0;i<2;i++){
     result[i]*=2.*pm*pm;  //2. because of symmetry in phi
   }
@@ -283,7 +283,7 @@ void RhoDeuteron::intCosThetaz(const double costheta, double *result, va_list ap
   
   double sintheta = sqrt(1.-costheta*costheta);
   rombergerN(this,&RhoDeuteron::intPhiz,0.,PI,2,
-	    result,PREC,3,7,pphiestimate,pm, costheta, sintheta, Q2,nu,qvec,Erho,prho,EN);
+	    result,nucqcd::integration_prec,3,7,pphiestimate,pm, costheta, sintheta, Q2,nu,qvec,Erho,prho,EN);
 
 }
 
@@ -301,10 +301,10 @@ void RhoDeuteron::intPhiz(const double phi, double *result, va_list ap){
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
   TVector3 pmvec = TVector3(pm*sintheta*cosphi*1.E03,pm*sintheta*sinphi*1.E03,pm*costheta*1.E03);
-  double Eoff = MASSD*1.E-03-EN;
+  double Eoff = nucqcd::mass_d*1.E-03-EN;
   for(int i=0;i<2;i++) result[i]=0.;  
   
-  double C0 = nu+MASSD*1.E-03-EN;
+  double C0 = nu+nucqcd::mass_d*1.E-03-EN;
   double Cz = qvec-pm*costheta;
   double Cy = -pm*sintheta*sinphi;
   double Cx = -pm*sintheta*cosphi;
@@ -320,7 +320,7 @@ void RhoDeuteron::intPhiz(const double phi, double *result, va_list ap){
   if(discr>-1.E-09){
     if(abs(discr)<1.E-09) {
       double pzrho = -b/(2.*a);
-      double t =  -Q2 + MASSRHO*MASSRHO*1.E-06-2*Erho*nu+2.*qvec*pzrho;
+      double t =  -Q2 + nucqcd::mass_rho*nucqcd::mass_rho*1.E-06-2*Erho*nu+2.*qvec*pzrho;
       if(prho>pzrho&&(nocuts||(t<-0.1&&t>-0.4))){
 	double pxrho = sqrt(prho*prho-pzrho*pzrho);      
 	double intresults[2];
@@ -332,7 +332,7 @@ void RhoDeuteron::intPhiz(const double phi, double *result, va_list ap){
     else{
       discr = sqrt(discr);
       double pzrho = (-b+discr)/(2.*a);
-      double t =  -Q2 + MASSRHO*MASSRHO*1.E-06-2*Erho*nu+2.*qvec*pzrho;
+      double t =  -Q2 + nucqcd::mass_rho*nucqcd::mass_rho*1.E-06-2*Erho*nu+2.*qvec*pzrho;
       if(pzrho<prho&&(nocuts||(t<-0.1&&t>-0.4))){
 	double pxrho = sqrt(prho*prho-pzrho*pzrho);
 	if(SIGN(A-Cz*pzrho)==SIGN(Cx*pxrho)){
@@ -342,7 +342,7 @@ void RhoDeuteron::intPhiz(const double phi, double *result, va_list ap){
 	}
       }
       pzrho = (-b-discr)/(2.*a);
-      t =  -Q2 + MASSRHO*MASSRHO*1.E-06-2*Erho*nu+2.*qvec*pzrho;
+      t =  -Q2 + nucqcd::mass_rho*nucqcd::mass_rho*1.E-06-2*Erho*nu+2.*qvec*pzrho;
       if(pzrho<prho&&(nocuts||(t<-0.1&&t>-0.4))){
 	double pxrho = sqrt(prho*prho-pzrho*pzrho);	  
 	if(SIGN(A-Cz*pzrho)==SIGN(Cx*pxrho)){
@@ -359,12 +359,12 @@ void RhoDeuteron::intPhiz(const double phi, double *result, va_list ap){
 void RhoDeuteron::getMomdistr(double *results, double Erho, double prho, double pzrho, 
 			      double pxrho, TVector3 &pmvec, double nu, double qvec){
   
-  double s = MASS_N*MASS_N*1.E06+MASSRHO*MASSRHO+2.*Erho*sqrt(MASS_N*MASS_N*1.E06+pmvec.Mag2())-2.*(pzrho*pmvec.Z()+pxrho*pmvec.X());
+  double s = MASS_N*MASS_N*1.E06+nucqcd::mass_rho*nucqcd::mass_rho+2.*Erho*sqrt(MASS_N*MASS_N*1.E06+pmvec.Mag2())-2.*(pzrho*pmvec.Z()+pxrho*pmvec.X());
   double sigmap, beta2p, epsp, sigman, beta2n, epsn;
   FastParticle::interpPionGlauberData(4,prho,sigmap,beta2p,epsp,sigman,beta2n,epsn);
-  deuteron.setScatter(10.*sigmap,beta2p*INVHBARC*INVHBARC*1.E06,epsp);//careful with units!
+  deuteron.setScatter(10.*sigmap,beta2p*nucqcd::inv_hbarc*nucqcd::inv_hbarc*1.E06,epsp);//careful with units!
   results[0] = deuteron.getMomDistrpw(pmvec);
-  results[1] = fsi? deuteron.getMomDistrfsi(pmvec, nu, qvec, s, MASSRHO) : results[0];
+  results[1] = fsi? deuteron.getMomDistrfsi(pmvec, nu, qvec, s, nucqcd::mass_rho) : results[0];
 }  
   
   
@@ -386,32 +386,32 @@ void RhoDeuteron::getCrosst_coh(double *result, const double Ebeam, const double
 		     *((1.-fScatterAngle)/(1.+fScatterAngle)));
   
   //ALL IN GeV to avoid some numeric overflow almost zero shit!
-  double A = (t+Q2-MASSRHO*MASSRHO*1.E-06)*0.5;
-  double C0 = nu+MASSD*1.E-03;
+  double A = (t+Q2-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06)*0.5;
+  double C0 = nu+nucqcd::mass_d*1.E-03;
   double Cz = qvec;
   double s = C0*C0-Cz*Cz; //mandelstam rhoD system
-  double D = (s-MASSD*MASSD*1.E-06+MASSRHO*MASSRHO*1.E-06)/2.+C0*A/nu;
+  double D = (s-nucqcd::mass_d*nucqcd::mass_d*1.E-06+nucqcd::mass_rho*nucqcd::mass_rho*1.E-06)/2.+C0*A/nu;
   double E = Cz-C0*qvec/nu;
   double pzrho=-D/E;
   double Erho = (pzrho*qvec-A)/nu;
-//   double tt = -Q2 + MASSRHO*MASSRHO*1.E-06-2*Erho*nu+2.*qvec*pzrho;
+//   double tt = -Q2 + nucqcd::mass_rho*nucqcd::mass_rho*1.E-06-2*Erho*nu+2.*qvec*pzrho;
   if(Erho/nu>0.9){
-    double pxrho = sqrt(Erho*Erho-pzrho*pzrho-MASSRHO*MASSRHO*1.E-06);
+    double pxrho = sqrt(Erho*Erho-pzrho*pzrho-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06);
     if(std::isnan(pxrho)) pxrho=0.;
     double prho = sqrt(pzrho*pzrho+pxrho*pxrho);
     double costhetarho = pzrho/prho;
     double pDz = Cz-pzrho;
     double pDx = -pxrho;
     double ss = -Q2+MASS_N*MASS_N+2.*MASS_N*nu;
-    double ED = sqrt(MASSD*MASSD*1.E-06+pDx*pDx+pDz*pDz);	
+    double ED = sqrt(nucqcd::mass_d*nucqcd::mass_d*1.E-06+pDx*pDx+pDz*pDz);	
 //   	  /*if(Erho/nu>0.9)*/ cout << "zero " <<
 //   	    Erho << " " << costhetarho << " " << Erho/nu << " " << tt << 
 //   	    " " << C0 << " " << ED+Erho << endl;
       TVector3 pDvec = TVector3(pDx*1.E-03,0.,pDx*1.E-03);
-//       *result = 1./(2.*MASSD*1.E-03);
+//       *result = 1./(2.*nucqcd::mass_d*1.E-03);
 //       return;
       *result = calcCross_coh(pDvec)
-		*ALPHA*(Ebeam-nu)*prho*ss*exp(6*t)/(pow(2.*PI,2.)*Ebeam*Q2*(1.-epsilon)*MASSD*1.E-03*abs(ED+Erho*(1-qvec*pzrho/prho/prho)));
+		*nucqcd::alpha_em*(Ebeam-nu)*prho*ss*exp(6*t)/(pow(2.*PI,2.)*Ebeam*Q2*(1.-epsilon)*nucqcd::mass_d*1.E-03*abs(ED+Erho*(1-qvec*pzrho/prho/prho)));
 //       cout << nu << " " << t << " " << *result << endl;
     
   }
@@ -426,11 +426,11 @@ void RhoDeuteron::getCrossz_coh(double *result, const double Ebeam,  const doubl
 		     *((1.-fScatterAngle)/(1.+fScatterAngle)));
   
   double Erho=nu*z;
-  double prho=sqrt(Erho*Erho-MASSRHO*MASSRHO*1.E-06);
-  double ED = nu+MASSD*1.E-03-Erho;
-  double pD = sqrt(ED*ED-MASSD*MASSD*1.E-06);
+  double prho=sqrt(Erho*Erho-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06);
+  double ED = nu+nucqcd::mass_d*1.E-03-Erho;
+  double pD = sqrt(ED*ED-nucqcd::mass_d*nucqcd::mass_d*1.E-06);
   double pzrho = (qvec*qvec+prho*prho-pD*pD)/(2.*qvec);
-  double t = -Q2 + MASSRHO*MASSRHO*1.E-06-2*Erho*nu+2.*qvec*pzrho;
+  double t = -Q2 + nucqcd::mass_rho*nucqcd::mass_rho*1.E-06-2*Erho*nu+2.*qvec*pzrho;
   if(t<-0.1&&t>-0.4)
   {
     double pxrho = sqrt(prho*prho-pzrho*pzrho);
@@ -441,7 +441,7 @@ void RhoDeuteron::getCrossz_coh(double *result, const double Ebeam,  const doubl
 //     *result = nu;
 //     return;
     *result = calcCross_coh(pDvec)
-    *ALPHA*(Ebeam-nu)*prho*ss*exp(6*t)/(pow(2.*PI,2.)*Ebeam*Q2*(1.-epsilon)*MASSD*1.E-03*abs(ED+Erho*(1-qvec*pzrho/prho/prho)));    
+    *nucqcd::alpha_em*(Ebeam-nu)*prho*ss*exp(6*t)/(pow(2.*PI,2.)*Ebeam*Q2*(1.-epsilon)*nucqcd::mass_d*1.E-03*abs(ED+Erho*(1-qvec*pzrho/prho/prho)));    
 //     cout << nu << " " << z << " " << *result << endl;
   }
   else *result=0.;
@@ -453,18 +453,18 @@ double RhoDeuteron::calcCross_coh(TVector3 &pDvec){
   //because of symmetry between sd and -sd for both incoming and outgoing deuteron we can simplify the summation
   complex<double> intresult;
   rombergerN(this,&RhoDeuteron::intPmcoh,0.,pmax,1,
-	  &intresult,PREC,3,7,&pmestimate,&pDvec,-2,-2,&cthestimate, &phiestimate);
+	  &intresult,nucqcd::integration_prec,3,7,&pmestimate,&pDvec,-2,-2,&cthestimate, &phiestimate);
   result+=2.*norm(intresult);
   rombergerN(this,&RhoDeuteron::intPmcoh,0.,pmax,1,
-	  &intresult,PREC,3,7,&pmestimate,&pDvec,-2,2,&cthestimate, &phiestimate);
+	  &intresult,nucqcd::integration_prec,3,7,&pmestimate,&pDvec,-2,2,&cthestimate, &phiestimate);
   result+=2.*norm(intresult);
   rombergerN(this,&RhoDeuteron::intPmcoh,0.,pmax,1,
-	  &intresult,PREC,3,7,&pmestimate,&pDvec,-2,0,&cthestimate, &phiestimate);
+	  &intresult,nucqcd::integration_prec,3,7,&pmestimate,&pDvec,-2,0,&cthestimate, &phiestimate);
   result+=4.*norm(intresult);
   rombergerN(this,&RhoDeuteron::intPmcoh,0.,pmax,1,
-	  &intresult,PREC,3,7,&pmestimate,&pDvec,0,0,&cthestimate, &phiestimate);
+	  &intresult,nucqcd::integration_prec,3,7,&pmestimate,&pDvec,0,0,&cthestimate, &phiestimate);
   result+=norm(intresult);
-  return result*4./3.*pow(HBARC*1.E-03,3.);
+  return result*4./3.*pow(nucqcd::hbarc*1.E-03,3.);
 }
 
 
@@ -480,7 +480,7 @@ void RhoDeuteron::intPmcoh(const double pm, complex<double> *result, va_list ap)
     return;
   }
   rombergerN(this,&RhoDeuteron::intCosThetacoh,-1.,1.,1,
-	    result,PREC,3,7,pcthestimate, pm, p_pDvec,M,M2,pphiestimate);
+	    result,nucqcd::integration_prec,3,7,pcthestimate, pm, p_pDvec,M,M2,pphiestimate);
   *result*=pm*pm;
   
 }
@@ -494,7 +494,7 @@ void RhoDeuteron::intCosThetacoh(const double costheta, complex<double> *result,
   
   double sintheta = sqrt(1.-costheta*costheta);
   rombergerN(this,&RhoDeuteron::intPhicoh,0.,2.*PI,1,
-	    result,PREC,3,7,pphiestimate,pm, costheta, sintheta, p_pDvec,M,M2);
+	    result,nucqcd::integration_prec,3,7,pphiestimate,pm, costheta, sintheta, p_pDvec,M,M2);
  
 }
 
@@ -526,19 +526,19 @@ void RhoDeuteron::klaas_rhoD_t(numint::vector_d & results, double pm, double cos
 
   double EN = sqrt(MASS_N*MASS_N+pm*pm);
   TVector3 pmvec = TVector3(pm*sintheta*cosphi*1.E03,pm*sintheta*sinphi*1.E03,pm*costheta*1.E03);  
-  double Eoff = MASSD*1.E-03-EN;
+  double Eoff = nucqcd::mass_d*1.E-03-EN;
   
-  double A = (t+Q2-MASSRHO*MASSRHO*1.E-06)*0.5;
+  double A = (t+Q2-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06)*0.5;
   double C0 = nu+Eoff;
   double Cz = qvec-pm*costheta;
   double Cy = -pm*sintheta*sinphi;
   double Cx = -pm*sintheta*cosphi;
   double s = C0*C0-Cz*Cz-Cx*Cx-Cy*Cy; //mandelstam rhoN system
-  double D = (s-MASS_N*MASS_N+MASSRHO*MASSRHO*1.E-06)/2.+C0*A/nu;
+  double D = (s-MASS_N*MASS_N+nucqcd::mass_rho*nucqcd::mass_rho*1.E-06)/2.+C0*A/nu;
   double E = Cz-C0*qvec/nu;
   double a = E*E-Q2*Cx*Cx/(nu*nu);
   double b = 2.*(D*E+A*qvec*Cx*Cx/(nu*nu));
-  double c = D*D-A*A*Cx*Cx/(nu*nu)+Cx*Cx*MASSRHO*MASSRHO*1.E-06;
+  double c = D*D-A*A*Cx*Cx/(nu*nu)+Cx*Cx*nucqcd::mass_rho*nucqcd::mass_rho*1.E-06;
   double discr = b*b-4.*a*c;
   if(discr>-1.E-09){
       //zero discriminant
@@ -546,10 +546,10 @@ void RhoDeuteron::klaas_rhoD_t(numint::vector_d & results, double pm, double cos
       double pzrho=-b/(2.*a);
       double Erho = (pzrho*qvec-A)/nu;
       
-      double tt = -Q2 + MASSRHO*MASSRHO*1.E-06-2*Erho*nu+2.*qvec*pzrho;
+      double tt = -Q2 + nucqcd::mass_rho*nucqcd::mass_rho*1.E-06-2*Erho*nu+2.*qvec*pzrho;
       
       if(deuteron.getNocuts()||Erho/nu>0.9){
-	double pxrho = sqrt(Erho*Erho-pzrho*pzrho-MASSRHO*MASSRHO*1.E-06);
+	double pxrho = sqrt(Erho*Erho-pzrho*pzrho-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06);
 	if(std::isnan(pxrho)) pxrho=0.; //underflow
 	if((SIGN(D+E*pzrho)==SIGN(-Cx*pxrho))||pxrho==0.){ 
 	  double prho = sqrt(pzrho*pzrho+pxrho*pxrho);
@@ -574,10 +574,10 @@ void RhoDeuteron::klaas_rhoD_t(numint::vector_d & results, double pm, double cos
       discr = sqrt(discr);
       double pzrho = (-b+discr)/(2.*a);
       double Erho = (pzrho*qvec-A)/nu;
-      double tt = -Q2 + MASSRHO*MASSRHO*1.E-06-2*Erho*nu+2.*qvec*pzrho;
+      double tt = -Q2 + nucqcd::mass_rho*nucqcd::mass_rho*1.E-06-2*Erho*nu+2.*qvec*pzrho;
 	//check cuts
       if(deuteron.getNocuts()||Erho/nu>0.9){
-	double pxrho = sqrt(Erho*Erho-pzrho*pzrho-MASSRHO*MASSRHO*1.E-06);
+	double pxrho = sqrt(Erho*Erho-pzrho*pzrho-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06);
 	if(std::isnan(pxrho)) pxrho=0.;//underflow
 	if((SIGN(D+E*pzrho)==SIGN(-Cx*pxrho))||pxrho==0.){ 
 	  double prho = sqrt(pzrho*pzrho+pxrho*pxrho);
@@ -599,9 +599,9 @@ void RhoDeuteron::klaas_rhoD_t(numint::vector_d & results, double pm, double cos
       }
       pzrho = (-b-discr)/(2.*a);
       Erho = (pzrho*qvec-A)/nu;
-      tt = -Q2 + MASSRHO*MASSRHO*1.E-06-2*Erho*nu+2.*qvec*pzrho;
+      tt = -Q2 + nucqcd::mass_rho*nucqcd::mass_rho*1.E-06-2*Erho*nu+2.*qvec*pzrho;
       if(deuteron.getNocuts()||Erho/nu>0.9){
-	double pxrho = sqrt(Erho*Erho-pzrho*pzrho-MASSRHO*MASSRHO*1.E-06);
+	double pxrho = sqrt(Erho*Erho-pzrho*pzrho-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06);
 	if(std::isnan(pxrho)) pxrho=0.;//underflow
 	if((SIGN(D+E*pzrho)==SIGN(-Cx*pxrho))||pxrho==0.){ 
 	  double prho = sqrt(pzrho*pzrho+pxrho*pxrho);
@@ -639,7 +639,7 @@ void RhoDeuteron::klaas_rhoD_z(numint::vector_d & results, double pm, double cos
   
   double EN = sqrt(MASS_N*MASS_N+pm*pm);
   TVector3 pmvec = TVector3(pm*sintheta*cosphi*1.E03,pm*sintheta*sinphi*1.E03,pm*costheta*1.E03);  
-  double Eoff = MASSD*1.E-03-EN;
+  double Eoff = nucqcd::mass_d*1.E-03-EN;
 
   double C0 = nu+Eoff;
   double Cz = qvec-pm*costheta;
@@ -657,7 +657,7 @@ void RhoDeuteron::klaas_rhoD_z(numint::vector_d & results, double pm, double cos
   if(discr>-1.E-09){
     if(abs(discr)<1.E-09) {
       double pzrho = -b/(2.*a);
-      double t =  -Q2 + MASSRHO*MASSRHO*1.E-06-2*Erho*nu+2.*qvec*pzrho;
+      double t =  -Q2 + nucqcd::mass_rho*nucqcd::mass_rho*1.E-06-2*Erho*nu+2.*qvec*pzrho;
       if(deuteron.getNocuts()||(t<-0.1&&t>-0.4)){
 	double pxrho = sqrt(prho*prho-pzrho*pzrho);//pxrho defines x-axis (so only positive sqrt is considered)           
 	if(std::isnan(pxrho)) pxrho=0.;//underflow
@@ -672,7 +672,7 @@ void RhoDeuteron::klaas_rhoD_z(numint::vector_d & results, double pm, double cos
     else{
       discr = sqrt(discr);
       double pzrho = (-b+discr)/(2.*a);
-      double t =  -Q2 + MASSRHO*MASSRHO*1.E-06-2*Erho*nu+2.*qvec*pzrho;
+      double t =  -Q2 + nucqcd::mass_rho*nucqcd::mass_rho*1.E-06-2*Erho*nu+2.*qvec*pzrho;
       if(deuteron.getNocuts()||(t<-0.1&&t>-0.4)){
 	double pxrho = sqrt(prho*prho-pzrho*pzrho);
 	if(std::isnan(pxrho)) pxrho=0.;//underflow
@@ -684,7 +684,7 @@ void RhoDeuteron::klaas_rhoD_z(numint::vector_d & results, double pm, double cos
 	}
       }
       pzrho = (-b-discr)/(2.*a);
-      t =  -Q2 + MASSRHO*MASSRHO*1.E-06-2*Erho*nu+2.*qvec*pzrho;
+      t =  -Q2 + nucqcd::mass_rho*nucqcd::mass_rho*1.E-06-2*Erho*nu+2.*qvec*pzrho;
       if(deuteron.getNocuts()||(t<-0.1&&t>-0.4)){
 	double pxrho = sqrt(prho*prho-pzrho*pzrho);	  
 	if(std::isnan(pxrho)) pxrho=0.;//underflow
