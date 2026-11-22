@@ -158,3 +158,46 @@ TEST_CASE("Glauber grid cache: grids are computed at the bin centre, independent
   fs::remove_all(cache1);
   fs::remove_all(cache2);
 }
+
+TEST_CASE("Glauber grid cache: reading an FSI grid does not write a stale FSI+CT grid", "[glauber][gridcache]") {
+  // Until 2026-11, AbstractFsiGrid::fillGrids left filledallgrid set when it read the FSI grid from
+  // the cache, so AbstractFsiCTGrid::fillGrids took the FSI+CT grid still in memory (from the
+  // previous particle) for the new one and wrote it to the new particle's cache file.
+  namespace fs = std::filesystem;
+  const std::string dir = nucqcd_test::share_dir();
+  const fs::path cache = fs::path(dir) / "grid_cache_test" / "stale_ct";
+  fs::remove_all(cache);
+  setenv("NUCQCD_GRID_DIR", cache.c_str(), 1);
+  MeanFieldNucleusThick carbon(MeanFieldNucleus::C, dir);
+  FastParticle a(0, 0, 1200., 0., 0., 8., 0., 1., 1., dir);
+  FastParticle b(0, 0, 1800., 0., 0., 8., 0., 1., 1., dir);
+  std::complex<double> b_ct;
+  std::string b_ct_file;
+  {
+    // b's grids, computed from scratch; then only its FSI+CT file is removed
+    GlauberGridThick grid(8, 4, 2, &carbon, 1.E-03, 2, dir);
+    grid.addParticle(b);
+    grid.fillGrids();
+    b_ct = grid.getFsiCtGridFull_interp3(1.5, 0.3, 1.);
+    b_ct_file = grid.getFsi_Ct_Filename();
+  }
+  fs::remove(b_ct_file);
+  {
+    GlauberGridThick grid(8, 4, 2, &carbon, 1.E-03, 2, dir);
+    grid.addParticle(a);
+    grid.fillGrids();  // computed: all grids filled
+    grid.clearParticles();
+    grid.addParticle(b);
+    grid.updateGrids();  // FSI grid of b read from the cache, FSI+CT grid of b must be computed
+    CHECK(std::abs(grid.getFsiCtGridFull_interp3(1.5, 0.3, 1.) - b_ct) <= 2e-3 * std::abs(b_ct));
+  }
+  {
+    // and the file that was written is b's
+    GlauberGridThick grid(8, 4, 2, &carbon, 1.E-03, 2, dir);
+    grid.addParticle(b);
+    grid.fillGrids();
+    CHECK(std::abs(grid.getFsiCtGridFull_interp3(1.5, 0.3, 1.) - b_ct) <= 2e-3 * std::abs(b_ct));
+  }
+  unsetenv("NUCQCD_GRID_DIR");
+  fs::remove_all(cache);
+}

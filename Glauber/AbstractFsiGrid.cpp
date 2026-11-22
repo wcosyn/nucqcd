@@ -290,7 +290,9 @@ void AbstractFsiGrid::fillGrids(){
     readinFsiGrid(infile); // ! pure virtual
     read=!infile.fail(); // a truncated file sets failbit
     infile.close();
-    if(read) filledgrid=1;
+    // only the FSI grid was read: the other grids (FSI+CT) in memory may belong to earlier particles,
+    // so filledallgrid is cleared and AbstractFsiCTGrid::fillGrids reads or computes them
+    if(read){ filledgrid=1; filledallgrid=0; }
     else cerr << "FSI grid file is incomplete, recomputing it: " << fsi_filename << endl;
   }
   if(!read){
