@@ -71,6 +71,7 @@ class TDeuteron
    * quantization axis is z; Clebsch-Gordan coefficients and spherical harmonics use the
    * Condon-Shortley phase convention.
    */
+ public:
   class Wavefunction : public TNamed
   {
   private:
