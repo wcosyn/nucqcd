@@ -1,6 +1,8 @@
 // See header for more information about class and functions
 #include "pair.h"
 
+#include <algorithm>
+
 Pair::Pair(string wfname, string path, int A, int n1, int l1, int two_ms1, int two_j1, int two_mj1, int two_t1, int n2, int l2, int two_ms2, int two_j2, int two_mj2, int two_t2 )
 	: n1( n1), l1( l1), two_ms1( two_ms1), two_j1( two_j1), two_mj1( two_mj1), two_t1( two_t1),
 	  n2( n2), l2( l2), two_ms2( two_ms2), two_j2( two_j2), two_mj2( two_mj2), two_t2( two_t2),
@@ -144,7 +146,11 @@ complex<double> Pair::getrelwf( double r1, double costh1, double phi1, double r2
 //j is coupling (l,S).
 double Pair::radialwf( int n, int l, int la, int S, int j, int T, double r) const
 {
-	if(n==0&&l==0&&S==1&&T==0) return (la==l? deuteronwf->GetUr(r)/r: deuteronwf->GetWr(r)/r);
+	if(n==0&&l==0&&S==1&&T==0){
+	  // u(r)/r and w(r)/r at r = 0 are 0/0: evaluate them just next to the origin (their limits)
+	  const double rr = std::max(r,1.E-06);
+	  return (la==l? deuteronwf->GetUr(rr)/rr: deuteronwf->GetWr(rr)/rr);
+	}
 	else return (la==l? uncorrelatedradialwf(n,l,r)*correlation(r):0.);
 
 }
@@ -209,9 +215,10 @@ void Pair::getcomcoord( double r1, double costh1, double phi1, double r2, double
 
 	double cosphi1mphi2 = cosphi1.val* cosphi2.val+ sinphi1.val* sinphi2.val;
 	double Rsq = 0.5*r1*r1+ 0.5*r2*r2 + r1*r2* (sinth1*sinth2* cosphi1mphi2 + costh1* costh2 );
-	*R = sqrt(Rsq);
+	*R = sqrt(std::max(Rsq,0.)); // rounding can make Rsq slightly negative
 
-	*costhR = (r1*costh1+ r2*costh2)/ sqrt(2.)/ *R;
+	// R = 0 (r2 = -r1): the direction is irrelevant, take the z axis (was 0/0 = NaN)
+	*costhR = (*R==0.) ? 1. : std::max(-1.,std::min(1.,(r1*costh1+ r2*costh2)/ sqrt(2.)/ *R));
 
 	double tany= r1* sinth1* sinphi1.val+ r2* sinth2* sinphi2.val;
 	double tanx= r1* sinth1* cosphi1.val+ r2* sinth2* cosphi2.val;
@@ -239,12 +246,15 @@ void Pair::getrelcoord( double r1, double costh1, double phi1, double r2, double
 
 	double cosphi1mphi2 = cosphi1.val* cosphi2.val+ sinphi1.val* sinphi2.val;
 	double rsq = 0.5*r1*r1+ 0.5*r2*r2 - r1*r2* (sinth1*sinth2* cosphi1mphi2 + costh1* costh2 );
-	*r = sqrt(rsq);
+	*r = sqrt(std::max(rsq,0.)); // rounding can make rsq slightly negative
 
-	*costhr = (r1*costh1- r2*costh2)/ sqrt(2.)/ *r;
+	// r = 0 (r1 = r2): the direction is irrelevant, take the z axis (was 0/0 = NaN)
+	*costhr = (*r==0.) ? 1. : std::max(-1.,std::min(1.,(r1*costh1- r2*costh2)/ sqrt(2.)/ *r));
 
-	double tany= r1* sinth1* sinphi1.val+ r2* sinth2* sinphi2.val;
-	double tanx= r1* sinth1* cosphi1.val+ r2* sinth2* cosphi2.val;
+	// the relative vector is (r1-r2)/sqrt(2): its azimuth uses the differences (until 2026-11 the
+	// sums were used, which gave the azimuth of the c.m. vector)
+	double tany= r1* sinth1* sinphi1.val- r2* sinth2* sinphi2.val;
+	double tanx= r1* sinth1* cosphi1.val- r2* sinth2* cosphi2.val;
 
 	*phir = atan2( tany, tanx);
 }

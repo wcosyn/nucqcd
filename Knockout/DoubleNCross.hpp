@@ -2,6 +2,10 @@
  * \brief Contains declaration of class DoubleNCross, used to compute A(e,e'NN) cross sections
  * \author Wim Cosyn
  * \date 28/08/2012
+ * \warning Unfinished (2012), never validated and never used for results: the Monte Carlo
+ * integral did not converge at the kinematics of progs/attic/twonucl, the only program that uses it.
+ * Bugs fixed in 2026-11: the z component of r2 in the integrand, a crash in plane-wave mode, NaN of
+ * the correlated pair wave function (Pair) at r1 = +-r2, and the azimuth of the relative coordinate.
  * 
  * \addtogroup Knockout
  * @{
