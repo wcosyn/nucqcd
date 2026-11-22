@@ -859,14 +859,17 @@ void FastParticle::interpPionGlauberData(int particletype, double mom, double &s
 
 
 FastParticle FastParticle::gridBinCentre() const{
-  // bins of the grid cache key (AbstractFsiGrid::setFilenames): 10 MeV in p, 0.1 in cos(theta) and
-  // phi [rad], 0.1 GeV^2 in the hard scale, 0.01 in lc_mod and nkt_mod, 1 MeV in decay_dil
+  // bins of the grid cache key (AbstractFsiGrid::setFilenames): 10 MeV in p, 0.1 rad in theta and
+  // phi, 0.1 GeV^2 in the hard scale, 0.01 in lc_mod and nkt_mod, 1 MeV in decay_dil.
+  // theta is binned rather than cos(theta): bins of 0.1 in cos(theta) are up to 18 degrees wide near
+  // the z axis, bins of 0.1 rad are at most 0.05 rad (2.9 degrees) from their centre.
   const double pc = 10.*std::max(std::lround(p/10.),1L);
-  const double cthc = std::lround(costheta*10.)/10.;
+  const long kth = std::lround(std::acos(std::max(-1.,std::min(1.,costheta)))*10.);
+  const double thc = kth>=31 ? PI : kth/10.;                    // the edge bin [3.05,pi] is centred on pi (the -z axis)
   const long kphi = std::lround(std::remainder(phi,2.*PI)*10.); // phi in [-pi,pi] first
   double phic = std::labs(kphi)>=31 ? PI : kphi/10.;          // the edge bin [3.05,pi] is centred on pi (in plane)
-  if(std::fabs(cthc)==1.) phic=0.; // along the z axis phi is irrelevant: phi=0 gives the in-plane symmetry and one cache file
-  FastParticle c(particletype,incoming,pc,std::acos(cthc),phic,std::lround(hardscale*10.)/10.,Gamma,
+  if(kth==0||kth>=31) phic=0.; // along the z axis phi is irrelevant: phi=0 gives the in-plane symmetry and one cache file
+  FastParticle c(particletype,incoming,pc,thc,phic,std::lround(hardscale*10.)/10.,Gamma,
                  std::lround(lc_mod*100.)/100.,std::lround(nkt_mod*100.)/100.,"");
   if(userset){
     c.sigmap=std::lround(sigmap*10.)/10.;

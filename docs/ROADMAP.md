@@ -248,11 +248,30 @@ one commit per bug; no `[known-bug]` tests remain.
     off the z axis move further: cos θ bins of 0.1 put every θ below about 18° at θ = 0, so
     `reg_glauber_grid` now uses cos θ = 0.9 (a bin centre) instead of θ = 0.3 rad, and its grid
     references were re-baselined. Earlier results with off-axis particles used the angle of the first
-    calculation in each bin. Finer angle bins (option (c)) remain possible if this matters.
+    calculation in each bin. (The cos θ bins were replaced by θ bins in the next item.)
     Also fixed: the `FastParticle` copy constructor and assignment did not copy the decay width
     `Gamma`, which `setScatter` and the binning use. Tested in `unit_grid_bins` and in a `slow` case
     of `reg_glauber_grid` (two particles in the same bin give bitwise identical grids, computed or
     read from the cache).
+  - [x] **Cache key: θ bins of 0.1 rad instead of cos θ bins of 0.1** (chosen by the author on
+    2026-11-22, after a measurement). Bins of 0.1 in cos θ are narrow in angle near θ = 90° but wide
+    near the z axis: the cos θ = 1 bin holds every θ below 18.2°, all computed at θ = 0. Bins of
+    0.1 rad are never more than 0.05 rad (2.9°) from their centre. The integrals still run in cos θ;
+    only the angle the grid is computed at and the key change. Below 0.05 rad the particle still goes
+    on the z axis with cos θ exactly 1 (fast path, φ = 0); the edge bin θ > 3.05 goes to π. Keys
+    now contain `.tht<θ/0.1>` and end in `.key3.dat` (the key2 files are not reused; delete them).
+    **Measurement** (local scratch driver, not committed): distorted momentum distribution
+    ρ_D(p_m) = Σ_m |∫d³r e^{-ip_m·r} ψ_m(r) F(r)|² for carbon s1/2 and p3/2, proton 1 GeV at
+    θ = 5°–90°, p_m = 150 and 250 MeV parallel, perpendicular and out of plane. With cos θ bins the
+    deviation from the exact angle reached 8% at θ = 15° (155% in the deep FSI minimum of the
+    s-shell at 250 MeV perpendicular, 17% of the plane-wave value there); with θ bins 4% (86%,
+    9.5%), and below 1% at most angles. **Impact:** only grids with particles off the z axis:
+    `DoubleNModel` and `progs/2bodymom`. The single-nucleon knockout codes (`Model`, `Cross`,
+    `RhoTCross`, `PionTCross`, `WeakQEHadronCurrent`, `DQEinclusive`) put the particle along z and are
+    unchanged (the RMSGA references in `reg_glauber_grid` did not move). `reg_glauber_grid` now
+    uses θ = 0.5 rad, and its grid references were re-baselined. Rotating each grid into the frame
+    of its particle (no direction binning) is not straightforward for `DoubleNModel`: the
+    knocked-out states (shell, m) that the grid divides out are quantized along the grid's z axis.
   - Optional: the file names do not record the physics (model version, constants), so stale grids must still
     be deleted by hand when the physics changes; the key version tag could be bumped for that.
 - [x] **Fortran interop:** file names reached Fortran through unbounded `strcpy`/`strcat` into fixed
