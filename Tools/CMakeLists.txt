@@ -33,6 +33,7 @@ nucqcd_add_library(MePhys
     NucleonStructure.cpp
     DeuteronStructure.cpp
     Utilfunctions.cpp
+    GridCache.cpp
     LightConeKin2to2.cpp
     LightConeKin2to3.cpp
     He3wf.cpp

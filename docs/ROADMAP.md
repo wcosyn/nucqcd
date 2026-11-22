@@ -23,7 +23,7 @@ same PR.
 | 2 | Repo hygiene, including branches | ✅ done (PR #4) |
 | 3 | Rename the repository | ✅ done (PR #7, tagged-poldeut PRs #1 and #2) |
 | 4 | Bug fixes | 🔶 listed bugs fixed (PRs #8, #9, #12); He3 normalization to check |
-| 5 | Low-risk modernization | 🔶 `-fopenmp`, Doxygen, Fortran interop and constants done |
+| 5 | Low-risk modernization | 🔶 `-fopenmp`, Doxygen (PR #10), Fortran interop (#11), constants (#13, #14) and grid cache location and writes (#15) done; cache key open |
 | 6 | Structural refactors | ⬜ |
 | 7 | Unbundle Cuba | ⬜ (can be done any time after step 2) |
 | 8 | Repository README | ⬜ (last) |
@@ -131,6 +131,13 @@ one commit per bug; no `[known-bug]` tests remain.
   (Jacobi coordinates p₁₂, p₃, as used inside `getwavemod_tm.f`) before trusting He3 results. The
   normalization of the momentum grid in the `.form` files, the `INVHBARC³` conversion in `He3wf::getWF`
   and the sum of the three cyclic Faddeev components are the places to look.
+- [ ] **Stale FSI+CT grid after `updateGrids()` (found during step 5).** `AbstractFsiGrid::fillGrids`
+  sets `filledallgrid` when it computes the grids, but does not clear it when it reads the FSI grid
+  from the cache. If a grid object first computes a grid and then, in `updateGrids()` for new
+  kinematics, finds the new FSI grid in the cache, `AbstractFsiCTGrid::fillGrids` takes the old
+  FSI+CT grid still in memory as the new one, uses it, and overwrites the new FSI+CT cache file with
+  it. This affects Glauber+CT results in runs that mix computed and cached grids. To be fixed in its
+  own PR.
 - [x] **`WeakQECross` neutral current:** the NC constructor never initialized `lepton`, but
   `getDiffWeakQECross` dereferenced it, so nuclear NC cross sections segfaulted. NC now takes its
   kinematics from the electron object.
@@ -201,9 +208,38 @@ one commit per bug; no `[known-bug]` tests remain.
 - [ ] **Errors:** replace `exit()` in the libraries (about 295 calls) with exceptions, so errors can be
   tested and handled. For example, Christy-Bosted calls `exit()` outside its kinematic range.
 - [ ] **Grid cache:**
-  - Make the grid cache directory configurable independently of the input directory.
-  - Revisit the cache key: the momentum is rounded to 10 MeV (`Glauber/AbstractFsiGrid.cpp:262`).
-  - Make cache writes atomic.
+  - [x] **Cache directory:** `Tools/GridCache.hpp` provides `nucqcd::grid_cache_dir(share)`, which is
+    `$NUCQCD_GRID_DIR` if that is set and `share/grids/` otherwise. `AbstractFsiGrid` (and so all
+    Glauber grids), `DistMomDistrGrid` and `ClassGridThick_SCX` use it, so the cache can live on
+    scratch space or per job while the input is still read from `share/`. The test `main()` unsets
+    the variable. Grids for particles with user-set scattering parameters used to go to a directory
+    `fixgrids` next to the cache, found by cutting 5 characters (`grids`) from the path; that
+    directory was never created, so these grids were recomputed on every run. They now go to the
+    cache directory itself; their file names (with `.beta`/`.eps` instead of `.p`) already differ
+    from the others.
+  - [x] **Atomic writes:** `nucqcd::write_file_atomically` writes a temporary file in the same
+    directory and renames it, creating missing directories. A crash, a full disk or a concurrent job
+    can no longer leave a truncated grid file. Used by all grid writers above and for the
+    correlation grids of `FsiCorrelator` (which stay in `share/input/`, where precomputed ones are
+    tracked in git). Readers also check the stream after reading, and recompute a grid whose file is
+    incomplete (old files can still be truncated). Tested in `unit_grid_cache` and in a `slow` case of
+    `reg_glauber_grid`. Not done for the deuteron GPD grids in `share/gpd_deutgrids/`
+    (`GPD_Partons`), which are text files written point by point during the computation.
+  - [ ] **Cache key (needs a decision):** the file name is the key. It truncates the momentum to
+    10 MeV (`int(p/10)`) and rounds cos θ, φ and σ to 0.1 (`Glauber/AbstractFsiGrid.cpp`,
+    `setFilenames`); the CT key truncates the hard scale and the CT parameters. Two
+    consequences: a grid computed at p = 392 MeV is reused at 399 MeV (or at cos θ 0.96 for 0.98),
+    and since the grid is computed at whatever kinematics came first, **results depend on the
+    contents of the cache and on the order of the calculations**. The same holds within one run:
+    `updateGrids()` does nothing if the rounded name is unchanged. Also, the FSI+CT grid computed on
+    its own (`constructCtGrid`) differs from the one computed together with the FSI grid
+    (`constructAllGrids`) by up to the integration precision (6e-4 relative at precision 1e-3 in the
+    test), so which grid was cached first matters at that level too. Options: (a) compute the grid at
+    the bin centre (rounded p, cos θ, φ) so results no longer depend on history, keeping the reuse;
+    (b) key on the exact values (e.g. `%.6g`), which recomputes the grid for every new kinematics;
+    (c) keep the bins but make them finer. (a) and (b) change results; this needs the author's
+    choice. The file names also do not record the physics (model version, constants), so stale grids
+    must be deleted by hand; a version tag in the name would make that automatic.
 - [x] **Fortran interop:** file names reached Fortran through unbounded `strcpy`/`strcat` into fixed
   buffers: the 128-character COMMON block strings of the Alekhin and GRSV code (in both
   `NuclStructure` and `NucleonStructure`) and the 256-character He3 file name. A path longer than the

@@ -8,6 +8,7 @@
 #include <cassert>
 #include <gsl/gsl_integration.h>
 #include <fstream>
+#include <string>
 
 /** A class to calculate charge exchange
  *  using the mean field approximation.
@@ -59,7 +60,7 @@ class ClassGridThick_SCX {
 		double _dens_fctr;    /**< correction for density normalization. Density should be normed to A for A particles...*/
 		double** _grid;       /**< SCX probability data goes here */
 		double** _errorGrid;  /**< integrator error estimations go here */
-		char _filename[256];  /**< input/output file for the grid */
+		std::string _filename;  /**< input/output file for the grid (in the grid cache directory) */
 };
 
 

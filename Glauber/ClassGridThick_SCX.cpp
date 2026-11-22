@@ -1,4 +1,5 @@
 #include "ClassGridThick_SCX.hpp"
+#include <GridCache.hpp>
 
 /**
  * ClassGridThick_SCX constructor
@@ -12,6 +13,7 @@
  * @param fp         : FastParticle, particle you want to calculate SCX probability for
  * @param bpoints    : number of grid points in impact parameter b
  * @param zpoints    : number of grid points in impact parameter z
+ * @param SHAREDIR   : share directory; the grid is cached in SHAREDIR/grids/, or in $NUCQCD_GRID_DIR if that is set
  **/
 ClassGridThick_SCX::ClassGridThick_SCX(double (*densf)(double,void*),void* dens_param, const char* densName, double rmax, FastParticle* fp,int bpoints,int zpoints,char* SHAREDIR) : 
 	_densf(densf),
@@ -30,7 +32,7 @@ ClassGridThick_SCX::ClassGridThick_SCX(double (*densf)(double,void*),void* dens_
 	_bstep =    _rmax/(_bpoints-1.); // 0 to rmax
 	_zstep = 2.*_rmax/(_zpoints-1.); // -rmax to rmax
 	
-	sprintf(_filename,"%s/grids/ClassGridThick_SCX_%s_b%dz%d.bin",SHAREDIR,densName,bpoints,zpoints);
+	_filename = nucqcd::grid_cache_dir(SHAREDIR)+"ClassGridThick_SCX_"+densName+"_b"+std::to_string(bpoints)+"z"+std::to_string(zpoints)+".bin";
 	std::cout << "#[ClassGridThick::IO]    IO filename is                   " << _filename << std::endl;
     std::cout << "#[ClassGridThick::info]  FastParticle Type is             " << _fp->getParticletype() << std::endl;
 	std::cout << "#[ClassGridThick::info]  FastParticle (Sigmap,Sigman) is  " << "(" << _fp->getSigmap() << ", " << _fp->getSigman() << ")"  << std::endl;
@@ -102,18 +104,18 @@ void ClassGridThick_SCX::constructGrid(){
 	 *  only when they are all calculated, to minimize
 	 *  time output file is left open...
 	 **/
-	if (!input){
-		file.open(_filename,std::ios::binary | std::ios::out);
-		assert( file.is_open()); // make sure the file has been opened
-		for (int bi=0; bi<_bpoints;bi++){
-			for (int zi=0; zi<_zpoints;zi++){
-				file.write((char*)&_grid[bi][zi],sizeof(double)); // write data
-				file.write((char*)&_errorGrid[bi][zi],sizeof(double)); // write error
+	if (input){
+		file.close(); // its size was checked above
+	} else {
+		nucqcd::write_file_atomically(_filename,[this](std::ofstream &out){
+			for (int bi=0; bi<_bpoints;bi++){
+				for (int zi=0; zi<_zpoints;zi++){
+					out.write((char*)&_grid[bi][zi],sizeof(double)); // write data
+					out.write((char*)&_errorGrid[bi][zi],sizeof(double)); // write error
+				}
 			}
-		}
-	}	
-	assert(file.tellg()==_bpoints*_zpoints*2*sizeof(double)); // this should always be true, just to check, times 2 because data and errors are saved, if found to fail, maybe corrupt file?
-	file.close();
+		});
+	}
 	
 	
 	/**

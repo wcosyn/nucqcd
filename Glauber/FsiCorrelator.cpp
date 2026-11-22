@@ -6,6 +6,7 @@
 
 #include "FsiCorrelator.hpp"
 #include <Utilfunctions.hpp>
+#include <GridCache.hpp>
 #include <AuxFunction.hpp>
 using namespace std;
 
@@ -32,6 +33,7 @@ corr_rgrid(rgrid),corr_cthgrid(cthgrid),corr_phigrid(6),pnucleus(inputnucleus)
   x=NULL;
   ifstream infile(corrfilename.c_str(),ios::in|ios::binary);
   //check if object has been created sometime earlier and read it in
+  bool read=false;
   if(infile.is_open()){
     if(infile.peek() == std::ifstream::traits_type::eof()){
       cerr << "File is empty " << corrfilename << endl;
@@ -45,19 +47,19 @@ corr_rgrid(rgrid),corr_cthgrid(cthgrid),corr_phigrid(6),pnucleus(inputnucleus)
 	infile.read(reinterpret_cast<char *>(&corrgridneutron[i][j]),sizeof(double));
       }
     }
+    read=!infile.fail(); // a truncated file sets failbit
     infile.close();
+    if(!read) cerr << "Correlation grid file is incomplete, recomputing it: " << corrfilename << endl;
     //printCorrGridAll();
   }
   //else construct it now!
-  else{
+  if(!read){
     cout << "Constructing grids" << endl;
     constructCorrgrid(pnucleus->getTotalDensity(),corrgridfull);
     constructCorrgrid(pnucleus->getProtonDensity(),corrgridproton);
     constructCorrgrid(pnucleus->getNeutronDensity(),corrgridneutron);
     //printCorrGridAll();
-    ofstream outfile(corrfilename.c_str(),ios::out|ios::binary);
-    if(outfile.is_open()){
-      cout << "Writing grids to file :" << corrfilename << endl;
+    bool written=nucqcd::write_file_atomically(corrfilename,[this](ofstream &outfile){
       for(int i=0;i<corr_rgrid;i++){
 	for(int j=0;j<corr_cthgrid;j++){
 	  outfile.write(reinterpret_cast<char *>(&corrgridfull[i][j]),sizeof(double));
@@ -65,11 +67,8 @@ corr_rgrid(rgrid),corr_cthgrid(cthgrid),corr_phigrid(6),pnucleus(inputnucleus)
 	  outfile.write(reinterpret_cast<char *>(&corrgridneutron[i][j]),sizeof(double));
 	}
       }
-      outfile.close();
-    }
-    else{
-      cerr << "could not open file for writing corrgrid output: " << corrfilename << endl;
-    }
+    });
+    if(written) cout << "Wrote grids to file :" << corrfilename << endl;
   }
 
 }

@@ -63,13 +63,14 @@ public:
   virtual void updateGrids();  /*!< updates the fsi grids that are used for interpolation */
 
 protected:
-  virtual void setFilenames(std::string dir); /*!< set filenames of the grids \param dir dir where all input/output is located */ 
+  virtual void setFilenames(std::string dir); /*!< set filenames of the grids \param dir grid cache directory, plus the file name prefixes of the derived classes */ 
   bool filledctgrid; /*!< denotes if the ct grid has been filled */
   std::string fsi_ct_filename; /*!< filename for fsi+ct grid */
 
   
 private:
 
+  void readinOrConstructCtGrid(); /*!< reads the fsi+ct grid from its cache file, or computes and caches it if the file is missing or incomplete */
   virtual void constructCtGrid()=0;  /*!< construct only the fsi+ct grids, pure virtual! */
   virtual void readinFsiCtGrid(std::ifstream &infile)=0; /*!< read in only the fsi+ct grids, pure virtual! */
   virtual void writeoutFsiCtGrid(std::ofstream &outfile)=0; /*!< write out only the fsi+ct grids, pure virtual! */

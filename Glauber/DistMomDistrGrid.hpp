@@ -38,6 +38,7 @@ public:
    * \param max_Eval max number of evaluations
    * \param theta_rot [rad] rotation angle that connects momentum frame with glauberframe
    * \param homedir std::string that contains dir with all input, should be the ./share subdir of the project!
+   * The grids are cached next to the FSI grids of pfsi_grid (see GridCache.hpp).
    */
   DistMomDistrGrid(const int shell, const double p_max, const int p_grid, const int cth_grid, const int phi_grid,
 				   AbstractFsiCTGrid *pfsi_grid, const double precision, const int integr, 
@@ -49,7 +50,7 @@ public:
   int getShellindex() const{return shellindex;} /*!< shell level */
   const std::string getRho_Filename() const{return rho_filename;} /*!< returns filename for regular rho grid */
   const std::string getRhoCT_Filename() const{return rhoct_filename;} /*!< returns filename for rho+ct grid */
-  const std::string getDir() const{return dir;}/*!< returns dir where all input/output is located */ 
+  const std::string getDir() const{return dir;}/*!< returns the grid cache directory (with trailing /) */ 
   double getMass() const{return mass;} /*!<  mass interacting nucleon*/
   double getPmax() const{return pmax;}/*!<  returns max p size of the grid*/
   int getPgrid() const{return pgrid;}/*!<  returns the gridsize in r*/
@@ -130,7 +131,7 @@ private:
   int shellindex; /*!< shell level */
   std::string rho_filename; /*!< filename for regular rho grid */
   std::string rhoct_filename; /*!< filename for rho+ct grid */
-  std::string dir;  /*!< dir where all input/output is located */ 
+  std::string dir;  /*!< grid cache directory (with trailing /) */ 
   double mass; /*!< mass interacting nucleon */ 
   double pmax; /*!< max size of p (MeV) */ 
   int level;  /*!< shell index level */ 
@@ -188,6 +189,9 @@ private:
     */
   void constructCtGrid(TRotation & rot);  
   void readinRhoCtGrid(std::ifstream &infile); /*!< read in only the fsi+ct grids */
+  /*! reads the fsi+ct grid from its cache file, or computes and caches it if the file is missing or incomplete
+   * \param rot rotation passed on to constructCtGrid */
+  void readinOrConstructCtGrid(TRotation & rot);
   void writeoutRhoCtGrid(std::ofstream &outfile); /*!< write out only the fsi+ct grids */
 
 
