@@ -94,3 +94,21 @@ TEST_CASE("TKinematics2to3WithLabAngles for A(e,e'pn): solutions and conservatio
     CHECK_THAT((sol_out - sol_in).Vect().Mag(), WithinAbs(0., 1e-6));
   }
 }
+
+TEST_CASE("TKinematics2to3: azimuthal angles with the standard axis convention", "[kinematics]") {
+  // GetPhik(kS) lacked a return until 2026-11 and gave the kY result whatever the convention (kY
+  // itself needs a hyperon-first format, which these A(e,e'pN) kinematics do not use)
+  const double mA = 11177.93, mA2 = mA - MASSP - MASSN + 30.;
+  // the first particle of the format fixes the axes: with kK that is the kaon (phik is then zero by
+  // definition and phin is the input)
+  for (auto ac : {TKinematics2to3::kN, TKinematics2to3::kK}) {
+    TKinematics2to3WithLabAngles kin("", "", 7, ac,
+                                     ac == TKinematics2to3::kK ? "qsquared:wlab:pk:thk:thn:phin" : "qsquared:wlab:pn:thn:thk:phik",
+                                     1631389.67942, 580., 1000., 10. * DEGRTORAD, 40. * DEGRTORAD, 2.5, mA, MASSP, MASSN, mA2);
+    REQUIRE(kin.GetNumberOfSolutions() >= 1);
+    CHECK(kin.GetPhik() == kin.GetPhik(ac));
+    CHECK(kin.GetPhiy() == kin.GetPhiy(ac));
+    CHECK(kin.GetPhin() == kin.GetPhin(ac));
+    CHECK(kin.GetVar("phik") == kin.GetPhik(ac));
+  }
+}

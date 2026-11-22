@@ -188,14 +188,14 @@ one commit per bug; no `[known-bug]` tests remain.
   off (release builds), falls off the end without a return value (undefined behaviour); it should
   throw `std::logic_error`. No behaviour change for valid input. **Fixed:** both throw, with the list
   of known names in the message. Tested in `unit_deuteron_wf`.
-- [ ] **`TKinematics2to3::GetPhik(kS)` ignores the axis convention (found while documenting).**
+- [x] **`TKinematics2to3::GetPhik(kS)` ignores the axis convention (found while documenting).**
   For the standard convention it calls `GetPhik(fAC)` without `return`, falls through and returns
   the kaon azimuth in the `kY` convention whatever `fAC` is (`GetPhiy` and `GetPhin` do return). Wrong
   whenever `fAC` is not `kY`, e.g. `GetPhik()` and the variable "phik" (`GetVarByGetter`) with `kN` or
   `kK`. No results are affected: the only call in the code is `fPhik = GetPhik(kN)` inside the class
   (explicit convention), and nothing calls `GetPhik()`, `GetVar("phik")`, `GetVarArray("phik")` or
   `GetVarByGetter`; "phik" in a format string (A(e,e'pN) with `kN`) points directly at `fPhik`.
-  Fix: add the `return`.
+  **Fixed:** the `return` is added. Tested in `unit_kinematics`.
 - [x] **`WeakQECross` neutral current:** the NC constructor never initialized `lepton`, but
   `getDiffWeakQECross` dereferenced it, so nuclear NC cross sections segfaulted. NC now takes its
   kinematics from the electron object.
