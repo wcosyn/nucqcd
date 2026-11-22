@@ -244,8 +244,8 @@ private:
   double response[5][9]; /*!< response functions, from the hadronic tensor */
   double frontfactor; /*!< kinematical front factor */
   double mott; /*!< mott cross section */
-  bool usersigma;
-  double sigmascreening;
+  bool usersigma; /*!< has the user set some screening to sigma */
+  double sigmascreening; /*!< [%] screening of sigma */
   Model *reacmodel; /*!< class object that computes the amplitudes */
 
   /*! struct that is used for integration of phi_d */
@@ -258,11 +258,11 @@ private:
     }
     Cross *cross;/*!< pointer to cross instance that contains all */
     int total;/*!< number of results (5 with thicknes,3 without)*/
-    AbstractFsiGrid *grid;
-    TVector3 pm;
-    Matrix<1,4> spinor;
-    int shell;
-    int m;
+    AbstractFsiGrid *grid; /*!< Glauber grid */
+    TVector3 pm; /*!< [MeV] missing momentum */
+    Matrix<1,4> spinor; /*!< bar spinor of the outgoing nucleon */
+    int shell; /*!< shell index */
+    int m; /*!< \f$ 2m_j \f$ of the initial nucleon */
     /*! integrandum 
     * \param res results
     * \param r first integration variable
@@ -278,6 +278,7 @@ private:
     void (*f)(numint::vector_z & res, double r, double costheta, double phi, Cross & cross, int total,
 	      AbstractFsiGrid *grid, TVector3 &pm, Matrix<1,4> &spinor, int shell, int m);
   };
+  /*! integrand of the distorted Fourier transform phi_d, for the cubature integrators (parameters as Ftor_phid::f) */
   static void klaas_phid(numint::vector_z & res, double r, double costheta, double phi, Cross & cross, int total,
 	      AbstractFsiGrid *grid, TVector3 &pm, Matrix<1,4> &spinor, int shell, int m);
   
@@ -292,13 +293,13 @@ private:
     }
     Cross *cross;/*!< pointer to cross instance that contains all */
     int total;/*!< number of results (5 with thicknes,3 without)*/
-    AbstractFsiGrid *grid;
-    TVector3 pm;
-    Matrix<1,4> spinordown;
-    Matrix<1,4> spinorup;
-    std::complex<double>  **phid;
-    int shell;
-    double r;
+    AbstractFsiGrid *grid; /*!< Glauber grid */
+    TVector3 pm; /*!< [MeV] missing momentum */
+    Matrix<1,4> spinordown; /*!< bar spinor of the outgoing nucleon, spin down */
+    Matrix<1,4> spinorup; /*!< bar spinor of the outgoing nucleon, spin up */
+    std::complex<double>  **phid; /*!< distorted Fourier transform */
+    int shell; /*!< shell index */
+    double r; /*!< [fm] r coordinate */
     /*! integrandum 
     * \param res results
     * \param r first integration variable
@@ -317,6 +318,7 @@ private:
 	      AbstractFsiGrid *grid, TVector3 &pm, Matrix<1,4> &spinordown, Matrix<1,4> &spinorup,
 	      std::complex<double>  **phid, double r, int shell);
   };
+  /*! integrand over cos(theta) and phi of the density, for the cubature integrators (parameters as Ftor_densr::f) */
   static void klaas_densr(numint::vector_d & res, double costheta, double phi, Cross & cross, int total,
 	      AbstractFsiGrid *grid, TVector3 &pm, Matrix<1,4> &spinordown, Matrix<1,4> &spinorup,
 	      std::complex<double>  **phid, double r, int shell);
@@ -330,14 +332,14 @@ private:
     }
     Cross *cross;/*!< pointer to cross instance that contains all */
     int total;/*!< number of results (5 with thicknes,3 without)*/
-    AbstractFsiGrid *grid;
-    TVector3 pm;
-    Matrix<1,4> spinordown;
-    Matrix<1,4> spinorup;
-    std::complex<double>  **phid;
-    int shell;
-    double r;
-    double ctheta;
+    AbstractFsiGrid *grid; /*!< Glauber grid */
+    TVector3 pm; /*!< [MeV] missing momentum */
+    Matrix<1,4> spinordown; /*!< bar spinor of the outgoing nucleon, spin down */
+    Matrix<1,4> spinorup; /*!< bar spinor of the outgoing nucleon, spin up */
+    std::complex<double>  **phid; /*!< distorted Fourier transform */
+    int shell; /*!< shell index */
+    double r; /*!< [fm] r coordinate */
+    double ctheta; /*!< cos(theta) coordinate */
     /*! integrandum 
     * \param res results
     * \param r first integration variable
@@ -356,6 +358,7 @@ private:
 	      AbstractFsiGrid *grid, TVector3 &pm, Matrix<1,4> &spinordown, Matrix<1,4> &spinorup,
 	      std::complex<double>  **phid, double r, double costheta, int shell);
   };
+  /*! integrand over phi of the density, for the cubature integrators (parameters as Ftor_densr_ctheta::f) */
   static void klaas_densr_ctheta(numint::vector_d & res, double phi, Cross & cross, int total,
 	      AbstractFsiGrid *grid, TVector3 &pm, Matrix<1,4> &spinordown, Matrix<1,4> &spinorup,
 	      std::complex<double>  **phid, double r, double costheta, int shell);

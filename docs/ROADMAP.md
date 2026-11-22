@@ -392,6 +392,7 @@ one commit per bug; no `[known-bug]` tests remain.
     DIS 33. One class or library per PR.
     - [x] DIS (`Resonance`, `He3Cross`, `InclusiveCrossRes`, `Deut_Conv_EMTLF`): no warnings left.
     - [x] Glauber: no warnings left.
+    - [x] Knockout: no warnings left. Remaining (1049): all in Tools.
 
 ## 6. Structural refactors
 

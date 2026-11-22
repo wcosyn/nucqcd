@@ -67,7 +67,7 @@ public:
    * \param z [] E_rho/nu
    */
   void getCrossz_coh(double *results, const double Ebeam, const double Q2, const double nu, const double z);
-  int getNocuts() const{return nocuts;}
+  int getNocuts() const{return nocuts;} /*!< experimental cuts in t or z applied? */
   
 private:
   double pmax; /*!< maximum p_miss in integrations*/
@@ -166,6 +166,7 @@ private:
    */
    double getfrontfactor(double qvec, double Erho, double prho, double pzrho, double s, double Q2, double t, 
 			 double En, double Eoff, bool torz);
+  /*! struct that is used for the integrators: parameters and integrand */
   struct Ftor_rhoD {
 
     /*! integrandum function */

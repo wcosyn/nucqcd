@@ -79,8 +79,8 @@ public:
   void getCrossz_coh(double *results, const double Ebeam, const double Q2, const double nu, const double z);
   double getPrec() const{return prec;} /*!< returns the precision */
   int getNrofcross() const{return nrofcross;} /*!<returns number of different cross sections */
-  const MeanFieldNucleusThick& getNucleusthick() const{return nucleusthick;}
-  int getNocuts() const{return nocuts;}
+  const MeanFieldNucleusThick& getNucleusthick() const{return nucleusthick;} /*!< the nucleus */
+  int getNocuts() const{return nocuts;} /*!< experimental cuts in t or z applied? */
   
 private:
   std::string homedir; /*!< share dir where all input is located */

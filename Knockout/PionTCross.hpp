@@ -49,7 +49,7 @@ public:
   void getCross(double *results, const double Ebeam, const double Eout, const double theta_e);
   double getPrec() const{return prec;} /*!< returns the precision */
   int getNrofcross() const{return nrofcross;} /*!<returns number of different cross sections */
-  const MeanFieldNucleusThick& getNucleusthick() const{return nucleusthick;}
+  const MeanFieldNucleusThick& getNucleusthick() const{return nucleusthick;} /*!< the nucleus */
   
 
   /**

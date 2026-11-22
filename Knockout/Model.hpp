@@ -111,21 +111,21 @@ public:
   double getPrec() const{return prec;} /*!< returns precision in the integrations */
   bool getUsersigma() const{return usersigma;} /*!< returns 1 if user has changed sigma with some screening */
   double getSigmascreening() const{return sigmascreening;} /*!< [%] returns screening change to sigma */
-  AbstractFsiCTGrid *getGrid() const{return grid;}
-  GlauberGridThick* getThickGrid() {return &gridthick;}
-  int getShell() const{return shell;}
-  int getM() const{return mm;}
-  int getIntegrator() const{return integrator;}
-  MeanFieldNucleusThick* getPnucleus() {return pnucl;}
-  const Matrix<1,4> & getBarcontract0up() const{return barcontract0up;}
-  const Matrix<1,4> & getBarcontractminup() const{return barcontractminup;}
-  const Matrix<1,4> & getBarcontractplusup() const{return barcontractplusup;}
-  const Matrix<1,4> & getBarcontract0down() const{return barcontract0down;}
-  const Matrix<1,4> & getBarcontractmindown() const{return barcontractmindown;}
-  const Matrix<1,4> & getBarcontractplusdown() const{return barcontractplusdown;}
-  const Matrix<1,4> & getBarcontract() const{return barcontract;}
-  const NucleonEMOperator & getJ() const{return *J;}
-  TVector3 & getPm() {return pm;}
+  AbstractFsiCTGrid *getGrid() const{return grid;} /*!< Glauber grid used in the current calculation (with or without thickness) */
+  GlauberGridThick* getThickGrid() {return &gridthick;} /*!< Glauber grid with thickness (SRC), see gridthick */
+  int getShell() const{return shell;} /*!< shell index of the knocked-out nucleon in the current calculation */
+  int getM() const{return mm;} /*!< \f$ 2m_j \f$ of the knocked-out nucleon in the current calculation */
+  int getIntegrator() const{return integrator;} /*!< choice of integrator */
+  MeanFieldNucleusThick* getPnucleus() {return pnucl;} /*!< the nucleus */
+  const Matrix<1,4> & getBarcontract0up() const{return barcontract0up;} /*!< bar spinor of the outgoing nucleon (spin up) contracted with the current, photon polarization longitudinal (0) */
+  const Matrix<1,4> & getBarcontractminup() const{return barcontractminup;} /*!< bar spinor of the outgoing nucleon (spin up) contracted with the current, photon polarization transverse - */
+  const Matrix<1,4> & getBarcontractplusup() const{return barcontractplusup;} /*!< bar spinor of the outgoing nucleon (spin up) contracted with the current, photon polarization transverse + */
+  const Matrix<1,4> & getBarcontract0down() const{return barcontract0down;} /*!< bar spinor of the outgoing nucleon (spin down) contracted with the current, photon polarization longitudinal (0) */
+  const Matrix<1,4> & getBarcontractmindown() const{return barcontractmindown;} /*!< bar spinor of the outgoing nucleon (spin down) contracted with the current, photon polarization transverse - */
+  const Matrix<1,4> & getBarcontractplusdown() const{return barcontractplusdown;} /*!< bar spinor of the outgoing nucleon (spin down) contracted with the current, photon polarization transverse + */
+  const Matrix<1,4> & getBarcontract() const{return barcontract;} /*!< contraction of the outgoing-nucleon bar spinor with the current (the last one computed) */
+  const NucleonEMOperator & getJ() const{return *J;} /*!< nucleon current operator of the current calculation */
+  TVector3 & getPm() {return pm;} /*!< [MeV] missing momentum of the current calculation */
   
 private:
   double prec; /*!< precision in the integrations */
@@ -144,8 +144,8 @@ private:
   std::string homedir; /*!< contains the share dir with all input */
   bool usersigma; /*!< has the user set some screening to sigma */
   double sigmascreening; /*!< [%] screening effect to sigma */
-  GlauberGridThick gridthick;
-  OneGlauberGrid onegrid;
+  GlauberGridThick gridthick; /*!< Glauber grid with thickness, used with SRC or thickness */
+  OneGlauberGrid onegrid; /*!< Glauber grid without thickness (one particle along z) */
   int maxEval; /*!< max Evals in integrations */
   
   int shell; /*!< what shell has the ejected nucleon */
@@ -265,15 +265,15 @@ private:
     Model *model;/*!< pointer to model instance that contains all */
     int thick;/*!< thickness or not */
     int total; /*!< number of different FSI? */
-    Matrix<1,4> spinup;
-    Matrix<1,4> spindown;
+    Matrix<1,4> spinup; /*!< bar spinor of the outgoing nucleon, spin up */
+    Matrix<1,4> spindown; /*!< bar spinor of the outgoing nucleon, spin down */
     int medium; /*!< which medium modif */
-    FourVector<double> q;
-    FourVector<double> pi;
-    FourVector<double> pf;
-    FourVector<std::complex<double> > polmin;
-    FourVector<std::complex<double> > polplus;
-    FourVector<std::complex<double> > pol0;
+    FourVector<double> q; /*!< [MeV] four-momentum of the virtual boson */
+    FourVector<double> pi; /*!< [MeV] four-momentum of the initial nucleon */
+    FourVector<double> pf; /*!< [MeV] four-momentum of the outgoing nucleon */
+    FourVector<std::complex<double> > polmin; /*!< polarization four-vector of the virtual boson, transverse - */
+    FourVector<std::complex<double> > polplus; /*!< polarization four-vector of the virtual boson, transverse + */
+    FourVector<std::complex<double> > pol0; /*!< polarization four-vector of the virtual boson, longitudinal (0) */
     int current; /*!<which current operator */
     
     /*! integrandum 

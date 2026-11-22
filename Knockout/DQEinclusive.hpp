@@ -101,8 +101,8 @@ public:
   TDeuteron::Wavefunction* getDeutwf() const{return wf.get();} /*!< get instance to deuteron wave function */
   NucleonEMOperator* getFFactorseq() const{return ffactorseq;} /*!< get instance to form factors */
   NucleonEMOperator* getFFactorsdiff() const{return ffactorsdiff;} /*!< get instance to form factors */
-  double getMassr() const{return massr;}
-  double getMassi() const{return massi;}
+  double getMassr() const{return massr;} /*!< [MeV] mass of the spectator nucleon */
+  double getMassi() const{return massi;} /*!< [MeV] mass of the struck nucleon */
   
   /*! method to find the pole in the fsi integration, longitudinal part,
    * \param [out] sol [MeV] vector with solution (max 2) of on-shell ps,z values
@@ -113,7 +113,7 @@ public:
    * \return [0] no solutions [1] solutions
    */
   bool get_prz(std::vector<double> &sol, double pt, double Q2, double nu, double qvec);
-  double getMinpcm() const{return minpcm;}
+  double getMinpcm() const{return minpcm;} /*!< [MeV] smallest c.m. relative momentum of the intermediate nucleon pair found so far, to check the eikonal condition */
   static const FourVector<std::complex<double> > polVectorPlus; /*!< virtual photon polarization fourvector, transverse + direction */
   static const FourVector<std::complex<double> > polVectorMin;/*!< virtual photon polarization fourvector, transverse - direction */
   static const FourVector<std::complex<double> > polVector0; /*!< virtual photon polarization fourvector, 0 (time) direction */
@@ -401,8 +401,8 @@ private:
       Ftor_PVfirst_inner &p = * (Ftor_PVfirst_inner *) param;
       p.f(ret,p.pz1, p.pz2,x[0],x[1],x[2],*p.cross,p.Q2,p.x,p.current,p.tanhalfth2,p.crossed);
     }
-    double pz1; /*! [MeV] value of pz1 in the integration (first spectator) */
-    double pz2; /*! [MeV] value of pz1 in the integration (second spectator) */
+    double pz1; /*!< [MeV] value of pz1 in the integration (first spectator) */
+    double pz2; /*!< [MeV] value of pz2 in the integration (second spectator) */
     DQEinclusive *cross;/*!< pointer to  instance that contains all */
     double Q2; /*!< [MeV^2] momentum transfer */
     double x; /*!< [] Bjorken x */

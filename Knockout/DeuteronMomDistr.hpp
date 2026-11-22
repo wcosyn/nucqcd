@@ -137,7 +137,7 @@ public:
    * \param epsin real part of amplitude
    */  
   void setScatter(double sigmain, double betain, double epsin);
-  TDeuteron::Wavefunction *getDeuteronwf(){return wfref;}
+  TDeuteron::Wavefunction *getDeuteronwf(){return wfref;} /*!< the deuteron wave function */
 private:
   std::string wfname; /*!< name of deuteron wf parametrization, see TDeuteron for possibilities */
   TDeuteron::Wavefunction *wfref; /*!< contains instance of deuteron wave function*/
@@ -248,8 +248,13 @@ private:
    /*! integrandum function (clean ones)*/
   static void FSILC_int(numint::vector_z & results, double qt, double qphi, DeuteronMomDistr &momdistr,
 		      LightConeKin2to2  &kin, int M, int spinr);
+  /*! integrand over the transverse momentum (qt, qphi) of the rescattering, for getMomDistrfsi
+   * \param[out] results integrand \param qt [MeV] \param qphi [rad] \param momdistr this object
+   * \param kin kinematics \param M deuteron spin projection \param spinr spectator spin \param Er [MeV] spectator energy
+   * \param phi [rad] angle between hadron and electron scattering plane */
   static void FSI_int(numint::vector_z & results, double qt, double qphi, DeuteronMomDistr &momdistr,
 	                      TKinematics2to2 &kin, int M, int spinr, double Er, double phi);
+  /*! as FSI_int, for getMomDistr_y_fsi (the distribution that goes with the lepton single-spin asymmetry); two results */
   static void FSI_y_int(numint::vector_z & results, double qt, double qphi, DeuteronMomDistr &momdistr,
 	                      TKinematics2to2 &kin, int M, int spinr, double Er, double phi);
   
