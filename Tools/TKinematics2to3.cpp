@@ -4785,7 +4785,7 @@ double TKinematics2to3::GetThn_deg() const
 double TKinematics2to3::GetPhik(EAxisConvention axisConvention) const
 {
   if( axisConvention == kS )
-    GetPhik(fAC);
+    return GetPhik(fAC); // the return was missing until 2026-11
 
   else if( axisConvention == kN )
     return fKvector->Vect().XYvector().Phi();
