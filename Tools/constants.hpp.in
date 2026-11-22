@@ -73,49 +73,49 @@ inline constexpr const char *share_dir = "@SHARE_DIR@";  //!< absolute path of t
 }  // namespace nucqcd
 
 // ---- macro aliases (transition; prefer the nucqcd:: names in new code) ----
-#define PI 3.1415926535897932385 /*!< \def pi; a literal, identical to Integrator/numint/macros.hpp */
-#define PREC nucqcd::integration_prec /*!< \def see nucqcd::integration_prec */
-#define MASSN nucqcd::mass_n /*!< \def see nucqcd::mass_n */
-#define MASSP nucqcd::mass_p /*!< \def see nucqcd::mass_p */
-#define MASSn nucqcd::mass_nucleon /*!< \def see nucqcd::mass_nucleon */
-#define MASSN_G nucqcd::mass_n_GeV /*!< \def see nucqcd::mass_n_GeV */
-#define MASSP_G nucqcd::mass_p_GeV /*!< \def see nucqcd::mass_p_GeV */
-#define MASSn_G nucqcd::mass_nucleon_GeV /*!< \def see nucqcd::mass_nucleon_GeV */
-#define MASSPI nucqcd::mass_pi /*!< \def see nucqcd::mass_pi */
-#define MASSRHO nucqcd::mass_rho /*!< \def see nucqcd::mass_rho */
-#define HBARC nucqcd::hbarc /*!< \def see nucqcd::hbarc */
-#define ALPHA nucqcd::alpha_em /*!< \def see nucqcd::alpha_em */
-#define I_UNIT nucqcd::i_unit /*!< \def see nucqcd::i_unit */
-#define INVHBARC nucqcd::inv_hbarc /*!< \def see nucqcd::inv_hbarc */
-#define MUP nucqcd::mu_p /*!< \def see nucqcd::mu_p */
-#define DEGRTORAD nucqcd::deg_to_rad /*!< \def see nucqcd::deg_to_rad */
-#define RADTODEGR nucqcd::rad_to_deg /*!< \def see nucqcd::rad_to_deg */
-#define MASSD nucqcd::mass_d /*!< \def see nucqcd::mass_d */
-#define MASSD_G nucqcd::mass_d_GeV /*!< \def see nucqcd::mass_d_GeV */
-#define MASSHE3 nucqcd::mass_he3 /*!< \def see nucqcd::mass_he3 */
-#define SIN2W nucqcd::sin2_theta_w /*!< \def see nucqcd::sin2_theta_w */
-#define STRANGEUFLOW nucqcd::strange_underflow /*!< \def see nucqcd::strange_underflow */
+#define PI 3.1415926535897932385 /*!< pi; a literal, identical to Integrator/numint/macros.hpp */
+#define PREC nucqcd::integration_prec /*!< see nucqcd::integration_prec */
+#define MASSN nucqcd::mass_n /*!< see nucqcd::mass_n */
+#define MASSP nucqcd::mass_p /*!< see nucqcd::mass_p */
+#define MASSn nucqcd::mass_nucleon /*!< see nucqcd::mass_nucleon */
+#define MASSN_G nucqcd::mass_n_GeV /*!< see nucqcd::mass_n_GeV */
+#define MASSP_G nucqcd::mass_p_GeV /*!< see nucqcd::mass_p_GeV */
+#define MASSn_G nucqcd::mass_nucleon_GeV /*!< see nucqcd::mass_nucleon_GeV */
+#define MASSPI nucqcd::mass_pi /*!< see nucqcd::mass_pi */
+#define MASSRHO nucqcd::mass_rho /*!< see nucqcd::mass_rho */
+#define HBARC nucqcd::hbarc /*!< see nucqcd::hbarc */
+#define ALPHA nucqcd::alpha_em /*!< see nucqcd::alpha_em */
+#define I_UNIT nucqcd::i_unit /*!< see nucqcd::i_unit */
+#define INVHBARC nucqcd::inv_hbarc /*!< see nucqcd::inv_hbarc */
+#define MUP nucqcd::mu_p /*!< see nucqcd::mu_p */
+#define DEGRTORAD nucqcd::deg_to_rad /*!< see nucqcd::deg_to_rad */
+#define RADTODEGR nucqcd::rad_to_deg /*!< see nucqcd::rad_to_deg */
+#define MASSD nucqcd::mass_d /*!< see nucqcd::mass_d */
+#define MASSD_G nucqcd::mass_d_GeV /*!< see nucqcd::mass_d_GeV */
+#define MASSHE3 nucqcd::mass_he3 /*!< see nucqcd::mass_he3 */
+#define SIN2W nucqcd::sin2_theta_w /*!< see nucqcd::sin2_theta_w */
+#define STRANGEUFLOW nucqcd::strange_underflow /*!< see nucqcd::strange_underflow */
 // second set of names (from the kinematics classes and NuclStructure)
-#define M_P nucqcd::mass_p
-#define M_N nucqcd::mass_n
-#define M_NUCL nucqcd::mass_nucleon
-#define M_KP nucqcd::mass_kp
-#define M_K0 nucqcd::mass_k0
-#define M_L nucqcd::mass_lambda
-#define M_S0 nucqcd::mass_sigma0
-#define M_SP nucqcd::mass_sigmap
-#define M_SM nucqcd::mass_sigmam
-#define M_RHO nucqcd::mass_rho
-#define M_OMEGA nucqcd::mass_omega
-#define M_PHI nucqcd::mass_phi
-#define M_PIP nucqcd::mass_pi
-#define M_PIM nucqcd::mass_pi
-#define M_PI0 nucqcd::mass_pi0
-#define G_FERMI nucqcd::g_fermi
-#define M_Z nucqcd::mass_z
-#define M_W nucqcd::mass_w
-#define COS_CAB nucqcd::cos_cabibbo
+#define M_P nucqcd::mass_p /*!< see nucqcd::mass_p */
+#define M_N nucqcd::mass_n /*!< see nucqcd::mass_n */
+#define M_NUCL nucqcd::mass_nucleon /*!< see nucqcd::mass_nucleon */
+#define M_KP nucqcd::mass_kp /*!< see nucqcd::mass_kp */
+#define M_K0 nucqcd::mass_k0 /*!< see nucqcd::mass_k0 */
+#define M_L nucqcd::mass_lambda /*!< see nucqcd::mass_lambda */
+#define M_S0 nucqcd::mass_sigma0 /*!< see nucqcd::mass_sigma0 */
+#define M_SP nucqcd::mass_sigmap /*!< see nucqcd::mass_sigmap */
+#define M_SM nucqcd::mass_sigmam /*!< see nucqcd::mass_sigmam */
+#define M_RHO nucqcd::mass_rho /*!< see nucqcd::mass_rho */
+#define M_OMEGA nucqcd::mass_omega /*!< see nucqcd::mass_omega */
+#define M_PHI nucqcd::mass_phi /*!< see nucqcd::mass_phi */
+#define M_PIP nucqcd::mass_pi /*!< see nucqcd::mass_pi */
+#define M_PIM nucqcd::mass_pi /*!< see nucqcd::mass_pi */
+#define M_PI0 nucqcd::mass_pi0 /*!< see nucqcd::mass_pi0 */
+#define G_FERMI nucqcd::g_fermi /*!< see nucqcd::g_fermi */
+#define M_Z nucqcd::mass_z /*!< see nucqcd::mass_z */
+#define M_W nucqcd::mass_w /*!< see nucqcd::mass_w */
+#define COS_CAB nucqcd::cos_cabibbo /*!< see nucqcd::cos_cabibbo */
 
-#define HOMEDIR "@SHARE_DIR@" /*!< \def absolute path of the share/ directory of the repository, see nucqcd::share_dir */
+#define HOMEDIR "@SHARE_DIR@" /*!< absolute path of the share/ directory of the repository, see nucqcd::share_dir */
 
 #endif
