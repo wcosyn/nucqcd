@@ -11,7 +11,7 @@
 using namespace std;
 
 
-DeuteronStructure::DeuteronStructure(const bool pr, string nm)
+DeuteronStructure::DeuteronStructure(const bool pr, std::string nm)
 :proton(pr),name(nm),massi(pr?MASSP:MASSN){
   
 }

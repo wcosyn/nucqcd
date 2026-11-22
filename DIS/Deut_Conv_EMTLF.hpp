@@ -68,15 +68,15 @@ TInterpolatingWavefunction * getWf(){ return &wf;} ///< return deuteron wf objec
 
 /**
  * @brief computes nucleon matrix elements for chiral even vector GPDs.  
- * (\bar{u}(p') \gamma^+ u(p))/2P^+ etc for vector GPDs
- * (\bar{u}(p') \gamma^+gamma^5 u(p))/2P^+ etc for axial GPDs  [Diehl conventions, but shouldn't matter]
+ * \f$\bar{u}(p') \gamma^+ u(p)/2P^+\f$ etc. for vector GPDs
+ * \f$\bar{u}(p') \gamma^+\gamma^5 u(p)/2P^+\f$ etc. for axial GPDs  [Diehl conventions, but shouldn't matter]
  * 
  * @param sigma_in polarization incoming nucleon (spin times two!!)
  * @param sigma_out polarization outgoing nucleon (spin times two!!)
  * @param xi_n skewness nucleon
  * @param t [MeV^2] momentum transfer sq.
  * @param t0 [MeV^2] minimum momentum transfer sq
- * @param phi [azimuthal angle \xiP+Delta fourvector]
+ * @param phi azimuthal angle of the \f$\xi P+\Delta\f$ four-vector
  * @param gpd_H GPD H or Htilde
  * @param gpd_E GPD E or Etilde
  * @param [1] vector [0] axial GPDS
@@ -144,12 +144,14 @@ struct Ftor_conv_real{
  * @param alpha_1 [] lc momentum fraction of initial nucleon
  * @param kperp [MeV] perp lf momentum entering in initial deuteron wf
  * @param kphi [] azimuthal angle of lf momentum entering in initial deuteron wf
- * @param[in] gpd object that contains all necessary info on the gpds 
+ * @param[in] emt object that contains the deuteron wave function
  * @param t [MeV^2] momentum transfer sq
  * @param pold_in polarization initial deuteron state (-1//0//+1)
  * @param pold_out polarization final deuteron state (-1//0//+1)
- * @param right [1] R matrix element [0] L matrix element
  * @param deltax [MeV!!!] perp component of the momentum transfer, along x-axis
+ * @param GFF_A nucleon gravitational form factor A(t)
+ * @param GFF_J nucleon gravitational form factor J(t)
+ * @param GFF_D nucleon gravitational form factor D(t)
  */
 static void int_k3(numint::vector_z & res, double alpha_1, double kperp, double kphi, Deut_Conv_EMTLF &emt,
               double t, int pold_in, int pold_out, double deltax, double GFF_A, double GFF_J, double GFF_D);
@@ -162,12 +164,12 @@ static void int_k3(numint::vector_z & res, double alpha_1, double kperp, double 
  * @param alpha_1 [] lc momentum fraction of initial nucleon
  * @param kperp [MeV] perp lf momentum entering in initial deuteron wf
  * @param kphi [] azimuthal angle of lf momentum entering in initial deuteron wf
- * @param[in] gpd object that contains all necessary info on the gpds 
+ * @param[in] emt object that contains the deuteron wave function
  * @param t [MeV^2] momentum transfer sq
- * @param pold_in polarization initial deuteron state (-1//0//+1)
- * @param pold_out polarization final deuteron state (-1//0//+1)
- * @param right [1] R matrix element [0] L matrix element
  * @param deltax [MeV!!!] perp component of the momentum transfer, along x-axis
+ * @param GFF_A nucleon gravitational form factor A(t)
+ * @param GFF_J nucleon gravitational form factor J(t)
+ * @param GFF_D nucleon gravitational form factor D(t)
  */
 static void int_k3_real(numint::vector_d & res, double alpha_1, double kperp, double kphi, Deut_Conv_EMTLF &emt,
               double t, double deltax, double GFF_A, double GFF_J, double GFF_D);

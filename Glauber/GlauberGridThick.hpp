@@ -75,15 +75,15 @@ public:
   virtual void print_grid(int grid);
   /*!gives you a glauberphase at a certain point (all 4 RMSGA variants)
    * \param phases result
-   * \param rhit [fm] radial coordinate of hard interaction point`
-   * \param costhetahit cos of azimuthal angle of hard interactionpoint
+   * \param rhit [fm] radial coordinate of hard interaction point
+   * \param costhetahit cos of polar angle of hard interaction point
    * \param phihit phi angle of hard interaction point
    */
   void getFsiphaseAll(std::vector<std::complex<double> > &phases, double rhit, double costhetahit, double phihit);
   /*!gives you a glauberphase at a certain point (only 2 CT+RMSGA variants)
    * \param phases result
-   * \param rhit [fm] radial coordinate of hard interaction point`
-   * \param costhetahit cos of azimuthal angle of hard interactionpoint
+   * \param rhit [fm] radial coordinate of hard interaction point
+   * \param costhetahit cos of polar angle of hard interaction point
    * \param phihit phi angle of hard interaction point
    */
   void getFsiphaseCt(std::vector<std::complex<double> > &phases, double rhit, double costhetahit, double phihit);

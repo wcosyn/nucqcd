@@ -5,7 +5,7 @@
 
 using namespace std;
 
-He3Cross::He3Cross(string wfname, string inputdir, string strucname, bool proton_): 
+He3Cross::He3Cross(std::string wfname, std::string inputdir, std::string strucname, bool proton_): 
   proton(proton_),
   wavefunction(wfname,inputdir+"/he3"),
   strucfunc(proton_,strucname){

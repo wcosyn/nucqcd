@@ -123,7 +123,6 @@ public:
    * \param lab lab frame or cm frame for hadron part
    * \param lc_mod [] modification of coherence length in CT 
    * \param nkt_mod [] modification of initial CT sigma value
-   * \return differential cross section 
    */
   void getAllObs_tnl(std::vector<double> &obs, TKinematics2to2 &kin, int current, 
 			     int shellindex, int thick, int medium, double phi, int maxEval, bool lab, double lc_mod, double nkt_mod);
@@ -150,7 +149,6 @@ public:
    * \param lab lab frame or cm frame for hadron part
    * \param lc_mod [] modification of coherence length in CT 
    * \param nkt_mod [] modification of initial CT sigma value
-   * \return differential cross section 
    */
   void getAllObs_xyz(std::vector<double> &obs, TKinematics2to2 &kin, int current, 
 			     int shellindex, int thick, int medium, double phi, int maxEval, bool lab, double lc_mod, double nkt_mod);

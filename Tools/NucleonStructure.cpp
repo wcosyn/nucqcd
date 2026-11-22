@@ -98,7 +98,7 @@ name("SLAC"),dir(HOMEDIR){
 }
 
 
-NucleonStructure::NucleonStructure(const string nm):
+NucleonStructure::NucleonStructure(const std::string nm):
 name(nm),dir(HOMEDIR){
   if(!name.compare("MSTW")){
     string file= string(HOMEDIR)+"/mstw_grids/mstw2008lo.00.dat";

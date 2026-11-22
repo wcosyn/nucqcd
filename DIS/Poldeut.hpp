@@ -98,7 +98,7 @@ double calc_dsigma_unpol(const double x, const double Q2, const double s, const 
    * @param[out] P_STSL [MeV-2] helicity nucleon lf distribution for deuteron transverse polarized along x-axis
    * @param[out] P_SLST [MeV-2] transversity nucleon lf distribution for deuteron longitduinal polarized lambda +1
    * @param[out] P_STST_par [MeV-2] transversity nucleon lf distribution for deuteron transverse polarized along x-axis
-   * @param[out] P_STST_par [MeV-2] transversity nucleon lf distribution for deuteron transverse polarized along y-axis
+   * @param[out] P_STST_perp [MeV-2] transversity nucleon lf distribution for deuteron transverse polarized along y-axis
    */
   void getLFdistributions_new(double alpha_p, double pt, double &P_U, double &P_TLL, double &P_TLT, double &P_TTT, 
                         double &P_SLSL, double &P_STSL, double &P_SLST, double &P_STST_par, double &P_STST_perp);

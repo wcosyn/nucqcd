@@ -12,7 +12,7 @@ using namespace std;
 #include <GridCache.hpp>
 
 AbstractFsiGrid::AbstractFsiGrid(int r_grid, int cth_grid, int phi_grid, 
-				 MeanFieldNucleus *pnucl, double precision, int integr, string homedir):
+				 MeanFieldNucleus *pnucl, double precision, int integr, std::string homedir):
 filledgrid(0),filledallgrid(0),dir(nucqcd::grid_cache_dir(homedir)),rgrid(r_grid),cthgrid(cth_grid),
 phigrid(phi_grid),allinplane(0),totalprotonout(0), totalneutronout(0),
 protonknockout(0), neutronknockout(0),pnucleus(pnucl),number_of_grids(1),prec(precision),integrator(integr){

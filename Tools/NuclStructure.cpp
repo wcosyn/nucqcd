@@ -82,7 +82,7 @@ extern "C"{
 
 
 
-NuclStructure::NuclStructure(bool pr, double var1, double var2, int switchvar, string nm="SLAC"):
+NuclStructure::NuclStructure(bool pr, double var1, double var2, int switchvar, std::string nm="SLAC"):
 name(nm),proton(pr), mass(pr?MASSP:MASSN),dir(HOMEDIR){
   switch(switchvar){
     case 0:
@@ -115,7 +115,7 @@ name(nm),proton(pr), mass(pr?MASSP:MASSN),dir(HOMEDIR){
   return;
 
 }
-NuclStructure::NuclStructure(bool pr, double Q2in, double xin, double Wsqin, string nm="SLAC"):
+NuclStructure::NuclStructure(bool pr, double Q2in, double xin, double Wsqin, std::string nm="SLAC"):
 name(nm),proton(pr), mass(pr?MASSP:MASSN),dir(HOMEDIR),x(xin),Q2(Q2in),Wsq(Wsqin){
   if(!name.compare("CB")&&(Wsq>9.E06)) name="SLAC";
   if(!name.compare("MSTW")){

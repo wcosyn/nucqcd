@@ -67,7 +67,7 @@ inline constexpr double mass_z = 91187.6;        //!< Z boson mass
 inline constexpr double mass_w = 80385.;         //!< W boson mass
 
 // ---- data ----
-inline constexpr const char *share_dir = "@SHARE_DIR@";  //!< absolute path of <repo>/share (macro HOMEDIR)
+inline constexpr const char *share_dir = "@SHARE_DIR@";  //!< absolute path of the share/ directory of the repository (macro HOMEDIR)
 
 }  // namespace constants
 }  // namespace nucqcd
@@ -116,6 +116,6 @@ inline constexpr const char *share_dir = "@SHARE_DIR@";  //!< absolute path of <
 #define M_W nucqcd::mass_w
 #define COS_CAB nucqcd::cos_cabibbo
 
-#define HOMEDIR "@SHARE_DIR@" /*!< \def absolute path of <repo>/share, see nucqcd::share_dir */
+#define HOMEDIR "@SHARE_DIR@" /*!< \def absolute path of the share/ directory of the repository, see nucqcd::share_dir */
 
 #endif

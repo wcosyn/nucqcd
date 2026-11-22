@@ -128,9 +128,9 @@ public:
    * \param charged [0] Z boson [1] W boson
    * \param M_A [MeV] axial mass
    * \param leptonmass2 [MeV^2] outgoing leptonmass squared
-   * \param d_type type of differential cross section, see enum el_differential [ctheta_lab] \f$ d\sigma/d\Omega_l' [fm^2]\f$ 
-   * [realQ2] \f$ d\sigma/dQ^2d\phi_l' [fm^2/MeV^2] \f$, [Q2QE] \f$ d\sigma/dQ^2_{QE}d\phi_l' [fm^2/MeV^2], [Q2p] \f$ d\sigma/dQ^2_pd\phi_l' [fm^2/MeV^2] \f$ \f$ result.
-   * \return differential cross section, differential/units depends on d_type parameter \f$
+   * \param d_type type of differential cross section, see enum el_differential [ctheta_lab] \f$ d\sigma/d\Omega_l' \f$ [fm^2],
+   * [realQ2] \f$ d\sigma/dQ^2d\phi_l' \f$ [fm^2/MeV^2], [Q2QE] \f$ d\sigma/dQ^2_{QE}d\phi_l' \f$ [fm^2/MeV^2], [Q2p] \f$ d\sigma/dQ^2_pd\phi_l' \f$ [fm^2/MeV^2]
+   * \return differential cross section, differential/units depends on d_type parameter
    */  
   static double getElWeakQECross(double Q2, double E_in, bool proton, bool charged, double M_A, double leptonmass2, WeakQECross::el_differential d_type);
   
@@ -144,11 +144,10 @@ public:
    * \param omega [MeV] energy transfer
    * \param k_Fermi [MeV] Fermi momentum
    * \param leptonmass2 [MeV^2] outgoing leptonmass squared
-   * \param current selects the current operator [1=CC1, 2=CC2, 3=CC3], see T. de Forest, Nucl. Phys. A 392, 232 (1983).
    * \param charged [0] Z boson [1] W boson
    * \param M_A [MeV] axial mass
-   * \param d_type type of differential cross section, see enum el_differential [ctheta_lab] \f$ d\sigma/d\Omega_l' [fm^2]\f$ 
-   * [realQ2] \f$ d\sigma/dQ^2d\phi_l' [fm^2/MeV^2] \f$, [Q2QE] \f$ d\sigma/dQ^2_{QE}d\phi_l' [fm^2/MeV^2], [Q2p] \f$ d\sigma/dQ^2_pd\phi_l' [fm^2/MeV^2] \f$ \f$ result.
+   * \param d_type type of differential cross section, see enum el_differential [ctheta_lab] \f$ d\sigma/d\Omega_l' \f$ [fm^2],
+   * [realQ2] \f$ d\sigma/dQ^2d\phi_l' \f$ [fm^2/MeV^2], [Q2QE] \f$ d\sigma/dQ^2_{QE}d\phi_l' \f$ [fm^2/MeV^2], [Q2p] \f$ d\sigma/dQ^2_pd\phi_l' \f$ [fm^2/MeV^2]
    * \param Pauli_blocking [0] no Pauli_blocking taken into account [1] Pauli blocking taken into account, through the description with negative omega.
    */  
   static void getRFGWeakQECross(double &presult, double &nresult, double Q2, double E_in, double omega, 

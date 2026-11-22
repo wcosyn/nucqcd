@@ -369,6 +369,18 @@ one commit per bug; no `[known-bug]` tests remain.
   and the author's publication list, each marked for the author to confirm. Also replace the Doxygen main page, which is still
   titled "Glauber ISI/FSI RMSGA C++ Project" and shares its comment with the Glauber group
   (`Glauber/AbstractFsiGrid.hpp`), together with the README (step 8).
+  - [x] **Doc errors fixed** (2026-11-22): all warnings other than "not documented" are gone (1623 →
+    1231 warnings, all undocumented members). Unclosed `\f$` formulas (`ClassGridThick_SCX`,
+    `WeakQECross`, which also produced a bogus `#if` imbalance), stray backticks (`GlauberGridThick`),
+    LaTeX outside formulas, `\param` names that matched no argument (`Deut_Conv_EMTLF`, `PionTCross`,
+    `Poldeut`, `WeakQECross`), `\return` on `void` functions (`Cross`), unknown commands. Definitions in
+    `.cpp` files that Doxygen could not match to their declaration because they wrote `string` or
+    `complex<double>` (under `using namespace std`) where the header has `std::`: the signatures now
+    use `std::`. In the Doxyfile, the ROOT macros `ClassImp` and `ClassDef` are predefined (`ClassDef`
+    declares `Streamer`, as ROOT's does) and `Streamer` is excluded from the docs.
+  - [ ] **Undocumented members** (1231): Tools 1049 (`TKinematics2to3.h` 303, `TKinematics.h` 107,
+    `TSpinor.h` 94, `TDeuteron.h` 66, `TInterpolatingWavefunction.h` 52, ...), Knockout 91, Glauber 58,
+    DIS 33. One class or library per PR.
 
 ## 6. Structural refactors
 

@@ -154,7 +154,7 @@ private:
   bool charged; /*!< neutral weak current [0] or charged [1] */
   bool usersigma; /*!< has the user set some screening to sigma */
   double sigmascreening; /*!< [%] screening effect to sigma */
-  bool enable_ROMEA; /*!< enable ROMEA FSI for slow nucleons instead of Glauber.. */
+  bool enable_ROMEA; /*!< enable ROMEA FSI for slow nucleons instead of Glauber */
   GlauberGridThick gridthick; /*!< grid for calc with thickness */
   OneGlauberGrid onegrid; /*!< grid for calc without thickness */
   ROMEAGrid romgrid; /*!< grid for slow nucleons (ROMEA formalism) */
