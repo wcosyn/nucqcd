@@ -1,4 +1,5 @@
 #include "WeakQEHadronCurrent.hpp"
+#include <ErrorMessage.hpp>
 #include <TSpinor.h>
 #include <TMFSpinor.hpp>
 #include <AuxFunction.hpp>
@@ -74,16 +75,16 @@ complex<double> WeakQEHadronCurrent::getFreeMatrixEl(double Q2, bool proton, boo
 		      TSpinor(Pin,massin,TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kUnity);
     else if(spinin==1) return TSpinor::Bar(TSpinor(pf,massout,TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kUnity))*Jcontr*
 		      TSpinor(Pin,massin,TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity);
-    else {cerr << "invalid spinin " << spinin << endl; exit(1);}
+    else {throw std::invalid_argument(nucqcd::ErrorMessage() << "invalid spinin " << spinin );}
   }
   else if(spinout==1){
     if(spinin==-1) return TSpinor::Bar(TSpinor(pf,massout,TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity))*Jcontr*
 		      TSpinor(Pin,massin,TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kUnity);
     else if(spinin==1) return TSpinor::Bar(TSpinor(pf,massout,TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity))*Jcontr*
 		      TSpinor(Pin,massin,TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity);
-    else {cerr << "invalid spinin " << spinin << endl; exit(1);}
+    else {throw std::invalid_argument(nucqcd::ErrorMessage() << "invalid spinin " << spinin );}
   }
-  else {cerr << "invalid spinout " << spinout << endl; exit(1);}
+  else {throw std::invalid_argument(nucqcd::ErrorMessage() << "invalid spinout " << spinout );}
   
   
 }
@@ -189,7 +190,7 @@ void WeakQEHadronCurrent::getMatrixEl(TKinematics2to2 &tk, Matrix<2,4> & matrixe
       }
     }
   }      
-  else {cerr  << "integrator type not implemented " << integrator << endl; exit(1);}
+  else {throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented " << integrator );}
       
 //   cout << shellindex << " " << m << " ";
 //   for(int i=0;i<6;i++) cout << matrixel(i/3,i%3) << " ";
@@ -269,7 +270,7 @@ void WeakQEHadronCurrent::getAllMatrixElMult(TKinematics2to2 &tk, Matrix<2,4> *m
 	else res = numint::cube_adaptive(mdf,lower,upper,1.E-08,prec,1E03,2E06,ret,count,0);
 	for(int k=0;k<total;++k) matrixel[k](spinout,photopol) = ret[k];
       }      
-      else {cerr  << "integrator type not implemented " << integrator << endl; exit(1);}
+      else {throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented " << integrator );}
 //       cout << shellindex << " " << m << " " << spinout << " " << photopol << " " << matrixel[0](spinout,photopol) << 
 // 	" " << matrixel[1](spinout,photopol) << " " << matrixel[total-1](spinout,photopol) << " " << res << " " << count << endl;
     }
@@ -367,7 +368,7 @@ void WeakQEHadronCurrent::getAllMatrixEl(TKinematics2to2 &tk, Matrix<2,4> *matri
 	}
       }
     }      
-    else {cerr  << "integrator type not implemented " << integrator << endl; exit(1);}
+    else {throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented " << integrator );}
 	
   //   cout << shellindex << " " << m << " ";
   //   for(int i=0;i<6;i++) cout << matrixel[0](i/3,i%3) << " ";
@@ -417,7 +418,7 @@ void WeakQEHadronCurrent::getAllMatrixEl(TKinematics2to2 &tk, Matrix<2,4> *matri
 	}
       }
     }      
-    else {cerr  << "integrator type not implemented " << integrator << endl; exit(1);}
+    else {throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented " << integrator );}
     
     
     

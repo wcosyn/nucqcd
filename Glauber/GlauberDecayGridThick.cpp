@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <ErrorMessage.hpp>
 #include <iostream>
 #include <fstream>
 #include <complex>
@@ -34,8 +35,7 @@ AbstractFsiCTDecayGridThick(r_grid, cth_grid, phi_grid, pnucl, prec, integrator,
     }
   }
   else {
-    cerr << "fsi_grid should not be initialized more than once!!!!" << endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "fsi_grid should not be initialized more than once!!!!" );
   }
   //ct grid
   if (fsi_ct_grid == NULL) {
@@ -55,8 +55,7 @@ AbstractFsiCTDecayGridThick(r_grid, cth_grid, phi_grid, pnucl, prec, integrator,
     }
   }
   else {
-    cerr << "fsi_ct_grid should not be initialized more than once!!!!" << endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "fsi_ct_grid should not be initialized more than once!!!!" );
   }
 }
 
@@ -87,8 +86,7 @@ GlauberDecayGridThick::~GlauberDecayGridThick() {
 //interpolation of the grid after r,th,phi have been set
 complex < double >GlauberDecayGridThick::getFsiGridFull_interp() {
   if (!filledallgrid) {
-    cerr << "You have to fill the grids first!" << endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "You have to fill the grids first!" );
   }
   return pow(getInterp(fsi_grid[0][0]), getPnucleusthick()->getN() - getNeutronKnockout())
     * pow(getInterp(fsi_grid[0][1]), getPnucleusthick()->getZ() - getProtonKnockout());
@@ -97,8 +95,7 @@ complex < double >GlauberDecayGridThick::getFsiGridFull_interp() {
 //interpolation of the grid after r,th,phi have been set
 complex < double >GlauberDecayGridThick::getFsiCtGridFull_interp() {
   if (!filledallgrid) {
-    cerr << "You have to fill the grids first!" << endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "You have to fill the grids first!" );
   }
   return pow(getInterp(fsi_ct_grid[0][0]), getPnucleusthick()->getN() - getNeutronKnockout())
     * pow(getInterp(fsi_ct_grid[0][1]), getPnucleusthick()->getZ() - getProtonKnockout());
@@ -107,8 +104,7 @@ complex < double >GlauberDecayGridThick::getFsiCtGridFull_interp() {
 //interpolation of the grid after r,th,phi have been set
 complex < double >GlauberDecayGridThick::getFsiSrcGridFull_interp() {
   if (!filledallgrid) {
-    cerr << "You have to fill the grids first!" << endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "You have to fill the grids first!" );
   }
   return pow(getInterp(fsi_grid[1][0]), getPnucleusthick()->getN() - getNeutronKnockout())
     * pow(getInterp(fsi_grid[1][1]), getPnucleusthick()->getZ() - getProtonKnockout());
@@ -117,8 +113,7 @@ complex < double >GlauberDecayGridThick::getFsiSrcGridFull_interp() {
 //interpolation of the grid after r,th,phi have been set
 complex < double >GlauberDecayGridThick::getFsiSrcCtGridFull_interp() {
   if (!filledallgrid) {
-    cerr << "You have to fill the grids first!" << endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "You have to fill the grids first!" );
   }
   return pow(getInterp(fsi_ct_grid[1][0]), getPnucleusthick()->getN() - getNeutronKnockout())
     * pow(getInterp(fsi_ct_grid[1][1]), getPnucleusthick()->getZ() - getProtonKnockout());
@@ -127,8 +122,7 @@ complex < double >GlauberDecayGridThick::getFsiSrcCtGridFull_interp() {
 //interpolation of the grid after r,th,phi have been set
 complex < double >GlauberDecayGridThick::getFsiDecayGridFull_interp() {
   if (!filledallgrid) {
-    cerr << "You have to fill the grids first!" << endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "You have to fill the grids first!" );
   }
   return pow(getInterp(fsi_grid[2][0]), getPnucleusthick()->getN() - getNeutronKnockout())
     * pow(getInterp(fsi_grid[2][1]), getPnucleusthick()->getZ() - getProtonKnockout());
@@ -137,8 +131,7 @@ complex < double >GlauberDecayGridThick::getFsiDecayGridFull_interp() {
 //interpolation of the grid after r,th,phi have been set
 complex < double >GlauberDecayGridThick::getFsiCtDecayGridFull_interp() {
   if (!filledallgrid) {
-    cerr << "You have to fill the grids first!" << endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "You have to fill the grids first!" );
   }
   return pow(getInterp(fsi_ct_grid[2][0]), getPnucleusthick()->getN() - getNeutronKnockout())
     * pow(getInterp(fsi_ct_grid[2][1]), getPnucleusthick()->getZ() - getProtonKnockout());
@@ -147,8 +140,7 @@ complex < double >GlauberDecayGridThick::getFsiCtDecayGridFull_interp() {
 //interpolation of the grid after r,th,phi have been set
 complex < double >GlauberDecayGridThick::getFsiSrcDecayGridFull_interp() {
   if (!filledallgrid) {
-    cerr << "You have to fill the grids first!" << endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "You have to fill the grids first!" );
   }
   return pow(getInterp(fsi_grid[3][0]), getPnucleusthick()->getN() - getNeutronKnockout())
     * pow(getInterp(fsi_grid[3][1]), getPnucleusthick()->getZ() - getProtonKnockout());
@@ -157,8 +149,7 @@ complex < double >GlauberDecayGridThick::getFsiSrcDecayGridFull_interp() {
 //interpolation of the grid after r,th,phi have been set
 complex < double >GlauberDecayGridThick::getFsiSrcCtDecayGridFull_interp() {
   if (!filledallgrid) {
-    cerr << "You have to fill the grids first!" << endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "You have to fill the grids first!" );
   }
   return pow(getInterp(fsi_ct_grid[3][0]), getPnucleusthick()->getN() - getNeutronKnockout())
     * pow(getInterp(fsi_ct_grid[3][1]), getPnucleusthick()->getZ() - getProtonKnockout());
@@ -191,8 +182,7 @@ complex < double >GlauberDecayGridThick::getFsiGridN_interp(int grid) {
       return getFsiSrcCtDecayGridFull_interp();
       break;
     default:
-      cerr << "grid number not supported" << endl;
-      exit(1);
+      throw std::invalid_argument(nucqcd::ErrorMessage() << "grid number not supported" );
   }
 }
 
@@ -274,8 +264,7 @@ void GlauberDecayGridThick::constructAllGrids() {
     }
   }
   else {
-    cerr << "Treshold should only be initialized once!" << endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "Treshold should only be initialized once!" );
   }
   //fill the arrays!
   for (int i = 0; i <= getRgrid(); i++) {
@@ -367,8 +356,7 @@ void GlauberDecayGridThick::constructCtGrid() {
     }
   }
   else {
-    cerr << "Treshold should only be initialized once!" << endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "Treshold should only be initialized once!" );
   }
 //fill the arrays!
   for (int i = 0; i <= getRgrid(); i++) {
@@ -527,8 +515,7 @@ void GlauberDecayGridThick::calcGlauberphasesBoth(const int i, const int j, cons
       }
     }
     else {
-      cerr << "integrator type not implemented" << endl;
-      exit(1);
+      throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented" );
     }
 //     cout << i << " " << j << " " << k << " " << proton << " "<< fsi_grid[0][proton][i][j][k] << " " <<
 //     fsi_grid[1][proton][i][j][k] << " " << fsi_ct_grid[0][proton][i][j][k] << " " <<
@@ -609,8 +596,7 @@ void GlauberDecayGridThick::calcGlauberphasesCt(const int i, const int j, const 
       }
     }
     else {
-      cerr << "integrator type not implemented" << endl;
-      exit(1);
+      throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented" );
     }
 //     cout << i << " " << j << " " << k << " " << proton << " "<< fsi_grid[0][proton][i][j][k] << " " <<
 //     fsi_grid[1][proton][i][j][k] << " " << fsi_ct_grid[0][proton][i][j][k] << " " <<
@@ -640,8 +626,7 @@ void GlauberDecayGridThick::readinFsiGrid(ifstream & infile) {
     }
   }
   else {
-    cerr << "fsi_grid not initialized!!!!" << endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "fsi_grid not initialized!!!!" );
   }
 }
 
@@ -666,8 +651,7 @@ void GlauberDecayGridThick::readinFsiCtGrid(ifstream & infile) {
     }
   }
   else {
-    cerr << "fsi_ct_grid not initialized!!!!" << endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "fsi_ct_grid not initialized!!!!" );
   }
 }
 

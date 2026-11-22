@@ -11,6 +11,7 @@
 #define MATRIX_H
 
 #include <iostream>
+#include "ErrorMessage.hpp"
 #include <complex>
 #include <cstdlib>
 
@@ -152,10 +153,9 @@ Matrix<K,L>::Matrix(std::complex<double> number)
     m[0*1+0] = number; // Assign value
   }
   else {
-    cerr << "Error in Matrix::Matrix(std::complex,std::complex,std::complex,std::complex): a ("
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "Error in Matrix::Matrix(std::complex,std::complex,std::complex,std::complex): a ("
 	 << K << "x" << L << ") matrix can not be initialized "
-	 << "with 1 argument!" << std::endl;
-    exit(1);
+	 << "with 1 argument!" );
   }  
 }*/
 
@@ -176,10 +176,9 @@ Matrix<K,L>::Matrix(std::complex<double> v11,std::complex<double> v12,
     m[1*2+1] = v22;
   }
   else {
-    std::cerr << "Error in Matrix::Matrix(complex,complex,complex,complex): a ("
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "Error in Matrix::Matrix(complex,complex,complex,complex): a ("
 	 << K << "x" << L << ") matrix can not be initialized "
-	 << "with 4 arguments!" << std::endl;
-    exit(1);
+	 << "with 4 arguments!" );
   }
 }
 
@@ -218,10 +217,9 @@ Matrix<K,L>::Matrix(std::complex<double> v11,std::complex<double> v12,
     m[3*4+3] = v44;
   }
   else {
-    std::cerr << "Error in Matrix::Matrix(complex(16times)): a ("
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "Error in Matrix::Matrix(complex(16times)): a ("
 	 << K << "x" << L << ") matrix can not be initialized "
-	 << "with 16 arguments!" << std::endl;
-    exit(1);
+	 << "with 16 arguments!" );
   }
 }
 
@@ -275,9 +273,8 @@ template< int K, int L >
 std::complex<double>& Matrix<K,L>::operator()(int k, int l)
 {
   if( !(k>=0 && k<K && l>=0 && l<L) ) {
-    std::cerr << "Error in Matrix::operator()(int,int): "
-	 << "Out of bounds!" << std::endl;
-    exit(1);
+    throw std::out_of_range(nucqcd::ErrorMessage() << "Error in Matrix::operator()(int,int): "
+	 << "Out of bounds!" );
   }
   return m[k*L+l];
 }
@@ -288,9 +285,8 @@ template< int K, int L >
 const std::complex<double> Matrix<K,L>::operator()(int k, int l) const
 {
   if( !(k>=0 && k<K && l>=0 && l<L) ) {
-    std::cerr << "Error in Matrix::operator()(int,int): "
-	 << "Out of bounds!" << std::endl;
-    exit(1);
+    throw std::out_of_range(nucqcd::ErrorMessage() << "Error in Matrix::operator()(int,int): "
+	 << "Out of bounds!" );
   }
   return m[k*L+l];
 }
@@ -454,9 +450,8 @@ template< int K1, int L1, int K2, int L2 >
 Matrix<K1,L2> operator*(const Matrix<K1,L1>& left, const Matrix<K2,L2>& right)
 {
   if(L1 != K2) { // Check whether multiplication is meaningful
-    std::cerr << "Error in operator*(Matrix,Matrix): " 
-	 << "Matrix sizes are not compatible for multiplication" << std::endl;
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "Error in operator*(Matrix,Matrix): "
+	 << "Matrix sizes are not compatible for multiplication");
   }
   
   Matrix<K1,L2> product;
@@ -482,9 +477,8 @@ template< int L1 , int K2 >
 std::complex<double> operator*(const Matrix<1,L1>& left, const Matrix<K2,1>& right)
 {
   if(L1 != K2) { // Check whether multiplication is meaningful
-    std::cerr << "Error in operator*(Matrix,Matrix): " 
-	      << "Matrix sizes are not compatible for multiplication" << std::endl;
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "Error in operator*(Matrix,Matrix): "
+	 << "Matrix sizes are not compatible for multiplication");
   }
 
   std::complex<double> scalar(0,0);

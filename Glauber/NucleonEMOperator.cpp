@@ -1,4 +1,5 @@
 #include "NucleonEMOperator.hpp"
+#include <ErrorMessage.hpp>
 #include "MeanFieldNucleusThick.hpp"
 using namespace std;
 
@@ -98,8 +99,7 @@ switch(current){
       return getCC3(q,pi,pf,r,medium,nucleus);
       break;
     default:
-      cerr << "Current operator not supported " << current << endl;
-      exit(1);
+      throw std::invalid_argument(nucqcd::ErrorMessage() << "Current operator not supported " << current );
   }
 }
 
@@ -130,8 +130,7 @@ switch(current){
       return getCC3(q,pi,pf);
       break;
     default:
-      cerr << "Current operator not supported " << current << endl;
-      exit(1);
+      throw std::invalid_argument(nucqcd::ErrorMessage() << "Current operator not supported " << current );
   }
 }
 

@@ -1,4 +1,5 @@
 #include "Cross.hpp"
+#include <ErrorMessage.hpp>
 
 #include <cmath>
 #include <TSpinor.h>
@@ -443,7 +444,7 @@ void Cross::getDensr(std::vector<double> &densr, const TKinematics2to2 &tk, cons
     if(integrator==1) res = numint::cube_romb(mdf,lower,upper,1.E-08,prec,densr,count,0);
     else res = numint::cube_adaptive(mdf,lower,upper,1.E-08,prec,1E02,maxEval,densr,count,0);
   }      
-  else {cerr  << "integrator type not implemented " << integrator << endl; exit(1);}
+  else {throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented " << integrator );}
   
   delete grid;
   for(int i=0;i<2*abs(getPnucl()->getKappas()[shellindex]);i++) delete [] phid[i];
@@ -539,7 +540,7 @@ void Cross::getDensr_ctheta(std::vector<double> &densr, const TKinematics2to2 &t
     if(integrator==1) res = numint::cube_romb(mdf,lower,upper,1.E-08,prec,densr,count,0);
     else res = numint::cube_adaptive(mdf,lower,upper,1.E-08,prec,1E02,maxEval,densr,count,0);
   }      
-  else {cerr  << "integrator type not implemented " << integrator << endl; exit(1);}
+  else {throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented " << integrator );}
   
   delete grid;
   for(int i=0;i<2*abs(getPnucl()->getKappas()[shellindex]);i++) delete [] phid[i];
@@ -626,7 +627,7 @@ void Cross::getPhid(std::vector<complex<double> > &phid, const TKinematics2to2 &
     if(integrator==1) res = numint::cube_romb(mdf,lower,upper,1.E-08,prec,phid,count,0);
     else res = numint::cube_adaptive(mdf,lower,upper,1.E-08,prec,1E03,maxEval,phid,count,0);
   }      
-  else {cerr  << "integrator type not implemented " << integrator << endl; exit(1);}
+  else {throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented " << integrator );}
   
   delete grid;
 

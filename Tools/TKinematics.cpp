@@ -52,6 +52,7 @@
 //////////////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
+#include "ErrorMessage.hpp"
 #include <iomanip>
 #include <cstdlib>
 #include <cstring>
@@ -752,9 +753,8 @@ void TKinematics::ReadFormatString(const TString format)
       }
       else {
 	fVar[itoken] = NULL;
-	cerr << "ERROR in  TKinematics::ReadFormatString(const TString):\n"
-	     << "Kinematic variable \"" << token << "\" unknown!\n";
-	exit(1);
+	throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics::ReadFormatString(const TString):\n"
+	     << "Kinematic variable \"" << token << "\" unknown!");
       }
     }  // end loop over tokens
 
@@ -766,9 +766,8 @@ void TKinematics::ReadFormatString(const TString format)
   if( fNVars == 3 ) {
     if( qsqCount != 1 ) {
       if( phiCount != 1 ) {
-	cerr << "ERROR in TKinematics::ReadFormatString(const TString):\n"
-	     << "The angle phi or Q^2 need to be one of the 3 independent kinematic variables!\n";
-	exit(1);
+	throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics::ReadFormatString(const TString):\n"
+	     << "The angle phi or Q^2 need to be one of the 3 independent kinematic variables!");
       }
       else {
 	fQsquared = 0.;
@@ -776,9 +775,8 @@ void TKinematics::ReadFormatString(const TString format)
     }
     else {
       if( phiCount == 1 ) {
-	cerr << "ERROR in TKinematics::ReadFormatString(const TString):\n"
-	     << "The angle phi and Q^2 cannot simultaneously be one of the 3 independent kinematic variables!\n";
-	exit(1);
+	throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics::ReadFormatString(const TString):\n"
+	     << "The angle phi and Q^2 cannot simultaneously be one of the 3 independent kinematic variables!");
       }
       else {
 	fPhi = 0.;
@@ -786,9 +784,8 @@ void TKinematics::ReadFormatString(const TString format)
     }
   }
   else if( fNVars == 4 && qsqCount != 1 && phiCount != 1 ) {
-    cerr << "ERROR in TKinematics::ReadFormatString(const TString):\n"
-	 << "The angle phi and Q^2 need to be one of the 4 independent kinematic variables!\n";
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics::ReadFormatString(const TString):\n"
+	 << "The angle phi and Q^2 need to be one of the 4 independent kinematic variables!");
   }
   else {
     fQsquared = fPhi = 0.;
@@ -796,45 +793,39 @@ void TKinematics::ReadFormatString(const TString format)
 
   // Check for 1 and only 1 energy variable
   if( energyCount == 0 ) {
-    cerr << "ERROR in TKinematics::ReadFormatString(const TString):\n"
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics::ReadFormatString(const TString):\n"
 	 << "wlab/wcm/klab/kcm/pk/pklab/w/s/xb needs to be one of " << fNVars
-	 << " independent kinematic variables.\n";
-    exit(1); }
+	 << " independent kinematic variables."); }
   else if( energyCount != 1 ) {
-    cerr << "ERROR in TKinematics::ReadFormatString(const TString):\n"
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics::ReadFormatString(const TString):\n"
 	 << "Only one of following kinematic variables can be independent: "
-	 << "wlab/wcm/klab/kcm/pk/pklab/w/s/xb.\n";
-    exit(1);
+	 << "wlab/wcm/klab/kcm/pk/pklab/w/s/xb.");
   }
 
   // Check for 1 and only 1 angular variable
   if( angleCount == 0 ) {
-    cerr << "ERROR in TKinematics::ReadFormatString(const TString):\n"
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics::ReadFormatString(const TString):\n"
 	 << "costhkcm/t/u needs to be one of " << fNVars
-	 << " independent kinematic variables.\n";
-    exit(1); }
+	 << " independent kinematic variables."); }
   else if( angleCount != 1 ) {
-    cerr << "ERROR in TKinematics::ReadFormatString(const TString):\n"
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics::ReadFormatString(const TString):\n"
 	 << "Only one of following kinematic variables can be independent: "
-	 << "costhkcm/t/u.\n";
-    exit(1);
+	 << "costhkcm/t/u.");
   }
 
   // Some variables are not possible for certain isospin channels
   if( fIsospin == 11 || fIsospin == 12 ) {
     if( fEVar==&fKlab || fEVar==&fWlab || fEVar==&fXb ) {
-      cerr << "ERROR in  TKinematics::ReadFormatString(const TString):\n"
+      throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics::ReadFormatString(const TString):\n"
 	   << "Kinematic variable wlab/klab/xb is not allowed "
-	   << "as independent variable in radiative capture kinematics!\n";
-      exit(1);
+	   << "as independent variable in radiative capture kinematics!");
     }
   }
   else {
     if( fEVar==&fPk || fEVar==&fPklab ) {
-      cerr << "ERROR in  TKinematics::ReadFormatString(const TString):\n"
+      throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics::ReadFormatString(const TString):\n"
 	   << "Kinematic variable pk/pkcm/pklab is not allowed "
-	   << "as independent variable in EM meson production!\n";
-      exit(1);
+	   << "as independent variable in EM meson production!");
     }
   }
 }
@@ -1511,9 +1502,8 @@ void TKinematics::UpdateKinematics()
 
     // photon should be real!
     if( fQsquared!=0.0 ) {
-      cerr << "ERROR in TKinematics::UpdateKinematics(): "
-	   << "In radiative capture, the emitted photon is real!\n";
-      exit(1);
+      throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics::UpdateKinematics(): "
+	   << "In radiative capture, the emitted photon is real!");
     }
 
     // Determine all energy variables 
@@ -1775,9 +1765,8 @@ double* TKinematics::GetVarArray(const TString& variable) const
     ptrToVarGetter = &TKinematics::GetPhi;
   }
   else {
-    cerr << "ERROR in  TKinematics::GetVarArray(TString): "
-	 << "Kinematic variable \"" << variable << "\" unknown!\n";
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics::GetVarArray(TString): "
+	 << "Kinematic variable \"" << variable << "\" unknown!");
   }
 
   double *array = new double[tk.GetNumberOfSteps()];
@@ -1852,9 +1841,8 @@ double*  TKinematics::GetPhysicalVarArray(const TString& variable) const
     ptrToVarGetter = &TKinematics::GetPhi;
   }
   else {
-    cerr << "ERROR in  TKinematics::GetVarArray(TString): "
-	 << "Kinematic variable \"" << variable << "\" unknown!\n";
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics::GetVarArray(TString): "
+	 << "Kinematic variable \"" << variable << "\" unknown!");
   }
 
   double *array = new double[tk.GetNumberOfPhysicalSteps()];

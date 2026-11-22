@@ -1,4 +1,5 @@
 #include "NucleonWeakOperator.hpp"
+#include <ErrorMessage.hpp>
 
 using namespace std;
 
@@ -99,8 +100,7 @@ switch(current){
       return getCC3_weak(q,pi,pf,r,medium,nucleus);
       break;
     default:
-      cerr << "Current operator not supported " << current << endl;
-      exit(1);
+      throw std::invalid_argument(nucqcd::ErrorMessage() << "Current operator not supported " << current );
   }
 }
 
@@ -118,8 +118,7 @@ switch(current){
     + getGM_weak()/(4.*(proton?MASSn:MASSn))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q));
       break;
     default:
-      cerr << "Current operator not supported " << current << endl;
-      exit(1);
+      throw std::invalid_argument(nucqcd::ErrorMessage() << "Current operator not supported " << current );
   }
 /*  
 switch(current){
@@ -134,8 +133,7 @@ switch(current){
     + getGM_weak()/(4.*(proton?MASSP:MASSN))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q));
       break;
     default:
-      cerr << "Current operator not supported " << current << endl;
-      exit(1);
+      throw std::invalid_argument(nucqcd::ErrorMessage() << "Current operator not supported " << current );
   }*/
   
 }

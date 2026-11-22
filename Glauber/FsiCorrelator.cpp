@@ -1,4 +1,5 @@
 #include <fstream>
+#include <ErrorMessage.hpp>
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
@@ -127,8 +128,7 @@ int FsiCorrelator::getCthindex() const{
 //set up inteprolation help variables for r
 void FsiCorrelator::setRinterp(const double r){
   if(r>pnucleus->getRange()){
-    cerr << "r out of range in getWave_Rpart: " << r << endl;
-    exit(1);
+    throw std::out_of_range(nucqcd::ErrorMessage() << "r out of range in getWave_Rpart: " << r );
   }
   rindex = int(floor(r*getInvRstep()));
   if(rindex==getCorr_rgrid()) rindex-=2;
@@ -294,8 +294,7 @@ void FsiCorrelator::constructCorrgrid(const double *density, std::vector<std::ve
   if(*check>0) {
     delete [] x; 
     delete check;
-    cerr << "no solution found for integration equation" << endl;
-    exit(1);
+    throw std::runtime_error(nucqcd::ErrorMessage() << "no solution found for integration equation" );
   }
   else{
     for(int i=0;i<TOTALGRIDPNTS;i++){

@@ -1,4 +1,5 @@
 #include "Model.hpp"
+#include <ErrorMessage.hpp>
 #include <TMFSpinor.hpp>
 #include <AuxFunction.hpp>
 
@@ -67,16 +68,16 @@ complex<double> Model::getFreeMatrixEl(TKinematics2to2 &tk, int current, int spi
 		      TSpinor(Pin,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kUnity);
     else if(spinin==1) return TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kUnity))*Jcontr*
 		      TSpinor(Pin,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity);
-    else {cerr << "invalid spinin " << spinin << endl; exit(1);}
+    else {throw std::invalid_argument(nucqcd::ErrorMessage() << "invalid spinin " << spinin );}
   }
   else if(spinout==1){
     if(spinin==-1) return TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity))*Jcontr*
 		      TSpinor(Pin,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kUnity);
     else if(spinin==1) return TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity))*Jcontr*
 		      TSpinor(Pin,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity);
-    else {cerr << "invalid spinin " << spinin << endl; exit(1);}
+    else {throw std::invalid_argument(nucqcd::ErrorMessage() << "invalid spinin " << spinin );}
   }
-  else {cerr << "invalid spinout " << spinout << endl; exit(1);}
+  else {throw std::invalid_argument(nucqcd::ErrorMessage() << "invalid spinout " << spinout );}
   
 }
 
@@ -247,7 +248,7 @@ void Model::getMatrixEl(TKinematics2to2 &tk, Matrix<2,3> & matrixel, int shellin
       }
     }
   }      
-  else {cerr  << "integrator type not implemented " << integrator << endl; exit(1);}
+  else {throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented " << integrator );}
       
 //   cout << shellindex << " " << m << " ";
 //   for(int i=0;i<6;i++) cout << matrixel(i/3,i%3) << " ";
@@ -333,7 +334,7 @@ void Model::getAllMatrixElMult(TKinematics2to2 &tk, Matrix<2,3> *matrixel, int s
 	else res = numint::cube_adaptive(mdf,lower,upper,1.E-08,prec,1E03,maxEval,ret,count,0);
 	for(int k=0;k<total;++k) matrixel[k](spinout,photopol) = ret[k];
       }      
-      else {cerr  << "integrator type not implemented " << integrator << endl; exit(1);}
+      else {throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented " << integrator );}
 //       cout << shellindex << " " << m << " " << spinout << " " << photopol << " " << matrixel[0](spinout,photopol) << 
 // 	" " << matrixel[1](spinout,photopol) << " " << matrixel[total-1](spinout,photopol) << " " << res << " " << count << endl;
     }
@@ -452,7 +453,7 @@ void Model::getAllMatrixEl(TKinematics2to2 &tk, Matrix<2,3> *matrixel, int shell
 	}
       }
     }      
-    else {cerr  << "integrator type not implemented " << integrator << endl; exit(1);}
+    else {throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented " << integrator );}
 	
   //   cout << shellindex << " " << m << " ";
   //   for(int i=0;i<6;i++) cout << matrixel[0](i/3,i%3) << " ";
@@ -501,7 +502,7 @@ void Model::getAllMatrixEl(TKinematics2to2 &tk, Matrix<2,3> *matrixel, int shell
 	}
       }
     }      
-    else {cerr  << "integrator type not implemented " << integrator << endl; exit(1);}
+    else {throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented " << integrator );}
     
     
     

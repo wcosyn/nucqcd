@@ -97,6 +97,7 @@
 
 // #include "TMPI.h"
 #include "TKinematics2to3.h"
+#include "ErrorMessage.hpp"
 #include "TLorentzQuaternion.h"
 #include "constants.hpp"
 #include <iostream>
@@ -158,9 +159,8 @@ TKinematics2to3::TKinematics2to3(const char *name, const char *title,
   // compatible with your axis convention.
 
   if( ac==kS ) {
-    cerr << "ERROR in TKinematics2to3::TKinematics2to3(..): "
-	 << "TKinematics2to3::kS is NOT a valid axis convention.\n";
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::TKinematics2to3(..): "
+	 << "TKinematics2to3::kS is NOT a valid axis convention.");
   }
 
   ChangeIsospinChannel(isospin);
@@ -683,10 +683,9 @@ void TKinematics2to3::ReadFormatString(const char *format)
   // Check the number of tokens
   int nrOfTokens = tokens->GetEntries();
   if( nrOfTokens != 6 ) {
-    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	 << "Format string should provide 6 independent variables: "
-	 << "\"var1:var2:var3:var4:var5:var6\"\n";
-    exit(1);
+	 << "\"var1:var2:var3:var4:var5:var6\"");
   }
 
   // Transform tokens to lower case
@@ -695,9 +694,8 @@ void TKinematics2to3::ReadFormatString(const char *format)
 
   // Check that Q^2 is present
   if( !formatString.Contains("qsquared",TString::kIgnoreCase) ) {
-    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	 << "Q^2 needs to be one of 6 independent kinematic variables.\n";
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	 << "Q^2 needs to be one of 6 independent kinematic variables.");
   }
 
   // Check whether all tokens are mandelstam variables. We do this by
@@ -753,9 +751,8 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"wlab") ) {
 	if(fEVar || fKinSolution[0] == '2') {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	fVar[i] = fEVar = &fWlab;
 	fKinSolution[0] = '1';
@@ -763,9 +760,8 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"klab") ) {
 	if(fEVar || fKinSolution[0] == '2') {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	fVar[i] = fEVar = &fKlab;
 	fKinSolution[0] = '1';
@@ -774,18 +770,16 @@ void TKinematics2to3::ReadFormatString(const char *format)
       else if( !strcmp(token,"ek") ) {
 	if( fAC == kK ) {
 	  if(fE1Var) {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fE1Var = &fEk;
 	}
 	else {
 	  if(fE2Var || fKinSolution[0] == '1' 
 	     || fKinSolution[1] == 'N' || fKinSolution[1] == 'Y') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fE2Var = &fEk;
 	  fKinSolution[0] = '2';
@@ -796,18 +790,16 @@ void TKinematics2to3::ReadFormatString(const char *format)
       else if( !strcmp(token,"ey") ) {
 	if( fAC == kY ) {
 	  if(fE1Var) {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fE1Var = &fEy;
 	}
 	else {
 	  if(fE2Var || fKinSolution[0] == '1' 
 	     || fKinSolution[1] == 'N' || fKinSolution[1] == 'K') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fE2Var = &fEy;
 	  fKinSolution[0] = '2';
@@ -818,18 +810,16 @@ void TKinematics2to3::ReadFormatString(const char *format)
       else if( !strcmp(token,"en") ) {
 	if( fAC == kN ) {
 	  if(fE1Var) {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fE1Var = &fEn;
 	}
 	else {
 	  if(fE2Var || fKinSolution[0] == '1' 
 	     || fKinSolution[1] == 'Y' || fKinSolution[1] == 'K') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fE2Var = &fEn;
 	  fKinSolution[0] = '2';
@@ -840,18 +830,16 @@ void TKinematics2to3::ReadFormatString(const char *format)
       else if( !strcmp(token,"pk") ) {
 	if( fAC == kK ) {
 	  if(fE1Var) {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fE1Var = &fPk;
 	}
 	else {
 	  if(fE2Var || fKinSolution[0] == '1' 
 	     || fKinSolution[1] == 'N' || fKinSolution[1] == 'Y') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fE2Var = &fPk;
 	  fKinSolution[0] = '2';
@@ -862,18 +850,16 @@ void TKinematics2to3::ReadFormatString(const char *format)
       else if( !strcmp(token,"py") ) {
 	if( fAC == kY ) {
 	  if(fE1Var) {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fE1Var = &fPy;
 	}
 	else {
 	  if(fE2Var || fKinSolution[0] == '1' 
 	     || fKinSolution[1] == 'N' || fKinSolution[1] == 'K') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fE2Var = &fPy;
 	  fKinSolution[0] = '2';
@@ -884,18 +870,16 @@ void TKinematics2to3::ReadFormatString(const char *format)
       else if( !strcmp(token,"pn") ) {
 	if( fAC == kN ) {
 	  if(fE1Var) {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fE1Var = &fPn;
 	}
 	else {
 	  if(fE2Var || fKinSolution[0] == '1' 
 	     || fKinSolution[1] == 'Y' || fKinSolution[1] == 'K') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fE2Var = &fEn;
 	  fKinSolution[0] = '2';
@@ -906,18 +890,16 @@ void TKinematics2to3::ReadFormatString(const char *format)
       else if( !strcmp(token,"thk") ) {
 	if( fAC == kK ) {
 	  if(fTh1Var) {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fTh1Var = &fThk;
 	}
 	else {
 	  if(fTh2Var || fKinSolution[2] == '*' 
 	     || fKinSolution[1] == 'N' || fKinSolution[1] == 'Y') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fTh2Var = &fThk;
 	  fKinSolution[1] = 'K';
@@ -928,18 +910,16 @@ void TKinematics2to3::ReadFormatString(const char *format)
       else if( !strcmp(token,"thy") ) {
 	if( fAC == kY ) {
 	  if(fTh1Var) {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fTh1Var = &fThy;
 	}
 	else {
 	  if(fTh2Var || fKinSolution[2] == '*' 
 	     || fKinSolution[1] == 'N' || fKinSolution[1] == 'K') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fTh2Var = &fThy;
 	  fKinSolution[1] = 'Y';
@@ -950,18 +930,16 @@ void TKinematics2to3::ReadFormatString(const char *format)
       else if( !strcmp(token,"thn") ) {
 	if( fAC == kN ) {
 	  if(fTh1Var) {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fTh1Var = &fThn;
 	}
 	else {
 	  if(fTh2Var || fKinSolution[2] == '*' 
 	     || fKinSolution[1] == 'K' || fKinSolution[1] == 'Y') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fTh2Var = &fThn;
 	  fKinSolution[1] = 'N';
@@ -972,18 +950,16 @@ void TKinematics2to3::ReadFormatString(const char *format)
       else if( !strcmp(token,"costhk") ) {
 	if( fAC == kK ) {
 	  if(fTh1Var) {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fTh1Var = &fCosthk;
 	}
 	else {
 	  if(fTh2Var || fKinSolution[2] == '*' 
 	     || fKinSolution[1] == 'N' || fKinSolution[1] == 'Y') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fTh2Var = &fCosthk;
 	  fKinSolution[1] = 'K';
@@ -994,18 +970,16 @@ void TKinematics2to3::ReadFormatString(const char *format)
       else if( !strcmp(token,"costhy") ) {
 	if( fAC == kY ) {
 	  if(fTh1Var) {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fTh1Var = &fCosthy;
 	}
 	else {
 	  if(fTh2Var || fKinSolution[2] == '*' 
 	     || fKinSolution[1] == 'N' || fKinSolution[1] == 'K') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fTh2Var = &fCosthy;
 	  fKinSolution[1] = 'Y';
@@ -1016,18 +990,16 @@ void TKinematics2to3::ReadFormatString(const char *format)
       else if( !strcmp(token,"costhn") ) {
 	if( fAC == kN ) {
 	  if(fTh1Var) {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fTh1Var = &fCosthn;
 	}
 	else {
 	  if(fTh2Var || fKinSolution[2] == '*' 
 	     || fKinSolution[1] == 'K' || fKinSolution[1] == 'Y') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fTh2Var = &fCosthn;
 	  fKinSolution[1] = 'N';
@@ -1037,17 +1009,15 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"phik") ) {
 	if( fAC == kK ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane! Because of the axis convention "
-	       << "phik is zero by definition.\n";
-	  exit(1);
+	       << "phik is zero by definition.");
 	}
 	else {
 	  if(fPhi2Var || fKinSolution[2] == '*' 
 	     || fKinSolution[1] == 'N' || fKinSolution[1] == 'Y') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fPhi2Var = &fPhik;
 	  fKinSolution[1] = 'K';
@@ -1057,17 +1027,15 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"phiy") ) {
 	if( fAC == kY ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane! Because of the axis convention "
-	       << "phiy is zero by definition.\n";
-	  exit(1);
+	       << "phiy is zero by definition.");
 	}
 	else {
 	  if(fPhi2Var || fKinSolution[2] == '*' 
 	     || fKinSolution[1] == 'N' || fKinSolution[1] == 'K') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fPhi2Var = &fPhiy;
 	  fKinSolution[1] = 'Y';
@@ -1077,17 +1045,15 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"phin") ) {
 	if( fAC == kN ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane! Because of the axis convention "
-	       << "phin is zero by definition.\n";
-	  exit(1);
+	       << "phin is zero by definition.");
 	}
 	else {
 	  if(fPhi2Var || fKinSolution[2] == '*' 
 	     || fKinSolution[1] == 'K' || fKinSolution[1] == 'Y') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fPhi2Var = &fPhin;
 	  fKinSolution[1] = 'N';
@@ -1097,9 +1063,8 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"wtot") ) {
 	if(fEVar || fKinSolution[0] == '2') {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	fVar[i] = fEVar = &fWtot;
 	fKinSolution[0] = '1';
@@ -1107,15 +1072,13 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"wky") || !strcmp(token,"wyk") ) {
 	if( fAC != kN ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else {
 	  if(fEVar || fKinSolution[0] == '2') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fEVar = &fWky;
 	  fKinSolution[0] = '1';
@@ -1124,15 +1087,13 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"wkn") || !strcmp(token,"wnk") ) {
 	if( fAC != kY ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else {
 	  if(fEVar || fKinSolution[0] == '2') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fEVar = &fWkn;
 	  fKinSolution[0] = '1';
@@ -1141,15 +1102,13 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"wyn") || !strcmp(token,"wny") ) {
 	if( fAC != kK ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else {
 	  if(fEVar || fKinSolution[0] == '2') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fEVar = &fWyn;
 	  fKinSolution[0] = '1';
@@ -1158,9 +1117,8 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"stot") ) {
 	if(fEVar || fKinSolution[0] == '2') {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else if(fKinSolution[0] == '3') {
 	  fVar[i] = &fStot;
@@ -1181,23 +1139,20 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	    mandel->ReplaceAll("d","-");
 	  }
 	  else {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = &fSky;
 	} // end mandelstam case
 	else {
 	  if( fAC != kN ) {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  else {
 	    if(fEVar || fKinSolution[0] == '2') {
-	      cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		   << "Format string is not sane!\n";
-	      exit(1);
+	      throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		   << "Format string is not sane!");
 	    }
 	    fVar[i] = fEVar = &fSky;
 	    fKinSolution[0] = '1';
@@ -1215,23 +1170,20 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	    mandel->ReplaceAll("d","-");
 	  }
 	  else {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = &fSkn;
 	} // end mandelstam case
 	else {
 	  if( fAC != kY ) {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  else {
 	    if(fEVar || fKinSolution[0] == '2') {
-	      cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		   << "Format string is not sane!\n";
-	      exit(1);
+	      throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		   << "Format string is not sane!");
 	    }
 	    fVar[i] = fEVar = &fSkn;
 	    fKinSolution[0] = '1';
@@ -1249,23 +1201,20 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	    mandel->ReplaceAll("d","-");
 	  }
 	  else {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = &fSyn;
 	} // end mandelstam case
 	else {
 	  if( fAC != kK ) {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  else {
 	    if(fEVar || fKinSolution[0] == '2') {
-	      cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		   << "Format string is not sane!\n";
-	      exit(1);
+	      throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		   << "Format string is not sane!");
 	    }
 	    fVar[i] = fEVar = &fSyn;
 	    fKinSolution[0] = '1';
@@ -1286,32 +1235,28 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	    mandel->ReplaceAll("f","-");
 	  }
 	  else {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = &fTgk;
 	} // end mandelstam case
 	else if (fKinSolution[0] == '2') {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else {
 	  if( fAC == kK ) {
 	    if(fTh1Var) {
-	      cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		   << "Format string is not sane!\n";
-	      exit(1);
+	      throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		   << "Format string is not sane!");
 	    }
 	    fVar[i] = fTh1Var = &fTgk;
 	  }
 	  else {
 	    if(fTh2Var || fKinSolution[2] == 'L' 
 	       || fKinSolution[1] == 'N' || fKinSolution[1] == 'Y') {
-	      cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		   << "Format string is not sane!\n";
-	      exit(1);
+	      throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		   << "Format string is not sane!");
 	    }
 	    fVar[i] = fTh2Var = &fTgk;
 	    fKinSolution[1] = 'K';
@@ -1334,32 +1279,28 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	    mandel->ReplaceAll("f","-");
 	  }
 	  else {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = &fTgy;
 	} // end mandelstam case
 	else if (fKinSolution[0] == '2') {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else {
 	  if( fAC == kY ) {
 	    if(fTh1Var) {
-	      cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		   << "Format string is not sane!\n";
-	      exit(1);
+	      throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		   << "Format string is not sane!");
 	    }
 	    fVar[i] = fTh1Var = &fTgy;
 	  }
 	  else {
 	    if(fTh2Var || fKinSolution[2] == 'L' 
 	       || fKinSolution[1] == 'N' || fKinSolution[1] == 'K') {
-	      cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		   << "Format string is not sane!\n";
-	      exit(1);
+	      throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		   << "Format string is not sane!");
 	    }
 	    fVar[i] = fTh2Var = &fTgy;
 	    fKinSolution[1] = 'Y';
@@ -1382,32 +1323,28 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	    mandel->ReplaceAll("f","-");
 	  }
 	  else {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = &fTgn;
 	} // end mandelstam case
 	else if (fKinSolution[0] == '2') {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else {
 	  if( fAC == kN ) {
 	    if(fTh1Var) {
-	      cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		   << "Format string is not sane!\n";
-	      exit(1);
+	      throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		   << "Format string is not sane!");
 	    }
 	    fVar[i] = fTh1Var = &fTgn;
 	  }
 	  else {
 	    if(fTh2Var || fKinSolution[2] == 'L' 
 	       || fKinSolution[1] == 'K' || fKinSolution[1] == 'Y') {
-	      cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		   << "Format string is not sane!\n";
-	      exit(1);
+	      throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		   << "Format string is not sane!");
 	    }
 	    fVar[i] = fTh2Var = &fTgn;
 	    fKinSolution[1] = 'N';
@@ -1419,9 +1356,8 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"tdk") || !strcmp(token,"tkd") ) {
 	if( fKinSolution[0] != '3' || fAC==kK ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else if( fKinSolution[1] == 'K' ) {
 	  mandel->ReplaceAll("a","-");
@@ -1438,9 +1374,8 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"tdy") || !strcmp(token,"tyd") ) {
 	if( fKinSolution[0] != '3' || fAC==kY ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else if( fKinSolution[1] == 'Y' ) {
 	  mandel->ReplaceAll("a","-");
@@ -1457,9 +1392,8 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"tdn") || !strcmp(token,"tnd") ) {
 	if( fKinSolution[0] != '3' || fAC==kN ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else if( fKinSolution[1] == 'N' ) {
 	  mandel->ReplaceAll("a","-");
@@ -1476,16 +1410,14 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"kythkcm") || !strcmp(token,"ykthkcm") ) {
 	if( fAC != kN ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else {
 	  if(fTh2Var || fKinSolution[0] == 2 || fKinSolution[2] == 'L' 
 	     || fKinSolution[1] == 'N' || fKinSolution[1] == 'Y') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fTh2Var = &fKYthkcm;
 	  fKinSolution[0] = '1';
@@ -1496,16 +1428,14 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"kythycm") || !strcmp(token,"ykthycm") ) {
 	if( fAC != kN ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else {
 	  if(fTh2Var || fKinSolution[0] == 2 || fKinSolution[2] == 'L' 
 	     || fKinSolution[1] == 'N' || fKinSolution[1] == 'K') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fTh2Var = &fKYthycm;
 	  fKinSolution[0] = '1';
@@ -1516,16 +1446,14 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"knthkcm") || !strcmp(token,"nkthkcm") ) {
 	if( fAC != kY ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else {
 	  if(fTh2Var || fKinSolution[0] == 2 || fKinSolution[2] == 'L' 
 	     || fKinSolution[1] == 'N' || fKinSolution[1] == 'Y') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fTh2Var = &fKNthkcm;
 	  fKinSolution[0] = '1';
@@ -1536,16 +1464,14 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"knthncm") || !strcmp(token,"nkthncm") ) {
 	if( fAC != kY ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else {
 	  if(fTh2Var || fKinSolution[0] == 2 || fKinSolution[2] == 'L' 
 	     || fKinSolution[1] == 'K' || fKinSolution[1] == 'Y') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fTh2Var = &fKNthncm;
 	  fKinSolution[0] = '1';
@@ -1556,16 +1482,14 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"ynthycm") || !strcmp(token,"nythycm") ) {
 	if( fAC != kK ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else {
 	  if(fTh2Var || fKinSolution[0] == 2 || fKinSolution[2] == 'L' 
 	     || fKinSolution[1] == 'N' || fKinSolution[1] == 'K') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fTh2Var = &fYNthycm;
 	  fKinSolution[0] = '1';
@@ -1576,16 +1500,14 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"ynthncm") || !strcmp(token,"nythncm") ) {
 	if( fAC != kK ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else {
 	  if(fTh2Var || fKinSolution[0] == 2 || fKinSolution[2] == 'L' 
 	     || fKinSolution[1] == 'Y' || fKinSolution[1] == 'K') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fTh2Var = &fYNthncm;
 	  fKinSolution[0] = '1';
@@ -1596,16 +1518,14 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"kycosthkcm") || !strcmp(token,"ykcosthkcm") ) {
 	if( fAC != kN ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else {
 	  if(fTh2Var || fKinSolution[0] == 2 || fKinSolution[2] == 'L' 
 	     || fKinSolution[1] == 'N' || fKinSolution[1] == 'Y') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fTh2Var = &fKYcosthkcm;
 	  fKinSolution[0] = '1';
@@ -1616,16 +1536,14 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"kycosthycm") || !strcmp(token,"ykcosthycm") ) {
 	if( fAC != kN ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else {
 	  if(fTh2Var || fKinSolution[0] == 2 || fKinSolution[2] == 'L' 
 	     || fKinSolution[1] == 'N' || fKinSolution[1] == 'K') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fTh2Var = &fKYcosthycm;
 	  fKinSolution[0] = '1';
@@ -1636,16 +1554,14 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"kncosthkcm") || !strcmp(token,"nkcosthkcm") ) {
 	if( fAC != kY ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else {
 	  if(fTh2Var || fKinSolution[0] == 2 || fKinSolution[2] == 'L' 
 	     || fKinSolution[1] == 'N' || fKinSolution[1] == 'Y') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fTh2Var = &fKNcosthkcm;
 	  fKinSolution[0] = '1';
@@ -1656,16 +1572,14 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"kncosthncm") || !strcmp(token,"nkcosthncm") ) {
 	if( fAC != kY ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else {
 	  if(fTh2Var || fKinSolution[0] == 2 || fKinSolution[2] == 'L' 
 	     || fKinSolution[1] == 'K' || fKinSolution[1] == 'Y') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fTh2Var = &fKNcosthncm;
 	  fKinSolution[0] = '1';
@@ -1676,16 +1590,14 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"yncosthycm") || !strcmp(token,"nycosthycm") ) {
 	if( fAC != kK ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else {
 	  if(fTh2Var || fKinSolution[0] == 2 || fKinSolution[2] == 'L' 
 	     || fKinSolution[1] == 'N' || fKinSolution[1] == 'K') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fTh2Var = &fYNcosthycm;
 	  fKinSolution[0] = '1';
@@ -1696,16 +1608,14 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"yncosthncm") || !strcmp(token,"nycosthncm") ) {
 	if( fAC != kK ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else {
 	  if(fTh2Var || fKinSolution[0] == 2 || fKinSolution[2] == 'L' 
 	     || fKinSolution[1] == 'Y' || fKinSolution[1] == 'K') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fTh2Var = &fYNcosthncm;
 	  fKinSolution[0] = '1';
@@ -1716,16 +1626,14 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"kyphikcm") || !strcmp(token,"ykphikcm") ) {
 	if( fAC != kN ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else {
 	  if(fPhi2Var || fKinSolution[0] == 2 || fKinSolution[2] == 'L' 
 	     || fKinSolution[1] == 'N' || fKinSolution[1] == 'Y') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fPhi2Var = &fKYphikcm;
 	  fKinSolution[0] = '1';
@@ -1736,16 +1644,14 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"kyphiycm") || !strcmp(token,"ykphiycm") ) {
 	if( fAC != kN ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else {
 	  if(fPhi2Var || fKinSolution[0] == 2 || fKinSolution[2] == 'L' 
 	     || fKinSolution[1] == 'N' || fKinSolution[1] == 'K') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fPhi2Var = &fKYphiycm;
 	  fKinSolution[0] = '1';
@@ -1756,16 +1662,14 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"knphikcm") || !strcmp(token,"nkphikcm") ) {
 	if( fAC != kY ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else {
 	  if(fPhi2Var || fKinSolution[0] == 2 || fKinSolution[2] == 'L' 
 	     || fKinSolution[1] == 'N' || fKinSolution[1] == 'Y') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fPhi2Var = &fKNphikcm;
 	  fKinSolution[0] = '1';
@@ -1776,16 +1680,14 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"knphincm") || !strcmp(token,"nkphincm") ) {
 	if( fAC != kY ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else {
 	  if(fPhi2Var || fKinSolution[0] == 2 || fKinSolution[2] == 'L' 
 	     || fKinSolution[1] == 'K' || fKinSolution[1] == 'Y') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fPhi2Var = &fKNphincm;
 	  fKinSolution[0] = '1';
@@ -1796,16 +1698,14 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"ynphiycm") || !strcmp(token,"nyphiycm") ) {
 	if( fAC != kK ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else {
 	  if(fPhi2Var || fKinSolution[0] == 2 || fKinSolution[2] == 'L' 
 	     || fKinSolution[1] == 'N' || fKinSolution[1] == 'K') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fPhi2Var = &fYNphiycm;
 	  fKinSolution[0] = '1';
@@ -1816,16 +1716,14 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else if( !strcmp(token,"ynphincm") || !strcmp(token,"nyphincm") ) {
 	if( fAC != kK ) {
-	  cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	       << "Format string is not sane!\n";
-	  exit(1);
+	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	       << "Format string is not sane!");
 	}
 	else {
 	  if(fPhi2Var || fKinSolution[0] == 2 || fKinSolution[2] == 'L' 
 	     || fKinSolution[1] == 'Y' || fKinSolution[1] == 'K') {
-	    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-		 << "Format string is not sane!\n";
-	    exit(1);
+	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+		 << "Format string is not sane!");
 	  }
 	  fVar[i] = fPhi2Var = &fYNphincm;
 	  fKinSolution[0] = '1';
@@ -1837,9 +1735,8 @@ void TKinematics2to3::ReadFormatString(const char *format)
       //__________________________________
       else {
 	fVar[i] = NULL;
-	cerr << "ERROR in  TKinematics2to3::ReadFormatString(const char*): "
-	     << "Kinematic variable \"" << token << "\" unknown!\n";
-	exit(1);
+	throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics2to3::ReadFormatString(const char*): "
+	     << "Kinematic variable \"" << token << "\" unknown!");
       }
     } // end loop over tokens
   
@@ -1847,9 +1744,8 @@ void TKinematics2to3::ReadFormatString(const char *format)
   // in the mandelstam case
   if(mandel) {
     if(mandel->CountChar('-') != 6) {
-      cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	   << "Format string is not sane!\n";
-      exit(1);
+      throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	   << "Format string is not sane!");
     }
     fKinSolution[2] = mandel->Strip(TString::kBoth,'-')[0];
   }
@@ -1866,9 +1762,8 @@ void TKinematics2to3::ReadFormatString(const char *format)
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   if( fKinSolution[0] == '2' ) {
-    cerr << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
-	 << "I cannot solve kinematics with these variables.\n";
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	 << "I cannot solve kinematics with these variables.");
   }
   else if( fKinSolution[0] == '1' && fKinSolution[2] == 'L' )
     cerr << "WARNING in TKinematics2to3::ReadFormatString(const char*): "
@@ -2561,9 +2456,8 @@ void TKinematics2to3::UpdateKinematics()
       *td2 = m2*m2 + m3*m3 + fMd*fMd + *tg1 - *td3 - *s23;
       break;
     default:
-      cerr << "ERROR in TKinematics2to3::UpdateKinematics(): "
-	   << "Invalid option.\n";
-      exit(1);
+      throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::UpdateKinematics(): "
+	   << "Invalid option.");
     }
 
     double threshold = (m1+m2+m3)*(m1+m2+m3);
@@ -3519,9 +3413,8 @@ double TKinematics2to3::GetVar(const TString& variable) const
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_phincm_deg_kS;
   }
   else {
-    std::cerr << "ERROR in  TKinematics2to3::GetVar(const TString&): "
-	      << "Kinematic variable \"" << variable << "\" unknown!\n";
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics2to3::GetVar(const TString&): "
+	      << "Kinematic variable \"" << variable << "\" unknown!");
   }
 
   return (this->*ptrToVarGetter)();
@@ -3874,9 +3767,8 @@ double* TKinematics2to3::GetVarArray(const TString& variable) const
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_phincm_deg_kS;
   }
   else {
-    std::cerr << "ERROR in  TKinematics2to3::GetVarArray(TString): "
-	      << "Kinematic variable \"" << variable << "\" unknown!\n";
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics2to3::GetVarArray(TString): "
+	      << "Kinematic variable \"" << variable << "\" unknown!");
   }
 
   double *array = new double[tk.GetNumberOfSteps()];
@@ -4237,9 +4129,8 @@ double* TKinematics2to3::GetPhysicalVarArray(const TString& variable) const
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_phincm_deg_kS;
   }
   else {
-    std::cerr << "ERROR in  TKinematics2to3::GetVarArray(TString): "
-	      << "Kinematic variable \"" << variable << "\" unknown!\n";
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics2to3::GetVarArray(TString): "
+	      << "Kinematic variable \"" << variable << "\" unknown!");
   }
 
   double *array = new double[tk.GetNumberOfPhysicalSteps()];
@@ -5660,9 +5551,8 @@ double TKinematics2to3::GetVarByGetter(const TString& variable) const
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_phincm_deg_kS;
   }
   else {
-    std::cerr << "ERROR in  TKinematics2to3::GetVarByGetter(TString): "
-	      << "Kinematic variable \"" << variable << "\" unknown!\n";
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics2to3::GetVarByGetter(TString): "
+	      << "Kinematic variable \"" << variable << "\" unknown!");
   }
 
   return (this->*ptrToVarGetter)();

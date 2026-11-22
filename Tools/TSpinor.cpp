@@ -8,6 +8,7 @@
  */
 
 #include "TSpinor.h"
+#include "ErrorMessage.hpp"
 #include "TLorentzQuaternion.h"
 #include "constants.hpp"
 //#include <numtoa.h>
@@ -319,9 +320,8 @@ void TSpinor::Polarization::SetTheta(double theta)
   // Set the polar angle of the spin quantization axis (in rad)
 
   if( theta<0. || theta>TMath::Pi() ) {
-    cerr << "ERROR in TSpinor::Polarization::SetTheta(double): "
-	 << "polar angle not in range [0,pi].\n";
-    exit(1);
+    throw std::out_of_range(nucqcd::ErrorMessage() << "ERROR in TSpinor::Polarization::SetTheta(double): "
+	 << "polar angle not in range [0,pi].");
   }
 
   fTheta = theta;

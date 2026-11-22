@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <ErrorMessage.hpp>
 #include <iostream>
 #include <fstream>
 #include <complex>
@@ -37,8 +38,7 @@ AbstractFsiCTGrid(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir), fsi
     }
   }
   else {
-    cerr << "fsi_grid should not be initialized more than once!!!!" << endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "fsi_grid should not be initialized more than once!!!!" );
   }
   //ct grid
   if (fsi_ct_grid == NULL) {
@@ -61,8 +61,7 @@ AbstractFsiCTGrid(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir), fsi
     }
   }
   else {
-    cerr << "fsi_ct_grid should not be initialized more than once!!!!" << endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "fsi_ct_grid should not be initialized more than once!!!!" );
   }
 }
 
@@ -93,8 +92,7 @@ GlauberGrid::~GlauberGrid() {
 //interpolation of the grid after r,cth,phi have been set
 complex < double >GlauberGrid::getFsiGridFull_interp() {
   if (!filledallgrid) {
-    cerr << "You have to fill the grids first!" << endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "You have to fill the grids first!" );
   }
   //sanity check to see that the right amount of knocked out nucleons end up in the final state!
   //if((getTotalProtonOut()==getProtonKnockout())&&(getTotalNeutronOut()==getNeutronKnockout())){
@@ -113,8 +111,7 @@ complex < double >GlauberGrid::getFsiGridFull_interp() {
 //interpolation of the grid after r,th,phi have been set
 complex < double >GlauberGrid::getFsiCtGridFull_interp() {
   if (!filledallgrid) {
-    cerr << "You have to fill the grids first!" << endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "You have to fill the grids first!" );
   }
   //sanity check to see that the right amount of knocked out nucleons end up in the final state!
 //   if((getTotalProtonOut()==getProtonKnockout())&&(getTotalNeutronOut()==getNeutronKnockout())){
@@ -136,8 +133,7 @@ complex < double >GlauberGrid::getFsiGridN_interp(int grid) {
     return (grid == 0 ? getFsiGridFull_interp() : getFsiCtGridFull_interp());
   }
   else {
-    cerr << "grid number not supported!" << endl;
-    exit(1);
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "grid number not supported!" );
   }
 }
 
@@ -187,8 +183,7 @@ void GlauberGrid::constructAllGrids() {
     }
   }
   else {
-    cerr << "Treshold should only be initialized once!" << endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "Treshold should only be initialized once!" );
   }
   
   //fill the arrays!
@@ -331,8 +326,7 @@ void GlauberGrid::constructCtGrid() {
     }
   }
   else {
-    cerr << "Treshold should only be initialized once!" << endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "Treshold should only be initialized once!" );
   }
   //fill ct array!
   for (int i = 0; i <= getRgrid(); i++) {
@@ -452,8 +446,7 @@ void GlauberGrid::calcGlauberphasesBoth(const int i, const int j, const int k) {
       if (integrator == 0) {
         double restimate = 0., thetaestimate = 0., phiestimate = 0.;
         if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
-          cerr << "You should be using the OneGlauberGrid class boy!" << endl;
-          exit(1);
+          throw std::invalid_argument(nucqcd::ErrorMessage() << "You should be using the OneGlauberGrid class boy!" );
         }
         else {
           complex < double >results[2] = { 0., 0. };
@@ -464,8 +457,7 @@ void GlauberGrid::calcGlauberphasesBoth(const int i, const int j, const int k) {
       }
       else if (integrator == 1 || integrator == 2) {
         if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
-          cerr << "You should be using the OneGlauberGrid class boy!" << endl;
-          exit(1);
+          throw std::invalid_argument(nucqcd::ErrorMessage() << "You should be using the OneGlauberGrid class boy!" );
         }
         else {
           numint::array < double, 3 > lower = { {0., -1., 0.} };
@@ -506,8 +498,7 @@ void GlauberGrid::calcGlauberphasesCt(const int i, const int j, const int k) {
       if (integrator == 0) {
         double restimate = 0., thetaestimate = 0., phiestimate = 0.;
         if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
-          cerr << "You should be using the OneGlauberGrid class boy!" << endl;
-          exit(1);
+          throw std::invalid_argument(nucqcd::ErrorMessage() << "You should be using the OneGlauberGrid class boy!" );
         }
 
         else {
@@ -518,8 +509,7 @@ void GlauberGrid::calcGlauberphasesCt(const int i, const int j, const int k) {
       }
       else if (integrator == 1 || integrator == 2) {
         if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
-          cerr << "You should be using the OneGlauberGrid class boy!" << endl;
-          exit(1);
+          throw std::invalid_argument(nucqcd::ErrorMessage() << "You should be using the OneGlauberGrid class boy!" );
         }
         else {
           numint::array < double, 3 > lower = { {0., -1., 0.} };
@@ -570,8 +560,7 @@ void GlauberGrid::readinFsiGrid(ifstream & infile) {
     }
   }
   else {
-    cerr << "fsi_grid not initialized!!!!" << endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "fsi_grid not initialized!!!!" );
   }
 }
 
@@ -595,8 +584,7 @@ void GlauberGrid::readinFsiCtGrid(ifstream & infile) {
     }
   }
   else {
-    cerr << "fsi_ct_grid not initialized!!!!" << endl;
-    exit(1);
+    throw std::logic_error(nucqcd::ErrorMessage() << "fsi_ct_grid not initialized!!!!" );
   }
 }
 
