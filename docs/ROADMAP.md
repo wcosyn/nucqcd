@@ -414,6 +414,7 @@ one commit per bug; no `[known-bug]` tests remain.
     - [x] `TSpinor.h` (94 members), with the spinor conventions.
     - [x] Deuteron wave function implementations: `TWavefunctionImplementation`, `TYukawaPWF`, `TGrossPWF`, `TCstPWF`, `TInterpolatingWavefunction` (150 members).
     - [x] `constants.hpp` (macro aliases); the third-party MSTW code (`mstwpdf.h/.cpp`) is excluded from the docs.
+    - [x] Lorentz and Dirac algebra: `FourVector`, `Matrix`, `GammaStructure`, `TLorentzQuaternion` (132 members).
 
 ## 6. Structural refactors
 
