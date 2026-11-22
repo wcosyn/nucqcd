@@ -11,8 +11,8 @@
 using namespace std;
 
 
-//data type needed for complex (fortran data type) return 
-typedef struct{double dr; double di;} complex_;
+/// Fortran COMPLEX return value: real part dr, imaginary part di
+typedef struct{double dr; /*!< real part */ double di; /*!< imaginary part */} complex_;
 
 //fortran imports
 extern"C"{

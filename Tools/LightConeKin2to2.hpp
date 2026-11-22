@@ -72,7 +72,7 @@ public:
   double getEk() const{return Ek;} /*!< [MeV] on-shell energy of LC rescaled deuteron momentum */
   double getZs() const{return zs;} /*!< [MeV] (A_mu*ps_mu)/(A_mu*q_mu) */
   
-  double getPs_norm2() const{return ps_mu[1]*ps_mu[1]+ps_mu[2]*ps_mu[2]+ps_mu[3]*ps_mu[3];}
+  double getPs_norm2() const{return ps_mu[1]*ps_mu[1]+ps_mu[2]*ps_mu[2]+ps_mu[3]*ps_mu[3];} ///< [MeV^2] squared norm of the spectator three-momentum
   
   double getS() const{return (q_mu+A_mu)*(q_mu+A_mu);} /*!< [MeV^2] Mandelstam s */
   

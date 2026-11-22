@@ -162,7 +162,7 @@ public:
    */
   double getLeptonSSA_sf(TKinematics2to2 &kin, TElectronKinematics &el, double Einoff) const;
     
-  const std::string & getName() const{return name;}
+  const std::string & getName() const{return name;} ///< name of the structure-function parametrization
   
 private:
 //   TElectronKinematics electron; /*!< electron kinematics */

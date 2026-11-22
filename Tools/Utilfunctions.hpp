@@ -8,7 +8,7 @@
 #define UTILFUNCTIONS_H
 
 
-#define SIGN(x) ((x>0)-(x<0))
+#define SIGN(x) ((x>0)-(x<0)) /*!< sign of x: -1, 0 or 1 */
 
 #include <cstdarg>
 #include "ErrorMessage.hpp"
@@ -111,8 +111,10 @@ void freematrix(double **matrix, int n); /*!< free a n*? matrix on the heap*/
 // 	+ t*(comps*grid[sindex][tindex+1][uindex+1]
 // 	+ s*grid[sindex+1][tindex+1][uindex+1]));
 // }
+/// trilinear interpolation in a 3D grid: weights s, t, u (and comps = 1-s, ...) between the points with indices (sindex, tindex, uindex) and the next ones
 std::complex<double> Interp3d(std::complex<double> ***grid, double s, double t, double u, 
 			  double comps, double compt, double compu, int sindex, int tindex, int uindex);
+/// trilinear interpolation in a real 3D grid, see the complex version
 double Interp3d(double ***grid, double s, double t, double u, 
 			  double comps, double compt, double compu, int sindex, int tindex, int uindex);
 /*! template function for romberg integration of N functions (slightly different preferably) T f(x)

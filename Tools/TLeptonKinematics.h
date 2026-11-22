@@ -38,9 +38,11 @@ class TLeptonKinematics : public TObject
 
   virtual TLeptonKinematics* Clone(const char * ="") const { return new TLeptonKinematics(*this); } /*!< ROOT Cloner */
 
-  enum Lepton { electron = 0,
-		       muon = 1,
-		       tau = 2 };
+  /// lepton type
+  enum Lepton { electron = 0, ///< electron
+		       muon = 1,     ///< muon
+		       tau = 2       ///< tau
+  };
 
   /*! indirect constructorcreator 
    * \param lep lepton type
@@ -60,9 +62,9 @@ class TLeptonKinematics : public TObject
 //   double GetEpsilon(const TKinematics2to2&) const; 
   double GetCosScatterAngle(const TKinematics2to2&) const; /*!< \return costheta_l [-1,1] cosine of the lepton scattering angle */
 //   double GetTan2HalfAngle(const TKinematics2to2&) const;
-  double GetBeamEnergy(const TKinematics2to3&) const;
+  double GetBeamEnergy(const TKinematics2to3&) const; ///< [MeV] energy of the incoming beam
 //   double GetEpsilon(const TKinematics2to3&) const; /*!< \return costheta_l [-1,1] cosine of the lepton scattering angle */
-  double GetCosScatterAngle(const TKinematics2to3&) const;
+  double GetCosScatterAngle(const TKinematics2to3&) const; ///< cosine of the lepton scattering angle, in [-1,1]
   double GetLeptonMass() const{return mass;} /*!< [MeV] returns lepton mass */
 //   double GetTan2HalfAngle(const TKinematics2to3&) const;
   static const double masse; /*!< [MeV] electronmass */

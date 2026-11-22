@@ -140,7 +140,7 @@ public:
   double getF2(); /*!< returns the F2 structure function */
   const std::string getName() const{return name;} /*!< returns the name of the chosen parametrization */
   double getW(){return sqrt(Wsq);} /*!< [MeV] returns the invariant mass of X*/
-  bool getProton() const{return proton;}
+  bool getProton() const{return proton;} ///< structure functions of the proton (true) or the neutron (false)
   
   /*! returns the g1 structure function from the grsv2000 parametrization (leading order,  hep-ph/0011215, Tools/grsv2000pdf_g1.f )
    * \param proton 1=proton 0=neutron
@@ -184,7 +184,7 @@ private:
   double x; /*!< Bjorken x */
   double Q2; /*!< [MeV^2] Q^2 of the virtual photon */
   double Wsq; /*!< [MeV^2] invariant mass squared W^2 */
-  c_mstwpdf *mstw;
+  c_mstwpdf *mstw; ///< MSTW PDF interpolation object
   
   /*! proton F2 SLAC parametrization
    * \param massi [GeV] initial mass, off-shell

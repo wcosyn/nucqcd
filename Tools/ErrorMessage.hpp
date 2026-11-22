@@ -36,15 +36,16 @@ namespace nucqcd {
  * constructor of a standard exception. */
 class ErrorMessage {
  public:
+  /// appends a value to the message
   template <class T>
   ErrorMessage &operator<<(const T &value) {
     stream_ << value;
     return *this;
   }
-  operator std::string() const { return stream_.str(); }
+  operator std::string() const { return stream_.str(); } ///< the message
 
  private:
-  std::ostringstream stream_;
+  std::ostringstream stream_; ///< the message being built
 };
 
 }  // namespace nucqcd
