@@ -556,9 +556,8 @@ Add LHAPDF6 sets as a parametrization in `NucleonStructure` (and so in `NuclStru
 `DeuteronStructure` and the programs that take a structure-function name), the C++ counterpart of
 `LHAPDFStructure` in `taggedpd/nucleon.py` of the poldeut repository.
 
-- [ ] **Physics** (as in poldeut): leading-order parton model, \f$ F_2 = \sum_q e_q^2\, x(q+\bar q) \f$
-  (nf = 5 by default) from an unpolarized set and \f$ g_1 = \frac12\sum_q e_q^2(\Delta q+\Delta\bar q) \f$
-  (nf = 3 by default) from a polarized set; the neutron by isospin (u <-> d); F1 = F2/(2x(1+R)) with R
+- [ ] **Physics** (as in poldeut): leading-order parton model, F₂ = Σ_q e_q² x(q + q̄) (nf = 5 by
+  default) from an unpolarized set and g₁ = ½ Σ_q e_q² (Δq + Δq̄) (nf = 3 by default) from a polarized set; the neutron by isospin (u <-> d); F1 = F2/(2x(1+R)) with R
   a constant or R1998 (`getr1998`); g1+g2 from the Wandzura-Wilczek relation, tabulated at
   construction on (x, Q^2) nodes, as for GRSV.
 - [ ] **Interface:** a name such as `"LHAPDF:CT18LO"` (and an optional polarized set and member), or a
