@@ -411,6 +411,7 @@ one commit per bug; no `[known-bug]` tests remain.
     - [x] `TDeuteron.h`, including the D-wave conventions (also stated in `Poldeut` and `Deut_Conv_EMTLF`).
     - [x] `TKinematics2to3.h` (303 members).
     - [x] `TKinematics.h` (107 members).
+    - [x] `TSpinor.h` (94 members), with the spinor conventions.
 
 ## 6. Structural refactors
 
