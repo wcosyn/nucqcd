@@ -143,6 +143,23 @@ one commit per bug; no `[known-bug]` tests remain.
   `filledgrid`, and `DistMomDistrGrid` has its own logic without this bug. Tested in a `slow` case
   of `reg_glauber_grid`. **FSI+CT grid files cached before this fix may be wrong** (those written by
   a run that had computed a grid before reading another one from the cache); delete them if in doubt.
+- [x] **`TKinematics2to3WithLabAngles`: overlapping `sprintf` (found during step 5).** The format
+  string of each solution was built with `sprintf(formatString, "%s...", formatString, ...)`, where
+  the destination is also a source: undefined behaviour. With gcc -O3 the first four tokens were
+  lost, and constructing the solutions failed with "Format string should provide 6 independent
+  variables" (and exited), so `DoubleNCross` (`progs/attic/twonucl`) could not run. Fixed by copying
+  the first tokens first (and using `snprintf`); it was the only such call in the code. Tested in
+  `unit_kinematics` (12C(e,e'pn) kinematics: conservation laws, and the solutions are built).
+- [ ] **`TKinematics2to3WithLabAngles::GetSolution` has no masses for isospin channel 7 (found
+  during step 5).** `UpdateKinematics` constructs the solutions as `TKinematics2to3` without passing
+  the masses, so for channel 7 (masses given by the caller, used for A(e,e'pN)) their masses are 0
+  and their vectors NaN. The object itself is correct, and no code calls `GetSolution`. Fix: pass
+  `fMd, fMn, fMk, fMy`.
+- [ ] **`DoubleNModel` (found during step 5).** (1) The z component of r₂ in the integrand used
+  φ₂ instead of cos θ₂. (2) With `pw = 1` the FSI grids are not created, but the integrand still
+  calls them: segfault. (3) With SRC correlations on (`corr = 1`) the result is NaN (not yet
+  investigated). Also, the integral does not converge at the twonucl SRC kinematics, where the
+  uncorrelated matrix element nearly vanishes.
 - [x] **`WeakQECross` neutral current:** the NC constructor never initialized `lepton`, but
   `getDiffWeakQECross` dereferenced it, so nuclear NC cross sections segfaulted. NC now takes its
   kinematics from the electron object.

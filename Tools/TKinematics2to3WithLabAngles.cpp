@@ -51,6 +51,7 @@ using std::cout; using std::cerr;
 #include <cassert>
 #include <cstring>
 #include <cstdio>
+#include <string>
 #include <vector>
 using std::vector;
 
@@ -625,8 +626,11 @@ void TKinematics2to3WithLabAngles::UpdateKinematics()
     name2[1] = '\0';
 
     // paste everything together
-    std::sprintf(formatString,"%s%s%s%s%s%s%s%s%s",
-		 formatString,name23,"costh",name2,"cm:",
+    // (formatString is copied first: passing it both as destination and as source is undefined
+    // behaviour, which with gcc -O3 dropped the first four tokens)
+    const std::string first4(formatString);
+    std::snprintf(formatString,sizeof(formatString),"%s%s%s%s%s%s%s%s%s",
+		 first4.c_str(),name23,"costh",name2,"cm:",
 		 name23,"phi",name2,"cm");
     
     // Create the solution
