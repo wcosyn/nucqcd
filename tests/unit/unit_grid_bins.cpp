@@ -109,3 +109,19 @@ TEST_CASE("FastParticle copies keep the decay width", "[gridbins]") {
   CHECK(assigned.gridBinCentre().getDecay_dil() == std::round(rho.getDecay_dil()));
   CHECK_THAT(rho.gridBinCentre().getDecay_dil(), WithinRel(rho.getDecay_dil(), 0.5 / rho.getDecay_dil()));
 }
+
+TEST_CASE("FastParticle: pi- Glauber parameters are the isospin mirror of pi+", "[gridbins]") {
+  // pi- p = pi+ n and pi- n = pi+ p; until 2026-11 PI_MIN used the pi+ tables unswapped (since 2012)
+  const std::string dir = nucqcd_test::share_dir();
+  for (double p : {400., 1000., 3000.}) {
+    const FastParticle piplus(FastParticle::PI_PLUS, 0, p, 0., 0., 1., 0., 1., 1., dir);
+    const FastParticle piminus(FastParticle::PI_MIN, 0, p, 0., 0., 1., 0., 1., 1., dir);
+    REQUIRE(piplus.getSigmap() != piplus.getSigman());  // the test is not trivial
+    CHECK(piminus.getSigmap() == piplus.getSigman());
+    CHECK(piminus.getSigman() == piplus.getSigmap());
+    CHECK(piminus.getBeta2p() == piplus.getBeta2n());
+    CHECK(piminus.getBeta2n() == piplus.getBeta2p());
+    CHECK(piminus.getEpsilonp() == piplus.getEpsilonn());
+    CHECK(piminus.getEpsilonn() == piplus.getEpsilonp());
+  }
+}

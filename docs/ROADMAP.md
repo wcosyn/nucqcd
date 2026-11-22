@@ -172,12 +172,15 @@ one commit per bug; no `[known-bug]` tests remain.
   Knockout) and `Pair`, `Newcoef` (from MePhys) now live in `progs/attic/twonucl` and are compiled
   into `twonucl`; `unit_pair` compiles `pair.cpp` and `newcoef.cpp` from there (`nucqcd_add_test`
   takes `SOURCES`). `RecMosh` (Moshinsky brackets, tested in `unit_moshinsky`) stays in MePhys.
-- [ ] **π⁻ Glauber parameters (found while documenting `FastParticle`).** For `PI_MIN` the constructor
+- [x] **π⁻ Glauber parameters (found while documenting `FastParticle`).** For `PI_MIN` the constructor
   takes the π⁺p tables for scattering off protons and the π⁺n tables for neutrons, exactly as for
   `PI_PLUS`. By isospin π⁻p = π⁺n, and until commit `1666202` (2012-04-23), when the file reads were
   replaced by static tables, the π⁻ case did swap them (the old call is still there, commented out).
   No library code or program creates a `PI_MIN` explicitly (`PionTCross` uses π⁺), so no known results
-  are affected. Fix: swap the tables for `PI_MIN`; this changes π⁻ results, so it needs the author's OK.
+  are affected. **Fixed** (with the author's OK): `PI_MIN` swaps the tables, in the constructor and in
+  `interpPionGlauberData`. Tested in `unit_grid_bins`. Cached π⁻ grids (`Ptype3` in the file name)
+  were computed with the old parameters; the cache key contains σ, so most of them are not reused,
+  but delete them to be sure.
 - [x] **`WeakQECross` neutral current:** the NC constructor never initialized `lepton`, but
   `getDiffWeakQECross` dereferenced it, so nuclear NC cross sections segfaulted. NC now takes its
   kinematics from the electron object.
