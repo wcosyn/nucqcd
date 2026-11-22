@@ -20,13 +20,8 @@ offshellset(offshell),
 electron(elec),
 structure(proton,strucname){
 
-  wf = TDeuteron::Wavefunction::CreateWavefunction(wavename);
+  wf.reset(TDeuteron::Wavefunction::CreateWavefunction(wavename));
   
-}
-
-
-InclusiveCross::~InclusiveCross(){
- delete wf; 
 }
 
 

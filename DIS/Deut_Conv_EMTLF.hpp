@@ -3,6 +3,7 @@
 
 
 #include <vector>
+#include <memory>
 #include <cmath>
 #include <iostream>
 #include <cstdarg>
@@ -31,7 +32,6 @@ Deut_Conv_EMTLF(const std::string &wfname);
  * @brief Destructor
  * 
  */
-~Deut_Conv_EMTLF();
 
 
 /**
@@ -191,7 +191,7 @@ static std::vector< std::complex<double> > getGFF_nucl(const int sigma_in, const
                         const double alpha_1, const std::complex<double> p1R, const std::complex<double> p1L, const double t,
                         const double GFF_A, const double GFF_J, const double GFF_D);
 
-TDeuteron::Wavefunction *wfref; /*!< contains instance of deuteron wave function*/
+std::unique_ptr<TDeuteron::Wavefunction> wfref; /*!< contains instance of deuteron wave function*/
 TInterpolatingWavefunction wf;
 
 

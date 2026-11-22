@@ -32,13 +32,8 @@ ffactorseq(NULL),
 ffactorsdiff(NULL),
 ffparam(ff_param){
 
-  wf = TDeuteron::Wavefunction::CreateWavefunction(wavename);
+  wf.reset(TDeuteron::Wavefunction::CreateWavefunction(wavename));
   minpcm=1.E03;
-}
-
-
-DQEinclusive::~DQEinclusive(){
- delete wf; 
 }
 
 

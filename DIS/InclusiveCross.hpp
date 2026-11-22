@@ -11,6 +11,7 @@
 #define INCLUSIVECROSS_HPP
 
 #include <string>
+#include <memory>
 #include <TElectronKinematics.h>
 #include <DeuteronStructure.hpp>
 #include <TDeuteron.h>
@@ -42,7 +43,6 @@ public:
   InclusiveCross(bool proton, std::string strucname, std::string wavename, TElectronKinematics &elec,
 		 std::vector<double> & res, int offshell, 
 		 double sigmain=40.,double betain=8., double epsilonin=-0.5, double betaoffin=8., double lambdain=1.2);
-  ~InclusiveCross(); /*!< Destructor */
   /*! Calculates the plane-wave inclusive cross on-shell section without any prefactors, just the deuteron structure functions time
    * momentum distribution
    * \param Q2 [MeV^2] Q^2 of virtual photon
@@ -192,7 +192,7 @@ public:
   
   
   void setOffshell(const int offshell){offshellset=offshell;} /*!< set offshell parametrization */
-  TDeuteron::Wavefunction* getDeutwf() const{return wf;} /*!< get instance to deuteron wave function */
+  TDeuteron::Wavefunction* getDeutwf() const{return wf.get();} /*!< get instance to deuteron wave function */
   /*! set resonance value
    * \param it index of resonance
    * \param value [MeV] resonance mass 
@@ -222,7 +222,7 @@ private:
    */
   int offshellset;
 
-  TDeuteron::Wavefunction *wf; /*!< pointer to deuteron wave funtion, see TDeuteron */
+  std::unique_ptr<TDeuteron::Wavefunction> wf; /*!< pointer to deuteron wave funtion, see TDeuteron */
   TElectronKinematics electron; /*!< electron kinematis, see TElectronKinematics */
   DeuteronStructure structure;  /*!< deuteron structure functions object, see DeuteronStructure */
 

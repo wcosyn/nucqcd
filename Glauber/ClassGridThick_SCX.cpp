@@ -24,9 +24,7 @@ ClassGridThick_SCX::ClassGridThick_SCX(double (*densf)(double,void*),void* dens_
 	_zpoints(zpoints),
 	_bstep(0.),
 	_zstep(0.),
-	_dens_fctr(1.),
-	_grid(NULL),
-	_errorGrid(NULL)
+	_dens_fctr(1.)
 	{
 	assert( _fp->getParticletype() == FastParticle::Particletype::P_CLASS_SCX || _fp->getParticletype() == FastParticle::Particletype::N_CLASS_SCX);
 	_bstep =    _rmax/(_bpoints-1.); // 0 to rmax
@@ -38,23 +36,13 @@ ClassGridThick_SCX::ClassGridThick_SCX(double (*densf)(double,void*),void* dens_
 	std::cout << "#[ClassGridThick::info]  FastParticle (Sigmap,Sigman) is  " << "(" << _fp->getSigmap() << ", " << _fp->getSigman() << ")"  << std::endl;
 }
 
-ClassGridThick_SCX::~ClassGridThick_SCX(){
-	if ( _grid != NULL ){ // make sure grid has been constructed
-		for (int bi=0; bi<_bpoints;bi++){
-			delete[] _grid[bi];
-			delete[] _errorGrid[bi];
-		}
-		delete[] _grid;
-		delete[] _errorGrid;
-	}
-}
 
 /** Constructs the grid with actual SCX probabilities.
  *  Call this once you have set _dens_fctr to your liking...
  *  Remember density should be normed to A.
  * */
 void ClassGridThick_SCX::constructGrid(){
-	assert(_grid==NULL && _errorGrid==NULL && _bstep > 0. && _zstep > 0.);
+	assert(_grid.empty() && _errorGrid.empty() && _bstep > 0. && _zstep > 0.);
 	std::fstream file;
 	file.open(_filename,std::ios::binary | std::ios::in);
 	bool input = (bool)file;
@@ -78,11 +66,9 @@ void ClassGridThick_SCX::constructGrid(){
 	std::cout << "#[ClassGridThick::info] constructing grid " << _bpoints << " by " << _zpoints << std::endl;
 	std::cout << "#[ClassGridThick::info] steps are " << _bstep << "  " << _zstep << std::endl;
 	std::cout << "#[ClassGridThick::info] density correction factor is = " << _dens_fctr << std::endl;
-	_grid = new double*[_bpoints];
-	_errorGrid = new double*[_bpoints];
+	_grid.assign(_bpoints,std::vector<double>(_zpoints,0.));
+	_errorGrid.assign(_bpoints,std::vector<double>(_zpoints,0.));
 	for (int bi=0; bi<_bpoints; bi++){
-		_grid[bi] = new double[_zpoints];
-		_errorGrid[bi] = new double[_zpoints];
 		for (int zi=0; zi<_zpoints; zi++){
 			double b = bi*_bstep;  // b [0,rmax]
 			double z = -_rmax + zi*_zstep; // z [-rmax,rmax]
@@ -160,7 +146,7 @@ void ClassGridThick_SCX::printDensityGrid(){
  *  */
 double ClassGridThick_SCX::getInterp(double x[],double& res,double& err){ // x is r,costheta,phi 
 	//std::cout << "# ClassGridThick_SCX got interpolation request for " << x[0] << " " << x[1] << " " << x[2] << std::endl;
-	assert( _grid != NULL); // make sure grid has been constructed
+	assert( !_grid.empty()); // make sure grid has been constructed
 	_fp->setHitcoord(x[0],x[1],sqrt(1.-x[1]*x[1]),cos(x[2]),sin(x[2]) ); // set the hitcoordinates for the fast particle
 	//std::cout << "#Interpolation for " << x[0] << ", " << x[1] << ", " << x[2] << "
 	double z = _fp->getHitz();//x[0]*x[1]; // z = r \cos \theta

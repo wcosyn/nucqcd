@@ -10,6 +10,7 @@
 #define INCLUSIVECROSSRES_HPP
 
 #include <string>
+#include <memory>
 #include <TElectronKinematics.h>
 #include <DeuteronStructure.hpp>
 #include <TDeuteron.h>
@@ -41,7 +42,6 @@ public:
    */  
   InclusiveCrossRes(bool proton, std::string strucname, std::string wavename, TElectronKinematics &elec, 
 		    int symm, int offshell, bool fixprop, int kin_choice);
-  ~InclusiveCrossRes(); /*!< Destructor */
     /*! Calculates the plane-wave inclusive cross section without any prefactors, just the deuteron structure functions time
    * momentum distribution
    * \param Q2 [MeV^2] Q^2 of virtual photon
@@ -89,7 +89,7 @@ private:
 
   
 
-  TDeuteron::Wavefunction *wf; /*!< pointer to deuteron wave funtion, see TDeuteron */
+  std::unique_ptr<TDeuteron::Wavefunction> wf; /*!< pointer to deuteron wave funtion, see TDeuteron */
   TElectronKinematics electron; /*!< electron kinematis, see TElectronKinematics */
   DeuteronStructure structure;  /*!< deuteron structure functions object, see DeuteronStructure */
 
