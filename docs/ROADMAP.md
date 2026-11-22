@@ -192,8 +192,10 @@ one commit per bug; no `[known-bug]` tests remain.
   For the standard convention it calls `GetPhik(fAC)` without `return`, falls through and returns
   the kaon azimuth in the `kY` convention whatever `fAC` is (`GetPhiy` and `GetPhin` do return). Wrong
   whenever `fAC` is not `kY`, e.g. `GetPhik()` and the variable "phik" (`GetVarByGetter`) with `kN` or
-  `kK`, as in `TKinematics2to3WithLabAngles` for A(e,e'pN). Fix: add the `return`; changes results
-  that use the kaon azimuth with `kK`/`kN`, so it needs the author's OK.
+  `kK`. No results are affected: the only call in the code is `fPhik = GetPhik(kN)` inside the class
+  (explicit convention), and nothing calls `GetPhik()`, `GetVar("phik")`, `GetVarArray("phik")` or
+  `GetVarByGetter`; "phik" in a format string (A(e,e'pN) with `kN`) points directly at `fPhik`.
+  Fix: add the `return`.
 - [x] **`WeakQECross` neutral current:** the NC constructor never initialized `lepton`, but
   `getDiffWeakQECross` dereferenced it, so nuclear NC cross sections segfaulted. NC now takes its
   kinematics from the electron object.
