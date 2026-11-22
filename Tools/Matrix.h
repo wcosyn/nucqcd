@@ -1,11 +1,10 @@
-/*
-  Matrix.h
-  Class representing a general (K x L) matrix
-  The components are complex doubles
-
-  author: Pieter Vancraeyveld (pieter.vancraeyveld@ugent.be)
-
-*/
+/*! \file Matrix.h
+ * \brief Complex K x L matrix with a fixed size
+ * \author Pieter Vancraeyveld (pieter.vancraeyveld@ugent.be)
+ *
+ * \addtogroup MePhys
+ * @{
+ */
 
 #ifndef MATRIX_H
 #define MATRIX_H
@@ -19,6 +18,7 @@
 //---- Certain classes and functions need to be pre-declared
 //---- See C++ FAQ lite 35.16 as to why
 
+/// forward declaration
 template<int K,int L> class Matrix;  // pre-declare Matrix<K,L>
 // pre-declare friend template functions of Matrix<K,L>
 template<int K,int L> Matrix<K,L> operator*(double,const Matrix<K,L>&);
@@ -29,21 +29,24 @@ template<int K,int L> std::ostream& operator<<(std::ostream&,const Matrix<K,L>&)
 //-------------------------------------------------------------------------
 //---- class Matrix<K,L> declaration
 
+/*! \brief Complex K x L matrix; indices run from 0, the components are stored row by row */
 template< int K, int L >
 class Matrix
 {
  private:
   // Data member
   // -----------
-  std::complex<double>* m;
+  std::complex<double>* m; ///< the K*L components, row by row
 
  public:
   // Constructors
   // ------------
-  Matrix();                                // Default Constructor
+  Matrix(); ///< default constructor: all components zero
   //Matrix(std::complex<double>);               // Ambiguous
+  /// constructor for a 2x2, 4x1 or 1x4 matrix, components row by row
   Matrix(std::complex<double>,std::complex<double>,
-	 std::complex<double>,std::complex<double>); // Constructor for 2x2/4x1/1x4 matrix
+	 std::complex<double>,std::complex<double>);
+  /// constructor for a 4x4, 8x2, 2x8, 1x16 or 16x1 matrix, components row by row
   Matrix(std::complex<double>,std::complex<double>,
 	 std::complex<double>,std::complex<double>,
 	 std::complex<double>,std::complex<double>,
@@ -51,72 +54,76 @@ class Matrix
 	 std::complex<double>,std::complex<double>,
 	 std::complex<double>,std::complex<double>,
 	 std::complex<double>,std::complex<double>,
-	 std::complex<double>,std::complex<double>); // Constructor for 4x4/8x2/2x8/1x16/16x1 matrix
-  Matrix(const Matrix&);                   // copy constructor
+	 std::complex<double>,std::complex<double>);
+  Matrix(const Matrix&); ///< copy constructor
 
   // Destructor
   // ----------
-  ~Matrix();
+  ~Matrix(); ///< destructor
 
   // Assignment
   // ----------
-  Matrix& operator=(const Matrix&);
+  Matrix& operator=(const Matrix&); ///< assignment
 
   // Access individual components
   // ----------------------------
-  std::complex<double>& operator()(int,int);
-  const std::complex<double> operator()(int,int) const;
+  std::complex<double>& operator()(int,int); ///< component (row, column), from 0; throws std::out_of_range outside the matrix
+  const std::complex<double> operator()(int,int) const; ///< component (row, column), from 0; throws std::out_of_range outside the matrix
 
   // Addition
   // --------
-  Matrix& operator+=(const Matrix&);
-  Matrix& operator-=(const Matrix&);
+  Matrix& operator+=(const Matrix&); ///< addition
+  Matrix& operator-=(const Matrix&); ///< subtraction
 
-  Matrix operator+(const Matrix&) const;
-  Matrix operator-(const Matrix&) const;
+  Matrix operator+(const Matrix&) const; ///< sum
+  Matrix operator-(const Matrix&) const; ///< difference
   
   // Scalar multiplication
   // ---------------------
-  Matrix& operator*=(double);
-  Matrix& operator*=(const std::complex<double>&);
+  Matrix& operator*=(double); ///< multiplication by a number
+  Matrix& operator*=(const std::complex<double>&); ///< multiplication by a number
 
-  friend Matrix operator*<>(double,const Matrix&);
-  friend Matrix operator*<>(const std::complex<double>&,const Matrix&);
+  friend Matrix operator*<>(double,const Matrix&); ///< number times matrix
+  friend Matrix operator*<>(const std::complex<double>&,const Matrix&); ///< number times matrix
   
-  Matrix operator*(double) const;
-  Matrix operator*(const std::complex<double>&) const;
+  Matrix operator*(double) const; ///< matrix times number
+  Matrix operator*(const std::complex<double>&) const; ///< matrix times number
 
   // Addition with Scalar multiplication
   // -----------------------------------
-  Matrix& multiAdd(double,const Matrix&);
-  Matrix& multiAdd(const std::complex<double>&,const Matrix&);
+  Matrix& multiAdd(double,const Matrix&); ///< adds a number times a matrix: *this += f * m
+  Matrix& multiAdd(const std::complex<double>&,const Matrix&); ///< adds a number times a matrix: *this += f * m
 
   // Matrix multiplication
   // ---------------------
+  /// matrix product; throws std::invalid_argument when the sizes do not match
   template< int K1, int L1, int K2, int L2 >
     friend Matrix<K1,L2> operator*(const Matrix<K1,L1>& left,
 				   const Matrix<K2,L2>& right);
+  /// product of a row and a column: a number
   template< int L1 , int K2 >
     friend std::complex<double> operator*(const Matrix<1,L1>& left,
 				     const Matrix<K2,1>& right);
+  /// right multiplication by a square matrix
   template < int K1, int L1 >
     friend Matrix<K1,L1>& operator*=(Matrix<K1,L1>& left,
 				     const Matrix<L1,L1>& right);
 
   // Matrix manipulations
   // --------------------
-  Matrix<L,K> T() const;                       // Transpose
-  Matrix<L,K> H() const;                       // Hermitian conjugate
-  friend Matrix<2,2> sqrt(const Matrix<2,2>&); // sqrt of 2x2 matrix
+  Matrix<L,K> T() const; ///< transpose
+  Matrix<L,K> H() const; ///< Hermitian conjugate
+  friend Matrix<2,2> sqrt(const Matrix<2,2>&); ///< square root of a Hermitian 2x2 matrix (by diagonalization)
+  /// trace of a square matrix
   template< int K1 >
     friend std::complex<double> Trace(const Matrix<K1,K1>&); // Trace
 
   // Output
   // ------
-  void print(int, int) const;       // Print the (x,y) component
-  void print() const;               // Print all components
-  void printReal() const;           // Print the real part of all components 
-  friend std::ostream& operator<< <>(std::ostream&, const Matrix&); // Overload <<
+  void print(int, int) const; ///< prints component (row, column)
+  void print() const; ///< prints all components
+  void printReal() const; ///< prints the real parts of all components
+  friend std::ostream& operator<< <>(std::ostream&, const Matrix&); ///< prints all components
 };
 
 //-------------------------------------------------------------------------
@@ -419,6 +426,7 @@ Matrix<K,L> Matrix<K,L>::operator*(const std::complex<double>& factor) const
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // (double*matrix)
+/// number times matrix
 template< int K, int L >
 Matrix<K,L> operator*(double factor, const Matrix<K,L>& matrix)
 {
@@ -431,6 +439,7 @@ Matrix<K,L> operator*(double factor, const Matrix<K,L>& matrix)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // (complex*matrix)
+/// number times matrix
 template< int K, int L >
 Matrix<K,L> operator*(const std::complex<double>& factor,
 		      const Matrix<K,L>& matrix)
@@ -446,6 +455,7 @@ Matrix<K,L> operator*(const std::complex<double>& factor,
 // Matrix multiplication
 // ---------------------
 
+/// matrix product; throws std::invalid_argument when the sizes do not match
 template< int K1, int L1, int K2, int L2 >
 Matrix<K1,L2> operator*(const Matrix<K1,L1>& left, const Matrix<K2,L2>& right)
 {
@@ -473,6 +483,7 @@ Matrix<K1,L2> operator*(const Matrix<K1,L1>& left, const Matrix<K2,L2>& right)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Matrix multiplication resulting in a scalar
+/// product of a row and a column: a number
 template< int L1 , int K2 >
 std::complex<double> operator*(const Matrix<1,L1>& left, const Matrix<K2,1>& right)
 {
@@ -489,6 +500,7 @@ std::complex<double> operator*(const Matrix<1,L1>& left, const Matrix<K2,1>& rig
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+/// right multiplication by a square matrix
 template < int K1, int L1 >
 Matrix<K1,L1>& operator*=(Matrix<K1,L1>& left,const Matrix<L1,L1>& right)
 {
@@ -531,6 +543,7 @@ Matrix<L,K> Matrix<K,L>::H() const
 
 // Trace of square matrices
 // ------------------------
+/// trace of a square matrix
 template< int K>
 std::complex<double> Trace(const Matrix<K,K>& m)
 {
@@ -593,6 +606,7 @@ void Matrix<K,L>::printReal() const
 //-------------------------------------------------------------------------
 
 // Enables output using << operator
+/// prints all components
 template< int K, int L >
 std::ostream& operator<<(std::ostream& output, const Matrix<K,L>& matrix)
 {
@@ -614,4 +628,5 @@ std::ostream& operator<<(std::ostream& output, const Matrix<K,L>& matrix)
 
 
 
+/** @} */
 #endif

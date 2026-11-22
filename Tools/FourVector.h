@@ -1,11 +1,10 @@
-/*
-  FourVector.h
-  Class representing a general 4-vector in Minkowski space
-  The components of the 4-vector can be virtually everything
-
-  author: Pieter Vancraeyveld (pieter.vancraeyveld@ugent.be)
-
-*/
+/*! \file FourVector.h
+ * \brief Four-vector in Minkowski space with components of any type (numbers, matrices, GammaStructure)
+ * \author Pieter Vancraeyveld (pieter.vancraeyveld@ugent.be)
+ *
+ * \addtogroup MePhys
+ * @{
+ */
 
 
 #ifndef FOURVECTOR_H
@@ -23,99 +22,115 @@
 //---- Certain classes and functions need to be pre-declared
 //---- See C++ FAQ lite 35.16 as to why
 
+/// forward declaration
 template<typename T> class FourVector;
+/// prints a four-vector
 template<typename T> 
 std::ostream& operator<<(std::ostream&,const FourVector<T>&);
 
 /*Global functions for conversion 
 from ROOT 4vectors to strangecalc 4vectors.*/
+/// applies a ROOT Lorentz transformation to a FourVector
 template<typename T>
 FourVector<T> operator*(const TLorentzRotation&, const FourVector<T>&);
 
-FourVector<double> ToFourVector(const TLorentzVector&);
-TLorentzVector ToLorentzVector(const FourVector<double>&);
+FourVector<double> ToFourVector(const TLorentzVector&); ///< converts a ROOT TLorentzVector to a FourVector
+TLorentzVector ToLorentzVector(const FourVector<double>&); ///< converts a FourVector to a ROOT TLorentzVector
 
 //-------------------------------------------------------------------------
 //---- class FourVector<T> declaration
 
+/*! \brief Four-vector (t, x, y, z) with components of type T
+ *
+ * Index 0 is the time component. The metric is (+,-,-,-): the product of two four-vectors is
+ * \f$ a\cdot b = a^0 b^0 - \vec a\cdot\vec b \f$. Components can be numbers, Matrix objects or
+ * GammaStructure objects, e.g. the four-vector of gamma matrices, so that a contraction such as
+ * \f$ \gamma^\mu p_\mu \f$ is written as a product.
+ */
 template< typename T >
 class FourVector
 {
  public:
   // Constructors
   // ------------
-  FourVector(); // default constructor (all components are zero)
-  FourVector(const T&,const T&,const T&,const T&);
+  FourVector(); ///< default constructor (all components zero)
+  FourVector(const T&,const T&,const T&,const T&); ///< constructor with the components (t, x, y, z)
 
   // Access individual components
   // ----------------------------
-  T& operator[](int);
-  T operator[](int) const;
+  T& operator[](int); ///< component mu (0 = t, 1 = x, 2 = y, 3 = z)
+  T operator[](int) const; ///< component mu (0 = t, 1 = x, 2 = y, 3 = z)
 
   // Assignment
   // ----------
-  FourVector& operator=(const FourVector&);
+  FourVector& operator=(const FourVector&); ///< assignment
  
   // Addition
   // --------
-  FourVector& operator+=(const FourVector& right);
-  FourVector& operator-=(const FourVector& right);
+  FourVector& operator+=(const FourVector& right); ///< addition
+  FourVector& operator-=(const FourVector& right); ///< subtraction
 
-  FourVector operator+(const FourVector&) const;
-  FourVector operator-(const FourVector& right) const;
+  FourVector operator+(const FourVector&) const; ///< sum
+  FourVector operator-(const FourVector& right) const; ///< difference
 
   // Unary minus
   // -----------
-  FourVector operator-() const;
+  FourVector operator-() const; ///< unary minus
 
   // Vector multiplication
   // ---------------------
-  T operator*(const FourVector&) const;
+  T operator*(const FourVector&) const; ///< Minkowski product, metric (+,-,-,-)
+  /// Minkowski product with a four-vector of matrices
   template< typename X, int K, int L >
     friend Matrix<K,L> operator*(const FourVector<X>&,
 				 const FourVector< Matrix<K,L> >&);
+  /// Minkowski product of a four-vector of gamma structures and a four-vector, e.g. gamma^mu p_mu
   template< typename X >
     friend GammaStructure operator*(const FourVector<GammaStructure>&,
 				    const FourVector<X>&);
+  /// Minkowski product of a four-vector and a four-vector of gamma structures
   template< typename X >
     friend GammaStructure operator*(const FourVector<X>&,
 				    const FourVector<GammaStructure>&);
   
   // Scalar multiplication
   // ---------------------
+  /// multiplication of all components by a factor
   template< typename X, typename F >
     friend FourVector<X> operator*(const FourVector<X>&, const F&);
+  /// multiplication of all components by a factor
   template< typename X, typename F >
     friend FourVector<X> operator*(const F&, const FourVector<X>&);
+  /// multiplication of all components by a factor
   template< typename X, typename F >
     friend FourVector<X>& operator*=(FourVector<X>&, const F&);
+  /// gamma structure times each component
   template< typename X >
     friend FourVector<GammaStructure> operator*(const GammaStructure&,
 						const FourVector<X>&);
+  /// each component times a gamma structure
   template< typename X >
     friend FourVector<GammaStructure> operator*(const FourVector<X>&,
 						const GammaStructure&);
 
   // General
   // -------
-  FourVector lowerIndex() const; /* Lowering the index of the 4vector
-				  * is equivalent to multiplication
-				  * with the metric */
-  double theta() const; // polar angle of the 3vector
-  double phi() const; // azimuthal angle of the 3vector
+  FourVector lowerIndex() const; ///< the four-vector with lowered index, (t, -x, -y, -z)
+  double theta() const; ///< [rad] polar angle of the three-vector
+  double phi() const; ///< [rad] azimuthal angle of the three-vector
 
   // Output
   // ------
-  void print() const; // print to screen
-  friend std::ostream& operator<< <>(std::ostream&,const FourVector&); // overload <<
+  void print() const; ///< prints the components
+  friend std::ostream& operator<< <>(std::ostream&,const FourVector&); ///< prints the components
 
  private:
   // Data members (components)
   // -------------------------
-  T t;
-  T x;
-  T y;
-  T z;  
+  T t; ///< t component
+  T x; ///< x component
+  T y; ///< y component
+  T z; ///< z component
 };
 
 //-----------------------------------------------------------------------
@@ -291,6 +306,7 @@ T FourVector<T>::operator*(const FourVector<T>& right) const
 
 // Special type of vector multiplication
 // in which the right side is a KxL matrix
+/// Minkowski product with a four-vector of matrices
 template< typename X, int K, int L >
 Matrix<K,L> operator*(const FourVector<X>& left,
 		      const FourVector< Matrix<K,L> >& right)
@@ -306,6 +322,7 @@ Matrix<K,L> operator*(const FourVector<X>& left,
 
 // Special type of vector multiplication
 // in which the left side is a GammaStructure
+/// Minkowski product of a four-vector of gamma structures and a four-vector
 template< typename T >
 GammaStructure operator*(const FourVector<GammaStructure>& left,
 			 const FourVector<T>& right)
@@ -321,6 +338,7 @@ GammaStructure operator*(const FourVector<GammaStructure>& left,
 
 // Special type of vector multiplication
 // in which the right side is a GammaStructure
+/// Minkowski product of a four-vector and a four-vector of gamma structures
 template< typename X >
 GammaStructure operator*(const FourVector<X>& left,
 			 const FourVector<GammaStructure>& right)
@@ -338,6 +356,7 @@ GammaStructure operator*(const FourVector<X>& left,
 // ---------------------
 
 // (FourVector * factor)
+/// multiplication of all components by a factor
 template< typename X , typename F>
 FourVector<X> operator*(const FourVector<X>& vect, const F& factor)
 {
@@ -350,6 +369,7 @@ FourVector<X> operator*(const FourVector<X>& vect, const F& factor)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // (FourVector * factor)
+/// multiplication of all components by a factor
 template< typename X , typename F>
 FourVector<X>& operator*=(FourVector<X>& vect, const F& factor)
 {
@@ -364,6 +384,7 @@ FourVector<X>& operator*=(FourVector<X>& vect, const F& factor)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // (factor * FourVector)
+/// multiplication of all components by a factor
 template< typename X, typename F>
 FourVector<X> operator*(const F& factor, const FourVector<X>& vect)
 {
@@ -376,6 +397,7 @@ FourVector<X> operator*(const F& factor, const FourVector<X>& vect)
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // (GammaStructure * T 4vector)
+/// gamma structure times each component
 template< typename X >
 FourVector<GammaStructure> operator*(const GammaStructure& left,
 				     const FourVector<X>& right)
@@ -389,6 +411,7 @@ FourVector<GammaStructure> operator*(const GammaStructure& left,
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // (T 4vector * GammaStructure)
+/// each component times a gamma structure
 template< typename X >
 FourVector<GammaStructure> operator*(const FourVector<X>& left,
 				     const GammaStructure& right)
@@ -478,6 +501,7 @@ FourVector<T> operator*(const TLorentzRotation& rot, const FourVector<T>& v)
 }
 
 // We define the 4vector gamma_{mu} containing 4 GammaStructures
+/// four-vector of gamma matrices with the components (gamma^0, gamma^1, gamma^2, gamma^3): GMU * p = gamma^mu p_mu (p-slash)
 const FourVector<GammaStructure> GMU(GammaStructure(0,0,1),
 				     GammaStructure(0,0,0,1),
 				     GammaStructure(0,0,0,0,1),
@@ -486,4 +510,5 @@ const FourVector<GammaStructure> GMU(GammaStructure(0,0,1),
 
 
 
+/** @} */
 #endif
