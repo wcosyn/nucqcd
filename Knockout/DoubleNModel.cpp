@@ -216,10 +216,11 @@ complex<double> DoubleNModel::MC_helper(const double r1, const double costheta1,
   double sintheta2 = sqrt(1.-costheta2*costheta2);
   
   TVector3 r1vec = TVector3(sintheta1*cos(phi1),sintheta1*sin(phi1),costheta1)*r1;
-  TVector3 r2vec = TVector3(sintheta2*cos(phi2),sintheta2*sin(phi2),phi2)*r2;
+  TVector3 r2vec = TVector3(sintheta2*cos(phi2),sintheta2*sin(phi2),costheta2)*r2; // z was phi2 until 2026-11
   
   complex<double> glf1r1, glf1r2, glf2r1, glf2r2;
-  if(getSRC()){
+  if(getPW()){ glf1r1=glf1r2=glf2r1=glf2r2=1.; } // no FSI grids in plane-wave mode (this crashed until 2026-11)
+  else if(getSRC()){
     if(getCT()){
       glf1r1=getGridf1()->getFsiSrcCtGridFull_interp3(r1,costheta1,phi1);
       glf1r2=getGridf1()->getFsiSrcCtGridFull_interp3(r2,costheta2,phi2);

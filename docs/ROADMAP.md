@@ -156,11 +156,19 @@ one commit per bug; no `[known-bug]` tests remain.
   and their vectors NaN. The object itself is correct, and no code calls `GetSolution`. **Fixed:**
   the masses `fMd, fMn, fMk, fMy` are passed (channels 1–6 set their own masses anyway). Tested in
   `unit_kinematics` (the solutions conserve energy and momentum and reproduce the input).
-- [ ] **`DoubleNModel` (found during step 5).** (1) The z component of r₂ in the integrand used
-  φ₂ instead of cos θ₂. (2) With `pw = 1` the FSI grids are not created, but the integrand still
-  calls them: segfault. (3) With SRC correlations on (`corr = 1`) the result is NaN (not yet
-  investigated). Also, the integral does not converge at the twonucl SRC kinematics, where the
-  uncorrelated matrix element nearly vanishes.
+- [x] **`DoubleNModel` and `Pair` (found during step 5).** A(e,e'NN) with correlated pairs, unfinished
+  since the first commit (2012) and never used for results: the 2012 Vegas logs of
+  `progs/twonucl` did not converge (correlated −1.65 ± 1.18, uncorrelated 0.183 ± 0.054). Fixed:
+  (1) the z component of r₂ in the integrand was φ₂ instead of cos θ₂; (2) with `pw = 1` the FSI
+  grids were not created but still read (segfault); now the Glauber factors are 1; (3) `Pair`
+  returned NaN at r₁ = ±r₂ (0/0 in the relative and c.m. coordinates, and u(r)/r at r = 0); (4) the
+  azimuth of the relative coordinate in `Pair::getrelcoord` was computed from r₁ + r₂ (the c.m.
+  azimuth) instead of r₁ − r₂. The headers now say the code is unfinished. Tested in `unit_pair`.
+  Not fixed: the integral does not converge at the twonucl SRC kinematics, where the uncorrelated
+  matrix element nearly vanishes. Observed on the way: the Paris deuteron u(r)/r and w(r)/r
+  (`TDeuteron`) are numerically noisy below about 0.01 fm (w(r)/r = −0.09 at 10⁻⁴ fm), probably
+  cancellations in the analytic form; this carries almost no weight in integrals over d³r.
+  Next: move the code to the attic (repo hygiene).
 - [x] **`WeakQECross` neutral current:** the NC constructor never initialized `lepton`, but
   `getDiffWeakQECross` dereferenced it, so nuclear NC cross sections segfaulted. NC now takes its
   kinematics from the electron object.

@@ -1,5 +1,9 @@
 //
 // Class of pair ( n1 l1 j1 mj1 t1, n2 l2 j2 mj2 t2)
+//
+// Unfinished (2012), never validated; only used by DoubleNModel (see its warning). Bugs fixed in
+// 2026-11: NaN of the coordinates and of the deuteron radial functions at r1 = +-r2, and the azimuth
+// of the relative coordinate (it was the c.m. azimuth).
 // 
 #ifndef PAIR_H
 #define PAIR_H

@@ -75,3 +75,11 @@ This is not a complete list. Add to it when you trace a result back to the progr
 - **`progs/deepsdis`**: DEEPS and BONuS spectator-tagging analyses, including the BONuS paper plots
   (`bonustest`), and b1 calculations compared with Kumano's model (`b1_calc`, `b1_calc_comp`).
   The experiment data are in `share/expdata/`.
+
+## Unfinished code
+
+- **A(e,e'NN) with correlated pairs** (`Knockout/DoubleNModel`, `Knockout/DoubleNCross`,
+  `Tools/pair`, `progs/twonucl`), in the initial import of 2012-03 and not developed further. The
+  Vegas logs committed with `progs/twonucl` (`corrpn`, `uncorrpn`, `corrtest`, `uncorrtest`,
+  removed in 2017) show that the 6D integral did not converge at its ¹²C(e,e'pn) kinematics, and no
+  results came from it. Several bugs were fixed in 2026-11 ([ROADMAP.md](ROADMAP.md), step 4).
