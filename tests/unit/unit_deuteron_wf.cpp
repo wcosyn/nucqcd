@@ -11,6 +11,7 @@
 #include <cmath>
 #include <functional>
 #include <memory>
+#include <stdexcept>
 #include <string>
 
 using Catch::Matchers::WithinAbs;
@@ -154,4 +155,13 @@ TEST_CASE("D-wave conventions: sign of w(r) and W(p), and the Bessel transform b
     CHECK(std::abs(wf->DeuteronPState(0, 1, 1, 150. * dir) - (-wf->GetWp(150.) * cg * Y2m1)) < 1e-12 * wf->GetWp(150.));
     CHECK(std::abs(wf->DeuteronRState(0, 1, 1, 2. * dir) - (wf->GetWr(2.) * cg * Y2m1)) < 1e-12 * wf->GetWr(2.));
   }
+}
+
+TEST_CASE("TDeuteron::Wavefunction: errors are exceptions", "[deuteron][errors]") {
+  // until 2026-11 an unknown name returned a null pointer (with a warning), and getResidu() of a
+  // non-Yukawa wave function had no return value when assertions were off
+  CHECK_THROWS_AS(TDeuteron::Wavefunction::CreateWavefunction("Nijmegen"), std::invalid_argument);
+  CHECK_NOTHROW(make_wf("nijm3"));
+  CHECK_THROWS_AS(make_wf("nijm3")->getResidu(), std::logic_error);
+  CHECK(make_wf("AV18")->getResidu() > 0.);
 }

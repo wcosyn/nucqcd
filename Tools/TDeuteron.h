@@ -94,7 +94,7 @@ class TDeuteron
     static Wavefunction *CreateNijmegenWavefunction(); ///< Nijmegen III, "nijm3" (interpolated tables); the caller owns it
     static Wavefunction *CreateTestWavefunction(); ///< test wave function (interpolated tables); the caller owns it
     /*! creates the wave function with the given name (see the class description); the caller owns it
-     * \return the wave function, or a null pointer (with a warning) for an unknown name */
+     * \return the wave function \throw std::invalid_argument for an unknown name */
     static Wavefunction *CreateWavefunction(const TString& name);
   
     double GetUr(double r) const { return fImplementation->GetUr(r); } ///< [fm^-1/2] reduced S wave u(r) \param r [fm]
@@ -110,7 +110,7 @@ class TDeuteron
     double GetVSp(double p) const { return fImplementation->GetVSp(p); } ///< [MeV^-3/2] spin-singlet P wave in momentum space (relativistic only) \param p [MeV]
     double Radial_r(int l, double r) const { return fImplementation->Radial_r(l,r); } ///< [fm^-1/2] u(r) for l=0, w(r) for l=2 \param l orbital angular momentum \param r [fm]
     double Radial_p(int l, double p) const { return fImplementation->Radial_p(l,p); } ///< [MeV^-3/2] U(p) for l=0, W(p) for l=2 \param l orbital angular momentum \param p [MeV]
-    double getResidu() const; ///< [MeV^1/2] residue of the pole of the wave function, for the on-shell extrapolation (Yukawa parametrizations only)
+    double getResidu() const; ///< [MeV^1/2] residue of the pole of the wave function, for the on-shell extrapolation (Yukawa parametrizations only; throws std::logic_error for the others)
   
     bool   IsRelativistic() const { return fRelativistic; } ///< true for the relativistic (Gross) wave functions
 
