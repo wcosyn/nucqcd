@@ -144,7 +144,7 @@ struct Ftor_conv_real{
  * @param alpha_1 [] lc momentum fraction of initial nucleon
  * @param kperp [MeV] perp lf momentum entering in initial deuteron wf
  * @param kphi [] azimuthal angle of lf momentum entering in initial deuteron wf
- * @param[in] emt object that contains the deuteron wave function
+ * @param[in] emt EMT object from which this integration is called, used to get parameters and functionality for within the integrand
  * @param t [MeV^2] momentum transfer sq
  * @param pold_in polarization initial deuteron state (-1//0//+1)
  * @param pold_out polarization final deuteron state (-1//0//+1)
@@ -164,7 +164,7 @@ static void int_k3(numint::vector_z & res, double alpha_1, double kperp, double 
  * @param alpha_1 [] lc momentum fraction of initial nucleon
  * @param kperp [MeV] perp lf momentum entering in initial deuteron wf
  * @param kphi [] azimuthal angle of lf momentum entering in initial deuteron wf
- * @param[in] emt object that contains the deuteron wave function
+ * @param[in] emt EMT object from which this integration is called, used to get parameters and functionality for within the integrand
  * @param t [MeV^2] momentum transfer sq
  * @param deltax [MeV!!!] perp component of the momentum transfer, along x-axis
  * @param GFF_A nucleon gravitational form factor A(t)
