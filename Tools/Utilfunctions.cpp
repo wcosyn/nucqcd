@@ -337,7 +337,7 @@ void Bookkeep(int argc, char* argv[], string* arg_names){
   
   // Get git version
   std::string git_version;
-  std::string git_command = "cd " + std::string(HOMEDIR) + " && git rev-parse --short HEAD";
+  std::string git_command = "cd " + std::string(nucqcd::share_dir) + " && git rev-parse --short HEAD";
   FILE* git_pipe = popen(git_command.c_str(), "r");
   if (git_pipe) {
       char buffer[128];

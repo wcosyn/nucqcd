@@ -330,7 +330,7 @@ bool TElectronKinematics::SolveKinematics(const double Q2, const double nu) cons
     // Find the scattering angle
     fScatterAngle = 1. - Q2/2./fBeamEnergy/(fBeamEnergy-nu);
     if( fabs(fScatterAngle) > 1. ) {
-      if( fabs(fScatterAngle)-1.0 < STRANGEUFLOW ) 
+      if( fabs(fScatterAngle)-1.0 < nucqcd::strange_underflow ) 
      	fScatterAngle = ( fScatterAngle>0.0 ? 1.0 : -1.0 );
       else
 	return false;
@@ -338,17 +338,17 @@ bool TElectronKinematics::SolveKinematics(const double Q2, const double nu) cons
 
     // Finally calculate epsilon
     if( fScatterAngle<= -1. ) fEpsilon = 0.;
-    else if( Q2<STRANGEUFLOW ) fEpsilon = 1.;
+    else if( Q2<nucqcd::strange_underflow ) fEpsilon = 1.;
     else {
       ftan2HalfAngle = (1.-fScatterAngle)/(1.+fScatterAngle);
       fEpsilon = 1./(1.+2.*(1.+nu*nu/Q2)
 		     *ftan2HalfAngle);
     }
     if( fEpsilon < 0. ) {
-      if( fEpsilon < -STRANGEUFLOW ) return false;
+      if( fEpsilon < -nucqcd::strange_underflow ) return false;
       else fEpsilon = 0.;
     } else if( fEpsilon > 1. ) {
-      if( (fEpsilon-1.) > STRANGEUFLOW ) return false;
+      if( (fEpsilon-1.) > nucqcd::strange_underflow ) return false;
       else fEpsilon = 1.;
     }
     break;
@@ -358,13 +358,13 @@ bool TElectronKinematics::SolveKinematics(const double Q2, const double nu) cons
     if( fEpsilon<0. || fEpsilon>1. ) return false;
 
     // Find the scattering angle
-    if( Q2<STRANGEUFLOW ) fScatterAngle = 1.;
+    if( Q2<nucqcd::strange_underflow ) fScatterAngle = 1.;
     else {
       tmp = (1./fEpsilon-1.)/2./(1.+nu*nu/Q2);
       fScatterAngle = (1.-tmp)/(1.+tmp);
     }
     if( fabs(fScatterAngle) > 1. ) {
-      if( fabs(fScatterAngle)-1.0 < STRANGEUFLOW ) 
+      if( fabs(fScatterAngle)-1.0 < nucqcd::strange_underflow ) 
      	fScatterAngle = ( fScatterAngle>0.0 ? 1.0 : -1.0 );
       else
 	return false;
@@ -372,7 +372,7 @@ bool TElectronKinematics::SolveKinematics(const double Q2, const double nu) cons
 
     // Calculate the beam energy
     if( fScatterAngle > 1. ) return false;
-    else if( fScatterAngle == 1. ) fBeamEnergy = nu + STRANGEUFLOW;
+    else if( fScatterAngle == 1. ) fBeamEnergy = nu + nucqcd::strange_underflow;
     else
       fBeamEnergy = nu/2. + sqrt(nu*nu/4.
 					   +Q2/2./(1.-fScatterAngle));
@@ -383,14 +383,14 @@ bool TElectronKinematics::SolveKinematics(const double Q2, const double nu) cons
   case kScatterAngle:
     // Solve the kinematics starting with the scattering angle
     if( fabs(fScatterAngle) > 1. ) {
-      if( fabs(fScatterAngle)-1.0 < STRANGEUFLOW ) 
+      if( fabs(fScatterAngle)-1.0 < nucqcd::strange_underflow ) 
      	fScatterAngle = ( fScatterAngle>0.0 ? 1.0 : -1.0 );
       else
 	return false;
     }
 
     // Find the beam energy
-    if( fScatterAngle == 1. ) fBeamEnergy = nu + STRANGEUFLOW;
+    if( fScatterAngle == 1. ) fBeamEnergy = nu + nucqcd::strange_underflow;
     else
       fBeamEnergy = nu/2. + sqrt( nu*nu/4.
 					    +Q2/2./(1.-fScatterAngle) );
@@ -398,17 +398,17 @@ bool TElectronKinematics::SolveKinematics(const double Q2, const double nu) cons
 
     // Calculate epsilon
     if( fScatterAngle<= -1. ) fEpsilon = 0.;
-    else if( Q2<STRANGEUFLOW ) fEpsilon = 1.;
+    else if( Q2<nucqcd::strange_underflow ) fEpsilon = 1.;
     else {
       ftan2HalfAngle = (1.-fScatterAngle)/(1.+fScatterAngle);
       fEpsilon = 1./(1.+2.*(1.+nu*nu/Q2)
 		     *ftan2HalfAngle);
     }
     if( fEpsilon < 0. ) {
-      if( fEpsilon < -STRANGEUFLOW ) return false;
+      if( fEpsilon < -nucqcd::strange_underflow ) return false;
       else fEpsilon = 0.;
     } else if( fEpsilon > 1. ) {
-      if( (fEpsilon-1.) > STRANGEUFLOW ) return false;
+      if( (fEpsilon-1.) > nucqcd::strange_underflow ) return false;
       else fEpsilon = 1.;
     }
     ftan2HalfAngle = (1.-fScatterAngle)/(1.+fScatterAngle);

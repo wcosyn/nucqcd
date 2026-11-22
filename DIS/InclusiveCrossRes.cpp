@@ -6,8 +6,8 @@ using namespace std;
 
 InclusiveCrossRes::InclusiveCrossRes(bool proton, string strucname, string wavename, 
 				     TElectronKinematics &elec, int sym, int offshell, bool fixpropp, int k_c)
-:massi(proton? MASSP:MASSN),
-massr(proton? MASSN:MASSP),
+:massi(proton? nucqcd::mass_p:nucqcd::mass_n),
+massr(proton? nucqcd::mass_n:nucqcd::mass_p),
 symm(sym),
 fixprop(fixpropp),
 t_choice(0),
@@ -26,8 +26,8 @@ double InclusiveCrossRes::calc_F2Dinc(double Q2,double x){
   
   double result;
   double prestimate=0.,cosestimate=0.;
-  rombergerN(this,&InclusiveCrossRes::int_pr,0.,1.e03,1,&result,PREC*1.E-03,3,10,&prestimate, x, Q2, &cosestimate);
-  return 2.*PI*2.*massi/MASSD*result;
+  rombergerN(this,&InclusiveCrossRes::int_pr,0.,1.e03,1,&result,nucqcd::integration_prec*1.E-03,3,10,&prestimate, x, Q2, &cosestimate);
+  return 2.*PI*2.*massi/nucqcd::mass_d*result;
   
   
 }
@@ -44,12 +44,12 @@ void InclusiveCrossRes::int_pr(double prnorm, double *result, va_list ap){
   double lo=-1;
   double hi=1.;
   //Wx^2> massi^2
-  double lowerlimit= -(-massi*massi-Q2+pow(MASSD-Er,2.)-prnorm*prnorm+2.*(MASSD-Er)*Q2/(2.*massi*x))/(2.*qvec*prnorm);
+  double lowerlimit= -(-massi*massi-Q2+pow(nucqcd::mass_d-Er,2.)-prnorm*prnorm+2.*(nucqcd::mass_d-Er)*Q2/(2.*massi*x))/(2.*qvec*prnorm);
   if(lowerlimit>lo) {lo=lowerlimit;}
   if(hi<lo){ *result=0.; return;}
-  rombergerN(this, &InclusiveCrossRes::int_costheta_incl,lo+1e-04,hi-1.e-04,1,result,PREC*1.E-03,3,10,pcosestimate,prnorm, x,Q2);
+  rombergerN(this, &InclusiveCrossRes::int_costheta_incl,lo+1e-04,hi-1.e-04,1,result,nucqcd::integration_prec*1.E-03,3,10,pcosestimate,prnorm, x,Q2);
   if(prnorm<1.e-04) *result=0.; 
-  else *result*=prnorm*prnorm*(pow(wf->GetUp(prnorm),2.)+pow(wf->GetWp(prnorm),2.))/(4.*PI)*(MASSD/(2.*(MASSD-Er)));
+  else *result*=prnorm*prnorm*(pow(wf->GetUp(prnorm),2.)+pow(wf->GetWp(prnorm),2.))/(4.*PI)*(nucqcd::mass_d/(2.*(nucqcd::mass_d-Er)));
   return;
 }
 
@@ -63,9 +63,9 @@ void InclusiveCrossRes::int_costheta_incl(double costheta, double *result, va_li
   double Er=sqrt(massr*massr+prnorm*prnorm);
   double qvec=sqrt(Q2+pow(Q2/(2.*massi*x),2.));
   double nu=Q2/(2.*massi*x);
-  double Wx=sqrt(MASSD*MASSD-Q2+massr*massr+2.*MASSD*(nu-Er)-2.*nu*Er+2.*qvec*prnorm*costheta);
-  TKinematics2to2 kin("","",MASSD,massr,Wx,"qsquared:wlab:pklab",Q2,nu,prnorm);
-  double structfactor=structure.getInclStructure(kin,MASSD-Er);
+  double Wx=sqrt(nucqcd::mass_d*nucqcd::mass_d-Q2+massr*massr+2.*nucqcd::mass_d*(nu-Er)-2.*nu*Er+2.*qvec*prnorm*costheta);
+  TKinematics2to2 kin("","",nucqcd::mass_d,massr,Wx,"qsquared:wlab:pklab",Q2,nu,prnorm);
+  double structfactor=structure.getInclStructure(kin,nucqcd::mass_d-Er);
   if(structfactor==0.) {*result=0.; return; }
   //no phi integration, symmetry is already used in getInclStructure()
   *result=structfactor;
@@ -79,7 +79,7 @@ void InclusiveCrossRes::int_costheta_incl(double costheta, double *result, va_li
 void InclusiveCrossRes::calc_F2DincFSI(double &fsi1, double &fsi2, double Q2,double x){
   
   fsi1=fsi2=0.;
-  double s = Q2*(MASSD/(massi*x)-1.)+MASSD*MASSD;
+  double s = Q2*(nucqcd::mass_d/(massi*x)-1.)+nucqcd::mass_d*nucqcd::mass_d;
   size_t max=getResonance_vec().size();
   for(size_t res1=0; res1<getResonance_vec().size(); res1++) {
     if(pow(getResonance_vec()[res1].getMass()+massr,2.)>s){
@@ -91,12 +91,12 @@ void InclusiveCrossRes::calc_F2DincFSI(double &fsi1, double &fsi2, double Q2,dou
     for(size_t res2=0; res2<max; res2++){
       double results[2];
       double prestimate=0.,cosestimate=0.;
-      rombergerN(this,&InclusiveCrossRes::int_pr_fsi,0.,1.e03,2,results,PREC,3,10,&prestimate, x, Q2, res1, res2, &cosestimate);
+      rombergerN(this,&InclusiveCrossRes::int_pr_fsi,0.,1.e03,2,results,nucqcd::integration_prec,3,10,&prestimate, x, Q2, res1, res2, &cosestimate);
       double chi2 = sqrt(s*s-2.*s*(getResonance_vec()[res1].getMass2()+massr*massr)+pow(massr*massr-getResonance_vec()[res1].getMass2(),2.));
 //          cout << res1 << " " << res2 << " " << results[0]*chi2 << " " << results[1]*chi2 << endl;
       //cout << res1 << " " << res2 << " " << s*1.E-06 << " " << chi2*1.E-06 << endl;
-      fsi1+=results[0]*2.*PI*2.*massi/MASSD*chi2;
-      fsi2+=results[1]*2.*PI*2.*massi/MASSD*chi2;                
+      fsi1+=results[0]*2.*PI*2.*massi/nucqcd::mass_d*chi2;
+      fsi2+=results[1]*2.*PI*2.*massi/nucqcd::mass_d*chi2;                
     }
   }
  //cout << fsi1 << " " << fsi2 << endl;
@@ -119,10 +119,10 @@ void InclusiveCrossRes::int_pr_fsi(double prnorm, double *results, va_list ap){
   double lo=-1;
   double hi=1.;
   //Wx^2> massi^2
-  double lowerlimit= -(-massi*massi-Q2+pow(MASSD-Er,2.)-prnorm*prnorm+2.*(MASSD-Er)*Q2/(2.*massi*x))/(2.*qvec*prnorm);
+  double lowerlimit= -(-massi*massi-Q2+pow(nucqcd::mass_d-Er,2.)-prnorm*prnorm+2.*(nucqcd::mass_d-Er)*Q2/(2.*massi*x))/(2.*qvec*prnorm);
   if(lowerlimit>lo) {lo=lowerlimit;}
   if(hi<lo){ results[0]=0.; results[1]=0.; return;}
-  rombergerN(this, &InclusiveCrossRes::int_costheta_incl_fsi,lo+1e-04,hi-1.e-04,2,results,PREC,3,8,pcosestimate,prnorm, x,Q2,res1,res2);
+  rombergerN(this, &InclusiveCrossRes::int_costheta_incl_fsi,lo+1e-04,hi-1.e-04,2,results,nucqcd::integration_prec,3,8,pcosestimate,prnorm, x,Q2,res1,res2);
 
   results[0]*=prnorm*prnorm;
   results[1]*=prnorm*prnorm;
@@ -141,18 +141,18 @@ void InclusiveCrossRes::int_costheta_incl_fsi(double costheta, double *results, 
   double Er=sqrt(massr*massr+prnorm*prnorm);
   double qvec=sqrt(Q2+pow(Q2/(2.*massi*x),2.));
   double nu=Q2/(2.*massi*x);
-  Wxprime2=MASSD*MASSD-Q2+massr*massr+2.*MASSD*(nu-Er)-2.*nu*Er+2.*qvec*prnorm*costheta;
+  Wxprime2=nucqcd::mass_d*nucqcd::mass_d-Q2+massr*massr+2.*nucqcd::mass_d*(nu-Er)-2.*nu*Er+2.*qvec*prnorm*costheta;
   TKinematics2to2 *kin1=NULL,*kin2=NULL;
 //   if(fixprop) {
-//     kin1 = new TKinematics2to2("","",MASSD,massr,sqrt(getResonance_vec()[res1].getMass2()),"qsquared:wlab:pklab",Q2,nu,prnorm);
-//     kin2 = new TKinematics2to2("","",MASSD,massr,sqrt(getResonance_vec()[res2].getMass2()),"qsquared:wlab:pklab",Q2,nu,prnorm);
+//     kin1 = new TKinematics2to2("","",nucqcd::mass_d,massr,sqrt(getResonance_vec()[res1].getMass2()),"qsquared:wlab:pklab",Q2,nu,prnorm);
+//     kin2 = new TKinematics2to2("","",nucqcd::mass_d,massr,sqrt(getResonance_vec()[res2].getMass2()),"qsquared:wlab:pklab",Q2,nu,prnorm);
 //   }
 //   else {
-    kin1= new TKinematics2to2("","",MASSD,massr,sqrt(Wxprime2),"qsquared:wlab:pklab",Q2,nu,prnorm);
-    kin2 = new TKinematics2to2("","",MASSD,massr,sqrt(Wxprime2),"qsquared:wlab:pklab",Q2,nu,prnorm);
+    kin1= new TKinematics2to2("","",nucqcd::mass_d,massr,sqrt(Wxprime2),"qsquared:wlab:pklab",Q2,nu,prnorm);
+    kin2 = new TKinematics2to2("","",nucqcd::mass_d,massr,sqrt(Wxprime2),"qsquared:wlab:pklab",Q2,nu,prnorm);
 //   }
-  double structfactor1=structure.getInclStructure(*kin1,MASSD-Er);
-  double structfactor2=structure.getInclStructure(*kin2,MASSD-Er);
+  double structfactor1=structure.getInclStructure(*kin1,nucqcd::mass_d-Er);
+  double structfactor2=structure.getInclStructure(*kin2,nucqcd::mass_d-Er);
   if(abs(structfactor1<1E-09)||std::isnan(structfactor1)) {results[0]=0.; results[1]=0.; return; }
   if(abs(structfactor2<1E-09)||std::isnan(structfactor2)) {results[0]=0.; results[1]=0.; return; }
 //   double chi=sqrt(kin.GetS()*kin.GetS()-2.*kin.GetS()*
@@ -162,10 +162,10 @@ void InclusiveCrossRes::int_costheta_incl_fsi(double costheta, double *results, 
 								   prnorm*costheta)); 
   double qresults[2];
   double qestimate=0.,qphiestimate=0.;
-  rombergerN(this,&InclusiveCrossRes::int_qt,0.,1.E03,2,qresults,PREC,3,7,&qestimate,kin1,kin2,wave,res1,res2,&qphiestimate);
+  rombergerN(this,&InclusiveCrossRes::int_qt,0.,1.E03,2,qresults,nucqcd::integration_prec,3,7,&qestimate,kin1,kin2,wave,res1,res2,&qphiestimate);
   
   results[0]= 1./(32.*PI*PI*3.)
-		*sqrt(MASSD/(2.*(MASSD-Er)*Er))/**chi*/;
+		*sqrt(nucqcd::mass_d/(2.*(nucqcd::mass_d-Er)*Er))/**chi*/;
   results[1]= results[0];
   results[0]*=structfactor1*qresults[0]/kin1->GetKlab();
   results[1]*=structfactor2*qresults[1]/kin2->GetKlab();
@@ -185,7 +185,7 @@ void InclusiveCrossRes::int_qt(double qt, double *results, va_list ap){
   double *pqphiestimate = va_arg(ap,double*);
   
   if(qt<1.E-03) {results[0]=results[1]=0.; return;}
-  rombergerN(this, &InclusiveCrossRes::int_qphi,0.,2*PI,2,results,PREC,3,7,pqphiestimate,qt,pkin1,pkin2,wave,res1,res2);
+  rombergerN(this, &InclusiveCrossRes::int_qphi,0.,2*PI,2,results,nucqcd::integration_prec,3,7,pqphiestimate,qt,pkin1,pkin2,wave,res1,res2);
   
   results[0]*=qt;
   results[1]*=qt;
@@ -228,7 +228,7 @@ void InclusiveCrossRes::int_qphi(double qphi, double *results, va_list ap){
     double Erprime=sqrt(massr*massr+pprime*pprime);
 //     cout << pkin1->GetS() << " " << pow(Er+sqrt(getResonance_vec()[res1].getMass2()+pkin1->GetKlab()*pkin1->GetKlab()+pkin1->GetPklab()*pkin1->GetPklab()-2.*prz*pkin1->GetKlab()),2.)-pkin1->GetKlab()*pkin1->GetKlab() << " " <<
 //     pow(Erprime+sqrt(getResonance_vec()[res2].getMass2()+pkin1->GetKlab()*pkin1->GetKlab()+pprime*pprime-2.*przprime*pkin1->GetKlab()),2.)-pkin1->GetKlab()*pkin1->GetKlab() << endl;
-    if((Erprime>MASSD)
+    if((Erprime>nucqcd::mass_d)
       ||(((pkin1->GetS()<pow(Er+sqrt(getResonance_vec()[res1].getMass2()    //s<(Er+sqrt(MR1^2+(q-pr)^2))^2-q^2
 	    +pkin1->GetKlab()*pkin1->GetKlab()+pkin1->GetPklab()*pkin1->GetPklab()
 	    -2.*prz*pkin1->GetKlab()),2.)-pkin1->GetKlab()*pkin1->GetKlab())
@@ -251,7 +251,7 @@ void InclusiveCrossRes::int_qphi(double qphi, double *results, va_list ap){
 
       double offshellness=0.;
       if(offshellset==0){
-	double massdiff=(MASSD-Erprime)*(MASSD-Erprime)-pprime*pprime-massi*massi+2.*pkin1->GetWlab()*(MASSD-Erprime-massi)+2.*pkin1->GetKlab()*prz;
+	double massdiff=(nucqcd::mass_d-Erprime)*(nucqcd::mass_d-Erprime)-pprime*pprime-massi*massi+2.*pkin1->GetWlab()*(nucqcd::mass_d-Erprime-massi)+2.*pkin1->GetKlab()*prz;
 	offshellness=exp((getResonance_vec()[res1].getBeta()+getResonance_vec()[res2].getBeta())/2.*massdiff);
       }
       if(offshellset==1) {
@@ -272,7 +272,7 @@ void InclusiveCrossRes::int_qphi(double qphi, double *results, va_list ap){
       complex<double> temp=0.;
       for(int i=0;i<12;i++) temp+=wave[i]*conj(wave2[i]);
       results[0]= imag(scatter(t,pkin1->GetQsquared(),res1,res2)*temp
-	    *sqrt(MASSD/(2.*(MASSD-Erprime)*Erprime)));
+	    *sqrt(nucqcd::mass_d/(2.*(nucqcd::mass_d-Erprime)*Erprime)));
 
     }
 
@@ -285,7 +285,7 @@ void InclusiveCrossRes::int_qphi(double qphi, double *results, va_list ap){
     sinthetaprime=sqrt(pt2)/pprime;
     if(pprime<1.E-03) {costhetaprime=1.;sinthetaprime=0.;}
     Erprime=sqrt(massr*massr+pprime*pprime);
-    if(Erprime>MASSD      
+    if(Erprime>nucqcd::mass_d      
       ||(((pkin2->GetS()<pow(Er+sqrt(getResonance_vec()[res2].getMass2()  //s<(Er+sqrt(MR2^2+(q-pr)^2))^2-q^2
       +pkin2->GetKlab()*pkin2->GetKlab()+pkin2->GetPklab()*pkin2->GetPklab()
       -2.*prz*pkin2->GetKlab()),2.)-pkin2->GetKlab()*pkin2->GetKlab())
@@ -308,7 +308,7 @@ void InclusiveCrossRes::int_qphi(double qphi, double *results, va_list ap){
       
     double offshellness=0.;
     if(offshellset==0){
-      double massdiff=(MASSD-Erprime)*(MASSD-Erprime)-pprime*pprime-massi*massi+2.*pkin2->GetWlab()*(MASSD-Erprime-massi)+2.*pkin2->GetKlab()*przprime;
+      double massdiff=(nucqcd::mass_d-Erprime)*(nucqcd::mass_d-Erprime)-pprime*pprime-massi*massi+2.*pkin2->GetWlab()*(nucqcd::mass_d-Erprime-massi)+2.*pkin2->GetKlab()*przprime;
       offshellness=exp((getResonance_vec()[res1].getBeta()+getResonance_vec()[res2].getBeta())/2.*massdiff);
     }
     if(offshellset==1) {
@@ -329,7 +329,7 @@ void InclusiveCrossRes::int_qphi(double qphi, double *results, va_list ap){
     complex<double> temp=0.;
     for(int i=0;i<12;i++) temp+=conj(wave[i])*wave2[i];
     results[1]= imag(scatter(t,pkin2->GetQsquared(),res1,res2)*temp
-	  *sqrt(MASSD/(2.*(MASSD-Erprime)*Erprime)));
+	  *sqrt(nucqcd::mass_d/(2.*(nucqcd::mass_d-Erprime)*Erprime)));
   }
     
     
@@ -347,7 +347,7 @@ void InclusiveCrossRes::int_qphi(double qphi, double *results, va_list ap){
 //       cout << pkin1->GetS() << " " << pow(Er+sqrt(getResonance_vec()[res1].getMass2()+pkin1->GetKlab()*pkin1->GetKlab()+pkin1->GetPklab()*pkin1->GetPklab()-2.*prz*pkin1->GetKlab()),2.)-pkin1->GetKlab()*pkin1->GetKlab() << " " <<
 //       pow(Erprime+sqrt(getResonance_vec()[res2].getMass2()+pkin1->GetKlab()*pkin1->GetKlab()+pprime*pprime-2.*przprime*pkin1->GetKlab()),2.)-pkin1->GetKlab()*pkin1->GetKlab() 
 //        << " " << pkin1->GetPklab() << " " << pprime << endl;
-      if(Erprime>MASSD      
+      if(Erprime>nucqcd::mass_d      
 	||(((pkin1->GetS()<pow(Er+sqrt(getResonance_vec()[res1].getMass2() //s<(Er+sqrt(MR1^2+(q-pr)^2))^2-q^2
 	+pkin1->GetKlab()*pkin1->GetKlab()+pkin1->GetPklab()*pkin1->GetPklab()
 	-2.*prz*pkin1->GetKlab()),2.)-pkin1->GetKlab()*pkin1->GetKlab())
@@ -370,7 +370,7 @@ void InclusiveCrossRes::int_qphi(double qphi, double *results, va_list ap){
 
       	double offshellness=0.;
 	if(offshellset==0){
-	  double massdiff=(MASSD-Erprime)*(MASSD-Erprime)-pprime*pprime-massi*massi+2.*pkin1->GetWlab()*(MASSD-Erprime-massi)+2.*pkin1->GetKlab()*prz;
+	  double massdiff=(nucqcd::mass_d-Erprime)*(nucqcd::mass_d-Erprime)-pprime*pprime-massi*massi+2.*pkin1->GetWlab()*(nucqcd::mass_d-Erprime-massi)+2.*pkin1->GetKlab()*prz;
 	  offshellness=exp((getResonance_vec()[res1].getBeta()+getResonance_vec()[res2].getBeta())/2.*massdiff);
 	}
 	if(offshellset==1) {
@@ -391,7 +391,7 @@ void InclusiveCrossRes::int_qphi(double qphi, double *results, va_list ap){
 	complex<double> temp=0.;
 	for(int i=0;i<12;i++) temp+=wave[i]*conj(wave2[i]);
 	results[0]= imag(scatter(t,pkin1->GetQsquared(),res1,res2)*temp
-	      *sqrt(MASSD/(2.*(MASSD-Erprime)*Erprime)));
+	      *sqrt(nucqcd::mass_d/(2.*(nucqcd::mass_d-Erprime)*Erprime)));
 
       }
     }
@@ -405,7 +405,7 @@ void InclusiveCrossRes::int_qphi(double qphi, double *results, va_list ap){
     double sinthetaprime=sqrt(pt2)/pprime;
     if(pprime<1.E-03) {costhetaprime=1.;sinthetaprime=0.;}
     double Erprime=sqrt(massr*massr+pprime*pprime);
-    if(Erprime>MASSD      
+    if(Erprime>nucqcd::mass_d      
       ||(((pkin2->GetS()<pow(Er+sqrt(getResonance_vec()[res2].getMass2() //s<(Er+sqrt(MR2^2+(q-pr)^2))^2-q^2
       +pkin2->GetKlab()*pkin2->GetKlab()+pkin2->GetPklab()*pkin2->GetPklab()
       -2.*prz*pkin2->GetKlab()),2.)-pkin2->GetKlab()*pkin2->GetKlab())
@@ -428,7 +428,7 @@ void InclusiveCrossRes::int_qphi(double qphi, double *results, va_list ap){
 
     double offshellness=0.;
     if(offshellset==0){
-      double massdiff=(MASSD-Erprime)*(MASSD-Erprime)-pprime*pprime-massi*massi+2.*pkin2->GetWlab()*(MASSD-Erprime-massi)+2.*pkin2->GetKlab()*przprime;
+      double massdiff=(nucqcd::mass_d-Erprime)*(nucqcd::mass_d-Erprime)-pprime*pprime-massi*massi+2.*pkin2->GetWlab()*(nucqcd::mass_d-Erprime-massi)+2.*pkin2->GetKlab()*przprime;
       offshellness=exp((getResonance_vec()[res1].getBeta()+getResonance_vec()[res2].getBeta())/2.*massdiff);
     }
     if(offshellset==1) {
@@ -449,7 +449,7 @@ void InclusiveCrossRes::int_qphi(double qphi, double *results, va_list ap){
     complex<double> temp=0.;
     for(int i=0;i<12;i++) temp+=conj(wave[i])*wave2[i];
     results[1]= imag(scatter(t,pkin2->GetQsquared(),res1,res2)*temp
-	  *sqrt(MASSD/(2.*(MASSD-Erprime)*Erprime)));
+	  *sqrt(nucqcd::mass_d/(2.*(nucqcd::mass_d-Erprime)*Erprime)));
   }
     
   return;  
@@ -462,7 +462,7 @@ void InclusiveCrossRes::get_prz(double pt2, double Er, TKinematics2to2 *pkin, in
     przprime=0.;
     for(int i=0;i<1;i++){
       double f_Erprime=sqrt(massr*massr+pt2+przprime*przprime);  //guess for on-shell energy of initial spectator
-      double f_prz=prz-(pkin->GetWlab()+MASSD)/pkin->GetKlab()*(Er-f_Erprime);  //new value for prz 
+      double f_prz=prz-(pkin->GetWlab()+nucqcd::mass_d)/pkin->GetKlab()*(Er-f_Erprime);  //new value for prz 
       //add mass diff term if necessary
       if(symm==0){
 	if(first/*&&(getResonance_vec()[res1].getMass2()<getResonance_vec()[res1].getMass2())*/) 
@@ -491,10 +491,10 @@ void InclusiveCrossRes::get_prz(double pt2, double Er, TKinematics2to2 *pkin, in
       double f_Erprime=sqrt(massr*massr+pt2+przprime*przprime);  //guess for on-shell energy of initial spectator
       //guess for invariant mass initial X'
       double f_Wxprime2=-pkin->GetQsquared()
-			+pow(MASSD-f_Erprime,2.)-pt2-przprime*przprime
-			+2.*pkin->GetWlab()*(MASSD-f_Erprime)+2.*pkin->GetKlab()*przprime;
+			+pow(nucqcd::mass_d-f_Erprime,2.)-pt2-przprime*przprime
+			+2.*pkin->GetWlab()*(nucqcd::mass_d-f_Erprime)+2.*pkin->GetKlab()*przprime;
 			
-      double f_prz=prz-(pkin->GetWlab()+MASSD)/pkin->GetKlab()*(Er-f_Erprime);  //new value for prz 
+      double f_prz=prz-(pkin->GetWlab()+nucqcd::mass_d)/pkin->GetKlab()*(Er-f_Erprime);  //new value for prz 
       //add mass diff term if necessary
       if(symm==0){
 	if(first/*&&(Wxprime2<f_Wxprime2)*/) f_prz-=(Wxprime2-f_Wxprime2)/(2.*pkin->GetKlab());
@@ -509,8 +509,8 @@ void InclusiveCrossRes::get_prz(double pt2, double Er, TKinematics2to2 *pkin, in
 	przprime = f_prz; 
 	f_Erprime=sqrt(massr*massr+pt2+przprime*przprime);
 	otherWx2=-pkin->GetQsquared()
-			+pow(MASSD-f_Erprime,2.)-pt2-przprime*przprime
-			+2.*pkin->GetWlab()*(MASSD-f_Erprime)+2.*pkin->GetKlab()*przprime;
+			+pow(nucqcd::mass_d-f_Erprime,2.)-pt2-przprime*przprime
+			+2.*pkin->GetWlab()*(nucqcd::mass_d-f_Erprime)+2.*pkin->GetKlab()*przprime;
 	return;	
       }
       //start again
@@ -526,7 +526,7 @@ complex<double> InclusiveCrossRes::scatter(double t, double Q2, size_t res1, siz
   double sigma = (getResonance_vec()[res1].getSigma(Q2)+getResonance_vec()[res2].getSigma(Q2))/2.;
   double beta = (getResonance_vec()[res1].getBeta()+getResonance_vec()[res2].getBeta())/2.;
   double epsilon = (getResonance_vec()[res1].getEpsilon()+getResonance_vec()[res2].getEpsilon())/2.;
-  return getResonance_vec()[res1].getCoeff()*conj(getResonance_vec()[res2].getCoeff())*sigma*(I_UNIT+epsilon)*exp(beta*t/2.); 
+  return getResonance_vec()[res1].getCoeff()*conj(getResonance_vec()[res2].getCoeff())*sigma*(nucqcd::i_unit+epsilon)*exp(beta*t/2.); 
 }
 
 

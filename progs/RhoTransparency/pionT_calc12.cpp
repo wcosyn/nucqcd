@@ -29,12 +29,12 @@ int main(int argc, char *argv[])
     }
     double Ebeam  = atof(argv[2])*1.E03;  //Beam energy in GeV, converted to MeV
     double E_out = atof(argv[3])*1.E03;  // Scattered electron energy in GeV, converted to MeV
-    double theta_e = atof(argv[4])*DEGRTORAD; // Scattered electron angle in degrees input converted to radians
+    double theta_e = atof(argv[4])*nucqcd::deg_to_rad; // Scattered electron angle in degrees input converted to radians
     
     double Q2 = 2.*Ebeam*E_out*(1.-cos(theta_e)); //Q2 in MeV^2
 
     PionTCross pionT_object = PionTCross(MeanFieldNucleus::TypeNames.at(nucleus_name),
-                                  400.,HOMEDIR,0,0.,1.E-05,2,20000);
+                                  400.,nucqcd::share_dir,0,0.,1.E-05,2,20000);
     double *results = new double[pionT_object.getNrofcross()];
     pionT_object.getCross(results, Ebeam,E_out,theta_e);
 

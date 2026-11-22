@@ -155,7 +155,7 @@ void TwoVector_Nucl::getCross_twovector(std::vector<double> & results, const dou
     double alpha_s = pRunningAlphaStrongModule->compute(scale*scale); //scale is 1 GeV^2
     int Nc=3; //number of colors
     double CF=(Nc*Nc-1)/2./Nc;
-    double mandelstam_t= -4.*MASSP_G*MASSP_G*xi*xi/(1-xi*xi);//tmin [GeV^2]
+    double mandelstam_t= -4.*nucqcd::mass_p_GeV*nucqcd::mass_p_GeV*xi*xi/(1-xi*xi);//tmin [GeV^2]
 
 
     Ftor_2vector_general F;
@@ -194,11 +194,11 @@ void TwoVector_Nucl::getCross_twovector(std::vector<double> & results, const dou
                 //prefactors Eq (14) Enberg et al., not including s factor since it drops out in xsection
                 // sqrt(1-xi^2) compensated  in the helicity amplitudes
                 // if (index==0) cout << spinin << " " << spinout << " " << pow(16.*PI*PI*alpha_s*(index<6 ? f_lowermeson_iv : f_lowermeson_is)*xi*sqrt(1-xi*xi)*CF/Nc/psq/psq,2.)*
-                //     pow(-2.*PI*alpha_s*sqrt(Q2)/Nc/sqrt(2.)*frho0*sqrt(ALPHA*4.*PI),2.)/256./pow(PI,3.)/xi/(1+xi) << " " 
-                //     << norm(integral[index]) << " " << pow(alpha_s,4.)*pow(frho0,4.)*CF*CF/pow(Nc,4.)*8.*pow(PI,4.)*ALPHA/pow(psq,4.)*Q2*xi*(1.-xi)   << endl;
+                //     pow(-2.*PI*alpha_s*sqrt(Q2)/Nc/sqrt(2.)*frho0*sqrt(nucqcd::alpha_em*4.*PI),2.)/256./pow(PI,3.)/xi/(1+xi) << " " 
+                //     << norm(integral[index]) << " " << pow(alpha_s,4.)*pow(frho0,4.)*CF*CF/pow(Nc,4.)*8.*pow(PI,4.)*nucqcd::alpha_em/pow(psq,4.)*Q2*xi*(1.-xi)   << endl;
                 integral[index] *= 16.*PI*PI*alpha_s*(index<6 ? f_lowermeson_iv : f_lowermeson_is)*xi*sqrt(1-xi*xi)*CF/Nc/psq/psq; //prefactors Eq (14) Enberg et al.
-                if(gammapol==TwoVector_Nucl::kgammaL) integral[index] *= -2.*PI*alpha_s*sqrt(Q2)/Nc/sqrt(2.)*frho0*sqrt(ALPHA*4.*PI);; //prefactors Eq (17) Enberg et al.
-                if(gammapol==TwoVector_Nucl::kgammaT) integral[index] *= PI*alpha_s*sqrt(psq)/Nc/sqrt(2.)*frho0*sqrt(ALPHA*4.*PI); //prefactors Eq (17) Enberg et al.
+                if(gammapol==TwoVector_Nucl::kgammaL) integral[index] *= -2.*PI*alpha_s*sqrt(Q2)/Nc/sqrt(2.)*frho0*sqrt(nucqcd::alpha_em*4.*PI);; //prefactors Eq (17) Enberg et al.
+                if(gammapol==TwoVector_Nucl::kgammaT) integral[index] *= PI*alpha_s*sqrt(psq)/Nc/sqrt(2.)*frho0*sqrt(nucqcd::alpha_em*4.*PI); //prefactors Eq (17) Enberg et al.
                 results[index]+=norm(integral[index])/256./pow(PI,3.)/xi/(1+xi); // Enberg et al Eq (12), corrected phase space factor!
                     
             }
@@ -219,7 +219,7 @@ void TwoVector_Nucl::getElectro_Cross_twovector(std::vector<double> & results, s
     
         
     double epsilon = (1-y)/(1-y+y*y/2.);
-    for(int kk=0;kk<12;kk++) results[kk] = (resultsL[kk]+epsilon/2.*resultsT[kk])*ALPHA/2./PI*y/Q2/(1-epsilon);
+    for(int kk=0;kk<12;kk++) results[kk] = (resultsL[kk]+epsilon/2.*resultsT[kk])*nucqcd::alpha_em/2./PI*y/Q2/(1-epsilon);
     
 }
 
@@ -280,11 +280,11 @@ void TwoVector_Nucl::getCross_twovector_ds2(std::vector<double> & results, const
             
                 //prefactors Eq (14) Enberg et al., not including s factor since it drops out in xsection
                 // sqrt(1-xi^2) compensated  in the helicity amplitudes
-                // if (index==0&&spinin==-1&&spinout==-1&&gammapol==TwoVector_Nucl::kgammaL) cout << " " << pow(alpha_s,4.)*pow(frho0,4.)*CF*CF/pow(Nc,4.)*8.*pow(PI,4.)*ALPHA/pow(psq,6.)*Q2*xi*xi*(1.-xi*xi)/(s2-trho)*0.389379E06  << " " 
+                // if (index==0&&spinin==-1&&spinout==-1&&gammapol==TwoVector_Nucl::kgammaL) cout << " " << pow(alpha_s,4.)*pow(frho0,4.)*CF*CF/pow(Nc,4.)*8.*pow(PI,4.)*nucqcd::alpha_em/pow(psq,6.)*Q2*xi*xi*(1.-xi*xi)/(s2-trho)*0.389379E06  << " " 
                 //     << norm(integral[index]*psq)/2. << " ";
                 integral[index] *= 16.*PI*PI*alpha_s*(index<6 ? f_lowermeson_iv : f_lowermeson_is)*xi*sqrt(1-xi*xi)*CF/Nc/psq/psq; //prefactors Eq (14) Enberg et al.
-                if(gammapol==TwoVector_Nucl::kgammaL) integral[index] *= -2.*PI*alpha_s*sqrt(Q2)/Nc/sqrt(2.)*frho0*sqrt(ALPHA*4.*PI);; //prefactors Eq (17) Enberg et al.
-                if(gammapol==TwoVector_Nucl::kgammaT) integral[index] *= PI*alpha_s*sqrt(psq)/Nc/sqrt(2.)*frho0*sqrt(ALPHA*4.*PI); //prefactors Eq (17) Enberg et al.
+                if(gammapol==TwoVector_Nucl::kgammaL) integral[index] *= -2.*PI*alpha_s*sqrt(Q2)/Nc/sqrt(2.)*frho0*sqrt(nucqcd::alpha_em*4.*PI);; //prefactors Eq (17) Enberg et al.
+                if(gammapol==TwoVector_Nucl::kgammaT) integral[index] *= PI*alpha_s*sqrt(psq)/Nc/sqrt(2.)*frho0*sqrt(nucqcd::alpha_em*4.*PI); //prefactors Eq (17) Enberg et al.
                 results[index]+=norm(integral[index])/256./pow(PI,3.)/(s2-trho); // Enberg et al Eq (12), corrected phase space factor!
                     
             }

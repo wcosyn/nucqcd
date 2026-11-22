@@ -17,7 +17,7 @@ using Catch::Matchers::WithinRel;
 TEST_CASE("TKinematics2to2 for A(e,e'p): conservation laws", "[kinematics]") {
   // 12C(e,e'p) 11B: target A, residual A-1 ("meson"), ejected proton ("hyperon")
   const double mA = 11177.93, mA1 = 10255.10, Q2 = 1.0e06, omega = 600., pm = 150.;
-  TKinematics2to2 kin("", "", mA, mA1, MASSP, "qsquared:wlab:pklab", Q2, omega, pm);
+  TKinematics2to2 kin("", "", mA, mA1, nucqcd::mass_p, "qsquared:wlab:pklab", Q2, omega, pm);
   CHECK_THAT(kin.GetQsquared(), WithinRel(Q2, 1e-12));
   CHECK_THAT(kin.GetWlab(), WithinRel(omega, 1e-12));
   CHECK_THAT(kin.GetPklab(), WithinRel(pm, 1e-10));
@@ -26,7 +26,7 @@ TEST_CASE("TKinematics2to2 for A(e,e'p): conservation laws", "[kinematics]") {
   // invariant mass
   CHECK_THAT(kin.GetW() * kin.GetW(), WithinRel((mA + omega) * (mA + omega) - k * k, 1e-12));
   // energy conservation in the lab
-  const double EY = std::sqrt(MASSP * MASSP + std::pow(kin.GetPYlab(), 2));
+  const double EY = std::sqrt(nucqcd::mass_p * nucqcd::mass_p + std::pow(kin.GetPYlab(), 2));
   const double Ek = std::sqrt(mA1 * mA1 + pm * pm);
   CHECK_THAT(EY + Ek, WithinRel(mA + omega, 1e-12));
   // momentum conservation along and perpendicular to q
@@ -34,7 +34,7 @@ TEST_CASE("TKinematics2to2 for A(e,e'p): conservation laws", "[kinematics]") {
   CHECK_THAT(kin.GetPYlab() * cY + pm * ck, WithinRel(k, 1e-9));
   CHECK_THAT(kin.GetPYlab() * std::sqrt(1. - cY * cY), WithinRel(pm * std::sqrt(1. - ck * ck), 1e-8));
   // s + t + u = sum of the masses squared (virtual photon: -Q^2)
-  CHECK_THAT(kin.GetS() + kin.GetT() + kin.GetU(), WithinRel(mA * mA + mA1 * mA1 + MASSP * MASSP - Q2, 1e-10));
+  CHECK_THAT(kin.GetS() + kin.GetT() + kin.GetU(), WithinRel(mA * mA + mA1 * mA1 + nucqcd::mass_p * nucqcd::mass_p - Q2, 1e-10));
 }
 
 TEST_CASE("TElectronKinematics: scattering angle reproduces Q^2", "[kinematics]") {
@@ -51,10 +51,10 @@ TEST_CASE("TElectronKinematics: scattering angle reproduces Q^2", "[kinematics]"
 // Until 2026-11 the check on the number of variables read (n<2) && (n>4), which is never true.
 TEST_CASE("TKinematics rejects format strings without 2, 3 or 4 variables", "[kinematics]") {
   const double mA = 11177.93, mA1 = 10255.10;
-  CHECK_THROWS_AS(TKinematics2to2("", "", mA, mA1, MASSP, "qsquared", 1.e06, 600., 150.), std::invalid_argument);
-  CHECK_THROWS_AS(TKinematics2to2("", "", mA, mA1, MASSP, "qsquared:wlab:pklab:costhkcm:phi", 1.e06, 600., 150.),
+  CHECK_THROWS_AS(TKinematics2to2("", "", mA, mA1, nucqcd::mass_p, "qsquared", 1.e06, 600., 150.), std::invalid_argument);
+  CHECK_THROWS_AS(TKinematics2to2("", "", mA, mA1, nucqcd::mass_p, "qsquared:wlab:pklab:costhkcm:phi", 1.e06, 600., 150.),
                   std::invalid_argument);
-  CHECK_NOTHROW(TKinematics2to2("", "", mA, mA1, MASSP, "qsquared:wlab:pklab", 1.e06, 600., 150.));
+  CHECK_NOTHROW(TKinematics2to2("", "", mA, mA1, nucqcd::mass_p, "qsquared:wlab:pklab", 1.e06, 600., 150.));
 }
 
 TEST_CASE("TKinematics2to3WithLabAngles for A(e,e'pn): solutions and conservation laws", "[kinematics]") {
@@ -63,10 +63,10 @@ TEST_CASE("TKinematics2to3WithLabAngles for A(e,e'pn): solutions and conservatio
   // Until 2026-11 the format string of each solution was built with a sprintf whose destination was
   // also a source (undefined behaviour); with gcc -O3 constructing the solutions failed with "Format
   // string should provide 6 independent variables".
-  const double mA = 11177.93, mA2 = mA - MASSP - MASSN + 30.;
-  const double Q2 = 1631389.67942, omega = 580., pn = 1000., thn = 10. * DEGRTORAD, thk = 40. * DEGRTORAD;
+  const double mA = 11177.93, mA2 = mA - nucqcd::mass_p - nucqcd::mass_n + 30.;
+  const double Q2 = 1631389.67942, omega = 580., pn = 1000., thn = 10. * nucqcd::deg_to_rad, thk = 40. * nucqcd::deg_to_rad;
   TKinematics2to3WithLabAngles kin("", "", 7, TKinematics2to3::kN, "qsquared:wlab:pn:thn:thk:phik", Q2, omega, pn,
-                                   thn, thk, PI, mA, MASSP, MASSN, mA2);
+                                   thn, thk, PI, mA, nucqcd::mass_p, nucqcd::mass_n, mA2);
   REQUIRE(kin.GetNumberOfSolutions() >= 1);
   CHECK(kin.IsPhysical());
   CHECK_THAT(kin.GetPn(), WithinRel(pn, 1e-9));
@@ -98,13 +98,13 @@ TEST_CASE("TKinematics2to3WithLabAngles for A(e,e'pn): solutions and conservatio
 TEST_CASE("TKinematics2to3: azimuthal angles with the standard axis convention", "[kinematics]") {
   // GetPhik(kS) lacked a return until 2026-11 and gave the kY result whatever the convention (kY
   // itself needs a hyperon-first format, which these A(e,e'pN) kinematics do not use)
-  const double mA = 11177.93, mA2 = mA - MASSP - MASSN + 30.;
+  const double mA = 11177.93, mA2 = mA - nucqcd::mass_p - nucqcd::mass_n + 30.;
   // the first particle of the format fixes the axes: with kK that is the kaon (phik is then zero by
   // definition and phin is the input)
   for (auto ac : {TKinematics2to3::kN, TKinematics2to3::kK}) {
     TKinematics2to3WithLabAngles kin("", "", 7, ac,
                                      ac == TKinematics2to3::kK ? "qsquared:wlab:pk:thk:thn:phin" : "qsquared:wlab:pn:thn:thk:phik",
-                                     1631389.67942, 580., 1000., 10. * DEGRTORAD, 40. * DEGRTORAD, 2.5, mA, MASSP, MASSN, mA2);
+                                     1631389.67942, 580., 1000., 10. * nucqcd::deg_to_rad, 40. * nucqcd::deg_to_rad, 2.5, mA, nucqcd::mass_p, nucqcd::mass_n, mA2);
     REQUIRE(kin.GetNumberOfSolutions() >= 1);
     CHECK(kin.GetPhik() == kin.GetPhik(ac));
     CHECK(kin.GetPhiy() == kin.GetPhiy(ac));

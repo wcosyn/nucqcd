@@ -302,8 +302,8 @@ bool TSpinor::Polarization::operator==(const Polarization& rhs)
   // Comparison
 
   return 
-    fabs(fTheta-rhs.fTheta)<STRANGEUFLOW &&
-    fabs(fPhi-rhs.fPhi)<STRANGEUFLOW &&
+    fabs(fTheta-rhs.fTheta)<nucqcd::strange_underflow &&
+    fabs(fPhi-rhs.fPhi)<nucqcd::strange_underflow &&
     fPolarizationState==rhs.fPolarizationState;
 }
 
@@ -560,7 +560,7 @@ THelicitySpinor::THelicitySpinor(const TLorentzVector& v, double mass,
 				 const Polarization::State& polState, 
 				 Normalization norm)
 : TSpinor(0.,0.,v.P(),mass,
-	  (v.P() < STRANGEUFLOW) ? 
+	  (v.P() < nucqcd::strange_underflow) ? 
 	  TSpinor::Polarization(0.,0.,polState) : 
 	  TSpinor::Polarization(v.Theta(),v.Phi(),polState),
 	  norm,1)
@@ -574,7 +574,7 @@ THelicitySpinor::THelicitySpinor(const FourVector<double>& v, double mass,
 				 const Polarization::State& polState, 
 				 Normalization norm)
   : TSpinor(0.,0.,sqrt(v[1]*v[1]+v[2]*v[2]+v[3]*v[3]), mass,
-	    (sqrt(v[1]*v[1]+v[2]*v[2]+v[3]*v[3]) < STRANGEUFLOW) ? 
+	    (sqrt(v[1]*v[1]+v[2]*v[2]+v[3]*v[3]) < nucqcd::strange_underflow) ? 
 	    TSpinor::Polarization(0.,0.,polState) :
 	    TSpinor::Polarization(v.theta(),v.phi(),polState),
 	    norm,1)
@@ -887,7 +887,7 @@ void TSpinor::LorentzRotation::SetBoost(double betaX, double betaY, double betaZ
   double sinhksi = sqrt( (1./sqrt(1.-beta*beta) - 1.)/2. );
   
   // Do nothing in case of no boost
-  if( beta<STRANGEUFLOW ) return;
+  if( beta<nucqcd::strange_underflow ) return;
 
   // Define the transformation matrix
   fTransformation = 
@@ -922,7 +922,7 @@ void TSpinor::LorentzRotation::SetRotation(double thetaX, double thetaY, double 
   complex<double> sintheta = complex<double>(0., -sin(theta/2.) );
  
   // Do nothing in case of no rotation
-  if( theta<STRANGEUFLOW ) return;
+  if( theta<nucqcd::strange_underflow ) return;
 
   // Define the transformation matrix
   fTransformation = 

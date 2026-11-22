@@ -19,11 +19,11 @@ void klaas_t(numint::vector_d & res, double nu, double t, RhoTCross & cross, dou
 //   double massA = cross.getNucleusthick().getMassA();
 //   massA*=1.E-03;
 //   //determine kinematics
-//   double A = (t+Q2-MASSRHO*MASSRHO*1.E-06)*0.5;
-//   double B=(2.*massA*nu+MASSRHO*MASSRHO*1.E-06-Q2)/2.+A*(massA+nu)/nu;
+//   double A = (t+Q2-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06)*0.5;
+//   double B=(2.*massA*nu+nucqcd::mass_rho*nucqcd::mass_rho*1.E-06-Q2)/2.+A*(massA+nu)/nu;
 //   double prz=B/((massA/nu)*qvec);
 //   double Erho=(prz*qvec-A)/nu;
-//   double prx=sqrt(Erho*Erho-prz*prz-MASSRHO*MASSRHO*1.E-06);
+//   double prx=sqrt(Erho*Erho-prz*prz-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06);
 //   double EA=sqrt(massA*massA+prx*prx+(qvec-prz)*(qvec-prz));
 //   double z=Erho/nu;
 //   if((!std::isnan(prx))&&(z>0.9&&z<1.)){
@@ -45,12 +45,12 @@ void klaas_z(numint::vector_d & res, double nu, double z, RhoTCross & cross, dou
 //   massA*=1.E-03;
 //   double Erho=z*nu;
 //   double EA=nu+massA-Erho;
-//   double prho=sqrt(Erho*Erho-MASSRHO*MASSRHO*1.E-06);
+//   double prho=sqrt(Erho*Erho-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06);
 //   double pA=sqrt(EA*EA-massA*massA);
 //   double prhoz=(prho*prho+qvec*qvec-pA*pA)/(2.*qvec);
 //   double pAz=(-prho*prho+qvec*qvec+pA*pA)/(2.*qvec);
 //   double prhox=sqrt(prho*prho-prhoz*prhoz);
-//   double t = -Q2 + MASSRHO*MASSRHO*1.E-06-2*Erho*nu+2.*qvec*prhoz;
+//   double t = -Q2 + nucqcd::mass_rho*nucqcd::mass_rho*1.E-06-2*Erho*nu+2.*qvec*prhoz;
 //   if((!std::isnan(prhox))&&(t<-0.1&&t>-0.4)) {
 //     for(int i=0;i<cross.getNrofcross();++i) res[i]=nu*massA*Erho/qvec;
 //     if(std::isnan(prhox)) cout << "Blaaa" << endl;
@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
   double prec=atof(argv[11]);
   int ptype=atoi(argv[12]);
 //   int maxEval2 = atoi(argv[11]);
-  string homedir=HOMEDIR;
+  string homedir=nucqcd::share_dir;
   double Ebeam = 4.023;
   
 
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
   if(integrator==0){
     double result[test.getNrofcross()];
     double nuestimate=0.,tzestimate=0.;
-    rombergerN(nuint,nu_min,nu_max,test.getNrofcross(),result,PREC,3,7,&nuestimate, 
+    rombergerN(nuint,nu_min,nu_max,test.getNrofcross(),result,nucqcd::integration_prec,3,7,&nuestimate, 
 				  torz,Q2,nocuts,Ebeam, &test, &tzestimate);
     cout << Q2 << " ";
     for (int l=0;l<test.getNrofcross();l++) cout << result[l] << " ";
@@ -145,9 +145,9 @@ void nuint(double nu, double* result, va_list ap){
   RhoTCross *ptest = va_arg(ap,RhoTCross*);
   double *ptzestimate = va_arg(ap,double*);
 
-  if(torz) rombergerN(tzint,-0.4,-0.1,ptest->getNrofcross(),result,PREC,3,6,
+  if(torz) rombergerN(tzint,-0.4,-0.1,ptest->getNrofcross(),result,nucqcd::integration_prec,3,6,
 	      ptzestimate,nu,torz,Q2,nocuts,Ebeam,ptest);
-  else rombergerN(tzint,0.9,1.,ptest->getNrofcross(),result,PREC,3,6,
+  else rombergerN(tzint,0.9,1.,ptest->getNrofcross(),result,nucqcd::integration_prec,3,6,
 	      ptzestimate,nu,torz,Q2,nocuts,Ebeam,ptest);
   return;
 }

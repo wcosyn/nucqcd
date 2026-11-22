@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     resonances.push_back(1.75E03);
     for(int i=1;i<50;i++){      
       double x=0.02*i;
-      //TKinematics2to2 kin("","",MASSD,MASSP,Wprime,"qsquared:wlab:pklab",1.8E06,nu,pr);
+      //TKinematics2to2 kin("","",nucqcd::mass_d,nucqcd::mass_p,Wprime,"qsquared:wlab:pklab",1.8E06,nu,pr);
       double teller=0.,fsi1=0.,fsi2=0.,fsioff1=0.,fsioff2=0.,fsioffsuppr1=0.,fsioffsuppr2=0.,noemer=1.;
       for(int proton=0;proton<=1;++proton){
 	InclusiveCross Dinc(proton,strucname,wf,*elec,resonances,3);
@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 	}
 	//noemer+=nucleon.getF2();
       }
-      cout << x << " " << sqrt(Q2*(1./x-1.)+MASSN*MASSN)*1.E-03 << " " << teller/noemer << " " << (teller-fsi1)/noemer << " " << (teller-fsi2)/noemer << " " 
+      cout << x << " " << sqrt(Q2*(1./x-1.)+nucqcd::mass_n*nucqcd::mass_n)*1.E-03 << " " << teller/noemer << " " << (teller-fsi1)/noemer << " " << (teller-fsi2)/noemer << " " 
 	<<(teller-fsi1-fsioffsuppr1)/noemer << " " << (teller-fsi2-fsioffsuppr2)/noemer << " " << (teller-fsi1-fsioffsuppr1)/noemer << " " 
 	<< (teller-fsi2-fsioffsuppr2)/noemer << endl;
       //cout << x << " " << teller << " " << noemer << " " << teller/noemer << endl;

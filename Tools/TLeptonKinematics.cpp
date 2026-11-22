@@ -294,7 +294,7 @@ bool TLeptonKinematics::SolveKinematics(const TKinematics2to2& tk) const
     fScatterAngle = (1. - (tk.GetQsquared()+mass*mass)/(2.*fBeamEnergy*(fBeamEnergy-tk.GetWlab())))
 	    /sqrt(1-mass*mass/((fBeamEnergy-tk.GetWlab())*(fBeamEnergy-tk.GetWlab())));
     if( fabs(fScatterAngle) > 1. ) {
-      if( fabs(fScatterAngle)-1.0 < STRANGEUFLOW ) 
+      if( fabs(fScatterAngle)-1.0 < nucqcd::strange_underflow ) 
      	fScatterAngle = ( fScatterAngle>0.0 ? 1.0 : -1.0 );
       else
 	return false;
@@ -302,17 +302,17 @@ bool TLeptonKinematics::SolveKinematics(const TKinematics2to2& tk) const
 
 //     // Finally calculate epsilon
 //     if( fScatterAngle<= -1. ) fEpsilon = 0.;
-//     else if( tk.GetQsquared()<STRANGEUFLOW ) fEpsilon = 1.;
+//     else if( tk.GetQsquared()<nucqcd::strange_underflow ) fEpsilon = 1.;
 //     else {
 //       ftan2HalfAngle = (1.-fScatterAngle)/(1.+fScatterAngle);
 //       fEpsilon = 1./(1.+2.*(1.+tk.GetWlab()*tk.GetWlab()/tk.GetQsquared())
 // 		     *ftan2HalfAngle);
 //     }
 //     if( fEpsilon < 0. ) {
-//       if( fEpsilon < -STRANGEUFLOW ) return false;
+//       if( fEpsilon < -nucqcd::strange_underflow ) return false;
 //       else fEpsilon = 0.;
 //     } else if( fEpsilon > 1. ) {
-//       if( (fEpsilon-1.) > STRANGEUFLOW ) return false;
+//       if( (fEpsilon-1.) > nucqcd::strange_underflow ) return false;
 //       else fEpsilon = 1.;
 //     }
     break;
@@ -322,13 +322,13 @@ bool TLeptonKinematics::SolveKinematics(const TKinematics2to2& tk) const
 //     if( fEpsilon<0. || fEpsilon>1. ) return false;
 // 
 //     // Find the scattering angle
-//     if( tk.GetQsquared()<STRANGEUFLOW ) fScatterAngle = 1.;
+//     if( tk.GetQsquared()<nucqcd::strange_underflow ) fScatterAngle = 1.;
 //     else {
 //       tmp = (1./fEpsilon-1.)/2./(1.+tk.GetWlab()*tk.GetWlab()/tk.GetQsquared());
 //       fScatterAngle = (1.-tmp)/(1.+tmp);
 //     }
 //     if( fabs(fScatterAngle) > 1. ) {
-//       if( fabs(fScatterAngle)-1.0 < STRANGEUFLOW ) 
+//       if( fabs(fScatterAngle)-1.0 < nucqcd::strange_underflow ) 
 //      	fScatterAngle = ( fScatterAngle>0.0 ? 1.0 : -1.0 );
 //       else
 // 	return false;
@@ -336,7 +336,7 @@ bool TLeptonKinematics::SolveKinematics(const TKinematics2to2& tk) const
 // 
 //     // Calculate the beam energy
 //     if( fScatterAngle > 1. ) return false;
-//     else if( fScatterAngle == 1. ) fBeamEnergy = tk.GetWlab() + STRANGEUFLOW;
+//     else if( fScatterAngle == 1. ) fBeamEnergy = tk.GetWlab() + nucqcd::strange_underflow;
 //     else
 //       fBeamEnergy = tk.GetWlab()/2. + sqrt(tk.GetWlab()*tk.GetWlab()/4.
 // 					   +tk.GetQsquared()/2./(1.-fScatterAngle));
@@ -347,14 +347,14 @@ bool TLeptonKinematics::SolveKinematics(const TKinematics2to2& tk) const
   case kScatterAngle:{
     // Solve the kinematics starting with the scattering angle
     if( fabs(fScatterAngle) > 1. ) {
-      if( fabs(fScatterAngle)-1.0 < STRANGEUFLOW ) 
+      if( fabs(fScatterAngle)-1.0 < nucqcd::strange_underflow ) 
      	fScatterAngle = ( fScatterAngle>0.0 ? 1.0 : -1.0 );
       else
 	return false;
     }
 
     // Find the beam energy
-//     if( fScatterAngle == 1. ) fBeamEnergy = tk.GetWlab() + STRANGEUFLOW;
+//     if( fScatterAngle == 1. ) fBeamEnergy = tk.GetWlab() + nucqcd::strange_underflow;
     int count=0;
     if(abs(fScatterAngle)==1.){
       fBeamEnergy = (tk.GetWlab()+sqrt(tk.GetWlab()*tk.GetWlab()+(tk.GetQsquared())))*(tk.GetQsquared()+mass*mass)/(2.*tk.GetQsquared());
@@ -393,7 +393,7 @@ bool TLeptonKinematics::SolveKinematics(const TKinematics2to2& tk) const
 
       gsl_poly_complex_workspace_free (w);
       for(int i=0;i<4;i++){
-	if(abs(sol[i*2+1])<STRANGEUFLOW && sol[i*2] >=tk.GetWlab()*1.E-03){
+	if(abs(sol[i*2+1])<nucqcd::strange_underflow && sol[i*2] >=tk.GetWlab()*1.E-03){
 	  double eout=sol[2*i]*1.E03-tk.GetWlab();
 	  double pout=sqrt(eout*eout-mass*mass);
 	  double a=(tk.GetQsquared()+mass*mass)/2.-sol[2*i]*1.E03*eout;
@@ -429,17 +429,17 @@ bool TLeptonKinematics::SolveKinematics(const TKinematics2to2& tk) const
 
 //     // Calculate epsilon
 //     if( fScatterAngle<= -1. ) fEpsilon = 0.;
-//     else if( tk.GetQsquared()<STRANGEUFLOW ) fEpsilon = 1.;
+//     else if( tk.GetQsquared()<nucqcd::strange_underflow ) fEpsilon = 1.;
 //     else {
 //       ftan2HalfAngle = (1.-fScatterAngle)/(1.+fScatterAngle);
 //       fEpsilon = 1./(1.+2.*(1.+tk.GetWlab()*tk.GetWlab()/tk.GetQsquared())
 // 		     *ftan2HalfAngle);
 //     }
 //     if( fEpsilon < 0. ) {
-//       if( fEpsilon < -STRANGEUFLOW ) return false;
+//       if( fEpsilon < -nucqcd::strange_underflow ) return false;
 //       else fEpsilon = 0.;
 //     } else if( fEpsilon > 1. ) {
-//       if( (fEpsilon-1.) > STRANGEUFLOW ) return false;
+//       if( (fEpsilon-1.) > nucqcd::strange_underflow ) return false;
 //       else fEpsilon = 1.;
 //     }
 //     ftan2HalfAngle = (1.-fScatterAngle)/(1.+fScatterAngle);
@@ -474,7 +474,7 @@ bool TLeptonKinematics::SolveKinematics(const TKinematics2to3& tk) const
     fScatterAngle = (1. - (tk.GetQsquared()+mass*mass)/(2.*fBeamEnergy*(fBeamEnergy-tk.GetWlab())))
 	    /sqrt(1-mass*mass/((fBeamEnergy-tk.GetWlab())*(fBeamEnergy-tk.GetWlab())));
     if( fabs(fScatterAngle) > 1. ) {
-      if( fabs(fScatterAngle)-1.0 < STRANGEUFLOW ) 
+      if( fabs(fScatterAngle)-1.0 < nucqcd::strange_underflow ) 
      	fScatterAngle = ( fScatterAngle>0.0 ? 1.0 : -1.0 );
       else
 	return false;
@@ -482,17 +482,17 @@ bool TLeptonKinematics::SolveKinematics(const TKinematics2to3& tk) const
 
     // Finally calculate epsilon
 //     if( fScatterAngle<= -1. ) fEpsilon = 0.;
-//     else if( tk.GetQsquared()<STRANGEUFLOW ) fEpsilon = 1.;
+//     else if( tk.GetQsquared()<nucqcd::strange_underflow ) fEpsilon = 1.;
 //     else {
 //       ftan2HalfAngle = (1.-fScatterAngle)/(1.+fScatterAngle);
 //       fEpsilon = 1./(1.+2.*(1.+tk.GetWlab()*tk.GetWlab()/tk.GetQsquared())
 // 		     *ftan2HalfAngle);
 //     }
 //     if( fEpsilon < 0. ) {
-//       if( fEpsilon < -STRANGEUFLOW ) return false;
+//       if( fEpsilon < -nucqcd::strange_underflow ) return false;
 //       else fEpsilon = 0.;
 //     } else if( fEpsilon > 1. ) {
-//       if( (fEpsilon-1.) > STRANGEUFLOW ) return false;
+//       if( (fEpsilon-1.) > nucqcd::strange_underflow ) return false;
 //       else fEpsilon = 1.;
 //     }
     break;
@@ -502,13 +502,13 @@ bool TLeptonKinematics::SolveKinematics(const TKinematics2to3& tk) const
 //     if( fEpsilon<0. || fEpsilon>1. ) return false;
 // 
 //     // Find the scattering angle
-//     if( tk.GetQsquared()<STRANGEUFLOW ) fScatterAngle = 1.;
+//     if( tk.GetQsquared()<nucqcd::strange_underflow ) fScatterAngle = 1.;
 //     else {
 //       tmp = (1./fEpsilon-1.)/2./(1.+tk.GetWlab()*tk.GetWlab()/tk.GetQsquared());
 //       fScatterAngle = (1.-tmp)/(1.+tmp);
 //     }
 //     if( fabs(fScatterAngle) > 1. ) {
-//       if( fabs(fScatterAngle)-1.0 < STRANGEUFLOW ) 
+//       if( fabs(fScatterAngle)-1.0 < nucqcd::strange_underflow ) 
 //      	fScatterAngle = ( fScatterAngle>0.0 ? 1.0 : -1.0 );
 //       else
 // 	return false;
@@ -516,7 +516,7 @@ bool TLeptonKinematics::SolveKinematics(const TKinematics2to3& tk) const
 // 
 //     // Calculate the beam energy
 //     if( fScatterAngle > 1. ) return false;
-//     else if( fScatterAngle == 1. ) fBeamEnergy = tk.GetWlab() + STRANGEUFLOW;
+//     else if( fScatterAngle == 1. ) fBeamEnergy = tk.GetWlab() + nucqcd::strange_underflow;
 //     else
 //       fBeamEnergy = tk.GetWlab()/2. + sqrt(tk.GetWlab()*tk.GetWlab()/4.
 // 					   +tk.GetQsquared()/2./(1.-fScatterAngle));
@@ -527,14 +527,14 @@ bool TLeptonKinematics::SolveKinematics(const TKinematics2to3& tk) const
   case kScatterAngle:{
     // Solve the kinematics starting with the scattering angle
     if( fabs(fScatterAngle) > 1. ) {
-      if( fabs(fScatterAngle)-1.0 < STRANGEUFLOW ) 
+      if( fabs(fScatterAngle)-1.0 < nucqcd::strange_underflow ) 
      	fScatterAngle = ( fScatterAngle>0.0 ? 1.0 : -1.0 );
       else
 	return false;
     }
 
     // Find the beam energy
-//     if( fScatterAngle == 1. ) fBeamEnergy = tk.GetWlab() + STRANGEUFLOW;
+//     if( fScatterAngle == 1. ) fBeamEnergy = tk.GetWlab() + nucqcd::strange_underflow;
     int count=0;
     if(abs(fScatterAngle)==1.){
       fBeamEnergy = (tk.GetWlab()+sqrt(tk.GetWlab()*tk.GetWlab()+(tk.GetQsquared())))*(tk.GetQsquared()+mass*mass)/(2.*tk.GetQsquared());
@@ -573,7 +573,7 @@ bool TLeptonKinematics::SolveKinematics(const TKinematics2to3& tk) const
 
       gsl_poly_complex_workspace_free (w);
       for(int i=0;i<4;i++){
-	if(abs(sol[i*2+1])<STRANGEUFLOW && sol[i*2] >=tk.GetWlab()*1.E-03){
+	if(abs(sol[i*2+1])<nucqcd::strange_underflow && sol[i*2] >=tk.GetWlab()*1.E-03){
 	  double eout=sol[2*i]*1.E03-tk.GetWlab();
 	  double pout=sqrt(eout*eout-mass*mass);
 	  double a=(tk.GetQsquared()+mass*mass)/2.-sol[2*i]*1.E03*eout;
@@ -609,17 +609,17 @@ bool TLeptonKinematics::SolveKinematics(const TKinematics2to3& tk) const
 
 //     // Calculate epsilon
 //     if( fScatterAngle<= -1. ) fEpsilon = 0.;
-//     else if( tk.GetQsquared()<STRANGEUFLOW ) fEpsilon = 1.;
+//     else if( tk.GetQsquared()<nucqcd::strange_underflow ) fEpsilon = 1.;
 //     else {
 //       ftan2HalfAngle = (1.-fScatterAngle)/(1.+fScatterAngle);
 //       fEpsilon = 1./(1.+2.*(1.+tk.GetWlab()*tk.GetWlab()/tk.GetQsquared())
 // 		     *ftan2HalfAngle);
 //     }
 //     if( fEpsilon < 0. ) {
-//       if( fEpsilon < -STRANGEUFLOW ) return false;
+//       if( fEpsilon < -nucqcd::strange_underflow ) return false;
 //       else fEpsilon = 0.;
 //     } else if( fEpsilon > 1. ) {
-//       if( (fEpsilon-1.) > STRANGEUFLOW ) return false;
+//       if( (fEpsilon-1.) > nucqcd::strange_underflow ) return false;
 //       else fEpsilon = 1.;
 //     }
 //     ftan2HalfAngle = (1.-fScatterAngle)/(1.+fScatterAngle);

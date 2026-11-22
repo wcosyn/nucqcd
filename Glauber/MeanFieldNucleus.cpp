@@ -317,8 +317,8 @@ void MeanFieldNucleus::getWaveFunction(complex<double> *wave, const int shellind
   double Fr=getWave_F(shellindex,r);
   complex<double> spinup=getWave_Phipart(m,1,phi);
   complex<double> spindown=getWave_Phipart(m,-1,phi);
-  wave[0]=I_UNIT*Gr*spinup*TDeuteron::Wavefunction::ClebschGordan(2*l_array[shellindex],m-1,1,1, j_array[shellindex],m)*Spher_Harm(l_array[shellindex], (m-1)/2, costheta);
-  wave[1]=I_UNIT*Gr*spindown*TDeuteron::Wavefunction::ClebschGordan(2*l_array[shellindex],m+1,1,-1, j_array[shellindex],m)*Spher_Harm(l_array[shellindex], (m+1)/2, costheta);
+  wave[0]=nucqcd::i_unit*Gr*spinup*TDeuteron::Wavefunction::ClebschGordan(2*l_array[shellindex],m-1,1,1, j_array[shellindex],m)*Spher_Harm(l_array[shellindex], (m-1)/2, costheta);
+  wave[1]=nucqcd::i_unit*Gr*spindown*TDeuteron::Wavefunction::ClebschGordan(2*l_array[shellindex],m+1,1,-1, j_array[shellindex],m)*Spher_Harm(l_array[shellindex], (m+1)/2, costheta);
   wave[2]=-Fr*spinup*TDeuteron::Wavefunction::ClebschGordan(2*lbar_array[shellindex],m-1,1,1, j_array[shellindex],m)*Spher_Harm(lbar_array[shellindex], (m-1)/2, costheta);
   wave[3]=-Fr*spindown*TDeuteron::Wavefunction::ClebschGordan(2*lbar_array[shellindex],m+1,1,-1, j_array[shellindex],m)*Spher_Harm(lbar_array[shellindex], (m+1)/2, costheta);
 }
@@ -352,6 +352,6 @@ double MeanFieldNucleus::getYminkappacos(const int shellindex, const int m, cons
 //get exp(I*phi/2*m_l)
 complex<double> MeanFieldNucleus::getWave_Phipart(const int m, const int spin, const double phi) const{
   // j, ms and m are inputted as 2*j, 2*ms and 2*m respectively
-  return exp(I_UNIT*0.5*phi*double(m-spin));  
+  return exp(nucqcd::i_unit*0.5*phi*double(m-spin));  
 }
 

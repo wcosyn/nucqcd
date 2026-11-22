@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     for(int i=1;i<bla;i++){
       double x=1./bla*i;
 //       cout << x << endl;
-      //TKinematics2to2 kin("","",MASSD,MASSP,Wprime,"qsquared:wlab:pklab",1.8E06,nu,pr);
+      //TKinematics2to2 kin("","",nucqcd::mass_d,nucqcd::mass_p,Wprime,"qsquared:wlab:pklab",1.8E06,nu,pr);
       teller[i-1]=0.,fsi1[i-1]=0.,fsi2[i-1]=0.,noemer[i-1]=0.;
       for(int proton=0;proton<=1;++proton){
 	InclusiveCrossRes Dinc(proton,argv[6],argv[5],*elec,atoi(argv[1]),atoi(argv[2]),atoi(argv[3]),0);
@@ -66,12 +66,12 @@ int main(int argc, char *argv[])
 // 	cout << endl;
 	//cout << noemer << endl;
       }
-       cout << x << " " << (Q2*(1./x-1.)+MASSP*MASSP)/1.E06 << " " << teller[i-1]/noemer[i-1] << " " << (teller[i-1]-fsi1[i-1])/noemer[i-1] << " " << (teller[i-1]-fsi2[i-1])/noemer[i-1] << endl;
+       cout << x << " " << (Q2*(1./x-1.)+nucqcd::mass_p*nucqcd::mass_p)/1.E06 << " " << teller[i-1]/noemer[i-1] << " " << (teller[i-1]-fsi1[i-1])/noemer[i-1] << " " << (teller[i-1]-fsi2[i-1])/noemer[i-1] << endl;
     }
     delete elec;
 //     cout << endl << endl << endl;
 //     for(int i=0;i<19;i++){
 //       double x = (i+1)*0.05;
-//     cout << x << " " << teller[i]/noemer[i] << " " << (teller[i]-fsi1[i])/noemer[i] << " " << (teller[i]-fsi2[i])/noemer[i] << " " << (Q2*(1./x-1.)+MASSP*MASSP)/1.E06 << endl;
+//     cout << x << " " << teller[i]/noemer[i] << " " << (teller[i]-fsi1[i])/noemer[i] << " " << (teller[i]-fsi2[i])/noemer[i] << " " << (Q2*(1./x-1.)+nucqcd::mass_p*nucqcd::mass_p)/1.E06 << endl;
 //     }
 }

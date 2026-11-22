@@ -57,9 +57,9 @@ void DiDVCS::integrandum_DiDVCS(numint::vector_z & result, double x_over_xi,doub
         double sqt4zp1 = sqrt(4.*z+1);
         // asymptotic DA result (see Eq. (23) Pire, Szym.,Wallon paper)
         complex<double> integrand = ((gsl_sf_dilog(-2./(sqt4zp1-1))-gsl_sf_dilog(+2./(sqt4zp1+1)))*(-2.*z/sqt4zp1)
-                    -2.-(log(z)-I_UNIT*PI)*(1.-4.*z/sqt4zp1*atanh(1./sqt4zp1)))*xi;  //the *xi at the end because I integrate over x/xi
+                    -2.-(log(z)-nucqcd::i_unit*PI)*(1.-4.*z/sqt4zp1*atanh(1./sqt4zp1)))*xi;  //the *xi at the end because I integrate over x/xi
         // ads DA result, only imaginary part (delta function in k^2), evaulated through mathematica 
-        complex<double> integrand2 = I_UNIT*PI*PI*(1.-2.*sqrt(z/(1.+4.*z)))*xi/6.*8./PI; //the *xi at the end because I integrate over x/xi
+        complex<double> integrand2 = nucqcd::i_unit*PI*PI*(1.-2.*sqrt(z/(1.+4.*z)))*xi/6.*8./PI; //the *xi at the end because I integrate over x/xi
         result[0]=integrand*(2.*(Hu+Hu2)-(Hd+Hd2))/3.;  //CFF H
         result[1]=integrand*(2.*(Eu+Eu2)-(Ed+Ed2))/3.;  //CFF E
         result[2]=integrand2*(2.*(Hu+Hu2)-(Hd+Hd2))/3.;  //CFF H
@@ -80,7 +80,7 @@ void DiDVCS::getCross_DiDVCS(vector<double> & results, const double scale, const
     double alpha_s = pRunningAlphaStrongModule->compute(scale*scale); //scale is 1 GeV^2
     int Nc=3; //number of colors
     double CF=(Nc*Nc-1)/2./Nc;
-    //double mandelstam_t= -4.*MASSP_G*MASSP_G*xi*xi/(1-xi*xi);//tmin [GeV^2]
+    //double mandelstam_t= -4.*nucqcd::mass_p_GeV*nucqcd::mass_p_GeV*xi*xi/(1-xi*xi);//tmin [GeV^2]
 
     //kinematics
     double s_gN = s_eN*y;
@@ -105,7 +105,7 @@ void DiDVCS::getCross_DiDVCS(vector<double> & results, const double scale, const
     //         F.mandelstam_t=-0.05-j*0.05;
     //         for(int k=1;k<100;k++){
     //             F.xi=0.01*k;
-    //             if (F.mandelstam_t> 0.5*(-4.*MASSP_G*MASSP_G*F.xi*F.xi)/(1-F.xi*F.xi)) cout << F.Q2out_over_Q2in << " " << F.mandelstam_t << " " << F.xi << " 0 0 0 0" << endl;
+    //             if (F.mandelstam_t> 0.5*(-4.*nucqcd::mass_p_GeV*nucqcd::mass_p_GeV*F.xi*F.xi)/(1-F.xi*F.xi)) cout << F.Q2out_over_Q2in << " " << F.mandelstam_t << " " << F.xi << " 0 0 0 0" << endl;
     //             else{
     //                 unsigned count=0;
     //                 std::vector<complex<double> > integral(4,0.); //integrandum result array [dimensionless!]
@@ -131,26 +131,26 @@ void DiDVCS::getCross_DiDVCS(vector<double> & results, const double scale, const
     std::vector<complex<double> > integral(4,0.); //integrandum result array [dimensionless!]
     numint::cube_adaptive(mdf,lower,upper,1.E-08,1.E-03,1E02,maxintsteps,integral,count,0); 
     //cout << "integral " << " " << integral[0].real() << " " << integral[0].imag() << " " << integral[1].real() << " " << integral[1].imag() << endl;
-    double K = pow(2,7.)*PI*PI*ALPHA*CF*CF*alpha_s*alpha_s/8.; //[dimensionless]
+    double K = pow(2,7.)*PI*PI*nucqcd::alpha_em*CF*CF*alpha_s*alpha_s/8.; //[dimensionless]
     if(no_realpart){
         integral[0]=complex<double> (0.,integral[0].imag());
         integral[1]=complex<double> (0.,integral[1].imag());
     }
     double CFF_asympt = pow(3.*sqrt(2.)*K*frho0/Q2in/sqrt(Q2in*Q2out),2.)*((1-xi*xi)*norm(integral[0])
-                        -2.*xi*xi*((conj(integral[0])*integral[1]).real())-(xi*xi+t_N/4./MASSP_G/MASSP_G)*norm(integral[1])); //[GeV^-6]
+                        -2.*xi*xi*((conj(integral[0])*integral[1]).real())-(xi*xi+t_N/4./nucqcd::mass_p_GeV/nucqcd::mass_p_GeV)*norm(integral[1])); //[GeV^-6]
     double CFF_ads = pow(3.*sqrt(2.)*K*frho0/Q2in/sqrt(Q2in*Q2out),2.)*((1-xi*xi)*norm(integral[2])
-                        -2.*xi*xi*((conj(integral[2])*integral[3]).real())-(xi*xi+t_N/4./MASSP_G/MASSP_G)*norm(integral[3])); //[GeV^-6]
-    results[0] = CFF_asympt*ALPHA/pow(1+xi,2.)/(48*pow(2.*PI,4.)*Q2out*(s2-t_rho)); //[GeV-10]
-    results[2] = CFF_ads*ALPHA/pow(1+xi,2.)/(48*pow(2.*PI,4.)*Q2out*(s2-t_rho)); //[GeV-10]
-    // cout << 6.*frho0*frho0*pow(ALPHA/Q2in,3.)*pow(alpha_s*CF,4.)*(1.-xi)/(1+xi)/pow(Q2out,2.)/(s2-t_rho)*0.389379E06 << " " << ((1-xi*xi)*norm(integral[0])
-    //                     -2.*xi*((integral[0]*integral[1]).real())-(xi*xi+t_N/4./MASSP_G/MASSP_G)*norm(integral[1]))/(1.-xi*xi) << " ";
+                        -2.*xi*xi*((conj(integral[2])*integral[3]).real())-(xi*xi+t_N/4./nucqcd::mass_p_GeV/nucqcd::mass_p_GeV)*norm(integral[3])); //[GeV^-6]
+    results[0] = CFF_asympt*nucqcd::alpha_em/pow(1+xi,2.)/(48*pow(2.*PI,4.)*Q2out*(s2-t_rho)); //[GeV-10]
+    results[2] = CFF_ads*nucqcd::alpha_em/pow(1+xi,2.)/(48*pow(2.*PI,4.)*Q2out*(s2-t_rho)); //[GeV-10]
+    // cout << 6.*frho0*frho0*pow(nucqcd::alpha_em/Q2in,3.)*pow(alpha_s*CF,4.)*(1.-xi)/(1+xi)/pow(Q2out,2.)/(s2-t_rho)*0.389379E06 << " " << ((1-xi*xi)*norm(integral[0])
+    //                     -2.*xi*((integral[0]*integral[1]).real())-(xi*xi+t_N/4./nucqcd::mass_p_GeV/nucqcd::mass_p_GeV)*norm(integral[1]))/(1.-xi*xi) << " ";
     //[Gev-2 -> nb conversion]
     results[0] *=0.389379E06; //[nb GeV-8]
     results[2] *=0.389379E06; //[nb GeV-8]
 
     double epsilon = (1-y)/(1-y+y*y/2.);
-    results[1] = results[0]*ALPHA/2./PI*y/Q2in/(1-epsilon); //[nb GeV-10]
-    results[3] = results[2]*ALPHA/2./PI*y/Q2in/(1-epsilon); //[nb GeV-10]
+    results[1] = results[0]*nucqcd::alpha_em/2./PI*y/Q2in/(1-epsilon); //[nb GeV-10]
+    results[3] = results[2]*nucqcd::alpha_em/2./PI*y/Q2in/(1-epsilon); //[nb GeV-10]
     return;
 
 }

@@ -93,7 +93,7 @@ void ROMEAGrid::printFsi_grid() {
           phi = 0.;
         setinterp(r,costheta,phi);
         complex < double >value = getFsiGridFull_interp();
-        cout << r << " " << costheta << " " << phi * RADTODEGR << " " << real(value) << " " << imag(value) << endl;
+        cout << r << " " << costheta << " " << phi * nucqcd::rad_to_deg << " " << real(value) << " " << imag(value) << endl;
       }
     }
   }
@@ -132,8 +132,8 @@ void ROMEAGrid::constructAllGrids() {
     double nucleons=getPnucleus()->getA()-getProtonKnockout()-getNeutronKnockout();
 //     cout << nucleons << " " << fit << endl;
     global_(&fit,&p,&nucleons,r, VV, WV,VS,WS, &opticalsize);
-    for(int i=0;i<opticalsize;i++) opticalpotential[it][i]=VS[i]+I_UNIT*WS[i]+getParticles()[it].getE()/getParticles()[it].getMass()*
-      (VV[i]+I_UNIT*WV[i])+(-VV[i]*VV[i]+VS[i]*VS[i]+WV[i]*WV[i]-WS[i]*WS[i]+2.*I_UNIT*(VS[i]*WS[i]-VV[i]*WV[i]))
+    for(int i=0;i<opticalsize;i++) opticalpotential[it][i]=VS[i]+nucqcd::i_unit*WS[i]+getParticles()[it].getE()/getParticles()[it].getMass()*
+      (VV[i]+nucqcd::i_unit*WV[i])+(-VV[i]*VV[i]+VS[i]*VS[i]+WV[i]*WV[i]-WS[i]*WS[i]+2.*nucqcd::i_unit*(VS[i]*WS[i]-VV[i]*WV[i]))
       /2./getParticles()[it].getMass();
   }
 //    for(int i=0;i<opticalsize;i++) cout << r[i] << " " << opticalpotential[0][i] << " " << VV[i] << endl;
@@ -181,7 +181,7 @@ void ROMEAGrid::constructAllGrids() {
             for (j = 0; j <= getCthgrid(); j++) {
               for (k = 0; k <= getPhigrid(); k++) {
                 fsi_grid[i][j][k] = fsi_grid[0][0][0];
-                //cout << r_hit << " " << theta_hit*RADTODEGR << " " << phi_hit*RADTODEGR << " " << fsi_grid[getPnucleus()->getTotalLevels()][0][i][j][k] << endl;
+                //cout << r_hit << " " << theta_hit*nucqcd::rad_to_deg << " " << phi_hit*nucqcd::rad_to_deg << " " << fsi_grid[getPnucleus()->getTotalLevels()][0][i][j][k] << endl;
               }
             }
           }
@@ -189,14 +189,14 @@ void ROMEAGrid::constructAllGrids() {
           else if (j == 0 || j == getCthgrid()) {
             for (k = 1; k <= getPhigrid(); k++) {
               fsi_grid[i][j][k] = fsi_grid[i][j][0];
-              //cout << r_hit << " " << theta_hit*RADTODEGR << " " << phi_hit*RADTODEGR << " " << fsi_grid[getPnucleus()->getTotalLevels()][0][i][j][k] << endl;
+              //cout << r_hit << " " << theta_hit*nucqcd::rad_to_deg << " " << phi_hit*nucqcd::rad_to_deg << " " << fsi_grid[getPnucleus()->getTotalLevels()][0][i][j][k] << endl;
             }
           }
         }
         //treshold reached, fill with 1s
         else {
 	  fsi_grid[i][j][k] = 1.;
-          //cout << r_hit << " " << theta_hit*RADTODEGR << " " << phi_hit*RADTODEGR << " " << fsi_grid[getPnucleus()->getTotalLevels()][0][i][j][k] << endl;
+          //cout << r_hit << " " << theta_hit*nucqcd::rad_to_deg << " " << phi_hit*nucqcd::rad_to_deg << " " << fsi_grid[getPnucleus()->getTotalLevels()][0][i][j][k] << endl;
         }
       }
     }
@@ -274,7 +274,7 @@ void ROMEAGrid::calcROMEAphase(const int i, const int j, const int k) {
       else
 	res = numint::cube_adaptive(mdf, lower, upper, 1.E-12, prec, 2E02,2E06, ret, count, 0);
 //       cout << i << " " << j << " " << k << " " << real(ret[0]) << " " << imag(ret[0]) << endl;
-      fsi_grid[i][j][k] *= exp(-I_UNIT*getParticles()[it].getMass()/getParticles()[it].getP()*ret[0]/HBARC);
+      fsi_grid[i][j][k] *= exp(-nucqcd::i_unit*getParticles()[it].getMass()/getParticles()[it].getP()*ret[0]/nucqcd::hbarc);
     }
     
   }

@@ -141,8 +141,8 @@ TEST_CASE("D-wave conventions: sign of w(r) and W(p), and the Bessel transform b
     CHECK(wf->GetWr(3.) > 0.);
     CHECK(wf->GetWp(100.) > 0.);
     for (double p : {50., 150., 300.}) {
-      const double k = p / HBARC;
-      const double f = std::sqrt(2. / PI) / std::pow(HBARC, 1.5);
+      const double k = p / nucqcd::hbarc;
+      const double f = std::sqrt(2. / PI) / std::pow(nucqcd::hbarc, 1.5);
       const double U = f * simpson([&](double r) { return wf->GetUr(r) * std::sph_bessel(0, k * r) * r; }, 0., 40., 40000);
       const double W = f * simpson([&](double r) { return wf->GetWr(r) * std::sph_bessel(2, k * r) * r; }, 0., 40., 40000);
       CHECK_THAT(U, WithinRel(wf->GetUp(p), 2e-3));

@@ -15,7 +15,7 @@ NucleonWeakOperator::NucleonWeakOperator(){
 NucleonWeakOperator::NucleonWeakOperator(const double q2, const bool prot, const int para, const bool charge,
 					 const double M_A_in, const double r_s2_in, const double mu_s_in, const double gA_s_in):
 NucleonEMOperator(q2,prot,para),charged(charge),M_A(M_A_in),r_s2(r_s2_in),mu_s(mu_s_in),gA_s(gA_s_in),isopartner(q2,!prot,para){
-  if(charged) tau=Q2/4./MASSP/MASSN;
+  if(charged) tau=Q2/4./nucqcd::mass_p/nucqcd::mass_n;
   setGA_weak();
   setF1_weak();
   setF2_weak();
@@ -67,23 +67,23 @@ NucleonWeakOperator & NucleonWeakOperator::operator=(const NucleonWeakOperator &
 FourVector<GammaStructure> NucleonWeakOperator::getCC1_weak(const FourVector<double> &pi, const FourVector<double> &pf, 
 						     const double r, const int medium, const MeanFieldNucleusThick &nucleus) const{
   if(medium) return getGM_weak(r,medium,nucleus)*gamma_mu
-		      -getF2_weak(r,medium,nucleus)/(2.*(proton?MASSP:MASSN))*(pi+pf)*Id;
-  else return getGM_weak()*gamma_mu-getF2_weak()/(2.*(proton?MASSP:MASSN))*(pi+pf)*Id;
+		      -getF2_weak(r,medium,nucleus)/(2.*(proton?nucqcd::mass_p:nucqcd::mass_n))*(pi+pf)*Id;
+  else return getGM_weak()*gamma_mu-getF2_weak()/(2.*(proton?nucqcd::mass_p:nucqcd::mass_n))*(pi+pf)*Id;
 }
 FourVector<GammaStructure> NucleonWeakOperator::getCC2_weak(const FourVector<double> &q, const double r, const int medium,
 						     const MeanFieldNucleusThick &nucleus) const{
   if(medium) return gamma_mu*getF1_weak(r,medium,nucleus)
-    +getF2_weak(r,medium,nucleus)/(4.*(proton?MASSP:MASSN))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q));
-  else return gamma_mu*getF1_weak()+getF2_weak()/(4.*(proton?MASSP:MASSN))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q));
+    +getF2_weak(r,medium,nucleus)/(4.*(proton?nucqcd::mass_p:nucqcd::mass_n))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q));
+  else return gamma_mu*getF1_weak()+getF2_weak()/(4.*(proton?nucqcd::mass_p:nucqcd::mass_n))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q));
   
 }
 FourVector<GammaStructure> NucleonWeakOperator::getCC3_weak(const FourVector<double> &q, const FourVector<double> &pi,
 						     const FourVector<double> &pf, const double r, const int medium,
 						     const MeanFieldNucleusThick &nucleus) const{
-  if(medium) return getF1_weak(r,medium,nucleus)/(2.*(proton?MASSP:MASSN))*(pi+pf)*Id 
-    + getGM_weak(r,medium,nucleus)/(4.*(proton?MASSP:MASSN))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q)); 
-  else return getF1_weak()/(2.*(proton?MASSP:MASSN))*(pi+pf)*Id 
-    + getGM_weak()/(4.*(proton?MASSP:MASSN))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q)); 
+  if(medium) return getF1_weak(r,medium,nucleus)/(2.*(proton?nucqcd::mass_p:nucqcd::mass_n))*(pi+pf)*Id 
+    + getGM_weak(r,medium,nucleus)/(4.*(proton?nucqcd::mass_p:nucqcd::mass_n))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q)); 
+  else return getF1_weak()/(2.*(proton?nucqcd::mass_p:nucqcd::mass_n))*(pi+pf)*Id 
+    + getGM_weak()/(4.*(proton?nucqcd::mass_p:nucqcd::mass_n))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q)); 
 }
 
 FourVector<GammaStructure> NucleonWeakOperator::getCC_weak(const int current, const FourVector<double>& q, 
@@ -108,14 +108,14 @@ FourVector<GammaStructure> NucleonWeakOperator::getCC_weak(const int current, co
 						    const FourVector<double>& pi, const FourVector<double>& pf) const{
 switch(current){
     case(1):
-      return getGM_weak()*gamma_mu-getF2_weak()/(2.*(proton?MASSn:MASSn))*(pi+pf)*Id;
+      return getGM_weak()*gamma_mu-getF2_weak()/(2.*(proton?nucqcd::mass_nucleon:nucqcd::mass_nucleon))*(pi+pf)*Id;
       break;
     case(2):
-      return gamma_mu*getF1_weak()+getF2_weak()/(4.*(proton?MASSn:MASSn))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q));
+      return gamma_mu*getF1_weak()+getF2_weak()/(4.*(proton?nucqcd::mass_nucleon:nucqcd::mass_nucleon))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q));
       break;
     case(3):
-      return getF1_weak()/(2.*(proton?MASSn:MASSn))*(pi+pf)*Id 
-    + getGM_weak()/(4.*(proton?MASSn:MASSn))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q));
+      return getF1_weak()/(2.*(proton?nucqcd::mass_nucleon:nucqcd::mass_nucleon))*(pi+pf)*Id 
+    + getGM_weak()/(4.*(proton?nucqcd::mass_nucleon:nucqcd::mass_nucleon))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q));
       break;
     default:
       throw std::invalid_argument(nucqcd::ErrorMessage() << "Current operator not supported " << current );
@@ -123,14 +123,14 @@ switch(current){
 /*  
 switch(current){
     case(1):
-      return getGM_weak()*gamma_mu-getF2_weak()/(2.*(proton?MASSP:MASSN))*(pi+pf)*Id;
+      return getGM_weak()*gamma_mu-getF2_weak()/(2.*(proton?nucqcd::mass_p:nucqcd::mass_n))*(pi+pf)*Id;
       break;
     case(2):
-      return gamma_mu*getF1_weak()+getF2_weak()/(4.*(proton?MASSP:MASSN))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q));
+      return gamma_mu*getF1_weak()+getF2_weak()/(4.*(proton?nucqcd::mass_p:nucqcd::mass_n))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q));
       break;
     case(3):
-      return getF1_weak()/(2.*(proton?MASSP:MASSN))*(pi+pf)*Id 
-    + getGM_weak()/(4.*(proton?MASSP:MASSN))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q));
+      return getF1_weak()/(2.*(proton?nucqcd::mass_p:nucqcd::mass_n))*(pi+pf)*Id 
+    + getGM_weak()/(4.*(proton?nucqcd::mass_p:nucqcd::mass_n))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q));
       break;
     default:
       throw std::invalid_argument(nucqcd::ErrorMessage() << "Current operator not supported " << current );
@@ -140,7 +140,7 @@ switch(current){
 
 
 FourVector<GammaStructure> NucleonWeakOperator::getAxial(const FourVector<double> &q) const{
- return +getGA_weak()*gamma_5mu-getGP_weak()/(2.*sqrt(MASSP*MASSN))*gamma_5*q; //-gamma^mu*gamma5G_A - q^mu gamma5 GP
+ return +getGA_weak()*gamma_5mu-getGP_weak()/(2.*sqrt(nucqcd::mass_p*nucqcd::mass_n))*gamma_5*q; //-gamma^mu*gamma5G_A - q^mu gamma5 GP
 }
 
 
@@ -158,7 +158,7 @@ void NucleonWeakOperator::setGA_weak(){
   else
     GA_weak=(-gA_s+(proton? 1.:-1.)*gA_null)*0.5*Get_dipole_mass(Q2,M_A);
   //G_P should not contribute for neutral currents (prop to lepton mass)
-  GP_weak=4.*MASSP*MASSN*GA_weak/(MASSPI*MASSPI+Q2)*(1.-MASSPI*MASSPI/(M_A*M_A)); 
+  GP_weak=4.*nucqcd::mass_p*nucqcd::mass_n*GA_weak/(nucqcd::mass_pi*nucqcd::mass_pi+Q2)*(1.-nucqcd::mass_pi*nucqcd::mass_pi/(M_A*M_A)); 
 
 }
 
@@ -166,13 +166,13 @@ void NucleonWeakOperator::setF1_weak(){
   if(charged)
     F1_weak=(proton?1.:-1.)*(getF1()-isopartner.getF1());
   else
-    F1_weak=0.5*(getF1()-isopartner.getF1())-2.*SIN2W*getF1()+0.5*r_s2*INVHBARC*INVHBARC/6.*Q2*Get_dipole_mass(Q2,1300.);
+    F1_weak=0.5*(getF1()-isopartner.getF1())-2.*nucqcd::sin2_theta_w*getF1()+0.5*r_s2*nucqcd::inv_hbarc*nucqcd::inv_hbarc/6.*Q2*Get_dipole_mass(Q2,1300.);
 }
 void NucleonWeakOperator::setF2_weak(){
   if(charged)
     F2_weak=(proton?1.:-1.)*(getF2()-isopartner.getF2());
   else
-    F2_weak=0.5*(getF2()-isopartner.getF2())-2.*SIN2W*getF2()-0.5*mu_s*Get_dipole_mass(Q2,1260.); 
+    F2_weak=0.5*(getF2()-isopartner.getF2())-2.*nucqcd::sin2_theta_w*getF2()-0.5*mu_s*Get_dipole_mass(Q2,1260.); 
 }
 
 void NucleonWeakOperator::setGE_weak(){
@@ -189,7 +189,7 @@ double NucleonWeakOperator::getF1_weak(const double r, const int medium, const M
   if(charged)
     return (proton?1.:-1.)*(F1mod-isoF1mod);
   else
-    return 0.5*(F1mod-isoF1mod)-2.*SIN2W*F1mod+0.5*r_s2*INVHBARC*INVHBARC/6.*Q2*Get_dipole_mass(Q2,1300.);
+    return 0.5*(F1mod-isoF1mod)-2.*nucqcd::sin2_theta_w*F1mod+0.5*r_s2*nucqcd::inv_hbarc*nucqcd::inv_hbarc/6.*Q2*Get_dipole_mass(Q2,1300.);
   
 }
 
@@ -200,7 +200,7 @@ double NucleonWeakOperator::getF2_weak(const double r, const int medium, const M
   if(charged)
     return (proton?1.:-1.)*(F2mod-isoF2mod);
   else
-    return 0.5*(F2mod-isoF2mod)-2.*SIN2W*F2mod-0.5*mu_s*Get_dipole_mass(Q2,1260.); 
+    return 0.5*(F2mod-isoF2mod)-2.*nucqcd::sin2_theta_w*F2mod-0.5*mu_s*Get_dipole_mass(Q2,1260.); 
 }
 
 

@@ -45,10 +45,10 @@ WeakQECross::~WeakQECross(){
 
 double WeakQECross::getElWeakQECross(double Q2, double E_in, bool proton, bool charged, double M_A, double leptonmass2, el_differential d_type){
 
-  double massin=(proton?MASSP:MASSN);
-  double massout=(charged?(proton?MASSN:MASSP):(proton?MASSP:MASSN));
+  double massin=(proton?nucqcd::mass_p:nucqcd::mass_n);
+  double massout=(charged?(proton?nucqcd::mass_n:nucqcd::mass_p):(proton?nucqcd::mass_p:nucqcd::mass_n));
   
-  if(d_type==type_Q2QE) massin=massout=MASSn;
+  if(d_type==type_Q2QE) massin=massout=nucqcd::mass_nucleon;
   
   double omega=0.5*(massout*massout-massin*massin+Q2)/massin;
   double qvec=sqrt(omega*omega+Q2);              // spacelike Q2???
@@ -88,11 +88,11 @@ double WeakQECross::getElWeakQECross(double Q2, double E_in, bool proton, bool c
 //     kinfactors[3]=tan2theta+0.5*rho-delta2*(omega/qvec+0.5*rho*rrho*delta2)*tan2theta/rrho;  
 //     kinfactors[4]=(1.-omega*rrho*delta2/qvec)*tan2theta/rrho;      
   
-    kinfactors2[0]=1.+massfactor*costhl+2.*leptonmass2*omega/E_out/M_W/M_W
-	+leptonmass2*pow(omega/M_W/M_W,2.)*(1.-massfactor*costhl); //v_L (part corresponding with unbroken current)
-    kinfactors2[1] = -leptonmass2/qvec/E_out - leptonmass2/M_W/M_W/qvec*(omega*(1.-massfactor*costhl)+Q2/E_out)
-      -omega/qvec*leptonmass2*pow(Q/M_W/M_W,2.)*(1-massfactor*costhl); //second contrib to v_L, mix z,0
-    kinfactors2[2] = leptonmass2/qvec/qvec*pow(1.+Q2/M_W/M_W,2.)*(1-massfactor*costhl); //third contrib to v_L, z*z
+    kinfactors2[0]=1.+massfactor*costhl+2.*leptonmass2*omega/E_out/nucqcd::mass_w/nucqcd::mass_w
+	+leptonmass2*pow(omega/nucqcd::mass_w/nucqcd::mass_w,2.)*(1.-massfactor*costhl); //v_L (part corresponding with unbroken current)
+    kinfactors2[1] = -leptonmass2/qvec/E_out - leptonmass2/nucqcd::mass_w/nucqcd::mass_w/qvec*(omega*(1.-massfactor*costhl)+Q2/E_out)
+      -omega/qvec*leptonmass2*pow(Q/nucqcd::mass_w/nucqcd::mass_w,2.)*(1-massfactor*costhl); //second contrib to v_L, mix z,0
+    kinfactors2[2] = leptonmass2/qvec/qvec*pow(1.+Q2/nucqcd::mass_w/nucqcd::mass_w,2.)*(1-massfactor*costhl); //third contrib to v_L, z*z
     kinfactors2[3]=1.-massfactor*costhl+E_in*E_out/qvec/qvec*massfactor*massfactor*sinthl*sinthl; //v_T
     kinfactors2[4]=(E_in+E_out)/qvec*(1.-massfactor*costhl)-leptonmass2/qvec/E_out; //v_T'
   
@@ -154,18 +154,18 @@ double WeakQECross::getElWeakQECross(double Q2, double E_in, bool proton, bool c
 //     for(int i=0;i<5;i++) cross2+=kinfactors2[i]*response[i];  //sign of T' term taken care of in response!
     
         
-    cross*=massfactor*pow(G_FERMI*COS_CAB*E_out/(Q2/M_W/M_W+1.)/PI/2.,2.);
+    cross*=massfactor*pow(nucqcd::g_fermi*nucqcd::cos_cabibbo*E_out/(Q2/nucqcd::mass_w/nucqcd::mass_w+1.)/PI/2.,2.);
     cross/=abs(1.+E_in/massin*(1.-costhl/massfactor)); //recoil factor
     
-    cross*=HBARC*HBARC; // to units fm^2.
+    cross*=nucqcd::hbarc*nucqcd::hbarc; // to units fm^2.
     //so far this will give us differential cross section in lab frame, differential to lepton solid angle
 
 
-//     cross2*=massfactor*pow(G_FERMI*COS_CAB*E_out/(Q2/M_W/M_W+1.)/PI/2.,2.);
+//     cross2*=massfactor*pow(nucqcd::g_fermi*nucqcd::cos_cabibbo*E_out/(Q2/nucqcd::mass_w/nucqcd::mass_w+1.)/PI/2.,2.);
 //     cross2/=1.+E_in/massin*(1.-massfactor*costhl); //recoil factor
 //     
-//     cross2*=HBARC*HBARC;
-//     cout << cross << " " << cross2 << " " << (Q2/M_W/M_W+1.) << endl;
+//     cross2*=nucqcd::hbarc*nucqcd::hbarc;
+//     cout << cross << " " << cross2 << " " << (Q2/nucqcd::mass_w/nucqcd::mass_w+1.) << endl;
     
     // cout<<"Factors "<<p_out<<" "<<E_out<<" "<<cos(atan(sqrt(tan2theta)))<<" "<<cos(atan(sqrt(tan2theta)))<<endl;*/
 
@@ -242,11 +242,11 @@ void WeakQECross::getRFGWeakQECross(double &presult, double &nresult, double Q2,
 
   //prefactors for Fermi Gas, scaling variables etc.
   
-  double lambda=omega/2./sqrt(MASSP*MASSN);
-  double kappa=qvec/2./sqrt(MASSP*MASSN);
-  double tau=Q2/4./MASSP/MASSN;
+  double lambda=omega/2./sqrt(nucqcd::mass_p*nucqcd::mass_n);
+  double kappa=qvec/2./sqrt(nucqcd::mass_p*nucqcd::mass_n);
+  double tau=Q2/4./nucqcd::mass_p/nucqcd::mass_n;
   
-  double xi=sqrt(1.+k_Fermi*k_Fermi/MASSP/MASSN)-1.;
+  double xi=sqrt(1.+k_Fermi*k_Fermi/nucqcd::mass_p/nucqcd::mass_n)-1.;
   double psi=pow(lambda-tau,2.)/(xi*((1.+lambda)*tau+kappa*sqrt(tau*(1.+tau))));
 //   cout << "blaaa " << psi << endl;
   if(abs(psi)>1.) return;
@@ -254,7 +254,7 @@ void WeakQECross::getRFGWeakQECross(double &presult, double &nresult, double Q2,
   double totscaling=1.; //
   if(Pauli_blocking){
     double omegaprime=omega-20.;
-    double llambda=omegaprime/2./sqrt(MASSP*MASSN);
+    double llambda=omegaprime/2./sqrt(nucqcd::mass_p*nucqcd::mass_n);
     double ttau=kappa*kappa-llambda*llambda;
     double ppsi=pow(llambda-ttau,2.)/(xi*((1.+llambda)*ttau+kappa*sqrt(ttau*(1.+ttau))));
     double dden=1+xi/2.*(1+ppsi);
@@ -264,13 +264,13 @@ void WeakQECross::getRFGWeakQECross(double &presult, double &nresult, double Q2,
     double denneg=1+xi/2.*(1+ppsineg);
     double scaling, negscaling;
     if(abs(ppsi)>1.) scaling=0.;
-    else scaling = 3./4.*(1-ppsi)*xi/(sqrt(MASSP*MASSN)*pow(k_Fermi/sqrt(MASSP*MASSN),3.)*kappa)*dden;
+    else scaling = 3./4.*(1-ppsi)*xi/(sqrt(nucqcd::mass_p*nucqcd::mass_n)*pow(k_Fermi/sqrt(nucqcd::mass_p*nucqcd::mass_n),3.)*kappa)*dden;
     if(abs(ppsineg)>1.) negscaling=0.;
-    else negscaling = 3./4.*(1-ppsineg)*xi/(sqrt(MASSP*MASSN)*pow(k_Fermi/sqrt(MASSP*MASSN),3.)*kappa)*denneg;
+    else negscaling = 3./4.*(1-ppsineg)*xi/(sqrt(nucqcd::mass_p*nucqcd::mass_n)*pow(k_Fermi/sqrt(nucqcd::mass_p*nucqcd::mass_n),3.)*kappa)*denneg;
     totscaling=(scaling-negscaling)/den;
     if(totscaling<0.) return;
   }
-  else totscaling=3./4.*(1-psi)*xi/(sqrt(MASSP*MASSN)*pow(k_Fermi/sqrt(MASSP*MASSN),3.)*kappa);
+  else totscaling=3./4.*(1-psi)*xi/(sqrt(nucqcd::mass_p*nucqcd::mass_n)*pow(k_Fermi/sqrt(nucqcd::mass_p*nucqcd::mass_n),3.)*kappa);
   
   //W interaction
   if(charged){
@@ -289,11 +289,11 @@ void WeakQECross::getRFGWeakQECross(double &presult, double &nresult, double Q2,
     if(abs(abs(costhl)-1.)<1.E-09) {  costhl=1.*SIGN(costhl);} //underflow protection
     double sinthl=sqrt(1.-costhl*costhl);
   
-    kinfactors[0]=1.+massfactor*costhl+2.*leptonmass2*omega/E_out/M_W/M_W
-	+leptonmass2*pow(omega/M_W/M_W,2.)*(1.-massfactor*costhl); //v_L (part corresponding with unbroken current)
-    kinfactors[1] = -leptonmass2/qvec/E_out - leptonmass2/M_W/M_W/qvec*(omega*(1.-massfactor*costhl)+Q2/E_out)
-      -omega/qvec*leptonmass2*pow(Q/M_W/M_W,2.)*(1-massfactor*costhl); //second contrib to v_L, mix z,0
-    kinfactors[2] = leptonmass2/qvec/qvec*pow(1.+Q2/M_W/M_W,2.)*(1-massfactor*costhl); //third contrib to v_L, z*z
+    kinfactors[0]=1.+massfactor*costhl+2.*leptonmass2*omega/E_out/nucqcd::mass_w/nucqcd::mass_w
+	+leptonmass2*pow(omega/nucqcd::mass_w/nucqcd::mass_w,2.)*(1.-massfactor*costhl); //v_L (part corresponding with unbroken current)
+    kinfactors[1] = -leptonmass2/qvec/E_out - leptonmass2/nucqcd::mass_w/nucqcd::mass_w/qvec*(omega*(1.-massfactor*costhl)+Q2/E_out)
+      -omega/qvec*leptonmass2*pow(Q/nucqcd::mass_w/nucqcd::mass_w,2.)*(1-massfactor*costhl); //second contrib to v_L, mix z,0
+    kinfactors[2] = leptonmass2/qvec/qvec*pow(1.+Q2/nucqcd::mass_w/nucqcd::mass_w,2.)*(1-massfactor*costhl); //third contrib to v_L, z*z
     kinfactors[3]=1.-massfactor*costhl+E_in*E_out/qvec/qvec*massfactor*massfactor*sinthl*sinthl; //v_T
     kinfactors[4]=(E_in+E_out)/qvec*(1.-massfactor*costhl)-leptonmass2/qvec/E_out; //v_T'
   
@@ -305,7 +305,7 @@ void WeakQECross::getRFGWeakQECross(double &presult, double &nresult, double Q2,
     
     NucleonWeakOperator J(Q2,1,0,charged,M_A,0.,0.,0.);
       
-    double GA2prime = pow(J.getGA_weak()-Q2/(4.*MASSP*MASSN)*J.getGP_weak(),2.);
+    double GA2prime = pow(J.getGA_weak()-Q2/(4.*nucqcd::mass_p*nucqcd::mass_n)*J.getGP_weak(),2.);
     double delta=tau/kappa/kappa*xi*(1-psi)*(kappa*sqrt(1+1./tau)+xi/3.*(1-psi));
 
     //careful here when comparing to the PRC71 065501 formulas, they use F^V = (Fp-Fn)/2 convention!!
@@ -323,11 +323,11 @@ void WeakQECross::getRFGWeakQECross(double &presult, double &nresult, double Q2,
           +kinfactors[3]*(UT_V+UT_A);
     presult = cross-kinfactors[4]*UTprime; 
     nresult = cross+kinfactors[4]*UTprime; 
-    presult*=massfactor*pow(G_FERMI*COS_CAB*E_out/(Q2/M_W/M_W+1.)/PI/2.,2.); //sigma mott-like part
-    nresult*=massfactor*pow(G_FERMI*COS_CAB*E_out/(Q2/M_W/M_W+1.)/PI/2.,2.); //sigma mott-like part
+    presult*=massfactor*pow(nucqcd::g_fermi*nucqcd::cos_cabibbo*E_out/(Q2/nucqcd::mass_w/nucqcd::mass_w+1.)/PI/2.,2.); //sigma mott-like part
+    nresult*=massfactor*pow(nucqcd::g_fermi*nucqcd::cos_cabibbo*E_out/(Q2/nucqcd::mass_w/nucqcd::mass_w+1.)/PI/2.,2.); //sigma mott-like part
     
-    presult*=HBARC*HBARC*totscaling; // to units fm^2.
-    nresult*=HBARC*HBARC*totscaling; // to units fm^2.
+    presult*=nucqcd::hbarc*nucqcd::hbarc*totscaling; // to units fm^2.
+    nresult*=nucqcd::hbarc*nucqcd::hbarc*totscaling; // to units fm^2.
 
     switch(d_type){
       case(costheta_lab):
@@ -338,8 +338,8 @@ void WeakQECross::getRFGWeakQECross(double &presult, double &nresult, double Q2,
       }
       break;
       case(type_Q2QE):{
-        double massin=MASSn-34.;
-        double massout=MASSn;
+        double massin=nucqcd::mass_nucleon-34.;
+        double massout=nucqcd::mass_nucleon;
         double EnuQE=(2.*massin*E_out-(massin*massin+leptonmass2-massout*massout))/2./(massin-E_out*(1-massfactor*costhl));
         double Q2QE=-leptonmass2+2.*EnuQE*(E_out-p_out*costhl);
         double Jac = -2.*EnuQE*p_out*massin/(massin-E_out+p_out*costhl);
@@ -471,7 +471,7 @@ double WeakQECross::getDiffWeakQECross(TKinematics2to2 &kin, int current, int th
   
   //CC
   if(charged){
-    double mott=sqrt(1.-leptonmass2/Eout/Eout)*pow(G_FERMI*COS_CAB*Eout/(Q2/M_W/M_W+1.)/PI/2.,2.); //[MeV]^2
+    double mott=sqrt(1.-leptonmass2/Eout/Eout)*pow(nucqcd::g_fermi*nucqcd::cos_cabibbo*Eout/(Q2/nucqcd::mass_w/nucqcd::mass_w+1.)/PI/2.,2.); //[MeV]^2
     
     double kinfactors[9];
     double response[9];
@@ -489,15 +489,15 @@ double WeakQECross::getDiffWeakQECross(TKinematics2to2 &kin, int current, int th
     double costhl=lepton->GetCosScatterAngle(kin);
     double sinthl=sqrt(1.-costhl*costhl);
     
-    kinfactors[0]=1.+massfactor*costhl+2.*leptonmass2*nu/k_out[0]/M_W/M_W
-	+leptonmass2*pow(nu/M_W/M_W,2.)*(1.-massfactor*costhl); //v_L (part corresponding with unbroken current)
-    kinfactors[1] = -leptonmass2/qvec/k_out[0] - leptonmass2/M_W/M_W/qvec*(nu*(1.-massfactor*costhl)+Q2/k_out[0])
-      -nu/qvec*leptonmass2*pow(Q/M_W/M_W,2.)*(1-massfactor*costhl); //second contrib to v_L, mix z,0
-    kinfactors[2] = leptonmass2/qvec/qvec*pow(1.+Q2/M_W/M_W,2.)*(1-massfactor*costhl); //third contrib to v_L, z*z
+    kinfactors[0]=1.+massfactor*costhl+2.*leptonmass2*nu/k_out[0]/nucqcd::mass_w/nucqcd::mass_w
+	+leptonmass2*pow(nu/nucqcd::mass_w/nucqcd::mass_w,2.)*(1.-massfactor*costhl); //v_L (part corresponding with unbroken current)
+    kinfactors[1] = -leptonmass2/qvec/k_out[0] - leptonmass2/nucqcd::mass_w/nucqcd::mass_w/qvec*(nu*(1.-massfactor*costhl)+Q2/k_out[0])
+      -nu/qvec*leptonmass2*pow(Q/nucqcd::mass_w/nucqcd::mass_w,2.)*(1-massfactor*costhl); //second contrib to v_L, mix z,0
+    kinfactors[2] = leptonmass2/qvec/qvec*pow(1.+Q2/nucqcd::mass_w/nucqcd::mass_w,2.)*(1-massfactor*costhl); //third contrib to v_L, z*z
     kinfactors[3]=1.-massfactor*costhl+k_in[0]*k_out[0]/qvec/qvec*massfactor*massfactor*sinthl*sinthl; //v_T
     kinfactors[4]=-k_in[0]*k_out[0]/qvec/qvec*massfactor*massfactor*sinthl*sinthl; //v_TT
-    kinfactors[5]=-sinthl*massfactor/sqrt(2.)/qvec*(k_in[0]+k_out[0]+nu*leptonmass2/M_W/M_W); //v_TL
-    kinfactors[6] =-sinthl*massfactor*leptonmass2/sqrt(2.)/qvec/qvec*(1.+Q2/M_W/M_W); //v_TL contrib from mixed current
+    kinfactors[5]=-sinthl*massfactor/sqrt(2.)/qvec*(k_in[0]+k_out[0]+nu*leptonmass2/nucqcd::mass_w/nucqcd::mass_w); //v_TL
+    kinfactors[6] =-sinthl*massfactor*leptonmass2/sqrt(2.)/qvec/qvec*(1.+Q2/nucqcd::mass_w/nucqcd::mass_w); //v_TL contrib from mixed current
     kinfactors[7]=(k_in[0]+k_out[0])/qvec*(1.-massfactor*costhl)-leptonmass2/qvec/k_out[0]; //v_T'
     kinfactors[8]=-massfactor*sinthl/sqrt(2.); //v_TL'
     
@@ -519,7 +519,7 @@ double WeakQECross::getDiffWeakQECross(TKinematics2to2 &kin, int current, int th
 // 						    0.);
 //     FourVector<complex<double> > polVector0(qvec/Q,0.,0.,nu/Q);
 //     FourVector<complex<double> > polVectorZ(nu/Q,0.,0.,qvec/Q);
-//     polVectorZ*=1.-Q2/M_W/M_W;
+//     polVectorZ*=1.-Q2/nucqcd::mass_w/nucqcd::mass_w;
     
 
 //     cout << -Trace(((polVectorMin*gamma_mu)*(k_in*gamma_mu)*(polVectorPlus*gamma_mu)*(k_out*gamma_mu)).value())/(4.*k_in[0]*k_out[0]) 
@@ -541,13 +541,13 @@ double WeakQECross::getDiffWeakQECross(TKinematics2to2 &kin, int current, int th
 //     << " " << sinthl/qvec/qvec*massfactor/sqrt(2.)*(Q*(k_in[0]+k_out[0])-nu*leptonmass2/Q) << endl;
 // 
 //     cout << Trace(((polVectorZ*gamma_mu)*(k_in*gamma_mu)*(polVectorPlus*gamma_mu)*(k_out*gamma_mu)).value())/(4.*k_in[0]*k_out[0]) 
-//     << " " << -sinthl/qvec*massfactor/sqrt(2.)*leptonmass2/Q*(1.-Q2/M_W/M_W) << endl;
+//     << " " << -sinthl/qvec*massfactor/sqrt(2.)*leptonmass2/Q*(1.-Q2/nucqcd::mass_w/nucqcd::mass_w) << endl;
 //     
 //     cout << std::setprecision(9) <<Trace(((polVectorZ*gamma_mu)*(k_in*gamma_mu)*(polVectorZ*gamma_mu)*(k_out*gamma_mu)).value())/2. 
-//     << " " << leptonmass2*(1.+leptonmass2/Q2)*pow(1.-Q2/M_W/M_W,2.) << endl;
+//     << " " << leptonmass2*(1.+leptonmass2/Q2)*pow(1.-Q2/nucqcd::mass_w/nucqcd::mass_w,2.) << endl;
 //     
 //     cout << std::setprecision(9) <<Trace(((polVector0*gamma_mu)*(k_in*gamma_mu)*(polVectorZ*gamma_mu)*(k_out*gamma_mu)).value())/2. 
-//     << " " << -leptonmass2/qvec*((k_in[0]+k_out[0])-leptonmass2*nu/Q2)*(1.-Q2/M_W/M_W) << endl;
+//     << " " << -leptonmass2/qvec*((k_in[0]+k_out[0])-leptonmass2*nu/Q2)*(1.-Q2/nucqcd::mass_w/nucqcd::mass_w) << endl;
 // 
 //     cout << std::setprecision(9) <<Trace(((polVector0*gamma_mu)*(k_in*gamma_mu)*(polVector0*gamma_mu)*(k_out*gamma_mu)).value())/2. 
 //     << " " << (pow(k_in[0]+k_out[0],2.)/qvec/qvec-1.)*Q2-leptonmass2*(1.+2.*(k_in[0]*k_in[0]-k_out[0]*k_out[0])/qvec/qvec)
@@ -556,17 +556,17 @@ double WeakQECross::getDiffWeakQECross(TKinematics2to2 &kin, int current, int th
 //     cout << std::setprecision(9) <<(qvec*qvec*Trace(((polVector0*gamma_mu)*(k_in*gamma_mu)*(polVector0*gamma_mu)*(k_out*gamma_mu)).value()) 
 //       - 2.*qvec*nu*Trace(((polVector0*gamma_mu)*(k_in*gamma_mu)*(polVectorZ*gamma_mu)*(k_out*gamma_mu)).value())
 //       +nu*nu*Trace(((polVectorZ*gamma_mu)*(k_in*gamma_mu)*(polVectorZ*gamma_mu)*(k_out*gamma_mu)).value()))/(4.*k_in[0]*k_out[0]*Q2) << 
-//       " " << 1.+massfactor*costhl -2.*leptonmass2*nu/k_out[0]/M_W/M_W+leptonmass2*pow(nu/M_W/M_W,2.)*(1.-massfactor*costhl)<< endl;
+//       " " << 1.+massfactor*costhl -2.*leptonmass2*nu/k_out[0]/nucqcd::mass_w/nucqcd::mass_w+leptonmass2*pow(nu/nucqcd::mass_w/nucqcd::mass_w,2.)*(1.-massfactor*costhl)<< endl;
 //     
 //     cout << std::setprecision(9) <<
 //       (Trace(((polVector0*gamma_mu)*(k_in*gamma_mu)*(polVectorZ*gamma_mu)*(k_out*gamma_mu)).value())
 //       -nu/qvec*Trace(((polVectorZ*gamma_mu)*(k_in*gamma_mu)*(polVectorZ*gamma_mu)*(k_out*gamma_mu)).value()))/(4.*k_in[0]*k_out[0]) << 
-//       " " << -leptonmass2/qvec/k_out[0] + leptonmass2/M_W/M_W/qvec*(nu*(1.-massfactor*costhl)+Q2/k_out[0])
-//       -nu/qvec*leptonmass2*pow(Q/M_W/M_W,2.)*(1-massfactor*costhl) << endl;
+//       " " << -leptonmass2/qvec/k_out[0] + leptonmass2/nucqcd::mass_w/nucqcd::mass_w/qvec*(nu*(1.-massfactor*costhl)+Q2/k_out[0])
+//       -nu/qvec*leptonmass2*pow(Q/nucqcd::mass_w/nucqcd::mass_w,2.)*(1-massfactor*costhl) << endl;
 // 
 //     cout << std::setprecision(9) <<
 //       Q2/qvec/qvec*Trace(((polVectorZ*gamma_mu)*(k_in*gamma_mu)*(polVectorZ*gamma_mu)*(k_out*gamma_mu)).value())/(4.*k_in[0]*k_out[0]) << 
-//       " " << leptonmass2/qvec/qvec*pow(1.-Q2/M_W/M_W,2.)*(1-massfactor*costhl) << endl;
+//       " " << leptonmass2/qvec/qvec*pow(1.-Q2/nucqcd::mass_w/nucqcd::mass_w,2.)*(1-massfactor*costhl) << endl;
 // //    z,z comparison pascal me   
 //     cout << std::setprecision(9) << nu*nu/qvec/qvec*(1.+massfactor*costhl)+2.*nu/qvec*leptonmass2/qvec/k_out[0]+leptonmass2/qvec/qvec*(1.-massfactor*costhl) <<
 //     " " << 1.+massfactor*costhl-2.*k_in[0]*k_out[0]*massfactor*massfactor*sinthl*sinthl/qvec/qvec << endl;
@@ -632,7 +632,7 @@ double WeakQECross::getDiffWeakQECross(TKinematics2to2 &kin, int current, int th
 //     cout <<"mott " << mott << " " << frontfactor << endl;
 //     cout << kinfactors[3] << " " << kinfactors[7] << " " << kinfactors[0] << " " << response[3] << " " << response[7] << " " << response[0] << " " 
 //     << massfactor << " " << mott << " " << frontfactor << " " << result << endl;
-    return mott*frontfactor*result/HBARC;
+    return mott*frontfactor*result/nucqcd::hbarc;
   }  
   //NC
   else{
@@ -641,7 +641,7 @@ double WeakQECross::getDiffWeakQECross(TKinematics2to2 &kin, int current, int th
      //same normalization as the CC branch: G_F^2 E'^2 cos^2(theta/2)/(2 pi^2), the NC form factors
      //(NucleonWeakOperator) carry the factors 1/2 of the Z coupling
      double mott=(1.+electron->GetCosScatterAngle(kin))*
-	pow((electron->GetBeamEnergy(kin)-kin.GetWlab())*G_FERMI/(Q2/M_Z/M_Z+1.)/PI/2.,2.);
+	pow((electron->GetBeamEnergy(kin)-kin.GetWlab())*nucqcd::g_fermi/(Q2/nucqcd::mass_z/nucqcd::mass_z+1.)/PI/2.,2.);
     double tan2=pow(tan(acos(electron->GetCosScatterAngle(kin))/2.),2.);
     double kinfactors[6];
     kinfactors[0]=1.; //v_L
@@ -696,7 +696,7 @@ double WeakQECross::getDiffWeakQECross(TKinematics2to2 &kin, int current, int th
     else result=2.*PI*(kinfactors[0]*response[0]+kinfactors[1]*response[1]
       +(shellindex<pnucl->getPLevels()?1.:-1.)*kinfactors[4]*response[4]);
     delete reacmodel;
-    return mott*frontfactor*result/HBARC;
+    return mott*frontfactor*result/nucqcd::hbarc;
   }  
 }
 

@@ -300,7 +300,7 @@ void TKinematics2to3WithLabAngles::UpdateKinematics()
     else
       s23 = *fEVar;
 
-    if( s23<(pow(m2+m3,2.)-STRANGEUFLOW) ) fIsPhysical = false;
+    if( s23<(pow(m2+m3,2.)-nucqcd::strange_underflow) ) fIsPhysical = false;
 
     // we can calculate eg now, if t_{g1} is the angular variable
     if( fTh1Var==&fTgk || fTh1Var==&fTgy || fTh1Var==&fTgn )
@@ -372,7 +372,7 @@ void TKinematics2to3WithLabAngles::UpdateKinematics()
 	}
 	else {
 	  if( sol1 && sol2 ) {
-	    if( fabs(roots[0]-roots[1]) > STRANGEUFLOW*fabs(roots[0]))
+	    if( fabs(roots[0]-roots[1]) > nucqcd::strange_underflow*fabs(roots[0]))
 	      std::cout << "WARNING in TKinematics2to3::UpdateKinematics(): "
 			   << "found multiple solutions. Choosing one arbitrarily.\n";
 	    eg = roots[0];
@@ -386,7 +386,7 @@ void TKinematics2to3WithLabAngles::UpdateKinematics()
   } // if( !egCalculated )
 
   double threshold = ((m1+m2+m3)*(m1+m2+m3)-fMd*fMd+fQsquared) / 2. / fMd;
-  if( eg<threshold-STRANGEUFLOW ) fIsPhysical = false;
+  if( eg<threshold-nucqcd::strange_underflow ) fIsPhysical = false;
 
   // Set 4vectors
   fGvector->SetXYZT(0.,0.,Sqrt(eg*eg+fQsquared),eg);
@@ -511,7 +511,7 @@ void TKinematics2to3WithLabAngles::UpdateKinematics()
     }
     else {
       if( sol1 && sol2 ) {
-	if( fabs(roots[0]-roots[1]) > STRANGEUFLOW*fabs(roots[0]))
+	if( fabs(roots[0]-roots[1]) > nucqcd::strange_underflow*fabs(roots[0]))
 	  // We pick solution arbitrarily for now. We will deal with this
 	  // at the end of the function.
 	  fNrOfSolutions = 2;
@@ -579,8 +579,8 @@ void TKinematics2to3WithLabAngles::UpdateKinematics()
   // Do a final check whether we are in a physical point
   // by checking conservation of energy and momentum
   TLorentzVector sum = *fGvector + *fDvector - *fKvector - *fYvector - *fNvector;
-  if( fabs(sum.E()) > STRANGEUFLOW || fabs(sum.X()) > STRANGEUFLOW ||
-      fabs(sum.Y()) > STRANGEUFLOW || fabs(sum.Z()) > STRANGEUFLOW )
+  if( fabs(sum.E()) > nucqcd::strange_underflow || fabs(sum.X()) > nucqcd::strange_underflow ||
+      fabs(sum.Y()) > nucqcd::strange_underflow || fabs(sum.Z()) > nucqcd::strange_underflow )
     fIsPhysical = false;
 
   fIsPhysical *= fKYsystem->IsPhysical() 

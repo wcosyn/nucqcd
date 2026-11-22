@@ -167,8 +167,8 @@ int main(int argc, char *argv[])
   else {cerr << "invalid lepton name chosen" << endl << "Choose either electron, muon or tau" << endl; assert(1==0);}
 
 
-  double En_out=(Q2p+pow(MASSn-34.,2.)+MASSn*MASSn)/2./(MASSn-34.); //outgoing nucleon momentum from Q2p definition
-  double pn_out=sqrt(En_out*En_out-MASSn*MASSn); //outgoing nucleon momentum
+  double En_out=(Q2p+pow(nucqcd::mass_nucleon-34.,2.)+nucqcd::mass_nucleon*nucqcd::mass_nucleon)/2./(nucqcd::mass_nucleon-34.); //outgoing nucleon momentum from Q2p definition
+  double pn_out=sqrt(En_out*En_out-nucqcd::mass_nucleon*nucqcd::mass_nucleon); //outgoing nucleon momentum
 
   //setting up variables dat will determine integration limits
   double E_out_max=minbeam;
@@ -190,8 +190,8 @@ int main(int argc, char *argv[])
   //   double E_in_hi=E_out+En_out-Nucleus.getMassA()+sqrt(massAmin1*massAmin1+max_initial_nucl_mom*max_initial_nucl_mom);
 
   //   //hydrogen piece
-  //   double E_nu_H_n = E_out+En_out-MASSN;
-  //   double E_nu_H_p = E_out+En_out-MASSP;
+  //   double E_nu_H_n = E_out+En_out-nucqcd::mass_n;
+  //   double E_nu_H_p = E_out+En_out-nucqcd::mass_p;
   //   if (E_nu_H_p>E_out&&E_nu_H_p<maxbeam){
   //     if(E_out>E_muH_hi) E_muH_hi = E_out;
   //     if(E_out<E_muH_low) E_muH_low = E_out;
@@ -237,7 +237,7 @@ int main(int argc, char *argv[])
             double costhetamu=1.-k*0.001;
             double Q2=-leptonmass*leptonmass+2.*E_in*El_out-2.*E_in*pl_out*costhetamu;
             TKinematics2to2 kin("","",Nucleus.getMassA(),resmass,
-              MASSN,"qsquared:wlab:pklab",Q2,omega,pm);
+              nucqcd::mass_n,"qsquared:wlab:pklab",Q2,omega,pm);
             // if(kin.IsPhysical()) cout << E_in << " " << pm << " " << costhetamu << " " << kin.GetCosthkcm() << " " << Q2 << " " << Q2p << " " << omega << endl;
             if(kin.IsPhysical()&&phys==0) phys=1;
             if(phys==1&&kin.IsPhysical()){
@@ -400,28 +400,28 @@ void adap_intPm(numint::vector_d & results, double omega, double E_in, double co
       WeakQECross pobs(lepton,&nucleus,prec,integrator,homedir,charged,1.03E03,screening,enable_romea);  
         
       TKinematics2to2 kin("","",nucleus.getMassA(),resmass,
-        shell<nucleus.getPLevels()?MASSN:MASSP,"qsquared:wlab:pklab",Q2,omega,pm);
+        shell<nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
       if(!kin.IsPhysical()||kin.GetPYlab()<min_final_nucl_mom||kin.GetPklab()>max_initial_nucl_mom){ //final nucleon momentum too low, impose cut!
         // cout << kin.IsPhysical() << " " << E_out << " " << omega << " " << Q2*1.E-06 << " " << costhetamu << " " << kin.GetCosthkcm() <<  " " << kin.GetEYlab() << " " << En_out << endl;
         for(int i=0;i<2;i++) results[i]+=0.; /*cout << "cut " << kin.GetPYlab() << " " << kin.GetPklab() << endl;*/
         // cout << shell << " " << E_in << " " << costhetamu << " " << p_out << " " << kin.GetCosthklab()<< " " 
         //   << kin.GetCosthYlab() << " " << kin.GetPklab() << " " << kin.GetPYlab() 
         //   << " " << kin.GetKlab() << " " << kin.GetWlab() << " " << kin.GetQsquared() << " "
-        //   << kin.GetXb()*nucleus.getMassA()/MASSP << " 0. 0." << endl; 
+        //   << kin.GetXb()*nucleus.getMassA()/nucqcd::mass_p << " 0. 0." << endl; 
       }
       else{
         double result=pobs.getDiffWeakQECross(kin,current,0,0,0,pw,shell,0.,maxEval,WeakQECross::En_lab,1);   // prec..2E04
   //	  			cout << "Result " << result << endl;
 
         //Jacobian to go to dQ2p, pm/E_a-1 is from going from dEleptonout (or domega) to dpm
-        double jcb=2*(MASSn-34.)/**EAmin1/pm*/;
+        double jcb=2*(nucqcd::mass_nucleon-34.)/**EAmin1/pm*/;
         result/=jcb;      
 
         results[(shell<nucleus.getPLevels()?1:0)]+= result; //results[0] neutrino, results[1] antineutrino
           cout << shell << " " << E_in <<  " " << costhetamu << " " << p_out << " "  << kin.GetCosthklab()<< " " 
           << kin.GetCosthYlab() << " " << kin.GetPklab() << " " << kin.GetPYlab() 
           << " " << kin.GetKlab() << " " << kin.GetWlab() << " " << kin.GetQsquared() << " "
-          << kin.GetXb()*nucleus.getMassA()/MASSP << " " << result <<  " " 
+          << kin.GetXb()*nucleus.getMassA()/nucqcd::mass_p << " " << result <<  " " 
           << result*interpolate(shell<2? neutrino_flux::Minerva_anu_muon_RHC_flux : neutrino_flux::Minerva_nu_muon_FHC_flux,E_in,500,20,0) << endl; 
       }  
       delete lepton;
@@ -467,12 +467,12 @@ void int_hydr(numint::vector_d & results, double E_in,
     leptonmass=TLeptonKinematics::masstau;
   } 
  //   if(abs(costhetamu)>1.) {/*cout << "costheta" << endl;*/ cout << E_out << " " << result[0] << " " << result[1] << endl; return;}
-  double E_out_n=E_in-En_out+MASSN;
-  double E_out_p=E_in-En_out+MASSP;
+  double E_out_n=E_in-En_out+nucqcd::mass_n;
+  double E_out_p=E_in-En_out+nucqcd::mass_p;
   double p_out_n = sqrt(E_out_n*E_out_n-leptonmass*leptonmass);
   double p_out_p = sqrt(E_out_p*E_out_p-leptonmass*leptonmass);
-  double pn_out_n = sqrt(En_out*En_out-MASSP*MASSP);  //initial neutron case
-  double pn_out_p = sqrt(En_out*En_out-MASSN*MASSN);  //initial proton case  
+  double pn_out_n = sqrt(En_out*En_out-nucqcd::mass_p*nucqcd::mass_p);  //initial neutron case
+  double pn_out_p = sqrt(En_out*En_out-nucqcd::mass_n*nucqcd::mass_n);  //initial proton case  
   double costhetamu_n = (E_in*E_in+p_out_n*p_out_n-pn_out_n*pn_out_n)/(2.*p_out_n*E_in);
   double costhetamu_p = (E_in*E_in+p_out_p*p_out_p-pn_out_p*pn_out_p)/(2.*p_out_p*E_in);
 

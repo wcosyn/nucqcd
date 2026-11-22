@@ -323,7 +323,7 @@ int main(int argc, char *argv[])
   bool charged=1;
   int current=2;
   
-//   double omega=Q2/(2.*MASSP*Bjx);
+//   double omega=Q2/(2.*nucqcd::mass_p*Bjx);
   
   string homedir=argv[4];//"/home/wim/Code/share";
 
@@ -357,14 +357,14 @@ int main(int argc, char *argv[])
     double omega=E_in-E_out_min;
     double Q2=2.*E_in*E_out_min*(1.-sqrt(1.-lepton->GetLeptonMass()*lepton->GetLeptonMass()/(E_out_min*E_out_min))*costhetamu_max)
 	-lepton->GetLeptonMass()*lepton->GetLeptonMass();
-//     double x=Q2/(2.*MASSP*omega);
+//     double x=Q2/(2.*nucqcd::mass_p*omega);
 //     cout << E_in << " " << omega << " " << Q2*1.E-06 << " " << x <<  endl;
     for(int shell=0;shell<Nucleus.getTotalLevels();shell++) {
       //lowest p_m is always at theta_cm -1
       TKinematics2to2 kin("","",Nucleus.getMassA(),
 			  (shell<Nucleus.getPLevels()? Nucleus.getMassA_min_proton(): Nucleus.getMassA_min_neutron())
 			  +Nucleus.getExcitation()[shell],
-			  shell<Nucleus.getPLevels()?MASSN:MASSP,"qsquared:wlab:costhkcm",Q2,omega,-1.);
+			  shell<Nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,-1.);
 	double tempmax=-1., tempmin=1.;
 	
       //anything above 300 MeV contribution will be negligible
@@ -394,14 +394,14 @@ int main(int argc, char *argv[])
     double omega=E_in-E_out_max;
     double Q2=2.*E_in*E_out_max*(1.-sqrt(1.-lepton->GetLeptonMass()*lepton->GetLeptonMass()/(E_out_max*E_out_max))*costhetamu_max)
 	-lepton->GetLeptonMass()*lepton->GetLeptonMass();
-    double x=Q2/(2.*MASSP*omega);
+    double x=Q2/(2.*nucqcd::mass_p*omega);
 //     cout << E_in << " " << omega << " " << Q2*1.E-06 << " " << x <<  endl;
     for(int shell=0;shell<Nucleus.getTotalLevels();shell++) {
       //lowest p_m is always at theta_cm -1
       TKinematics2to2 kin("","",Nucleus.getMassA(),
 			  (shell<Nucleus.getPLevels()? Nucleus.getMassA_min_proton(): Nucleus.getMassA_min_neutron())
 			  +Nucleus.getExcitation()[shell],
-			  shell<Nucleus.getPLevels()?MASSN:MASSP,"qsquared:wlab:costhkcm",Q2,omega,-1.);
+			  shell<Nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,-1.);
 	double tempmax=-1., tempmin=1.;
 	
       //anything above 300 MeV contribution will be negligible
@@ -432,14 +432,14 @@ int main(int argc, char *argv[])
     double omega=E_in-E_out_min;
     double Q2=2.*E_in*E_out_min*(1.-sqrt(1.-lepton->GetLeptonMass()*lepton->GetLeptonMass()/(E_out_min*E_out_min))*costhetamu_min)
 	-lepton->GetLeptonMass()*lepton->GetLeptonMass();
-    double x=Q2/(2.*MASSP*omega);
+    double x=Q2/(2.*nucqcd::mass_p*omega);
 //     cout << E_in << " " << omega << " " << Q2*1.E-06 << " " << x <<  endl;
     for(int shell=0;shell<Nucleus.getTotalLevels();shell++) {
       //lowest p_m is always at theta_cm -1
       TKinematics2to2 kin("","",Nucleus.getMassA(),
 			  (shell<Nucleus.getPLevels()? Nucleus.getMassA_min_proton(): Nucleus.getMassA_min_neutron())
 			  +Nucleus.getExcitation()[shell],
-			  shell<Nucleus.getPLevels()?MASSN:MASSP,"qsquared:wlab:costhkcm",Q2,omega,-1.);
+			  shell<Nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,-1.);
 	double tempmax=-1., tempmin=1.;
 	
       //anything above 300 MeV contribution will be negligible
@@ -470,14 +470,14 @@ int main(int argc, char *argv[])
     double omega=E_in-E_out_max;
     double Q2=2.*E_in*E_out_max*(1.-sqrt(1.-lepton->GetLeptonMass()*lepton->GetLeptonMass()/(E_out_max*E_out_max))*costhetamu_min)
 	-lepton->GetLeptonMass()*lepton->GetLeptonMass();
-    double x=Q2/(2.*MASSP*omega);
+    double x=Q2/(2.*nucqcd::mass_p*omega);
 //     cout << E_in << " " << omega << " " << Q2*1.E-06 << " " << x <<  endl;
     for(int shell=0;shell<Nucleus.getTotalLevels();shell++) {
       //lowest p_m is always at theta_cm -1
       TKinematics2to2 kin("","",Nucleus.getMassA(),
 			  (shell<Nucleus.getPLevels()? Nucleus.getMassA_min_proton(): Nucleus.getMassA_min_neutron())
 			  +Nucleus.getExcitation()[shell],
-			  shell<Nucleus.getPLevels()?MASSN:MASSP,"qsquared:wlab:costhkcm",Q2,omega,-1.);
+			  shell<Nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,-1.);
 	double tempmax=-1., tempmin=1.;
 	
       //anything above 300 MeV contribution will be negligible
@@ -556,7 +556,7 @@ void adap_intPm(numint::vector_d & results, double E_out, double costhetamu, dou
       TKinematics2to2 kin("","",nucleus.getMassA(),
 			  (shell<nucleus.getPLevels()? nucleus.getMassA_min_proton(): nucleus.getMassA_min_neutron())
 			  +nucleus.getExcitation()[shell],
-			  shell<nucleus.getPLevels()?MASSN:MASSP,"qsquared:wlab:costhkcm",Q2,omega,costhetacm);
+			  shell<nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,costhetacm);
       double pm=kin.GetPklab();
       if(!kin.IsPhysical()||kin.GetPYlab()<200.){ //final nucleon momentum too low, impose cut!
 	//for(int i=0;i<2;i++) results[i]+=0.;
@@ -565,9 +565,9 @@ void adap_intPm(numint::vector_d & results, double E_out, double costhetamu, dou
       else{
 	double result=pObs.getDiffWeakQECross(kin,current,1,0,0,1,shell,0.,2E04,WeakQECross::ctheta_cm,1);
 	results[(shell<nucleus.getPLevels()?1:0)]+= result; //results[0] neutrino, results[1] antineutrino
-	cout << shell << " " << E_out << " " << costhetamu << " " << E_in <<  " " << costhetacm << " " << pm << " "  << acos(kin.GetCosthklab())*RADTODEGR << " " 
-	<< acos(kin.GetCosthYlab())*RADTODEGR << " " << kin.GetPklab() << " " << kin.GetPYlab() 
-	<< " " << kin.GetKlab() << " " << kin.GetWlab() << " " << kin.GetXb()*nucleus.getMassA()/MASSP << " " << result << endl;
+	cout << shell << " " << E_out << " " << costhetamu << " " << E_in <<  " " << costhetacm << " " << pm << " "  << acos(kin.GetCosthklab())*nucqcd::rad_to_deg << " " 
+	<< acos(kin.GetCosthYlab())*nucqcd::rad_to_deg << " " << kin.GetPklab() << " " << kin.GetPYlab() 
+	<< " " << kin.GetKlab() << " " << kin.GetWlab() << " " << kin.GetXb()*nucleus.getMassA()/nucqcd::mass_p << " " << result << endl;
       }
     }
     
@@ -589,25 +589,25 @@ double getBound(double &high, double &low, MeanFieldNucleusThick &nucleus, TLept
     TKinematics2to2 kin("","",nucleus.getMassA(),
 			(shell<nucleus.getPLevels()? nucleus.getMassA_min_proton(): nucleus.getMassA_min_neutron())
 			+nucleus.getExcitation()[shell],
-			shell<nucleus.getPLevels()?MASSN:MASSP,"qsquared:wlab:costhkcm",Q2,omega,-1.+i*0.002);
+			shell<nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,-1.+i*0.002);
     double pm=kin.GetPklab(); //initial nucleon momentum
     if(pm<tempmin) {tempmin=pm; costhmin=-1.+i*0.002;}
   }
-  //   cout << omega << " " << Q2/1.E06 << " " << omega/(2.*MASSP*omega) << " " << high << " " << low << " " << pm << endl;
+  //   cout << omega << " " << Q2/1.E06 << " " << omega/(2.*nucqcd::mass_p*omega) << " " << high << " " << low << " " << pm << endl;
   double temptemp=costhmin;//com costheta value where the min initial nucl momentum is
 //   cout << costhmin << " " << tempmin << endl;
   if(tempmin<300.){
     TKinematics2to2 kin1("","",nucleus.getMassA(),
 			(shell<nucleus.getPLevels()? nucleus.getMassA_min_proton(): nucleus.getMassA_min_neutron())
 			+nucleus.getExcitation()[shell],
-			shell<nucleus.getPLevels()?MASSN:MASSP,"qsquared:wlab:costhkcm",Q2,omega,1.);
+			shell<nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,1.);
     high=1;
     if(kin1.GetPklab()>300.) high=getMax(high,temptemp,nucleus,lepton,Q2,omega,shell);
     temptemp=costhmin;
     TKinematics2to2 kinmin1("","",nucleus.getMassA(),
 			(shell<nucleus.getPLevels()? nucleus.getMassA_min_proton(): nucleus.getMassA_min_neutron())
 			+nucleus.getExcitation()[shell],
-			shell<nucleus.getPLevels()?MASSN:MASSP,"qsquared:wlab:costhkcm",Q2,omega,-1.);
+			shell<nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,-1.);
     low=-1.;
     if(kinmin1.GetPklab()>300.) getMin(temptemp,low,nucleus,lepton,Q2,omega,shell);
 //     cout << "pm " << kinmin1.GetPklab() << " " << kin1.GetPklab() << " " << costhmin << " " << low << " " << high << endl;
@@ -622,9 +622,9 @@ double getMin(double &high, double &low, MeanFieldNucleusThick &nucleus, TLepton
   TKinematics2to2 kin("","",nucleus.getMassA(),
 		      (shell<nucleus.getPLevels()? nucleus.getMassA_min_proton(): nucleus.getMassA_min_neutron())
 		      +nucleus.getExcitation()[shell],
-		      shell<nucleus.getPLevels()?MASSN:MASSP,"qsquared:wlab:costhkcm",Q2,omega,(high+low)/2.);
+		      shell<nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,(high+low)/2.);
   double pm=kin.GetPklab();
-//   cout << omega << " " << Q2/1.E06 << " " << omega/(2.*MASSP*omega) << " " << high << " " << low << " " << pm << endl;
+//   cout << omega << " " << Q2/1.E06 << " " << omega/(2.*nucqcd::mass_p*omega) << " " << high << " " << low << " " << pm << endl;
   if(pm<300.) high=(high+low)/2.;
   else low=(high+low)/2.;
   if((high-low)<1.E-04) { return high;}
@@ -638,9 +638,9 @@ double getMax(double &high, double &low, MeanFieldNucleusThick &nucleus, TLepton
   TKinematics2to2 kin("","",nucleus.getMassA(),
 		      (shell<nucleus.getPLevels()? nucleus.getMassA_min_proton(): nucleus.getMassA_min_neutron())
 		      +nucleus.getExcitation()[shell],
-		      shell<nucleus.getPLevels()?MASSN:MASSP,"qsquared:wlab:costhkcm",Q2,omega,(high+low)/2.);
+		      shell<nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,(high+low)/2.);
   double pm=kin.GetPklab();
-//   cout << omega << " " << Q2/1.E06 << " " << omega/(2.*MASSP*omega) << " " << high << " " << low << " " << pm << endl;
+//   cout << omega << " " << Q2/1.E06 << " " << omega/(2.*nucqcd::mass_p*omega) << " " << high << " " << low << " " << pm << endl;
   if(pm<300.) low=(high+low)/2.;
   else high=(high+low)/2.;
   if((high-low)<1.E-04) { return low;}

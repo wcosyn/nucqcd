@@ -85,9 +85,9 @@ extern "C"{
 
 
 NucleonStructure::NucleonStructure():
-name("SLAC"),dir(HOMEDIR){
+name("SLAC"),dir(nucqcd::share_dir){
   if(!name.compare("MSTW")){
-    string file= string(HOMEDIR)+"/mstw_grids/mstw2008lo.00.dat";
+    string file= string(nucqcd::share_dir)+"/mstw_grids/mstw2008lo.00.dat";
     mstw = new c_mstwpdf(file,false,true);
   }
   else mstw=NULL;
@@ -99,9 +99,9 @@ name("SLAC"),dir(HOMEDIR){
 
 
 NucleonStructure::NucleonStructure(const std::string nm):
-name(nm),dir(HOMEDIR){
+name(nm),dir(nucqcd::share_dir){
   if(!name.compare("MSTW")){
-    string file= string(HOMEDIR)+"/mstw_grids/mstw2008lo.00.dat";
+    string file= string(nucqcd::share_dir)+"/mstw_grids/mstw2008lo.00.dat";
     mstw = new c_mstwpdf(file,false,true);
   }
   else mstw=NULL;
@@ -120,7 +120,7 @@ NucleonStructure::NucleonStructure(const NucleonStructure& rhs){
   name=rhs.name;
   dir=rhs.dir;
   if(!name.compare("MSTW")){
-    string file= string(HOMEDIR)+"/mstw_grids/mstw2008lo.00.dat";
+    string file= string(nucqcd::share_dir)+"/mstw_grids/mstw2008lo.00.dat";
     mstw = new c_mstwpdf(file,false,true);
   }
   else mstw=NULL;
@@ -134,7 +134,7 @@ NucleonStructure& NucleonStructure::operator=(const NucleonStructure& rhs){
     name=rhs.name;
     dir=rhs.dir;
     if(!name.compare("MSTW")){
-      string file= string(HOMEDIR)+"/mstw_grids/mstw2008lo.00.dat";
+      string file= string(nucqcd::share_dir)+"/mstw_grids/mstw2008lo.00.dat";
       mstw = new c_mstwpdf(file,false,true);
     }
     else mstw=NULL;
@@ -188,13 +188,13 @@ double NucleonStructure::getF2_Alekhin(const bool proton, const double x, const 
 void NucleonStructure::getF_SLAC(double &F1, double &F2, const bool proton, const double x, const double Q2) const{
   F2=getF2_SLAC(proton,x,Q2);
   double R=getr1998(x,Q2);
-  double gamma2=pow(2*(proton? MASSP:MASSN)*x,2.)/Q2;
+  double gamma2=pow(2*(proton? nucqcd::mass_p:nucqcd::mass_n)*x,2.)/Q2;
   F1=F2/2./x/(R+1)*(1+gamma2);
 }
 
 
 double NucleonStructure::getF2_SLAC(const bool proton, const double x, const double Q2) const{
-  double mass = proton? MASSP:MASSN;
+  double mass = proton? nucqcd::mass_p:nucqcd::mass_n;
   double Wsq=Q2*(1./x-1.)+mass*mass;
   return proton? f2p_b(mass*1.E-03, x,Q2*1.E-06, sqrt(Wsq*1.E-06)):f2n_b(mass*1.E-03, x,Q2*1.E-06, sqrt(Wsq*1.E-06));
 }
@@ -202,7 +202,7 @@ double NucleonStructure::getF2_SLAC(const bool proton, const double x, const dou
 void NucleonStructure::getF_CTEQ(double &F1, double &F2, const bool proton, const double x, const double Q2) const{
   F2=getF2_CTEQ(proton,x,Q2);
   double R=getr1998(x,Q2);
-  double gamma2=pow(2*(proton? MASSP:MASSN)*x,2.)/Q2;
+  double gamma2=pow(2*(proton? nucqcd::mass_p:nucqcd::mass_n)*x,2.)/Q2;
   F1=F2/2./x/(R+1)*(1+gamma2);
 
   //F1=F2*2.*x/(1+R)*(pow(alphai/alphaq+1/(2.*x),2.);
@@ -217,7 +217,7 @@ double NucleonStructure::getF2_CTEQ(const bool proton, const double x, const dou
 }
 
 void NucleonStructure::getF_CB(double &F1, double &F2, const bool proton, const double x, const double Q2) const{
-  double mass=proton? MASSP:MASSN;
+  double mass=proton? nucqcd::mass_p:nucqcd::mass_n;
   double Wsq=Q2*(1./x-1.)+mass*mass;
   if(Wsq>25.E06){ 
     throw std::out_of_range(nucqcd::ErrorMessage() << "Invariant mass too big for Christy & Bosted Parametrization!! " << Wsq );
@@ -229,7 +229,7 @@ void NucleonStructure::getF_CB(double &F1, double &F2, const bool proton, const 
   double WSQ=Wsq*1.E-06;
   if(proton) f1f2in09_(&ONE, &ZERO, &QSQ, &WSQ, &F1, &F2, &R_CB);
   else f1f2in09_(&ZERO, &ONE, &QSQ, &WSQ, &F1, &F2, &R_CB);
-//   cout << F1 << " " << F2 << " " << QSQ << " " << WSQ << " " << 1./(1.+(WSQ-MASSN*MASSN*1.E-06)/QSQ) << endl;
+//   cout << F1 << " " << F2 << " " << QSQ << " " << WSQ << " " << 1./(1.+(WSQ-nucqcd::mass_n*nucqcd::mass_n*1.E-06)/QSQ) << endl;
   return;
 }
 
@@ -274,11 +274,11 @@ void NucleonStructure::getF_MSTW(double &F1,double &F2,const bool proton, const 
   bbar=mstw->parton(-5,x,qgev);
   if(proton){ 
     F2=1./9.*(4.*(u+ubar)+(d+dbar)+(s+sbar)+4*(c+cbar)+(b+bbar));
-    F1=1./(2.*x)/(1.+getr1998(x,Q2))*(1.+4.*MASSP*MASSP*x*x/Q2)*F2;
+    F1=1./(2.*x)/(1.+getr1998(x,Q2))*(1.+4.*nucqcd::mass_p*nucqcd::mass_p*x*x/Q2)*F2;
   }
   else{
     F2=1./9.*((u+ubar)+4.*(d+dbar)+(s+sbar)+4*(c+cbar)+(b+bbar));
-    F1=1./(2.*x)/(1.+getr1998(x,Q2))*(1.+4.*MASSN*MASSN*x*x/Q2)*F2;
+    F1=1./(2.*x)/(1.+getr1998(x,Q2))*(1.+4.*nucqcd::mass_n*nucqcd::mass_n*x*x/Q2)*F2;
   }
 //   cout << x << " " << q2gev << " " << F1 << " " << F2 << endl;
 }
@@ -311,19 +311,19 @@ double NucleonStructure::getF2_xQ(const bool proton, const double x, const doubl
 
 void NucleonStructure::getF_WQ(double &F1, double &F2,const bool proton, const double Wsq, const double Q2) const{
 
-  double mass=proton? MASSP:MASSN;
+  double mass=proton? nucqcd::mass_p:nucqcd::mass_n;
   double x=Q2/(Wsq-mass*mass+Q2);
   getF_xQ(F1,F2,proton,x,Q2);
 }
 
 double NucleonStructure::getF2_WQ(const bool proton, const double Wsq, const double Q2) const{
-  double mass=proton? MASSP:MASSN;
+  double mass=proton? nucqcd::mass_p:nucqcd::mass_n;
   double x=Q2/(Wsq-mass*mass+Q2);
   return getF2_xQ(proton,x,Q2);
 }
   
 double NucleonStructure::getF1_WQ(const bool proton, const double Wsq, const double Q2) const{
-  double mass=proton? MASSP:MASSN;
+  double mass=proton? nucqcd::mass_p:nucqcd::mass_n;
   double x=Q2/(Wsq-mass*mass+Q2);
   return getF1_xQ(proton,x,Q2);
 }
@@ -458,7 +458,7 @@ label2:
 
 double NucleonStructure::getG1_grsv2000(const bool proton, const double x, const double Q2){
   
-  nucqcd::to_fortran_string(grsvdir_.fileslo,std::string(HOMEDIR)+"/grsv/std2000_lo_g1.grid");
+  nucqcd::to_fortran_string(grsvdir_.fileslo,std::string(nucqcd::share_dir)+"/grsv/std2000_lo_g1.grid");
   if(intini_.iini!=1) intini_.iini=0;
   int iset=3;
   double dummy,g1p,g1n;

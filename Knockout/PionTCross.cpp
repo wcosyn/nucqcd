@@ -106,7 +106,7 @@ void PionTCross::dist_momdistr_integral(numint::vector_d & results, double Eout,
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
   double sintheta = sqrt(1.-costheta*costheta);
-  double Ep = sqrt(pm*pm+MASSP*MASSP);
+  double Ep = sqrt(pm*pm+nucqcd::mass_p*nucqcd::mass_p);
   
   //  electron kinematics
   double omega = Ebeam-Eout;
@@ -123,24 +123,24 @@ void PionTCross::dist_momdistr_integral(numint::vector_d & results, double Eout,
 
   //solve quadratic equation coming from energy conservation for pion momentum.  For momentum conservation we use q = p_pi + p_A*
   double CC=pow(omega+massA,2);
-  double DD=CC+massX*massX+qvec*qvec-MASSPI*MASSPI;
+  double DD=CC+massX*massX+qvec*qvec-nucqcd::mass_pi*nucqcd::mass_pi;
   double a=4*(CC-qvec*qvec);
   double b=4*qvec*(DD-2*CC);
   double c=4*CC*(massX*massX+qvec*qvec)-DD*DD;
   double discr=b*b-4*a*c;
   if(discr<0) { cout << "discr <0 " << discr << endl; return;}
   double p_pi = (-b+sqrt(discr))*0.5/a;
-  double E_pi = sqrt(p_pi*p_pi+MASSPI*MASSPI);
-  double t = (Q2 - MASSPI*MASSPI+2*omega*E_pi-2*qvec*p_pi)/1e06; //in GeV^2
-  double W = sqrt((-Q2+MASSP*MASSP+2*omega*MASSP)/1e06); // in GeV
-  double sfree = -Q2+MASSP*MASSP+2*omega*sqrt(MASSP*MASSP+pm*pm)-2*qvec*pm*costheta; //mandelstam variable for the free nucleon process
+  double E_pi = sqrt(p_pi*p_pi+nucqcd::mass_pi*nucqcd::mass_pi);
+  double t = (Q2 - nucqcd::mass_pi*nucqcd::mass_pi+2*omega*E_pi-2*qvec*p_pi)/1e06; //in GeV^2
+  double W = sqrt((-Q2+nucqcd::mass_p*nucqcd::mass_p+2*omega*nucqcd::mass_p)/1e06); // in GeV
+  double sfree = -Q2+nucqcd::mass_p*nucqcd::mass_p+2*omega*sqrt(nucqcd::mass_p*nucqcd::mass_p+pm*pm)-2*qvec*pm*costheta; //mandelstam variable for the free nucleon process
 
   for(int i=0;i<cross.getNucleusthick().getPLevels();i++){
     double intresults[cross.getNrofcross()];
     cross.getMomdistr(intresults,p_pi,0.,Q2,i,pm,costheta,phi);	  
-    double front=ALPHA/PI*Eout/Ebeam/Q2/(1-epsilon)*crosselectronfree(-t, Q2*1.E-06, W, 0., 0., epsilon)  //free cross section
-                  *MASSP/(Ep-pm*costheta) //flux correction for moving proton
-                  *p_pi/(8.*PI*PI)*massX/(MASSP*MASSN/pow(sfree-MASSP*MASSP,2)/4./PI);  //other factors
+    double front=nucqcd::alpha_em/PI*Eout/Ebeam/Q2/(1-epsilon)*crosselectronfree(-t, Q2*1.E-06, W, 0., 0., epsilon)  //free cross section
+                  *nucqcd::mass_p/(Ep-pm*costheta) //flux correction for moving proton
+                  *p_pi/(8.*PI*PI)*massX/(nucqcd::mass_p*nucqcd::mass_n/pow(sfree-nucqcd::mass_p*nucqcd::mass_p,2)/4./PI);  //other factors
     //correct for not completely full shells
     if(i==cross.getNucleusthick().getPLevels()-1) front*=double((cross.getNucleusthick().getFinalMProton()+1)*2-cross.getNucleusthick().getOnlyOneProton())/(cross.getNucleusthick().getJ_array()[i]+1);
     cout << i << " " << pm << " " << costheta << " " << phi << " " << Eout << " "  << p_pi << " " << front << " " << intresults[0]*pm*pm << endl;
@@ -160,11 +160,11 @@ double PionTCross::crosselectronfree(double t, double Q2, double W, double phipq
 
   sigmaT=D/Q2+E/Q2/Q2;
   sigmaL=A*Q2/pow(1+1.77*Q2+0.05*Q2*Q2,2)*exp((B-C*log(Q2))*abs(t));
-  sigmaTT=-F*abs(t)*sin(thetapq)*sin(thetapq)/Q2/Q2/pow(abs(t)+MASSPI*MASSPI/1e06,2);
+  sigmaTT=-F*abs(t)*sin(thetapq)*sin(thetapq)/Q2/Q2/pow(abs(t)+nucqcd::mass_pi*nucqcd::mass_pi/1e06,2);
   sigmaLT=sin(thetapq)*(exp(G-H*t/sqrt(Q2))+K-L/Q2/Q2);
 
   double sigma= sigmaT+epsilon*(sigmaL+sigmaTT*cos(phipq))+sqrt(epsilon*(epsilon+1))*sigmaLT*cos(2*phipq);
-  sigma*=8.539*0.5/PI/pow(W-MASSP*MASSP/1e06,2);
+  sigma*=8.539*0.5/PI/pow(W-nucqcd::mass_p*nucqcd::mass_p/1e06,2);
 
   //extra corrections
   if(abs(Q2-1.1)<=0.4) {

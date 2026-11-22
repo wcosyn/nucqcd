@@ -38,7 +38,7 @@
 class ClassGridThick_SCX {
 	public:
 		/** make sure both bpoints and zpoints are always larger than 2 plz **/
-		ClassGridThick_SCX(double (*densf)(double,void*),void* p,const char* densName,double rmax, FastParticle* fp,int bpoints, int zpoints,char* SHAREDIR);
+		ClassGridThick_SCX(double (*densf)(double,void*),void* p,const char* densName,double rmax, FastParticle* fp,int bpoints, int zpoints,const char* SHAREDIR);
 		void constructGrid();
 		void printGrid(); /**< prints the grid and its error estimates (b index, z index, value, error), for debugging */
 		void printDensityGrid(); /**< prints the density at the grid points (b index, z index, density), for debugging */

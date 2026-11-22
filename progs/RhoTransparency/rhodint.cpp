@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
   if(integrator==0){
     double result[2];
     double nuestimate=0.,tzestimate=0.;
-    rombergerN(nuint,nu_min,nu_max,2,result,PREC,3,7,&nuestimate, 
+    rombergerN(nuint,nu_min,nu_max,2,result,nucqcd::integration_prec,3,7,&nuestimate, 
 				  torz,Q2,nocuts,Ebeam, &test, &tzestimate);
     cout << Q2 << " ";
     for (int l=0;l<2;l++) cout << result[l] << " ";
@@ -107,9 +107,9 @@ void nuint(double nu, double* result, va_list ap){
   RhoDeuteron *ptest = va_arg(ap,RhoDeuteron*);
   double *ptzestimate = va_arg(ap,double*);
 
-  if(torz) rombergerN(tzint,-0.4,-0.1,2,result,PREC,3,6,
+  if(torz) rombergerN(tzint,-0.4,-0.1,2,result,nucqcd::integration_prec,3,6,
 	      ptzestimate,nu,torz,Q2,nocuts,Ebeam,ptest);
-  else rombergerN(tzint,0.9,1.,2,result,PREC,3,6,
+  else rombergerN(tzint,0.9,1.,2,result,nucqcd::integration_prec,3,6,
 	      ptzestimate,nu,torz,Q2,nocuts,Ebeam,ptest);
   return;
 }

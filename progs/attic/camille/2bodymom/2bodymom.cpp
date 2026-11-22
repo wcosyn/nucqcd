@@ -112,9 +112,9 @@ void symmetric_kinematics(MeanFieldNucleus& nuc)
 			cout <<">" << shellindex2+1 << " to " << nuc.getPLevels() << endl;
 			for (unsigned i=0; i<nsteps;i++)
 			{
-				double EP = sqrt(4.*MASSP*MASSP+Pcm[i]*Pcm[i]); // energy in COM
+				double EP = sqrt(4.*nucqcd::mass_p*nucqcd::mass_p+Pcm[i]*Pcm[i]); // energy in COM
 				double kz = (Pcm[i].Z()+q.Z())/2.; // because symmetric kinematics: kz is P/2+q, -- Z compos, everything is z --
-				double K = sqrt(pow((q.Mag()+EP)/2.,2)-MASSP*MASSP); // kinetic energy of ej nucleons  = (q+P)/2 - rest mass (total com energy at coll = P+q)
+				double K = sqrt(pow((q.Mag()+EP)/2.,2)-nucqcd::mass_p*nucqcd::mass_p); // kinetic energy of ej nucleons  = (q+P)/2 - rest mass (total com energy at coll = P+q)
 				double kperp = sqrt(K*K-kz*kz); // perp component of k of ej nucleons
 				double theta = atan2(kperp,kz); // theta of ej nucleons
 				TVector3 pf(0.,0.,K), ps(0.,0.,K); // create vectors of ej nucleons
@@ -145,7 +145,7 @@ void note_kinematics(MeanFieldNucleus& nuc)
 	// -- Vectors
 	TVector3 q = TVector3(0.,0.,1400.); // see distribution of Maarten
 	TVector3 pf = 0.8*q;
-	pf.RotateY(DEGRTORAD*5); // pf now in xz plane
+	pf.RotateY(nucqcd::deg_to_rad*5); // pf now in xz plane
 	TVector3 pm = pf-q; // pm also in xz plane
 	vector< pair<TVector3, double> >**  rho = NULL; // two shellindices of the nucleons, pair contains P vector and result
 	rho = initRho(nuc.getPLevels());
@@ -205,13 +205,13 @@ double dist2bodymom(MeanFieldNucleus& nuc, int shellindex1, int shellindex2, TVe
 		exit(1);
 	}
 	// init fourvectors to construct spinors
-	FourVector<double> f_pm = FourVector<double>(sqrt(MASSP*MASSP + pm.Dot(pm)) ,pm.X(),pm.Y(),pm.Z());
-	FourVector<double> f_ps = FourVector<double>(sqrt(MASSP*MASSP + ps.Dot(ps)), ps.X(), ps.Y(), ps.Z());
+	FourVector<double> f_pm = FourVector<double>(sqrt(nucqcd::mass_p*nucqcd::mass_p + pm.Dot(pm)) ,pm.X(),pm.Y(),pm.Z());
+	FourVector<double> f_ps = FourVector<double>(sqrt(nucqcd::mass_p*nucqcd::mass_p + ps.Dot(ps)), ps.X(), ps.Y(), ps.Z());
 	
 	if (FORCE_POS_ENERGY_PROJ) // to check Wim's previous results we take a look at pos energy terms (neglect lower part of spinor, so set momentum->zero)
 	{
-		f_pm = FourVector<double>(sqrt(MASSP*MASSP+pm*pm), 0, 0, 0);
-		f_ps = FourVector<double>(sqrt(MASSP*MASSP+ps*ps), 0, 0, 0);
+		f_pm = FourVector<double>(sqrt(nucqcd::mass_p*nucqcd::mass_p+pm*pm), 0, 0, 0);
+		f_ps = FourVector<double>(sqrt(nucqcd::mass_p*nucqcd::mass_p+ps*ps), 0, 0, 0);
 	}
 
 	// prepare integration
@@ -232,11 +232,11 @@ double dist2bodymom(MeanFieldNucleus& nuc, int shellindex1, int shellindex2, TVe
 	TSpinor::Polarization::State pol[2] = {TSpinor::Polarization::kDown,TSpinor::Polarization::kUp}; // make a list to use my beloved basic forloops
 	for (int s1=0; s1<2; s1++) // sum s_1
 	{
-		TSpinor u_pm = TSpinor(f_pm,MASSP,TSpinor::Polarization(0.,0.,pol[s1]),TSpinor::kUnity);
+		TSpinor u_pm = TSpinor(f_pm,nucqcd::mass_p,TSpinor::Polarization(0.,0.,pol[s1]),TSpinor::kUnity);
 		f.u_pm = &u_pm;
 		for (int s2=0; s2<2; s2++) // sum s_2
 		{
-			TSpinor u_ps = TSpinor(f_ps,MASSP,TSpinor::Polarization(0.,0.,pol[s2]),TSpinor::kUnity);
+			TSpinor u_ps = TSpinor(f_ps,nucqcd::mass_p,TSpinor::Polarization(0.,0.,pol[s2]),TSpinor::kUnity);
 			f.u_ps = &u_ps;
 			for (int m1 = -nuc.getJ_array()[shellindex1]; m1 <= nuc.getJ_array()[shellindex1]; m1+=2) // sum m1
 			{
@@ -272,7 +272,7 @@ void integrandum(complex<double>& res, const numint::array<double,3>& x, TVector
 	//TVector3 R(); // convert spherical x[] array coordinates to a cartesian vector
 	//R.SetMagThetaPhi(x[0],acos(x[1]),x[2]); // acos because x[1] is cos(theta)
 	//double PR = P*R;
-	res = exp(-I_UNIT*INVHBARC*PR)*TSpinor::Bar(*u_pm)*TMFSpinor(*nuc,shellindex1,m1,x[0],x[1],x[2])*TSpinor::Bar(*u_ps)*TMFSpinor(*nuc,shellindex2,m2,x[0],x[1],x[2]); // Wavefunctions already defined with factor r, so no r^2 that would appear from jacobian, no sin(theta) because we integrate over d(cos(theta))
+	res = exp(-nucqcd::i_unit*nucqcd::inv_hbarc*PR)*TSpinor::Bar(*u_pm)*TMFSpinor(*nuc,shellindex1,m1,x[0],x[1],x[2])*TSpinor::Bar(*u_ps)*TMFSpinor(*nuc,shellindex2,m2,x[0],x[1],x[2]); // Wavefunctions already defined with factor r, so no r^2 that would appear from jacobian, no sin(theta) because we integrate over d(cos(theta))
 
 }
 

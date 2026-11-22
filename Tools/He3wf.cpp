@@ -92,12 +92,12 @@ complex<double> He3wf::getWF(TVector3 &p1, TVector3 &p2, int ms1, int ms2, int m
     assert(1==0);
   }
   if(abs(ms3)!=1) return 0.;
-  double p1x=p1.X()*INVHBARC;
-  double p1y=p1.Y()*INVHBARC;
-  double p1z=p1.Z()*INVHBARC;
-  double p2x=p2.X()*INVHBARC;
-  double p2y=p2.Y()*INVHBARC;
-  double p2z=p2.Z()*INVHBARC;  
+  double p1x=p1.X()*nucqcd::inv_hbarc;
+  double p1y=p1.Y()*nucqcd::inv_hbarc;
+  double p1z=p1.Z()*nucqcd::inv_hbarc;
+  double p2x=p2.X()*nucqcd::inv_hbarc;
+  double p2y=p2.Y()*nucqcd::inv_hbarc;
+  double p2z=p2.Z()*nucqcd::inv_hbarc;  
   double p3x=-p1x-p2x;
   double p3y=-p1y-p2y;
   double p3z=-p1z-p2z;
@@ -107,8 +107,8 @@ complex<double> He3wf::getWF(TVector3 &p1, TVector3 &p2, int ms1, int ms2, int m
 			    &p3x,&p3y,&p3z,&ms3,&mt3,&ms1,&mt1);
   complex_ wfvalue3=gethe3wave(&p3x,&p3y,&p3z,&ms3,&mt3,
 			    &p1x,&p1y,&p1z,&ms1,&mt1,&ms2,&mt2);
-  return complex<double>((wfvalue1.dr+wfvalue2.dr+wfvalue3.dr)*pow(INVHBARC,3.)
-			  ,(wfvalue1.di+wfvalue2.di+wfvalue3.di)*pow(INVHBARC,3.));
+  return complex<double>((wfvalue1.dr+wfvalue2.dr+wfvalue3.dr)*pow(nucqcd::inv_hbarc,3.)
+			  ,(wfvalue1.di+wfvalue2.di+wfvalue3.di)*pow(nucqcd::inv_hbarc,3.));
 }
 
 complex<double> He3wf::getWF(double p1[3], double p2[3], int ms1, int ms2, int mt1, int mt2, int mA){
@@ -122,12 +122,12 @@ complex<double> He3wf::getWF(double p1[3], double p2[3], int ms1, int ms2, int m
     assert(1==0);
     
   }
-  double p1x=p1[0]*INVHBARC;
-  double p1y=p1[1]*INVHBARC;
-  double p1z=p1[2]*INVHBARC;
-  double p2x=p2[0]*INVHBARC;
-  double p2y=p2[1]*INVHBARC;
-  double p2z=p2[2]*INVHBARC;  
+  double p1x=p1[0]*nucqcd::inv_hbarc;
+  double p1y=p1[1]*nucqcd::inv_hbarc;
+  double p1z=p1[2]*nucqcd::inv_hbarc;
+  double p2x=p2[0]*nucqcd::inv_hbarc;
+  double p2y=p2[1]*nucqcd::inv_hbarc;
+  double p2z=p2[2]*nucqcd::inv_hbarc;  
   double p3x=-p1x-p2x;
   double p3y=-p1y-p2y;
   double p3z=-p1z-p2z;
@@ -137,7 +137,7 @@ complex<double> He3wf::getWF(double p1[3], double p2[3], int ms1, int ms2, int m
 			    &p3x,&p3y,&p3z,&ms3,&mt3,&ms1,&mt1);
   complex_ wfvalue3=gethe3wave(&p3x,&p3y,&p3z,&ms3,&mt3,
 			    &p1x,&p1y,&p1z,&ms1,&mt1,&ms2,&mt2);
-  return complex<double>((wfvalue1.dr+wfvalue2.dr+wfvalue3.dr)*pow(INVHBARC,3.)
-			  ,(wfvalue1.di+wfvalue2.di+wfvalue3.di)*pow(INVHBARC,3.));
+  return complex<double>((wfvalue1.dr+wfvalue2.dr+wfvalue3.dr)*pow(nucqcd::inv_hbarc,3.)
+			  ,(wfvalue1.di+wfvalue2.di+wfvalue3.di)*pow(nucqcd::inv_hbarc,3.));
   
 }

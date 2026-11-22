@@ -370,7 +370,7 @@ double TGrossPWF::GetF(ESpace space, int L, int index, double q) const
 
   if(space==kR) { // r-space
 
-    if(q<STRANGEUFLOW) // f(r) does not converge nicely
+    if(q<nucqcd::strange_underflow) // f(r) does not converge nicely
       return 0.;
 
     q /= fgHbarc; // convert position [fm] -> [MeV^-1]

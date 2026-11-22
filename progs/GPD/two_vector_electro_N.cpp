@@ -126,7 +126,7 @@ int main(int argc, char** argv) {
         double sum=0.;
         for(int i=100;i<1000;i++){
             double y=i/1000.;
-            sum+=ALPHA/2./PI*(2.*masse2*y*(1./Q2max-(1-y)/masse2/y/y)+(((1-y)*(1-y)+1)*log(Q2max*(1-y)/masse2/y/y)/y));
+            sum+=nucqcd::alpha_em/2./PI*(2.*masse2*y*(1./Q2max-(1-y)/masse2/y/y)+(((1-y)*(1-y)+1)*log(Q2max*(1-y)/masse2/y/y)/y));
         }
         cout << sum*1.04692/2./1000. << endl;
         exit(1);

@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 //     g1=NuclStructure::getG1_grsv2000(neutron,x_nucl,Q2*1.E06);
 //     g1pg2=NuclStructure::getG1plusg2_grsv2000(neutron,x_nucl,Q2*1.E06);
 //     nucl.getF(F1,F2);
-//     double gamma_n = 2.*x_nucl*MASSn_G/sqrt(Q2);
+//     double gamma_n = 2.*x_nucl*nucqcd::mass_nucleon_GeV/sqrt(Q2);
 //     F1=(1+gamma_n*gamma_n)/(1.+0.18)/(2.*x_nucl)*F2;
 //     FT=2.*F1;
 //     FL=(1+gamma_n*gamma_n)*F2/x_nucl-2.*F1;

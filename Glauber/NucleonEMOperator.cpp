@@ -14,7 +14,7 @@ NucleonEMOperator::NucleonEMOperator(){
 
 NucleonEMOperator::NucleonEMOperator(const double q2, const bool prot, const int para):
 proton(prot),parametrization(para),Q2(q2){
-  tau=Q2/(4.*(proton? MASSP*MASSP:MASSN*MASSN));
+  tau=Q2/(4.*(proton? nucqcd::mass_p*nucqcd::mass_p:nucqcd::mass_n*nucqcd::mass_n));
   GE_null=proton? 1.:1.91304;
   GM_null=proton? 2.79:-1.91304;
   setGM(); //GM first because GE can depend on GM for Q^2 above 6 GeV^2
@@ -66,23 +66,23 @@ NucleonEMOperator & NucleonEMOperator::operator=(const NucleonEMOperator &rhs){
 
 FourVector<GammaStructure> NucleonEMOperator::getCC1(const FourVector<double> &pi, const FourVector<double> &pf, 
 						     const double r, const int medium, const MeanFieldNucleusThick &nucleus) const{
-  if(medium) return getGM(r,medium,nucleus)*gamma_mu-getF2(r,medium,nucleus)/(2.*(proton?MASSP:MASSN))*(pi+pf)*Id;
-  else return getGM()*gamma_mu-getF2()/(2.*(proton?MASSP:MASSN))*(pi+pf)*Id;
+  if(medium) return getGM(r,medium,nucleus)*gamma_mu-getF2(r,medium,nucleus)/(2.*(proton?nucqcd::mass_p:nucqcd::mass_n))*(pi+pf)*Id;
+  else return getGM()*gamma_mu-getF2()/(2.*(proton?nucqcd::mass_p:nucqcd::mass_n))*(pi+pf)*Id;
 }
 FourVector<GammaStructure> NucleonEMOperator::getCC2(const FourVector<double> &q, const double r, const int medium,
 						     const MeanFieldNucleusThick &nucleus) const{
   if(medium) return gamma_mu*getF1(r,medium,nucleus)
-    +getF2(r,medium,nucleus)/(4.*(proton?MASSP:MASSN))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q));
-  else return gamma_mu*getF1()+getF2()/(4.*(proton?MASSP:MASSN))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q));
+    +getF2(r,medium,nucleus)/(4.*(proton?nucqcd::mass_p:nucqcd::mass_n))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q));
+  else return gamma_mu*getF1()+getF2()/(4.*(proton?nucqcd::mass_p:nucqcd::mass_n))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q));
   
 }
 FourVector<GammaStructure> NucleonEMOperator::getCC3(const FourVector<double> &q, const FourVector<double> &pi,
 						     const FourVector<double> &pf, const double r, const int medium,
 						     const MeanFieldNucleusThick &nucleus) const{
-  if(medium) return getF1(r,medium,nucleus)/(2.*(proton?MASSP:MASSN))*(pi+pf)*Id 
-    + getGM(r,medium,nucleus)/(4.*(proton?MASSP:MASSN))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q)); 
-  else return getF1()/(2.*(proton?MASSP:MASSN))*(pi+pf)*Id 
-    + getGM()/(4.*(proton?MASSP:MASSN))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q)); 
+  if(medium) return getF1(r,medium,nucleus)/(2.*(proton?nucqcd::mass_p:nucqcd::mass_n))*(pi+pf)*Id 
+    + getGM(r,medium,nucleus)/(4.*(proton?nucqcd::mass_p:nucqcd::mass_n))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q)); 
+  else return getF1()/(2.*(proton?nucqcd::mass_p:nucqcd::mass_n))*(pi+pf)*Id 
+    + getGM()/(4.*(proton?nucqcd::mass_p:nucqcd::mass_n))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q)); 
 }
 
 FourVector<GammaStructure> NucleonEMOperator::getCC(const int current, const FourVector<double>& q, 
@@ -105,16 +105,16 @@ switch(current){
 
 
 FourVector<GammaStructure> NucleonEMOperator::getCC1(const FourVector<double> &pi, const FourVector<double> &pf) const{
-  return getGM()*gamma_mu-getF2()/(2.*(proton?MASSP:MASSN))*(pi+pf)*Id;
+  return getGM()*gamma_mu-getF2()/(2.*(proton?nucqcd::mass_p:nucqcd::mass_n))*(pi+pf)*Id;
 }
 FourVector<GammaStructure> NucleonEMOperator::getCC2(const FourVector<double> &q) const{
-  return gamma_mu*getF1()+getF2()/(4.*(proton?MASSP:MASSN))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q));
+  return gamma_mu*getF1()+getF2()/(4.*(proton?nucqcd::mass_p:nucqcd::mass_n))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q));
   
 }
 FourVector<GammaStructure> NucleonEMOperator::getCC3(const FourVector<double> &q, const FourVector<double> &pi,
 						     const FourVector<double> &pf) const{
-  return getF1()/(2.*(proton?MASSP:MASSN))*(pi+pf)*Id 
-    + getGM()/(4.*(proton?MASSP:MASSN))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q)); 
+  return getF1()/(2.*(proton?nucqcd::mass_p:nucqcd::mass_n))*(pi+pf)*Id 
+    + getGM()/(4.*(proton?nucqcd::mass_p:nucqcd::mass_n))*((gamma_mu*q)*gamma_mu-gamma_mu*(gamma_mu*q)); 
 }
 
 FourVector<GammaStructure> NucleonEMOperator::getCC(const int current, const FourVector<double>& q, 

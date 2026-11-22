@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
         for(int i=0;i<=30;i++){
             double x=0.1;
             double xi=0.1+i*0.01;
-            double mandelstam_t = -0.45;//-4.*MASSP_G*MASSP_G*xi*xi/(1-xi*xi);
+            double mandelstam_t = -0.45;//-4.*nucqcd::mass_p_GeV*nucqcd::mass_p_GeV*xi*xi/(1-xi*xi);
             double scale = 1;
             cout << xi << " " << mandelstam_t << " ";
             PARTONS::GPDKinematic gpdKinematic(x,xi,mandelstam_t, scale*scale, scale*scale);
@@ -112,7 +112,7 @@ int main(int argc, char** argv) {
 
         for(int i=0;i<=2;i++){
             double xi=0.1+i*0.2;
-            double mandelstam_t= -4.*MASSP_G*MASSP_G*xi*xi/(1-xi*xi);//tmin [GeV^2]
+            double mandelstam_t= -4.*nucqcd::mass_p_GeV*nucqcd::mass_p_GeV*xi*xi/(1-xi*xi);//tmin [GeV^2]
             double scale=1.;
             for(int i =0;i<=50;i++){
                 double x=i*xi/50.;

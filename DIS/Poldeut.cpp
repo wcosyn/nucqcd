@@ -61,10 +61,10 @@ Poldeut& Poldeut::operator=(const Poldeut& rhs){
 
 void Poldeut::calc_Double_Asymm(double x, double Q2, double y, double alpha_s, double pt, bool proton, double &F_LSL, double &F_U){
   
-  double pd_plus =MASSD;
-  FourVector<double> pd_mu(MASSD,0.,0.,0.);
+  double pd_plus =nucqcd::mass_d;
+  FourVector<double> pd_mu(nucqcd::mass_d,0.,0.,0.);
   double ps_plus = alpha_s*pd_plus/2.;
-  double ps_min = (MASSn*MASSn+pt*pt)/ps_plus;
+  double ps_min = (nucqcd::mass_nucleon*nucqcd::mass_nucleon+pt*pt)/ps_plus;
   double Es = (ps_plus + ps_min)*0.5;
   double psz =(ps_plus - ps_min)*0.5;
   double psnorm  = sqrt(psz*psz + pt*pt);
@@ -72,10 +72,10 @@ void Poldeut::calc_Double_Asymm(double x, double Q2, double y, double alpha_s, d
   FourVector<double> pi_mu = pd_mu - ps_mu;
   double pi_plus=pd_plus-ps_plus;
   double pi_perp = -pt;
-  double pi_min=(MASSn*MASSn+pt*pt)/pi_plus;
+  double pi_min=(nucqcd::mass_nucleon*nucqcd::mass_nucleon+pt*pt)/pi_plus;
   FourVector<double> pi_mu_onshell((pi_plus + pi_min)*0.5,-pt,0.,(pi_plus - pi_min)*0.5);
   
-  double nu = 2.*Q2/MASSD/x;
+  double nu = 2.*Q2/nucqcd::mass_d/x;
   double qvec = sqrt(Q2+nu*nu);
   FourVector<double> q_mu(nu,0.,0.,-qvec);
   FourVector<double> q_onshell = q_mu+pi_mu-pi_mu_onshell;
@@ -83,13 +83,13 @@ void Poldeut::calc_Double_Asymm(double x, double Q2, double y, double alpha_s, d
   el_mu*=1./sqrt(Q2); //longitudinal basis vector
   FourVector<double> et_mu(0.,1.,0.,0.);
   
-  double gamma_d = sqrt(Q2)*MASSD/(pd_mu*q_mu);
+  double gamma_d = sqrt(Q2)*nucqcd::mass_d/(pd_mu*q_mu);
   double epsilon=(1.-y-pow(gamma_d*y/2.,2.))/(1.-y+y*y/2.+pow(gamma_d*y/2.,2.));
   
   
   double alpha_i = 2.-alpha_s;
   double k_perp=-pt;  //minus sign!!
-  double Ek = sqrt((MASSn*MASSn+k_perp*k_perp)/alpha_i/alpha_s);
+  double Ek = sqrt((nucqcd::mass_nucleon*nucqcd::mass_nucleon+k_perp*k_perp)/alpha_i/alpha_s);
   double kfz=(alpha_i-1.)*Ek;
   double knorm = sqrt(kfz*kfz+k_perp*k_perp);
   double thetak = atan2(k_perp,kfz);
@@ -110,44 +110,44 @@ void Poldeut::calc_Double_Asymm(double x, double Q2, double y, double alpha_s, d
   g1pg2=NuclStructure::getG1plusg2_grsv2000(proton,x,Q2);
 //   cout << g1 << " " << g1pg2 << " " << g1pg2-g1 << endl;
   nucl.getF(F1,F2);
-  double gamma_n = sqrt(Q2)*MASSn/(pi_mu_onshell*q_onshell);
+  double gamma_n = sqrt(Q2)*nucqcd::mass_nucleon/(pi_mu_onshell*q_onshell);
 //   cout << gamma_n << endl;
   F1=(1+gamma_n*gamma_n)/(1.+0.18)/(2.*x_nucl)*F2;
 //   cout << F1 << " " << F2 << " " << g1 << " " << gamma_n << endl;
   
-  FourVector<double> snz(0.5*(pi_plus+(pi_perp*pi_perp-MASSn*MASSn)/pi_plus),pi_perp,0.,0.5*(pi_plus-(pi_perp*pi_perp-MASSn*MASSn)/pi_plus));
-  snz*=1./MASSn;
+  FourVector<double> snz(0.5*(pi_plus+(pi_perp*pi_perp-nucqcd::mass_nucleon*nucqcd::mass_nucleon)/pi_plus),pi_perp,0.,0.5*(pi_plus-(pi_perp*pi_perp-nucqcd::mass_nucleon*nucqcd::mass_nucleon)/pi_plus));
+  snz*=1./nucqcd::mass_nucleon;
   FourVector<double> snx(pi_perp/pi_plus,1.,0.,-pi_perp/pi_plus);
   
-  double factor=MASSD*sqrt(1.+1./gamma_d/gamma_d)-ps_mu*el_mu;
+  double factor=nucqcd::mass_d*sqrt(1.+1./gamma_d/gamma_d)-ps_mu*el_mu;
   double ff=(epsilon*(-2.*F1+factor*factor*2.*F2/(pi_mu_onshell*q_onshell))+(2.*F1+pt*pt/(pi_mu_onshell*q_onshell)*F2))/F2*Ek/alpha_i/alpha_i*4.*pow(2.*PI,3.);
   F_U = (epsilon*(-2.*F1+factor*factor*2.*F2/(pi_mu_onshell*q_onshell))+(2.*F1+pt*pt/(pi_mu_onshell*q_onshell)*F2))*rhou;
   F_LSL = gamma_n*(((el_mu*snz)*g1pg2-q_onshell*snz/(pi_mu_onshell*q_onshell)*factor*(g1pg2-g1))*rho_l_z+((el_mu*snx)*g1pg2-q_onshell*snx/(pi_mu_onshell*q_onshell)*factor*(g1pg2-g1))*rho_l_x);
   double F_UTLL = -(epsilon*(-2.*F1+factor*factor*2.*F2/(pi_mu_onshell*q_onshell))+(2.*F1+pt*pt/(pi_mu_onshell*q_onshell)*F2))*rho_tensor_u;
 //   cout << (el_mu*snz)*rho_l_z << " " << (el_mu*snx)*rho_l_x << " " << snz << " " << snx << endl;
 //   cout << rhou << " " << rho_l_x << " " << rho_l_z << endl;
-//   cout << "dd " << rhou/3./Ek*alpha_i*alpha_i*pow((MASSn*MASSn-pi_mu*pi_mu)/wfref->getResidu(),2.) << " " << (MASSn*MASSn-pi_mu*pi_mu)/wfref->getResidu()<< " " << Ek << " " << alpha_i << " " << rhou << endl;
-  cout << x << " " << Q2 << " " << x_nucl << " " << alpha_s << " " << pt << " " << psnorm << " " << knorm << " " << k_perp << " " << F_U << " " << F_LSL << " " << F_LSL/(F_U+1/sqrt(6.)*F_UTLL) << " " << (MASSn*MASSn-pi_mu*pi_mu)*1.E-06 << " " << F_U*pow((MASSn*MASSn-pi_mu*pi_mu)/wfref->getResidu(),2.)/ff << " " << F2 << " " << F_UTLL/F_U/sqrt(3./2.) << endl;
+//   cout << "dd " << rhou/3./Ek*alpha_i*alpha_i*pow((nucqcd::mass_nucleon*nucqcd::mass_nucleon-pi_mu*pi_mu)/wfref->getResidu(),2.) << " " << (nucqcd::mass_nucleon*nucqcd::mass_nucleon-pi_mu*pi_mu)/wfref->getResidu()<< " " << Ek << " " << alpha_i << " " << rhou << endl;
+  cout << x << " " << Q2 << " " << x_nucl << " " << alpha_s << " " << pt << " " << psnorm << " " << knorm << " " << k_perp << " " << F_U << " " << F_LSL << " " << F_LSL/(F_U+1/sqrt(6.)*F_UTLL) << " " << (nucqcd::mass_nucleon*nucqcd::mass_nucleon-pi_mu*pi_mu)*1.E-06 << " " << F_U*pow((nucqcd::mass_nucleon*nucqcd::mass_nucleon-pi_mu*pi_mu)/wfref->getResidu(),2.)/ff << " " << F2 << " " << F_UTLL/F_U/sqrt(3./2.) << endl;
   
   
 }
 
 
 double Poldeut::calc_dsigma_unpol(const double x, const double Q2, const double s, const double alpha_p, const double tprime, bool proton){
-  double pt2=1./4.*alpha_p*(2.-alpha_p)*MASSD*MASSD-MASSn*MASSn-alpha_p*tprime/2.;
+  double pt2=1./4.*alpha_p*(2.-alpha_p)*nucqcd::mass_d*nucqcd::mass_d-nucqcd::mass_nucleon*nucqcd::mass_nucleon-alpha_p*tprime/2.;
 
   double k_perp=-sqrt(pt2);  //minus sign!!
-  double Ek = sqrt((MASSn*MASSn+k_perp*k_perp)/alpha_p/(2.-alpha_p));
+  double Ek = sqrt((nucqcd::mass_nucleon*nucqcd::mass_nucleon+k_perp*k_perp)/alpha_p/(2.-alpha_p));
   double kfz=(alpha_p-1.)*Ek;
   double knorm = sqrt(kfz*kfz+k_perp*k_perp);
   double thetak = atan2(k_perp,kfz);
   double k_plus = Ek+kfz;
 
   
-  double y=Q2/x*2./(s-MASSD*MASSD);
-  double gamma_d = x*x*MASSD*MASSD/(Q2);
+  double y=Q2/x*2./(s-nucqcd::mass_d*nucqcd::mass_d);
+  double gamma_d = x*x*nucqcd::mass_d*nucqcd::mass_d/(Q2);
   double epsilon=(1.-y-pow(gamma_d*y/2.,2.))/(1.-y+y*y/2.+pow(gamma_d*y/2.,2.));
-  double gamma_n = pow(2.*x/(2.-alpha_p)*MASSn,2.)/Q2;
+  double gamma_n = pow(2.*x/(2.-alpha_p)*nucqcd::mass_nucleon,2.)/Q2;
   //cout << y << " " << gamma_d << " " << gamma_n << " " << epsilon << endl; 
 
   double U=getU(knorm);
@@ -165,19 +165,19 @@ double Poldeut::calc_dsigma_unpol(const double x, const double Q2, const double 
   double strucunpol2 = 2.*F1d+epsilon*((1+gamma_d*gamma_d)*F2d/x*2.-2.*F1d);
 
   double strucunpol = 2.*pow(2.*PI,3.)*2.*dens/(2.-alpha_p)*(2.*F1+epsilon*((1+gamma_n*gamma_n)/x*(2.-alpha_p)*F2-2.*F1));
-  cout << sqrt(pt2) << " " << dens << " " << strucunpol << " " << strucunpol2 << " " << ALPHA*ALPHA/4./pow(2.*PI,2.)*y*y/Q2/Q2/(1.-epsilon) << " "; //Mev^-2, Mev^-2, Mev^-4
-  double dsigma = strucunpol*ALPHA*ALPHA/4./pow(2.*PI,2.)*y*y/Q2/Q2/(1.-epsilon);  //MeV-6
-  return dsigma*HBARC*HBARC*1.E19;  //nb/GeV^-4
+  cout << sqrt(pt2) << " " << dens << " " << strucunpol << " " << strucunpol2 << " " << nucqcd::alpha_em*nucqcd::alpha_em/4./pow(2.*PI,2.)*y*y/Q2/Q2/(1.-epsilon) << " "; //Mev^-2, Mev^-2, Mev^-4
+  double dsigma = strucunpol*nucqcd::alpha_em*nucqcd::alpha_em/4./pow(2.*PI,2.)*y*y/Q2/Q2/(1.-epsilon);  //MeV-6
+  return dsigma*nucqcd::hbarc*nucqcd::hbarc*1.E19;  //nb/GeV^-4
 
 }
 
 
 void Poldeut::Melosh_rot(double k_perp, double k_plus, double Ek, double &rho_l_z, double &rho_l_x){
-  double nom=k_plus*(Ek+MASSn);
+  double nom=k_plus*(Ek+nucqcd::mass_nucleon);
   
-  double new_rho_z= (1.-k_perp*k_perp/nom)*rho_l_z +k_perp*(k_plus+MASSn)/nom*rho_l_x;
-  double new_rho_x=(1.-k_perp*k_perp/nom)*rho_l_x -k_perp*(k_plus+MASSn)/nom*rho_l_z;
-//   cout << new_rho_z << " " << rho_l_z << " " << new_rho_x << " " << rho_l_x << " " << (1.-k_perp*k_perp/nom) << " " << k_perp*(k_plus+MASSn)/nom << endl;
+  double new_rho_z= (1.-k_perp*k_perp/nom)*rho_l_z +k_perp*(k_plus+nucqcd::mass_nucleon)/nom*rho_l_x;
+  double new_rho_x=(1.-k_perp*k_perp/nom)*rho_l_x -k_perp*(k_plus+nucqcd::mass_nucleon)/nom*rho_l_z;
+//   cout << new_rho_z << " " << rho_l_z << " " << new_rho_x << " " << rho_l_x << " " << (1.-k_perp*k_perp/nom) << " " << k_perp*(k_plus+nucqcd::mass_nucleon)/nom << endl;
   rho_l_z=new_rho_z;
   rho_l_x=new_rho_x;
   
@@ -192,13 +192,13 @@ void Poldeut::getDensities(double knorm, double thetak, double &rhou, double &rh
 //   double U=getU(200.);
 //   double W=getW(200.);
 //   cout << wf.DeuteronPState(2,1,1,kk)*sqrt(4.*PI) << " " << U-(3.*cos(1.)*cos(1.)-1)/sqrt(8.)*W << endl;
-//   cout << wf.DeuteronPState(2,-1,1,kk)*sqrt(4.*PI) << " " << wf.DeuteronPState(2,1,-1,kk)*sqrt(4.*PI) << " " << -3.*cos(1.)*sin(1.)*exp(I_UNIT*2.)/sqrt(8.)*W << endl;
-//   cout << wf.DeuteronPState(2,-1,-1,kk)*sqrt(4.*PI) << " " << -3.*sin(1.)*sin(1.)*exp(I_UNIT*4.)/sqrt(8.)*W << endl;
-//   cout << wf.DeuteronPState(0,1,1,kk)*sqrt(4.*PI) << " " << -3./2.*W*cos(1.)*sin(1.)*exp(-I_UNIT*2.) << endl;
+//   cout << wf.DeuteronPState(2,-1,1,kk)*sqrt(4.*PI) << " " << wf.DeuteronPState(2,1,-1,kk)*sqrt(4.*PI) << " " << -3.*cos(1.)*sin(1.)*exp(nucqcd::i_unit*2.)/sqrt(8.)*W << endl;
+//   cout << wf.DeuteronPState(2,-1,-1,kk)*sqrt(4.*PI) << " " << -3.*sin(1.)*sin(1.)*exp(nucqcd::i_unit*4.)/sqrt(8.)*W << endl;
+//   cout << wf.DeuteronPState(0,1,1,kk)*sqrt(4.*PI) << " " << -3./2.*W*cos(1.)*sin(1.)*exp(-nucqcd::i_unit*2.) << endl;
 //   cout << wf.DeuteronPState(0,1,-1,kk)*sqrt(4.*PI) << " "<<  wf.DeuteronPState(0,-1,1,kk)*sqrt(4.*PI) << " " << U/sqrt(2.)+W/2.*(3.*cos(1.)*cos(1.)-1) << endl;
-//   cout << wf.DeuteronPState(0,-1,-1,kk)*sqrt(4.*PI) << " " << 3./2.*exp(I_UNIT*2.)*W*sin(1.)*cos(1.) << endl;
-//   cout << wf.DeuteronPState(-2,1,1,kk)*sqrt(4.*PI) << " " << -3/sqrt(8)*W*sin(1.)*sin(1.)*exp(-I_UNIT*4.) << endl;
-//   cout << wf.DeuteronPState(-2,1,-1,kk)*sqrt(4.*PI) << " " << wf.DeuteronPState(-2,-1,1,kk)*sqrt(4.*PI) << " " << 3/sqrt(8)*W*cos(1.)*sin(1.)*exp(-I_UNIT*2.) << endl;
+//   cout << wf.DeuteronPState(0,-1,-1,kk)*sqrt(4.*PI) << " " << 3./2.*exp(nucqcd::i_unit*2.)*W*sin(1.)*cos(1.) << endl;
+//   cout << wf.DeuteronPState(-2,1,1,kk)*sqrt(4.*PI) << " " << -3/sqrt(8)*W*sin(1.)*sin(1.)*exp(-nucqcd::i_unit*4.) << endl;
+//   cout << wf.DeuteronPState(-2,1,-1,kk)*sqrt(4.*PI) << " " << wf.DeuteronPState(-2,-1,1,kk)*sqrt(4.*PI) << " " << 3/sqrt(8)*W*cos(1.)*sin(1.)*exp(-nucqcd::i_unit*2.) << endl;
 //   cout << wf.DeuteronPState(-2,-1,-1,kk)*sqrt(4.*PI) << " " << U-W/sqrt(8)*(3.*cos(1.)*cos(1.)-1.) << endl;
 // //   exit(1);
   
@@ -218,9 +218,9 @@ void Poldeut::getDensities(double knorm, double thetak, double &rhou, double &rh
     
 
   
-  double Ek=sqrt(MASSn*MASSn+knorm*knorm);
-  double t= pow(MASSD-Ek,2.)-knorm*knorm;
-  double alphai=(Ek+knorm*cos(thetak))/MASSn;
+  double Ek=sqrt(nucqcd::mass_nucleon*nucqcd::mass_nucleon+knorm*knorm);
+  double t= pow(nucqcd::mass_d-Ek,2.)-knorm*knorm;
+  double alphai=(Ek+knorm*cos(thetak))/nucqcd::mass_nucleon;
   double factor=Ek/(alphai*alphai*4.*PI)*4.*pow(2.*PI,3.);
   rhou=(U*U+W*W)  * factor;
   rho_l_z = 2.*(U*U-U*W/(2.*sqrt(2.))*(3.*cos(2.*thetak)+1.)+W*W/4.*(3.*cos(2.*thetak)-1.)) * factor;
@@ -236,13 +236,13 @@ void Poldeut::getDensities(double knorm, double thetak, double &rhou, double &rh
 
 
 void Poldeut::Tensor_Compare_nonrel(double &lfratio, double &nrratio, double alpha_p, double pt){
-  double Ek_sq = (MASSn*MASSn+pt*pt)/alpha_p/(2.-alpha_p);
-  double knorm = sqrt(Ek_sq-MASSn*MASSn);
+  double Ek_sq = (nucqcd::mass_nucleon*nucqcd::mass_nucleon+pt*pt)/alpha_p/(2.-alpha_p);
+  double knorm = sqrt(Ek_sq-nucqcd::mass_nucleon*nucqcd::mass_nucleon);
   double U_lf = getU(knorm);
   double W_lf = getW(knorm);
 
-  double p_p_plus = alpha_p/2.*MASSD;
-  double p_p_minus = (MASSn*MASSn+pt*pt)/p_p_plus;
+  double p_p_plus = alpha_p/2.*nucqcd::mass_d;
+  double p_p_minus = (nucqcd::mass_nucleon*nucqcd::mass_nucleon+pt*pt)/p_p_plus;
   double p_z = (p_p_plus - p_p_minus)/2.;
   double pnorm = sqrt(p_z*p_z+pt*pt);
 
@@ -252,7 +252,7 @@ void Poldeut::Tensor_Compare_nonrel(double &lfratio, double &nrratio, double alp
   lfratio = -((1-3./2.*pt*pt/knorm/knorm)*(2*U_lf+W_lf/sqrt(2.))*W_lf/sqrt(2.))/(U_lf*U_lf + W_lf*W_lf) ;
   lfratio = U_lf;
 
-  nrratio = -((1-3./2.*pt*pt/pnorm/pnorm/(1+p_z/MASSn))*(2*U_nr+W_nr/sqrt(2.))*W_nr/sqrt(2.))/(U_nr*U_nr + W_nr*W_nr) ;
+  nrratio = -((1-3./2.*pt*pt/pnorm/pnorm/(1+p_z/nucqcd::mass_nucleon))*(2*U_nr+W_nr/sqrt(2.))*W_nr/sqrt(2.))/(U_nr*U_nr + W_nr*W_nr) ;
   nrratio = W_lf;
 
 }
@@ -261,7 +261,7 @@ void Poldeut::Tensor_Compare_nonrel(double &lfratio, double &nrratio, double alp
 
 void Poldeut::getLFdistributions(double alpha_p, double pt, double &S_L, double &S_T, double &deltaS_L, double &deltaS_T, double &deltaT_S_L, double &deltaT_S_T){
 
-  double E = sqrt((pt*pt+MASSn*MASSn)/(alpha_p*(2.-alpha_p))); //MeV
+  double E = sqrt((pt*pt+nucqcd::mass_nucleon*nucqcd::mass_nucleon)/(alpha_p*(2.-alpha_p))); //MeV
   double kz = E*(alpha_p-1.);
   double knorm = sqrt(pt*pt+kz*kz);
   double costheta = kz/knorm;
@@ -280,23 +280,23 @@ void Poldeut::getLFdistributions(double alpha_p, double pt, double &S_L, double 
   S_L = S_unpol+S_tensor_L;
   S_T = S_unpol+S_tensor_T;
 
-  double C0L = 1-(E+kz)*pt*pt/(E+MASSn)/(MASSn*MASSn+pt*pt);
-  double C2L = 1-(E+2.*MASSn)*(E+kz)*pt*pt/(MASSn*MASSn+pt*pt)/(knorm*knorm);
+  double C0L = 1-(E+kz)*pt*pt/(E+nucqcd::mass_nucleon)/(nucqcd::mass_nucleon*nucqcd::mass_nucleon+pt*pt);
+  double C2L = 1-(E+2.*nucqcd::mass_nucleon)*(E+kz)*pt*pt/(nucqcd::mass_nucleon*nucqcd::mass_nucleon+pt*pt)/(knorm*knorm);
 
   deltaS_L = 1/(2.-alpha_p)*(f0-f2/sqrt(2.))*(C0L*f0-C2L*f2/sqrt(2.));
 
-  double C0T = -(E+kz)*(E-kz+MASSn)*pt/(E+MASSn)/(MASSn*MASSn+pt*pt);
-  double C2T = (E+kz)*(-knorm*knorm+kz*(E+2.*MASSn))*pt/(knorm*knorm*(MASSn*MASSn+pt*pt));
+  double C0T = -(E+kz)*(E-kz+nucqcd::mass_nucleon)*pt/(E+nucqcd::mass_nucleon)/(nucqcd::mass_nucleon*nucqcd::mass_nucleon+pt*pt);
+  double C2T = (E+kz)*(-knorm*knorm+kz*(E+2.*nucqcd::mass_nucleon))*pt/(knorm*knorm*(nucqcd::mass_nucleon*nucqcd::mass_nucleon+pt*pt));
 
   deltaS_T = 1/(2.-alpha_p)*(f0-f2/sqrt(2.))*(C0T*f0-C2T*f2/sqrt(2.));
 
-  double D0L = (E+kz)*(E-kz+MASSn)*pt/(E+MASSn)/(MASSn*MASSn+pt*pt); 
-  double D2L = -(E+kz)*(-knorm*knorm+(E+MASSn/2.)*kz)*pt/(knorm*knorm*(MASSn*MASSn+pt*pt));
+  double D0L = (E+kz)*(E-kz+nucqcd::mass_nucleon)*pt/(E+nucqcd::mass_nucleon)/(nucqcd::mass_nucleon*nucqcd::mass_nucleon+pt*pt); 
+  double D2L = -(E+kz)*(-knorm*knorm+(E+nucqcd::mass_nucleon/2.)*kz)*pt/(knorm*knorm*(nucqcd::mass_nucleon*nucqcd::mass_nucleon+pt*pt));
   
   deltaT_S_L = 1/(2.-alpha_p)*(f0-f2/sqrt(2.))*(D0L*f0+D2L*sqrt(2.)*f2);
 
-  double D0T = 1.-(E+kz)*pt*pt/(E+MASSn)/(MASSn*MASSn+pt*pt);
-  double D2T = 1.-(E+MASSn/2)*(E+kz)*pt*pt/(knorm*knorm*(MASSn*MASSn+pt*pt));
+  double D0T = 1.-(E+kz)*pt*pt/(E+nucqcd::mass_nucleon)/(nucqcd::mass_nucleon*nucqcd::mass_nucleon+pt*pt);
+  double D2T = 1.-(E+nucqcd::mass_nucleon/2)*(E+kz)*pt*pt/(knorm*knorm*(nucqcd::mass_nucleon*nucqcd::mass_nucleon+pt*pt));
   
   deltaT_S_T = 1/(2.-alpha_p)*(f0-f2/sqrt(2.))*(D0T*f0+D2T*sqrt(2.)*f2);
 
@@ -307,7 +307,7 @@ void Poldeut::getLFdistributions(double alpha_p, double pt, double &S_L, double 
 void Poldeut::getLFdistributions_new(double alpha_p, double pt, double &P_U, double &P_TLL, double &P_TLT, double &P_TTT, 
                         double &P_SLSL, double &P_STSL, double &P_SLST, double &P_STST_perp, double &P_STST_par){
 
-  double E = sqrt((pt*pt+MASSn*MASSn)/(alpha_p*(2.-alpha_p))); //MeV
+  double E = sqrt((pt*pt+nucqcd::mass_nucleon*nucqcd::mass_nucleon)/(alpha_p*(2.-alpha_p))); //MeV
   double kz = E*(alpha_p-1.);
   double knorm = sqrt(pt*pt+kz*kz);
   double costheta = kz/knorm;
@@ -323,23 +323,23 @@ void Poldeut::getLFdistributions_new(double alpha_p, double pt, double &P_U, dou
   P_TTT = -1./(2.-alpha_p)*(2.*f0+f2/sqrt(2.))*f2/sqrt(2.)*3./2.*sintheta*sintheta; 
 
   
-  double C0L = 1-(E+kz)*pt*pt/(E+MASSn)/(MASSn*MASSn+pt*pt);
-  double C2L = 1-(E+2.*MASSn)*(E+kz)*pt*pt/(MASSn*MASSn+pt*pt)/(knorm*knorm);
+  double C0L = 1-(E+kz)*pt*pt/(E+nucqcd::mass_nucleon)/(nucqcd::mass_nucleon*nucqcd::mass_nucleon+pt*pt);
+  double C2L = 1-(E+2.*nucqcd::mass_nucleon)*(E+kz)*pt*pt/(nucqcd::mass_nucleon*nucqcd::mass_nucleon+pt*pt)/(knorm*knorm);
 
   P_SLSL = 1/(2.-alpha_p)*(f0-f2/sqrt(2.))*(C0L*f0-C2L*f2/sqrt(2.));
 
-  double C0T = -(E+kz)*(E-kz+MASSn)*pt/(E+MASSn)/(MASSn*MASSn+pt*pt);
-  double C2T = (E+kz)*(-knorm*knorm+kz*(E+2.*MASSn))*pt/(knorm*knorm*(MASSn*MASSn+pt*pt));
+  double C0T = -(E+kz)*(E-kz+nucqcd::mass_nucleon)*pt/(E+nucqcd::mass_nucleon)/(nucqcd::mass_nucleon*nucqcd::mass_nucleon+pt*pt);
+  double C2T = (E+kz)*(-knorm*knorm+kz*(E+2.*nucqcd::mass_nucleon))*pt/(knorm*knorm*(nucqcd::mass_nucleon*nucqcd::mass_nucleon+pt*pt));
 
   P_STSL = 1/(2.-alpha_p)*(f0-f2/sqrt(2.))*(C0T*f0-C2T*f2/sqrt(2.));
 
-  double D0L = (E+kz)*(E-kz+MASSn)*pt/(E+MASSn)/(MASSn*MASSn+pt*pt); 
-  double D2L = -(E+kz)*(-knorm*knorm+(E+MASSn/2.)*kz)*pt/(knorm*knorm*(MASSn*MASSn+pt*pt));
+  double D0L = (E+kz)*(E-kz+nucqcd::mass_nucleon)*pt/(E+nucqcd::mass_nucleon)/(nucqcd::mass_nucleon*nucqcd::mass_nucleon+pt*pt); 
+  double D2L = -(E+kz)*(-knorm*knorm+(E+nucqcd::mass_nucleon/2.)*kz)*pt/(knorm*knorm*(nucqcd::mass_nucleon*nucqcd::mass_nucleon+pt*pt));
   
   P_SLST = 1/(2.-alpha_p)*(f0-f2/sqrt(2.))*(D0L*f0+D2L*sqrt(2.)*f2);
 
-  double D0T = 1.-(E+kz)*pt*pt/(E+MASSn)/(MASSn*MASSn+pt*pt);
-  double D2T = 1.-(E+MASSn/2)*(E+kz)*pt*pt/(knorm*knorm*(MASSn*MASSn+pt*pt));
+  double D0T = 1.-(E+kz)*pt*pt/(E+nucqcd::mass_nucleon)/(nucqcd::mass_nucleon*nucqcd::mass_nucleon+pt*pt);
+  double D2T = 1.-(E+nucqcd::mass_nucleon/2)*(E+kz)*pt*pt/(knorm*knorm*(nucqcd::mass_nucleon*nucqcd::mass_nucleon+pt*pt));
   
   P_STST_perp = 1/(2.-alpha_p)*(f0-f2/sqrt(2.))*(D0T*f0+D2T*sqrt(2.)*f2);
   P_STST_par = 1./(2.-alpha_p)*(f0-f2/sqrt(2.))*(f0+sqrt(2.)*f2);

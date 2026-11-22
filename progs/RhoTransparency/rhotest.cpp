@@ -20,7 +20,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
   
-  string homedir=HOMEDIR;
+  string homedir=nucqcd::share_dir;
   cout << homedir << endl;
 // 
 //   MeanFieldNucleusThick CarbonThick(3,homedir);

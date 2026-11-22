@@ -52,8 +52,8 @@ TEST_CASE("Mean-field nuclei: quantum numbers, normalization of shells and densi
     CHECK_THAT(4. * PI * simpson([&](double r) { return nucl.getProtonDensity(r); }, 0., R, 2000), WithinAbs(1., 5e-3));
     CHECK_THAT(4. * PI * simpson([&](double r) { return nucl.getNeutronDensity(r); }, 0., R, 2000), WithinAbs(1., 5e-3));
     // binding: separation energies positive
-    CHECK(nucl.getMassA() < nucl.getMassA_min_proton() + MASSP);
-    CHECK(nucl.getMassA() < nucl.getMassA_min_neutron() + MASSN);
+    CHECK(nucl.getMassA() < nucl.getMassA_min_proton() + nucqcd::mass_p);
+    CHECK(nucl.getMassA() < nucl.getMassA_min_neutron() + nucqcd::mass_n);
   }
 }
 

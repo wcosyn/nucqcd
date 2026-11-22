@@ -172,7 +172,7 @@ void GlauberGridThick::printFsi_grid() {
         if (std::isnan(phi))
           phi = 0.;
         complex < double >value = AbstractFsiGrid::getFsiGridFull_interp3(r, costheta, phi);
-        cout << r << " " << costheta << " " << phi * RADTODEGR << " " << real(value) << " " << imag(value) << endl;
+        cout << r << " " << costheta << " " << phi * nucqcd::rad_to_deg << " " << real(value) << " " << imag(value) << endl;
       }
     }
   }
@@ -191,7 +191,7 @@ void GlauberGridThick::printFsi_ct_grid() {
         if (std::isnan(phi))
           phi = 0.;
         complex < double >value = AbstractFsiCTGrid::getFsiCtGridFull_interp3(r, costheta, phi);
-        cout << r << " " << costheta << " " << phi * RADTODEGR << " " << real(value) << " " << imag(value) << endl;
+        cout << r << " " << costheta << " " << phi * nucqcd::rad_to_deg << " " << real(value) << " " << imag(value) << endl;
       }
     }
   }
@@ -211,7 +211,7 @@ void GlauberGridThick::printFsi_src_grid() {
         if (std::isnan(phi))
           phi = 0.;
         complex < double >value = AbstractFsiCTGridThick::getFsiSrcGridFull_interp3(r, costheta, phi);
-        cout << r << " " << costheta << " " << phi * RADTODEGR << " " << real(value) << " " << imag(value) << endl;
+        cout << r << " " << costheta << " " << phi * nucqcd::rad_to_deg << " " << real(value) << " " << imag(value) << endl;
       }
     }
   }
@@ -230,7 +230,7 @@ void GlauberGridThick::printFsi_src_ct_grid() {
         if (std::isnan(phi))
           phi = 0.;
         complex < double >value = AbstractFsiCTGridThick::getFsiSrcCtGridFull_interp3(r, costheta, phi);
-        cout << r << " " << costheta << " " << phi * RADTODEGR << " " << real(value) << " " << imag(value) << endl;
+        cout << r << " " << costheta << " " << phi * nucqcd::rad_to_deg << " " << real(value) << " " << imag(value) << endl;
       }
     }
   }
@@ -863,7 +863,7 @@ void GlauberGridThick::writeoutFsiCtGrid(ofstream & outfile) {
 //   double sintheta = sqrt(1. - costheta * costheta);
 //   double src = getFsiCorrelator().getCorrGrid_interp(costheta, proton);
 //   rombergerN(this, &GlauberGridThick::intGlauberPhi, 0., 2. * PI, 4, results, getPrec(), 3, 5, pphiestimate, r, costheta, sintheta, proton);
-//   //cout << r << " " << acos(costheta)*RADTODEGR << " " << getFsiCorrelator()->getRindex() << endl;
+//   //cout << r << " " << acos(costheta)*nucqcd::rad_to_deg << " " << getFsiCorrelator()->getRindex() << endl;
 //   results[1] *= src;
 //   results[3] *= src;
 // }
@@ -1090,7 +1090,7 @@ void GlauberGridThick::klaas_int_bound_ct(numint::vector_d & results, double b, 
 //   double src = getFsiCorrelator().getCorrGrid_interp(r, costheta, proton);
 //   double intresults[2] = { 0., 0. };
 //   rombergerN(this, &GlauberGridThick::intGlauberPhi_bound, 0., 2. * PI, 2, intresults, getPrec(), 3, 10, pphiestimate, b, r, costheta, sintheta, proton);
-//   //cout << r << " " << acos(costheta)*RADTODEGR << " " << getFsiCorrelator()->getRindex() << endl;
+//   //cout << r << " " << acos(costheta)*nucqcd::rad_to_deg << " " << getFsiCorrelator()->getRindex() << endl;
 //   results[0] = intresults[0];
 //   results[1] = intresults[1] * src;
 //   results[2] = results[0] * getParticles()[0].getCTsigma(z);
@@ -1150,7 +1150,7 @@ void GlauberGridThick::klaas_int_bound_ct(numint::vector_d & results, double b, 
 //   double src = getFsiCorrelator().getCorrGrid_interp(r, costheta, proton);
 //   double intresults;
 //   rombergerN(this, &GlauberGridThick::intGlauberPhi_bound, 0., 2. * PI, 1, &intresults, getPrec(), 3, 5, pphiestimate, b, r, costheta, sintheta, proton);
-//   //cout << r << " " << acos(costheta)*RADTODEGR << " " << getFsiCorrelator()->getRindex() << endl;
+//   //cout << r << " " << acos(costheta)*nucqcd::rad_to_deg << " " << getFsiCorrelator()->getRindex() << endl;
 //   results[0] = intresults * getParticles()[0].getCTsigma(z);
 //   results[1] = intresults * getParticles()[0].getCTsigma(z) * src;
 //   for (int i = 0; i < 2; i++)

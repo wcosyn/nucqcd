@@ -43,8 +43,8 @@ int main(int argc, char *argv[]){
   double Ein=1000.;
   double Q2=0.9E06;
   double x=1.;
-  double mp=MASSP;//938.272;
-  double nu=(Q2+MASSN*MASSN-MASSP*MASSP)/(2.*mp*x);
+  double mp=nucqcd::mass_p;//938.272;
+  double nu=(Q2+nucqcd::mass_n*nucqcd::mass_n-nucqcd::mass_p*nucqcd::mass_p)/(2.*mp*x);
   double qvec=sqrt(Q2+nu*nu);
   double Eout=Ein-nu;
   double mmu=105.6583715;
@@ -88,7 +88,7 @@ int main(int argc, char *argv[]){
     Q2=1.E06;
     double crossHanu=WeakQECross::getElWeakQECross(Q2,Ein,1,1,M_A,mmu*mmu,WeakQECross::realQ2);
     crossHanu*=2.*PI*1.E19; //units 10^-39 cm^2/GeV^2
-    double omega=(Q2+MASSN*MASSN-MASSP*MASSP)/(2.*mp*x);
+    double omega=(Q2+nucqcd::mass_n*nucqcd::mass_n-nucqcd::mass_p*nucqcd::mass_p)/(2.*mp*x);
 
     cout << omega << " " << Q2 << " " << crossHanu << endl;
 //   }
@@ -138,6 +138,6 @@ int main(int argc, char *argv[]){
   << tanth*sqrt(Q2/qvec/qvec+tanth*tanth) << endl;
       
   cout << Trace((gamma_5*gamma_mu[0]*gamma_mu[1]*gamma_mu[2]*gamma_mu[3]).value()) << endl;
-  cout << (I_UNIT*gamma_mu[0]*gamma_mu[1]*gamma_mu[2]*gamma_mu[3]).value() << endl;
+  cout << (nucqcd::i_unit*gamma_mu[0]*gamma_mu[1]*gamma_mu[2]*gamma_mu[3]).value() << endl;
   cout << gamma_5.value() << endl;
 }

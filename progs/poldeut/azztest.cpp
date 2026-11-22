@@ -23,8 +23,8 @@ int main(int argc, char *argv[])
         double alpha_p = 0.8+0.4*i/50;
         double pt=j*6;
 
-        double p_p_plus = alpha_p/2.*MASSD;
-        double p_p_minus = (MASSn*MASSn+pt*pt)/p_p_plus;
+        double p_p_plus = alpha_p/2.*nucqcd::mass_d;
+        double p_p_minus = (nucqcd::mass_nucleon*nucqcd::mass_nucleon+pt*pt)/p_p_plus;
         double p_z = (p_p_plus - p_p_minus)/2.;
         double pnorm = sqrt(p_z*p_z+pt*pt);
 

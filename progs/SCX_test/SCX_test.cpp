@@ -25,11 +25,11 @@ double myDensity(double r,void* param){
 }
 
 void testMeanFieldNucleus(){
-    FastParticle fp(FastParticle::Particletype::P_CLASS_SCX,0,100.,0.,0.,0.,0.,1.,1.,HOMEDIR); // change elastic scattering nucleon (0,1) to SCX nucleon (8,9) 
-    MeanFieldNucleusThick nuc(MeanFieldNucleus::C,HOMEDIR);
+    FastParticle fp(FastParticle::Particletype::P_CLASS_SCX,0,100.,0.,0.,0.,0.,1.,1.,nucqcd::share_dir); // change elastic scattering nucleon (0,1) to SCX nucleon (8,9) 
+    MeanFieldNucleusThick nuc(MeanFieldNucleus::C,nucqcd::share_dir);
     char densName[256];
     sprintf(densName,"%s_neutronDensity",nuc.getNucleusName().c_str());
-    ClassGridThick_SCX scx(meanFieldNucleusThickNeutronDensity,(void*)&nuc,densName,nuc.getRange(),&fp,100,100,HOMEDIR);
+    ClassGridThick_SCX scx(meanFieldNucleusThickNeutronDensity,(void*)&nuc,densName,nuc.getRange(),&fp,100,100,nucqcd::share_dir);
     scx.set_dens_fctr(6.);
     scx.constructGrid();
     for (double r=0.;r<nuc.getRange();r+=0.1){
@@ -44,8 +44,8 @@ void testMeanFieldNucleus(){
 }
 
 void testCustomDensity(){
-    FastParticle fp(FastParticle::Particletype::P_CLASS_SCX,0,1000.,0.,0.,0.,0.,1.,1.,HOMEDIR); // change elastic scattering nucleon (0,1) to SCX nucleon (8,9) 
-    ClassGridThick_SCX scx(myDensity,NULL,"dummyDensity",2.0,&fp,100,120,HOMEDIR);
+    FastParticle fp(FastParticle::Particletype::P_CLASS_SCX,0,1000.,0.,0.,0.,0.,1.,1.,nucqcd::share_dir); // change elastic scattering nucleon (0,1) to SCX nucleon (8,9) 
+    ClassGridThick_SCX scx(myDensity,NULL,"dummyDensity",2.0,&fp,100,120,nucqcd::share_dir);
     scx.constructGrid();
     scx.printGrid();
 }

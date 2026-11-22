@@ -6,7 +6,7 @@ using namespace std;
 #include "constants.hpp"
 #include "OldDeuteron.hpp"
 
-#define NORMFACTOR 11.4081948 //1/HBARC^{3/2}
+#define NORMFACTOR 11.4081948 //1/nucqcd::hbarc^{3/2}
 
 OldDeuteron::OldDeuteron(const std::string &wf_name){
     if(!wf_name.compare("Paris")){
@@ -53,7 +53,7 @@ OldDeuteron::OldDeuteron(const std::string &wf_name){
             *(-mass[12]*mass[12]*mass[10]*mass[10]*a+(mass[12]*mass[12]+mass[10]*mass[10])*b-cc);  
         D_pre[12]=mass[12]*mass[12]/(mass[11]*mass[11]-mass[12]*mass[12])/(mass[10]*mass[10]-mass[12]*mass[12])
             *(-mass[10]*mass[10]*mass[11]*mass[11]*a+(mass[10]*mass[10]+mass[11]*mass[11])*b-cc);  
-        norm=0.79788456/sqrt(4.*PI)*pow(INVHBARC,3./2.);
+        norm=0.79788456/sqrt(4.*PI)*pow(nucqcd::inv_hbarc,3./2.);
     }
     else if(!wf_name.compare("AV18")){
         mass=vector<double>(12,0.);
@@ -97,7 +97,7 @@ OldDeuteron::OldDeuteron(const std::string &wf_name){
         mass[9] = 8.0;
         mass[10] = 9.5;
         mass[11] = 11.0;
-        norm=1./sqrt(4.*PI)*pow(INVHBARC,3./2.);
+        norm=1./sqrt(4.*PI)*pow(nucqcd::inv_hbarc,3./2.);
         
     }
     else if(!wf_name.compare("CDBonn")){
@@ -141,7 +141,7 @@ OldDeuteron::OldDeuteron(const std::string &wf_name){
         D_pre[10] = mass[10]*mass[10]/(mass[9]*mass[9]-mass[10]*mass[10])/(mass[8]*mass[8]-mass[10]*mass[10]) *
                 ( -mass[8]*mass[8]*mass[9]*mass[9]*tm1 + (mass[8]*mass[8]+mass[9]*mass[9])*tm0-tm2);
         
-        norm=1./(sqrt(2.)*PI)*pow(INVHBARC,3./2.);
+        norm=1./(sqrt(2.)*PI)*pow(nucqcd::inv_hbarc,3./2.);
     }
 
     else if(!wf_name.compare("AV18b")){
@@ -212,7 +212,7 @@ OldDeuteron::OldDeuteron(const std::string &wf_name){
         S_pre[i]/=fact;
         D_pre[i]/=fact;
         }
-        norm=1./sqrt(4.*PI)*pow(INVHBARC,3./2.);
+        norm=1./sqrt(4.*PI)*pow(nucqcd::inv_hbarc,3./2.);
     }
     else{
         cerr << " invalid deuteron wf name " << endl;
@@ -347,7 +347,7 @@ std::complex<double> OldDeuteron::get_stensor(int dspin, int spinp, int spinn, d
 
 double OldDeuteron::U(double p){
     double result=0.;
-    double x=p*INVHBARC;
+    double x=p*nucqcd::inv_hbarc;
     for(int i=0;i<S_pre.size();i++) result+=S_pre[i]/(x*x+mass[i]*mass[i]);
     
     return result*norm;
@@ -358,7 +358,7 @@ double OldDeuteron::U(double p){
 
 double OldDeuteron::W(double p){
     double result=0.;
-    double x=p*INVHBARC;
+    double x=p*nucqcd::inv_hbarc;
     for(int i=0;i<D_pre.size();i++) result+=D_pre[i]/(x*x+mass[i]*mass[i]);
     
     return result*norm;

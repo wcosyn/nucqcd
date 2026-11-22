@@ -12,7 +12,7 @@ using namespace std;
 
 GPD_T_Nucl_grid::GPD_T_Nucl_grid(const std::string &pdf_name){
    if(!pdf_name.compare("MSTW")){
-        string file= string(HOMEDIR)+"/mstw_grids/mstw2008lo.00.dat";
+        string file= string(nucqcd::share_dir)+"/mstw_grids/mstw2008lo.00.dat";
         mstw = new c_mstwpdf(file,false,true);
     }
     else {

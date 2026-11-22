@@ -516,64 +516,64 @@ void TKinematics::ChangeIsospinChannel(int isospin)
   switch( isospin ) 
     {
     case 1:
-      fMp = M_P;
-      fMk = M_KP;
-      fMy = M_L;
+      fMp = nucqcd::mass_p;
+      fMk = nucqcd::mass_kp;
+      fMy = nucqcd::mass_lambda;
       break;
     case 2:
-      fMp = M_P;
-      fMk = M_KP;
-      fMy = M_S0;
+      fMp = nucqcd::mass_p;
+      fMk = nucqcd::mass_kp;
+      fMy = nucqcd::mass_sigma0;
       break;
     case 3:
-      fMp = M_P;
-      fMk = M_K0;
-      fMy = M_SP;
+      fMp = nucqcd::mass_p;
+      fMk = nucqcd::mass_k0;
+      fMy = nucqcd::mass_sigmap;
       break;
     case 4:
-      fMp = M_N;
-      fMk = M_K0;
-      fMy = M_L;
+      fMp = nucqcd::mass_n;
+      fMk = nucqcd::mass_k0;
+      fMy = nucqcd::mass_lambda;
       break;
     case 5:
-      fMp = M_N;
-      fMk = M_K0;
-      fMy = M_S0;
+      fMp = nucqcd::mass_n;
+      fMk = nucqcd::mass_k0;
+      fMy = nucqcd::mass_sigma0;
       break;
     case 6:
-      fMp = M_N;
-      fMk = M_KP;
-      fMy = M_SM;
+      fMp = nucqcd::mass_n;
+      fMk = nucqcd::mass_kp;
+      fMy = nucqcd::mass_sigmam;
       break;
     case 7:
-      fMp = M_P;
-      fMk = M_PI0;
-      fMy = M_P;
+      fMp = nucqcd::mass_p;
+      fMk = nucqcd::mass_pi0;
+      fMy = nucqcd::mass_p;
       break;
     case 8:
-      fMp = M_P;
-      fMk = M_PIP;
-      fMy = M_N;
+      fMp = nucqcd::mass_p;
+      fMk = nucqcd::mass_pi;
+      fMy = nucqcd::mass_n;
       break;
     case 9:
-      fMp = M_N;
-      fMk = M_PI0;
-      fMy = M_N;
+      fMp = nucqcd::mass_n;
+      fMk = nucqcd::mass_pi0;
+      fMy = nucqcd::mass_n;
       break;
     case 10:
-      fMp = M_N;
-      fMk = M_PIM;
-      fMy = M_P;
+      fMp = nucqcd::mass_n;
+      fMk = nucqcd::mass_pi;
+      fMy = nucqcd::mass_p;
       break;
     case 11:
-      fMp = M_P;
-      fMk = M_KP;
-      fMy = M_L;
+      fMp = nucqcd::mass_p;
+      fMk = nucqcd::mass_kp;
+      fMy = nucqcd::mass_lambda;
       break;
     case 12:
-      fMp = M_P;
-      fMk = M_KP;
-      fMy = M_S0;
+      fMp = nucqcd::mass_p;
+      fMk = nucqcd::mass_kp;
+      fMy = nucqcd::mass_sigma0;
       break;
     default:
       cerr << "ERROR in TKinematics::ChangeIsospinChannel(int):\n"
@@ -1694,7 +1694,7 @@ void TKinematics::UpdateKinematics()
     }
     if( std::fabs(fCosthkcm) <= 1.0 )
       fIsPhysical = true && fIsPhysical;
-    else if( std::fabs(fCosthkcm)-1.0 < STRANGEUFLOW ) {
+    else if( std::fabs(fCosthkcm)-1.0 < nucqcd::strange_underflow ) {
       fIsPhysical = true && fIsPhysical;
       fCosthkcm = ( fCosthkcm>0.0 ? 1.0 : -1.0 );
     }

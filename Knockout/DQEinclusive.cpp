@@ -24,8 +24,8 @@ DQEinclusive::DQEinclusive(bool proton_in, int ff_param, string wavename, TElect
 :proton(proton_in),
 betaoff(betaoffin*1.E-06),
 lambda(lambdain*1.E+06),
-massi(proton_in? MASSP:MASSN),
-massr(proton_in? MASSN:MASSP),
+massi(proton_in? nucqcd::mass_p:nucqcd::mass_n),
+massr(proton_in? nucqcd::mass_n:nucqcd::mass_p),
 offshellset(offshell),
 electron(elec),
 ffactorseq(NULL),
@@ -63,10 +63,10 @@ void DQEinclusive::calc_Crossinc(vector<double> &pw, double Q2,double x, int cur
   int count=0;
   unsigned int ccount =0;
   int fail     =0;
-//     res = numint::cube_romb(mdf,lower,upper,1.E-08,PREC,ret,count,0);
+//     res = numint::cube_romb(mdf,lower,upper,1.E-08,nucqcd::integration_prec,ret,count,0);
   switch(integrator){
     case(0):{  //numint adaptive cubature from MIT lib
-      res = numint::cube_adaptive(mdf,lower,upper,1.E-08,PREC,1E02,2E04,ret,ccount,0);
+      res = numint::cube_adaptive(mdf,lower,upper,1.E-08,nucqcd::integration_prec,1E02,2E04,ret,ccount,0);
       break;
     }
 //     case(1):{ //cuhre cubature from cuba lib
@@ -75,7 +75,7 @@ void DQEinclusive::calc_Crossinc(vector<double> &pw, double Q2,double x, int cur
 //       int key=11;
 //       char statefile[] = {""};
 //       int nregions =0;
-//       numint::cuhre(mdf,lower,upper,nvec,1.E-08,PREC,flags,1E03,2E04,key,statefile,nregions,count,fail,ret,error,prob);
+//       numint::cuhre(mdf,lower,upper,nvec,1.E-08,nucqcd::integration_prec,flags,1E03,2E04,key,statefile,nregions,count,fail,ret,error,prob);
 //       break;
 //     }
 //     case(2):{ //suave MC from cuba lib
@@ -88,7 +88,7 @@ void DQEinclusive::calc_Crossinc(vector<double> &pw, double Q2,double x, int cur
 //       
 //       // **** OUTPUT VARIABLES ****** //
 //       int nregions    = 0;
-//       numint::suave(mdf,lower,upper,nvec,1.E-08,PREC,flags,seed,1E03,2E04,nnew,flatness,
+//       numint::suave(mdf,lower,upper,nvec,1.E-08,nucqcd::integration_prec,flags,seed,1E03,2E04,nnew,flatness,
 // 		    statefile,nregions,count,fail,ret,error,prob);
 //       break;
 //     }
@@ -102,7 +102,7 @@ void DQEinclusive::calc_Crossinc(vector<double> &pw, double Q2,double x, int cur
 //       int gridno = 0;
 //       char statefile[] = {""};
 //       // **** OUTPUT VARIABLES ****** //
-//       numint::vegas(mdf,lower,upper,nvec,1.E-08,PREC,flags,seed,
+//       numint::vegas(mdf,lower,upper,nvec,1.E-08,nucqcd::integration_prec,flags,seed,
 // 				1E03,2E04,nstart,nincrease,nbatch,gridno,
 // 				statefile,count,fail,ret,error,prob);
 //       break;
@@ -129,7 +129,7 @@ void DQEinclusive::calc_Crossinc(vector<double> &pw, double Q2,double x, int cur
 // 	// **** OUTPUT VARIABLES ****** //
 // 	int nregions=0;
 // 	numint::divonne(mdf,lower,upper,nvec,
-// 		1.E-05,PREC,flags,seed,
+// 		1.E-05,nucqcd::integration_prec,flags,seed,
 // 		1E03,2E04,key1,key2,key3,
 // 		maxpass,border,maxchisq,mindeviation,
 // 		ngiven,ldxgiven,xgiven,nextra,peakfinder,
@@ -145,10 +145,10 @@ void DQEinclusive::calc_Crossinc(vector<double> &pw, double Q2,double x, int cur
 //      cout << "pw " << res << " " << count << endl;
   delete ffactorseq;
   delete ffactorsdiff;
-  double sigmamott=ALPHA*ALPHA*(1+electron.GetCosScatterAngle(Q2,nu))/
-    (2.*pow(electron.GetBeamEnergy(Q2,nu)*(1-electron.GetCosScatterAngle(Q2,nu)),2.))*HBARC*HBARC*1.E07;
-//     cout << sigmamott << " " << acos(electron.GetCosScatterAngle(Q2,nu))/PI*180. << " " << 2.*PI/3./MASSD*1.E03*ret[0] << endl;
-  for(int i=0;i<4;i++) pw[i]= 2.*PI/3./MASSD*1.E03*ret[i]*sigmamott;
+  double sigmamott=nucqcd::alpha_em*nucqcd::alpha_em*(1+electron.GetCosScatterAngle(Q2,nu))/
+    (2.*pow(electron.GetBeamEnergy(Q2,nu)*(1-electron.GetCosScatterAngle(Q2,nu)),2.))*nucqcd::hbarc*nucqcd::hbarc*1.E07;
+//     cout << sigmamott << " " << acos(electron.GetCosScatterAngle(Q2,nu))/PI*180. << " " << 2.*PI/3./nucqcd::mass_d*1.E03*ret[0] << endl;
+  for(int i=0;i<4;i++) pw[i]= 2.*PI/3./nucqcd::mass_d*1.E03*ret[i]*sigmamott;
 }
 
 
@@ -172,12 +172,12 @@ void DQEinclusive::planewave_int(numint::vector_d & result, double pperp,
       double prnorm=sqrt(pperp*pperp+prz[it]*prz[it]);
 //       double costheta=prz[it]/prnorm;
       double Ernorm=sqrt(pperp*pperp+prz[it]*prz[it]+cross.getMassr()*cross.getMassr());
-//       cout << "pw " << it << " " << pperp << " " <<  2.*qvec*prz[it]-2.*(MASSD+nu)*Ernorm << " " << -MASSD*MASSD+Q2-2.*MASSD*nu -cross.getMassr()*cross.getMassr()+ cross.getMassi()*cross.getMassi() << endl;
-      if(Ernorm<MASSD-200.){
+//       cout << "pw " << it << " " << pperp << " " <<  2.*qvec*prz[it]-2.*(nucqcd::mass_d+nu)*Ernorm << " " << -nucqcd::mass_d*nucqcd::mass_d+Q2-2.*nucqcd::mass_d*nu -cross.getMassr()*cross.getMassr()+ cross.getMassi()*cross.getMassi() << endl;
+      if(Ernorm<nucqcd::mass_d-200.){
 	FourVector<double> q(nu,0.,0.,qvec);
 	
 	//direct term
-	FourVector<double> pi(MASSD-Ernorm,-pperp*cosphi,-pperp*sinphi,-prz[it]); //pi=pD-ps
+	FourVector<double> pi(nucqcd::mass_d-Ernorm,-pperp*cosphi,-pperp*sinphi,-prz[it]); //pi=pD-ps
 	FourVector<double> pn=pi+q;  //pn=pi+q
 	GammaStructure J0 = cross.getFFactorseq()->getCC(current, q, pi, pn)*polVector0;
 	GammaStructure Jplus = cross.getFFactorseq()->getCC(current, q, pi, pn)*polVectorPlus;
@@ -252,11 +252,11 @@ void DQEinclusive::planewave_int(numint::vector_d & result, double pperp,
 		//direct
 		res0+=real(TandL*dens0);
 		//cross
-		if(Erprimenorm<MASSD-200.) res1+=real(TandL_crossed*dens0_crossed);
+		if(Erprimenorm<nucqcd::mass_d-200.) res1+=real(TandL_crossed*dens0_crossed);
 		res2+=real(TandL*dens1*(1.+3.*cos(2.*thetapol))/4.
 		      +(3./(4.*sqrt(2.))*sin(2.*thetapol)*dens2*LT)
 		+3./8.*(1.-cos(2.*thetapol))*dens3*TT);
-		if(Erprimenorm<MASSD-200.) res3+=real(TandL_crossed*dens1_crossed*(1.+3.*cos(2.*thetapol))/4.
+		if(Erprimenorm<nucqcd::mass_d-200.) res3+=real(TandL_crossed*dens1_crossed*(1.+3.*cos(2.*thetapol))/4.
 		      +(3./(4.*sqrt(2.))*sin(2.*thetapol)*dens2_crossed*LT_crossed)
 		+3./8.*(1.-cos(2.*thetapol))*dens3_crossed*TT_crossed);
 									  
@@ -265,13 +265,13 @@ void DQEinclusive::planewave_int(numint::vector_d & result, double pperp,
 	  }
 	}
 	//factors of 2 because of parity symmetry exploited
-	res0*=2.*pperp*MASSD/(2.*(MASSD-Ernorm))/2./abs(qvec-prz[it]/Ernorm*(MASSD+nu));
-	res2*=2.*pperp*MASSD/(2.*(MASSD-Ernorm))/2./abs(qvec-prz[it]/Ernorm*(MASSD+nu));
+	res0*=2.*pperp*nucqcd::mass_d/(2.*(nucqcd::mass_d-Ernorm))/2./abs(qvec-prz[it]/Ernorm*(nucqcd::mass_d+nu));
+	res2*=2.*pperp*nucqcd::mass_d/(2.*(nucqcd::mass_d-Ernorm))/2./abs(qvec-prz[it]/Ernorm*(nucqcd::mass_d+nu));
 	//minus sign because other nucleon is on-shell now in the wave function for cross term
-	if(Erprimenorm<MASSD-200.) {
-	  res1*=-2.*pperp*MASSD/(2.*sqrt((MASSD-Ernorm)*(MASSD-Erprimenorm)))/2./abs(qvec-prz[it]/Ernorm*(MASSD+nu))
+	if(Erprimenorm<nucqcd::mass_d-200.) {
+	  res1*=-2.*pperp*nucqcd::mass_d/(2.*sqrt((nucqcd::mass_d-Ernorm)*(nucqcd::mass_d-Erprimenorm)))/2./abs(qvec-prz[it]/Ernorm*(nucqcd::mass_d+nu))
 	  *sqrt(Erprimenorm/Ernorm);
-	  res3*=-2.*pperp*MASSD/(2.*sqrt((MASSD-Ernorm)*(MASSD-Erprimenorm)))/2./abs(qvec-prz[it]/Ernorm*(MASSD+nu))
+	  res3*=-2.*pperp*nucqcd::mass_d/(2.*sqrt((nucqcd::mass_d-Ernorm)*(nucqcd::mass_d-Erprimenorm)))/2./abs(qvec-prz[it]/Ernorm*(nucqcd::mass_d+nu))
 	  *sqrt(Erprimenorm/Ernorm);
 	}
 	result[0]+=res0;
@@ -293,7 +293,7 @@ void DQEinclusive::planewave_int(numint::vector_d & result, double pperp,
 void DQEinclusive::calc_CrossincFSI(vector<double> &fsi, double Q2,double x, 
 				  int current, int integrator, int maxEval, bool nopt, double thetapol){
   
-  double nu=Q2/(x*2.*MASSP);
+  double nu=Q2/(x*2.*nucqcd::mass_p);
   ffactorseq=new NucleonEMOperator(Q2,proton,ffparam);
   ffactorsdiff=new NucleonEMOperator(Q2,!proton,ffparam);
 
@@ -321,10 +321,10 @@ void DQEinclusive::calc_CrossincFSI(vector<double> &fsi, double Q2,double x,
   unsigned ccount=0;
   int count=0;
   int fail=0;
-  //     res = numint::cube_romb(mdf,lower,upper,1.E-08,PREC,ret,count,0);
+  //     res = numint::cube_romb(mdf,lower,upper,1.E-08,nucqcd::integration_prec,ret,count,0);
   switch(integrator){
     case(0):{  //numint adaptive cubature from MIT lib
-      res = numint::cube_adaptive(mdf,lower,upper,1.E-08,PREC,1E02,maxEval,ret,ccount,0);
+      res = numint::cube_adaptive(mdf,lower,upper,1.E-08,nucqcd::integration_prec,1E02,maxEval,ret,ccount,0);
       break;
     }
 //     case(1):{ //cuhre cubature from cuba lib
@@ -333,7 +333,7 @@ void DQEinclusive::calc_CrossincFSI(vector<double> &fsi, double Q2,double x,
 //       int key=11;
 //       char statefile[] = {""};
 //       int nregions =0;
-//       numint::cuhre(mdf,lower,upper,nvec,1.E-08,PREC,flags,1E03,maxEval,key,statefile,nregions,count,fail,ret,error,prob);
+//       numint::cuhre(mdf,lower,upper,nvec,1.E-08,nucqcd::integration_prec,flags,1E03,maxEval,key,statefile,nregions,count,fail,ret,error,prob);
 //       break;
 //     }
 //     case(2):{ //suave MC from cuba lib
@@ -346,7 +346,7 @@ void DQEinclusive::calc_CrossincFSI(vector<double> &fsi, double Q2,double x,
 //       
 // //       **** OUTPUT VARIABLES ****** //
 //       int nregions    = 0;
-//       numint::suave(mdf,lower,upper,nvec,1.E-08,PREC,flags,seed,1E03,maxEval,nnew,flatness,
+//       numint::suave(mdf,lower,upper,nvec,1.E-08,nucqcd::integration_prec,flags,seed,1E03,maxEval,nnew,flatness,
 // 		    statefile,nregions,count,fail,ret,error,prob);
 //       break;
 //     }
@@ -360,7 +360,7 @@ void DQEinclusive::calc_CrossincFSI(vector<double> &fsi, double Q2,double x,
 //       int gridno = 0;
 //       char statefile[] = {""};
 // //       **** OUTPUT VARIABLES ****** //
-//       numint::vegas(mdf,lower,upper,nvec,1.E-08,PREC,flags,seed,
+//       numint::vegas(mdf,lower,upper,nvec,1.E-08,nucqcd::integration_prec,flags,seed,
 // 				1E03,maxEval,nstart,nincrease,nbatch,gridno,
 // 				statefile,count,fail,ret,error,prob);
 //       break;
@@ -387,7 +387,7 @@ void DQEinclusive::calc_CrossincFSI(vector<double> &fsi, double Q2,double x,
 // // 	**** OUTPUT VARIABLES ****** //
 // 	int nregions=0;
 // 	numint::divonne(mdf,lower,upper,nvec,
-// 		1.E-05,PREC,flags,seed,
+// 		1.E-05,nucqcd::integration_prec,flags,seed,
 // 		1E03,maxEval,key1,key2,key3,
 // 		maxpass,border,maxchisq,mindeviation,
 // 		ngiven,ldxgiven,xgiven,nextra,peakfinder,
@@ -401,9 +401,9 @@ void DQEinclusive::calc_CrossincFSI(vector<double> &fsi, double Q2,double x,
     }
   }
 //     cout << "fsi " << res << " " << count << endl;
-  double sigmamott=ALPHA*ALPHA*(1+electron.GetCosScatterAngle(Q2,nu))/
-    (2.*pow(electron.GetBeamEnergy(Q2,nu)*(1-electron.GetCosScatterAngle(Q2,nu)),2.))*HBARC*HBARC*1.E07;
-  for(int i=0;i<8;i++) fsi[i]= 2.*PI/3./MASSD*1.E03/(64.*PI*PI)*ret[i]*sigmamott;
+  double sigmamott=nucqcd::alpha_em*nucqcd::alpha_em*(1+electron.GetCosScatterAngle(Q2,nu))/
+    (2.*pow(electron.GetBeamEnergy(Q2,nu)*(1-electron.GetCosScatterAngle(Q2,nu)),2.))*nucqcd::hbarc*nucqcd::hbarc*1.E07;
+  for(int i=0;i<8;i++) fsi[i]= 2.*PI/3./nucqcd::mass_d*1.E03/(64.*PI*PI)*ret[i]*sigmamott;
 
   
   delete ffactorseq;
@@ -428,8 +428,8 @@ void DQEinclusive::FSI_int(numint::vector_d & result, double pperp1, double qt,
   vector<double> prz1, prz2;
   double qvec=sqrt(Q2+pow(Q2/(2.*cross.massi*x),2.));
   double nu=Q2/(2.*cross.massi*x);
-  double s=(MASSD+nu)*(MASSD+nu)-qvec*qvec;
-  double pcm=sqrt(s/4.-MASSP*MASSP);
+  double s=(nucqcd::mass_d+nu)*(nucqcd::mass_d+nu)-qvec*qvec;
+  double pcm=sqrt(s/4.-nucqcd::mass_p*nucqcd::mass_p);
   if(pcm<cross.minpcm) cross.minpcm=pcm;
   double chi=sqrt(s)*pcm*2.;
 
@@ -445,12 +445,12 @@ void DQEinclusive::FSI_int(numint::vector_d & result, double pperp1, double qt,
 	double prnorm=sqrt(pperp1*pperp1+prz1[it1]*prz1[it1]);
   //       double costheta=prz[it]/prnorm;
 	double Ernorm=sqrt(pperp1*pperp1+prz1[it1]*prz1[it1]+cross.getMassr()*cross.getMassr());
-	if(Ernorm<MASSD-200.){
-// 	cout << "1 " << it1 << " " << pperp1 << " " <<  prz1[it1] << " " << Ernorm << " " << 2.*qvec*prz1[it1]-2.*(MASSD+nu)*Ernorm << " " << -MASSD*MASSD+Q2-2.*MASSD*nu -cross.getMassr()*cross.getMassr()+ cross.getMassi()*cross.getMassi()<< endl;
+	if(Ernorm<nucqcd::mass_d-200.){
+// 	cout << "1 " << it1 << " " << pperp1 << " " <<  prz1[it1] << " " << Ernorm << " " << 2.*qvec*prz1[it1]-2.*(nucqcd::mass_d+nu)*Ernorm << " " << -nucqcd::mass_d*nucqcd::mass_d+Q2-2.*nucqcd::mass_d*nu -cross.getMassr()*cross.getMassr()+ cross.getMassi()*cross.getMassi()<< endl;
 	  FourVector<double> q(nu,0.,0.,qvec);
 	  
 	  //direct term
-	  FourVector<double> pi1(MASSD-Ernorm,-pperp1*cosphi1,-pperp1*sinphi1,-prz1[it1]); //pi=pD-ps
+	  FourVector<double> pi1(nucqcd::mass_d-Ernorm,-pperp1*cosphi1,-pperp1*sinphi1,-prz1[it1]); //pi=pD-ps
 	  FourVector<double> pn1=pi1+q;  //pn1=pi+q
 	  GammaStructure J0 = cross.getFFactorseq()->getCC(current, q, pi1, pn1)*polVector0;
 	  GammaStructure Jplus = cross.getFFactorseq()->getCC(current, q, pi1, pn1)*polVectorPlus;
@@ -463,10 +463,10 @@ void DQEinclusive::FSI_int(numint::vector_d & result, double pperp1, double qt,
 	
 	  for(size_t it2=0;it2<prz2.size();it2++){      
 	    double Erprimenorm=sqrt(pperp2*pperp2+prz2[it2]*prz2[it2]+cross.getMassr()*cross.getMassr());
-	    if(Erprimenorm<MASSD-200.){
-// 	    cout << "2 " << it2 << " " << pperp2 << " " <<  prz2[it2] << " " << Erprimenorm << " " << 2.*qvec*prz2[it2]-2.*(MASSD+nu)*Erprimenorm << " " << -MASSD*MASSD+Q2-2.*MASSD*nu  -cross.getMassr()*cross.getMassr()+ cross.getMassi()*cross.getMassi()<< endl;
+	    if(Erprimenorm<nucqcd::mass_d-200.){
+// 	    cout << "2 " << it2 << " " << pperp2 << " " <<  prz2[it2] << " " << Erprimenorm << " " << 2.*qvec*prz2[it2]-2.*(nucqcd::mass_d+nu)*Erprimenorm << " " << -nucqcd::mass_d*nucqcd::mass_d+Q2-2.*nucqcd::mass_d*nu  -cross.getMassr()*cross.getMassr()+ cross.getMassi()*cross.getMassi()<< endl;
 
-	      FourVector<double> pi2(MASSD-Erprimenorm,-pperp1*cosphi1-qt*cosqphi,-qt*sinqphi,-prz2[it2]); //pi2=pD-ps2, in perp dir ps2=ps1+qt
+	      FourVector<double> pi2(nucqcd::mass_d-Erprimenorm,-pperp1*cosphi1-qt*cosqphi,-qt*sinqphi,-prz2[it2]); //pi2=pD-ps2, in perp dir ps2=ps1+qt
 	      FourVector<double> pn2=pi2+q; //pn2=pi2+q
 	      double t=pow(Ernorm-Erprimenorm,2.)-pow(prz1[it1]-prz2[it2],2.)-qt*qt;
 	      //double t_cross2=pow(pn1[0]-Erprimenorm,2.)-pow(pn1[3]-prz2[it2],2.)-qt*qt;
@@ -627,25 +627,25 @@ void DQEinclusive::FSI_int(numint::vector_d & result, double pperp1, double qt,
 		}
 	      }	  
 	      //factor 2 because of exploiting parity symmetry
-	      res0*=-2.*pperp1*qt/sqrt(Ernorm*Erprimenorm)*MASSD/(2.*(MASSD-Ernorm))/abs(qvec-prz1[it1]/Ernorm*(MASSD+nu))
-	      /abs(qvec-prz2[it2]/Erprimenorm*(MASSD+nu))*chi;
-	      res2*=2.*pperp1*qt/sqrt(Ernorm*Erprimenorm)*MASSD/(2.*(MASSD-Ernorm))/abs(qvec-prz1[it1]/Ernorm*(MASSD+nu))
-	      /abs(qvec-prz2[it2]/Erprimenorm*(MASSD+nu))*chi;
+	      res0*=-2.*pperp1*qt/sqrt(Ernorm*Erprimenorm)*nucqcd::mass_d/(2.*(nucqcd::mass_d-Ernorm))/abs(qvec-prz1[it1]/Ernorm*(nucqcd::mass_d+nu))
+	      /abs(qvec-prz2[it2]/Erprimenorm*(nucqcd::mass_d+nu))*chi;
+	      res2*=2.*pperp1*qt/sqrt(Ernorm*Erprimenorm)*nucqcd::mass_d/(2.*(nucqcd::mass_d-Ernorm))/abs(qvec-prz1[it1]/Ernorm*(nucqcd::mass_d+nu))
+	      /abs(qvec-prz2[it2]/Erprimenorm*(nucqcd::mass_d+nu))*chi;
 	      //minus sign because of wave function!!
-	      res1*=2.*pperp1*qt*MASSD/2./sqrt((MASSD-Ernorm)*(MASSD-Erprimenorm))/sqrt(Ernorm*Erprimenorm)
-	      /abs(qvec-prz1[it1]/Ernorm*(MASSD+nu))/abs(qvec-prz2[it2]/Erprimenorm*(MASSD+nu))*chi;
-	      res3*=-2.*pperp1*qt*MASSD/2./sqrt((MASSD-Ernorm)*(MASSD-Erprimenorm))/sqrt(Ernorm*Erprimenorm)
-	      /abs(qvec-prz1[it1]/Ernorm*(MASSD+nu))/abs(qvec-prz2[it2]/Erprimenorm*(MASSD+nu))*chi;
+	      res1*=2.*pperp1*qt*nucqcd::mass_d/2./sqrt((nucqcd::mass_d-Ernorm)*(nucqcd::mass_d-Erprimenorm))/sqrt(Ernorm*Erprimenorm)
+	      /abs(qvec-prz1[it1]/Ernorm*(nucqcd::mass_d+nu))/abs(qvec-prz2[it2]/Erprimenorm*(nucqcd::mass_d+nu))*chi;
+	      res3*=-2.*pperp1*qt*nucqcd::mass_d/2./sqrt((nucqcd::mass_d-Ernorm)*(nucqcd::mass_d-Erprimenorm))/sqrt(Ernorm*Erprimenorm)
+	      /abs(qvec-prz1[it1]/Ernorm*(nucqcd::mass_d+nu))/abs(qvec-prz2[it2]/Erprimenorm*(nucqcd::mass_d+nu))*chi;
 
-	      res4*=-2.*pperp1*qt/sqrt(Ernorm*Erprimenorm)*MASSD/(2.*(MASSD-Ernorm))/abs(qvec-prz1[it1]/Ernorm*(MASSD+nu))
-	      /abs(qvec-prz2[it2]/Erprimenorm*(MASSD+nu))*chi;
-	      res5*=2.*pperp1*qt/sqrt(Ernorm*Erprimenorm)*MASSD/(2.*(MASSD-Ernorm))/abs(qvec-prz1[it1]/Ernorm*(MASSD+nu))
-	      /abs(qvec-prz2[it2]/Erprimenorm*(MASSD+nu))*chi;
+	      res4*=-2.*pperp1*qt/sqrt(Ernorm*Erprimenorm)*nucqcd::mass_d/(2.*(nucqcd::mass_d-Ernorm))/abs(qvec-prz1[it1]/Ernorm*(nucqcd::mass_d+nu))
+	      /abs(qvec-prz2[it2]/Erprimenorm*(nucqcd::mass_d+nu))*chi;
+	      res5*=2.*pperp1*qt/sqrt(Ernorm*Erprimenorm)*nucqcd::mass_d/(2.*(nucqcd::mass_d-Ernorm))/abs(qvec-prz1[it1]/Ernorm*(nucqcd::mass_d+nu))
+	      /abs(qvec-prz2[it2]/Erprimenorm*(nucqcd::mass_d+nu))*chi;
 	      //minus sign because of wave function!!
-	      res6*=2.*pperp1*qt*MASSD/2./sqrt((MASSD-Ernorm)*(MASSD-Erprimenorm))/sqrt(Ernorm*Erprimenorm)
-	      /abs(qvec-prz1[it1]/Ernorm*(MASSD+nu))/abs(qvec-prz2[it2]/Erprimenorm*(MASSD+nu))*chi;
-	      res7*=-2.*pperp1*qt*MASSD/2./sqrt((MASSD-Ernorm)*(MASSD-Erprimenorm))/sqrt(Ernorm*Erprimenorm)
-	      /abs(qvec-prz1[it1]/Ernorm*(MASSD+nu))/abs(qvec-prz2[it2]/Erprimenorm*(MASSD+nu))*chi;
+	      res6*=2.*pperp1*qt*nucqcd::mass_d/2./sqrt((nucqcd::mass_d-Ernorm)*(nucqcd::mass_d-Erprimenorm))/sqrt(Ernorm*Erprimenorm)
+	      /abs(qvec-prz1[it1]/Ernorm*(nucqcd::mass_d+nu))/abs(qvec-prz2[it2]/Erprimenorm*(nucqcd::mass_d+nu))*chi;
+	      res7*=-2.*pperp1*qt*nucqcd::mass_d/2./sqrt((nucqcd::mass_d-Ernorm)*(nucqcd::mass_d-Erprimenorm))/sqrt(Ernorm*Erprimenorm)
+	      /abs(qvec-prz1[it1]/Ernorm*(nucqcd::mass_d+nu))/abs(qvec-prz2[it2]/Erprimenorm*(nucqcd::mass_d+nu))*chi;
 	      
 	      result[0]+=imag(res0);
 	      result[1]+=imag(res1);
@@ -675,7 +675,7 @@ void DQEinclusive::FSI_int(numint::vector_d & result, double pperp1, double qt,
 void DQEinclusive::calc_CrossincFSI_PVoff(double &fsi1_off, double &fsi2_off, double Q2,double x, 
 				  int current, int integrator, int maxEval){
   
-  double nu=Q2/(x*2.*MASSP);
+  double nu=Q2/(x*2.*nucqcd::mass_p);
   ffactorseq=new NucleonEMOperator(Q2,proton,ffparam);
   ffactorsdiff=new NucleonEMOperator(Q2,!proton,ffparam);
   //first we perform the regular 4d integration, inside we do the PV integrations.
@@ -701,10 +701,10 @@ void DQEinclusive::calc_CrossincFSI_PVoff(double &fsi1_off, double &fsi2_off, do
   unsigned ccount=0;
   int count=0;
   int fail=0;
-  //     res = numint::cube_romb(mdf,lower,upper,1.E-08,PREC,ret,count,0);
+  //     res = numint::cube_romb(mdf,lower,upper,1.E-08,nucqcd::integration_prec,ret,count,0);
   switch(integrator){
     case(0):{  //numint adaptive cubature from MIT lib
-      res = numint::cube_adaptive(mdf,lower,upper,1.E-08,PREC,1E01,maxEval,ret,ccount,0);
+      res = numint::cube_adaptive(mdf,lower,upper,1.E-08,nucqcd::integration_prec,1E01,maxEval,ret,ccount,0);
       break;
     }
 //     case(1):{ //cuhre cubature from cuba lib
@@ -713,7 +713,7 @@ void DQEinclusive::calc_CrossincFSI_PVoff(double &fsi1_off, double &fsi2_off, do
 //       int key=11;
 //       char statefile[] = {""};
 //       int nregions =0;
-//       numint::cuhre(mdf,lower,upper,nvec,1.E-08,PREC,flags,1E03,2E04,key,statefile,nregions,count,fail,ret,error,prob);
+//       numint::cuhre(mdf,lower,upper,nvec,1.E-08,nucqcd::integration_prec,flags,1E03,2E04,key,statefile,nregions,count,fail,ret,error,prob);
 //       break;
 //     }
 //     case(2):{ //suave MC from cuba lib
@@ -726,7 +726,7 @@ void DQEinclusive::calc_CrossincFSI_PVoff(double &fsi1_off, double &fsi2_off, do
 //       
 //       // **** OUTPUT VARIABLES ****** //
 //       int nregions    = 0;
-//       numint::suave(mdf,lower,upper,nvec,1.E-08,PREC,flags,seed,1E03,2E04,nnew,flatness,
+//       numint::suave(mdf,lower,upper,nvec,1.E-08,nucqcd::integration_prec,flags,seed,1E03,2E04,nnew,flatness,
 // 		    statefile,nregions,count,fail,ret,error,prob);
 //       break;
 //     }
@@ -740,7 +740,7 @@ void DQEinclusive::calc_CrossincFSI_PVoff(double &fsi1_off, double &fsi2_off, do
 //       int gridno = 0;
 //       char statefile[] = {""};
 //       // **** OUTPUT VARIABLES ****** //
-//       numint::vegas(mdf,lower,upper,nvec,1.E-08,PREC,flags,seed,
+//       numint::vegas(mdf,lower,upper,nvec,1.E-08,nucqcd::integration_prec,flags,seed,
 // 				1E03,2E04,nstart,nincrease,nbatch,gridno,
 // 				statefile,count,fail,ret,error,prob);
 //       break;
@@ -767,7 +767,7 @@ void DQEinclusive::calc_CrossincFSI_PVoff(double &fsi1_off, double &fsi2_off, do
 // 	// **** OUTPUT VARIABLES ****** //
 // 	int nregions=0;
 // 	numint::divonne(mdf,lower,upper,nvec,
-// 		1.E-05,PREC,flags,seed,
+// 		1.E-05,nucqcd::integration_prec,flags,seed,
 // 		1E03,2E04,key1,key2,key3,
 // 		maxpass,border,maxchisq,mindeviation,
 // 		ngiven,ldxgiven,xgiven,nextra,peakfinder,
@@ -781,10 +781,10 @@ void DQEinclusive::calc_CrossincFSI_PVoff(double &fsi1_off, double &fsi2_off, do
     }
   }
 //     cout << "fsi " << res << " " << count << endl;
-  double sigmamott=ALPHA*ALPHA*(1+electron.GetCosScatterAngle(Q2,nu))/
-    (2.*pow(electron.GetBeamEnergy(Q2,nu)*(1-electron.GetCosScatterAngle(Q2,nu)),2.))*HBARC*HBARC*1.E07;
-  fsi1_off= 2.*PI/3./MASSD*1.E03/(64.*PI*PI*PI)*ret[0]*sigmamott;
-  fsi2_off= 2.*PI/3./MASSD*1.E03/(64.*PI*PI*PI)*ret[1]*sigmamott;
+  double sigmamott=nucqcd::alpha_em*nucqcd::alpha_em*(1+electron.GetCosScatterAngle(Q2,nu))/
+    (2.*pow(electron.GetBeamEnergy(Q2,nu)*(1-electron.GetCosScatterAngle(Q2,nu)),2.))*nucqcd::hbarc*nucqcd::hbarc*1.E07;
+  fsi1_off= 2.*PI/3./nucqcd::mass_d*1.E03/(64.*PI*PI*PI)*ret[0]*sigmamott;
+  fsi2_off= 2.*PI/3./nucqcd::mass_d*1.E03/(64.*PI*PI*PI)*ret[1]*sigmamott;
 
   
   delete ffactorseq;
@@ -806,8 +806,8 @@ void DQEinclusive::FSI_PV(numint::vector_d & result, double pperp1, double qt,
   vector<double> prz1, prz2;
   double qvec=sqrt(Q2+pow(Q2/(2.*cross.massi*x),2.));
   double nu=Q2/(2.*cross.massi*x);
-  double s=(MASSD+nu)*(MASSD+nu)-qvec*qvec;
-  double pcm=sqrt(s/4.-MASSP*MASSP);
+  double s=(nucqcd::mass_d+nu)*(nucqcd::mass_d+nu)-qvec*qvec;
+  double pcm=sqrt(s/4.-nucqcd::mass_p*nucqcd::mass_p);
   if(pcm<cross.minpcm) cross.minpcm=pcm;
   double chi=sqrt(s)*pcm*2.;
   FastParticle rescatter(0,0,pcm,0.,0.,Q2,0.,1.,1.,"");
@@ -837,7 +837,7 @@ void DQEinclusive::FSI_PV(numint::vector_d & result, double pperp1, double qt,
   cout << prz1.size() << " " << prz2.size() << " ";
   for(size_t i=0;i<prz1.size();i++) cout << prz1[i] << " ";
   for(size_t i=0;i<prz2.size();i++) cout << prz2[i] << " ";
-  cout << (-MASSD*MASSD+Q2-2.*MASSD*nu+2.*(MASSD+nu)*cross.getMassr())/2./qvec << endl;
+  cout << (-nucqcd::mass_d*nucqcd::mass_d+Q2-2.*nucqcd::mass_d*nu+2.*(nucqcd::mass_d+nu)*cross.getMassr())/2./qvec << endl;
   
   if(cross.get_prz(prz1,nopt?0.:pperp1,Q2,nu,qvec)){ //prz evaluation is performed!!
     if(cross.get_prz(prz2,nopt?0.:pperp2,Q2,nu,qvec)){ //prz evaluation is performed!!
@@ -851,7 +851,7 @@ void DQEinclusive::FSI_PV(numint::vector_d & result, double pperp1, double qt,
 	  gsl_function F1;
 	  F1.function = &PV_int1;
 	  F1.params = &pvint;
-	  gsl_integration_qawc (&F1, -700., 700., prz1[it1], 1.e-08, PREC, 1E3,
+	  gsl_integration_qawc (&F1, -700., 700., prz1[it1], 1.e-08, nucqcd::integration_prec, 1E3,
 				w, &res, &error); 
 	  if(!crossed) result[0]+=res;
 	  else result[1]+=res;
@@ -880,7 +880,7 @@ double DQEinclusive::PV_int1(double pz1, void * params){
     gsl_function F2;
     F2.function = &Ftor_PV::exec;
     F2.params = &pvint;
-    gsl_integration_qawc (&F2, -700., 700.,pvint.prz2poles[it2] , 1.e-08, PREC, 1E3,
+    gsl_integration_qawc (&F2, -700., 700.,pvint.prz2poles[it2] , 1.e-08, nucqcd::integration_prec, 1E3,
 			  w2, &result, &error); 
     res+=result;
     gsl_integration_workspace_free (w2);
@@ -900,11 +900,11 @@ double DQEinclusive::FSI_intPV(double pz1, double pz2, double pperp1, double ppe
 
   double prnorm=sqrt(pperp1*pperp1+pz1*pz1);
   double Ernorm=sqrt(pperp1*pperp1+pz1*pz1+cross.getMassr()*cross.getMassr());
-  if(Ernorm<MASSD-200.){
+  if(Ernorm<nucqcd::mass_d-200.){
     FourVector<double> q(nu,0.,0.,qvec);
     
     //direct term
-    FourVector<double> pi1(MASSD-Ernorm,-pperp1*cosphi1,-pperp1*sinphi1,-pz1); //pi=pD-ps
+    FourVector<double> pi1(nucqcd::mass_d-Ernorm,-pperp1*cosphi1,-pperp1*sinphi1,-pz1); //pi=pD-ps
     FourVector<double> pn1=pi1+q;  //pn1=pi+q
     GammaStructure J0 = cross.getFFactorseq()->getCC(current, q, pi1, pn1)*polVector0;
     GammaStructure Jplus = cross.getFFactorseq()->getCC(current, q, pi1, pn1)*polVectorPlus;
@@ -916,9 +916,9 @@ double DQEinclusive::FSI_intPV(double pz1, double pz2, double pperp1, double ppe
     TSpinor ui1_up(pi1,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kDoubleMass);
   
     double Erprimenorm=sqrt(pperp2*pperp2+pz2*pz2+cross.getMassr()*cross.getMassr());
-    if(Erprimenorm<MASSD-200.){
+    if(Erprimenorm<nucqcd::mass_d-200.){
 
-      FourVector<double> pi2(MASSD-Erprimenorm,-pperp1*cosphi1-qt*cosqphi,-qt*sinqphi,-pz2); //pi2=pD-ps1+qt
+      FourVector<double> pi2(nucqcd::mass_d-Erprimenorm,-pperp1*cosphi1-qt*cosqphi,-qt*sinqphi,-pz2); //pi2=pD-ps1+qt
       FourVector<double> pn2=pi2+q; //pn2=pi2+q
       if(crossed) {pi2[1]*=-1.;pi2[2]*=-1.;pn2[1]*=-1.;pn2[2]*=-1.;} //transverse components opposite for crossed term
       double t=pow(Ernorm-Erprimenorm,2.)-pow(pz1-pz2,2.)-qt*qt;
@@ -986,10 +986,10 @@ double DQEinclusive::FSI_intPV(double pz1, double pz2, double pperp1, double ppe
 	}
       }
       //exploited parity symmetry, hence extra factor 2
-      if(!crossed) result*=2./sqrt(Ernorm*Erprimenorm)*MASSD/(2.*(MASSD-Ernorm))/abs(qvec-pz1/Ernorm*(MASSD+nu))
-      /abs(qvec-pz2/Erprimenorm*(MASSD+nu));
-      else result*=-2.*MASSD/2./sqrt((MASSD-Ernorm)*(MASSD-Erprimenorm))/sqrt(Ernorm*Erprimenorm)
-      /abs(qvec-pz1/Ernorm*(MASSD+nu))/abs(qvec-pz2/Erprimenorm*(MASSD+nu));
+      if(!crossed) result*=2./sqrt(Ernorm*Erprimenorm)*nucqcd::mass_d/(2.*(nucqcd::mass_d-Ernorm))/abs(qvec-pz1/Ernorm*(nucqcd::mass_d+nu))
+      /abs(qvec-pz2/Erprimenorm*(nucqcd::mass_d+nu));
+      else result*=-2.*nucqcd::mass_d/2./sqrt((nucqcd::mass_d-Ernorm)*(nucqcd::mass_d-Erprimenorm))/sqrt(Ernorm*Erprimenorm)
+      /abs(qvec-pz1/Ernorm*(nucqcd::mass_d+nu))/abs(qvec-pz2/Erprimenorm*(nucqcd::mass_d+nu));
     }
   }
 
@@ -1003,7 +1003,7 @@ double DQEinclusive::FSI_intPV(double pz1, double pz2, double pperp1, double ppe
 void DQEinclusive::calc_CrossincFSI_PVoff2(double &fsi1_off, double &fsi2_off, double Q2,double x, 
 				  int current, int integrator, int maxEval){
   
-  double nu=Q2/(x*2.*MASSP);
+  double nu=Q2/(x*2.*nucqcd::mass_p);
   ffactorseq=new NucleonEMOperator(Q2,proton,ffparam);
   ffactorsdiff=new NucleonEMOperator(Q2,!proton,ffparam);
   //first we perform the two PV integrations, inside we do the other (regular) integrations over the perp coordinates
@@ -1026,7 +1026,7 @@ void DQEinclusive::calc_CrossincFSI_PVoff2(double &fsi1_off, double &fsi2_off, d
   get_prz(prz1,0.,Q2,nu,qvec);
   cout << prz1.size() << " ";
   for(size_t i=0;i<prz1.size();i++) cout << prz1[i] << " ";
-  cout << (-MASSD*MASSD+Q2-2.*MASSD*nu+2.*(MASSD+nu)*massr+massi*massi-massr*massr)/2./qvec << endl;
+  cout << (-nucqcd::mass_d*nucqcd::mass_d+Q2-2.*nucqcd::mass_d*nu+2.*(nucqcd::mass_d+nu)*massr+massi*massi-massr*massr)/2./qvec << endl;
 
   if(prz1.size()==0){
     cerr<< "implement 0 case"<<endl;
@@ -1046,15 +1046,15 @@ void DQEinclusive::calc_CrossincFSI_PVoff2(double &fsi1_off, double &fsi2_off, d
   gsl_function F2;
   F2.function = &FSI_PV_pz1;
   F2.params = &F;
-  gsl_integration_qawc (&F2, -700., 700.,F.pzpole, 1.e-08, PREC, 1E3,
+  gsl_integration_qawc (&F2, -700., 700.,F.pzpole, 1.e-08, nucqcd::integration_prec, 1E3,
 			w2, &result, &error); 
-  double sigmamott=ALPHA*ALPHA*(1+electron.GetCosScatterAngle(Q2,nu))/
-    (2.*pow(electron.GetBeamEnergy(Q2,nu)*(1-electron.GetCosScatterAngle(Q2,nu)),2.))*HBARC*HBARC*1.E07;
-  fsi1_off= 2.*PI/3./MASSD*1.E03/(64.*PI*PI*PI)*result*sigmamott;
+  double sigmamott=nucqcd::alpha_em*nucqcd::alpha_em*(1+electron.GetCosScatterAngle(Q2,nu))/
+    (2.*pow(electron.GetBeamEnergy(Q2,nu)*(1-electron.GetCosScatterAngle(Q2,nu)),2.))*nucqcd::hbarc*nucqcd::hbarc*1.E07;
+  fsi1_off= 2.*PI/3./nucqcd::mass_d*1.E03/(64.*PI*PI*PI)*result*sigmamott;
   F.crossed=1;
-  gsl_integration_qawc (&F2, -700., 700.,F.pzpole, 1.e-08, PREC, 1E3,
+  gsl_integration_qawc (&F2, -700., 700.,F.pzpole, 1.e-08, nucqcd::integration_prec, 1E3,
 			w2, &result, &error); 
-  fsi2_off= 2.*PI/3./MASSD*1.E03/(64.*PI*PI*PI)*result*sigmamott;
+  fsi2_off= 2.*PI/3./nucqcd::mass_d*1.E03/(64.*PI*PI*PI)*result*sigmamott;
 
   gsl_integration_workspace_free (w2);
   
@@ -1080,7 +1080,7 @@ double DQEinclusive::FSI_PV_pz1(double pz1, void * params){
   gsl_function F2;
   F2.function = &Ftor_PVfirst::exec;
   F2.params = &pvint;
-  gsl_integration_qawc (&F2, -700., 700.,pvint.pzpole , 1.e-08, PREC, 1E3,
+  gsl_integration_qawc (&F2, -700., 700.,pvint.pzpole , 1.e-08, nucqcd::integration_prec, 1E3,
 			w2, &result, &error); 
   res=result;
   gsl_integration_workspace_free (w2);
@@ -1113,7 +1113,7 @@ double DQEinclusive::FSI_PV_pz2(double pz1, double pz2, DQEinclusive& cross,
   numint::vector_d ret = numint::vector_d(1,0.);
   switch(integrator){
     case(0):{  //numint adaptive cubature from MIT lib
-      res = numint::cube_adaptive(mdf,lower,upper,1.E-08,PREC,1E01,maxEval,ret,ccount,0);
+      res = numint::cube_adaptive(mdf,lower,upper,1.E-08,nucqcd::integration_prec,1E01,maxEval,ret,ccount,0);
       break;
     }
     default:{
@@ -1137,8 +1137,8 @@ void DQEinclusive::FSI_PVfirst_perp(numint::vector_d & res, double pz1, double p
   sincos(qphi,&sinqphi,&cosqphi);
   double qvec=sqrt(Q2+pow(Q2/(2.*cross.getMassi()*x),2.));
   double nu=Q2/(2.*cross.getMassi()*x);
-  double s=(MASSD+nu)*(MASSD+nu)-qvec*qvec;
-  double pcm=sqrt(s/4.-MASSP*MASSP);
+  double s=(nucqcd::mass_d+nu)*(nucqcd::mass_d+nu)-qvec*qvec;
+  double pcm=sqrt(s/4.-nucqcd::mass_p*nucqcd::mass_p);
   if(pcm<cross.getMinpcm()) cross.minpcm=pcm;
   double chi=sqrt(s)*pcm*2.;
   FastParticle rescatter(0,0,pcm,0.,0.,Q2,0.,1.,1.,"");
@@ -1149,11 +1149,11 @@ void DQEinclusive::FSI_PVfirst_perp(numint::vector_d & res, double pz1, double p
 
   double prnorm=sqrt(pperp1*pperp1+pz1*pz1);
   double Ernorm=sqrt(pperp1*pperp1+pz1*pz1+cross.getMassr()*cross.getMassr());
-  if(Ernorm<MASSD-200.){
+  if(Ernorm<nucqcd::mass_d-200.){
     FourVector<double> q(nu,0.,0.,qvec);
     
     //direct term
-    FourVector<double> pi1(MASSD-Ernorm,-pperp1*cosphi1,-pperp1*sinphi1,-pz1); //pi=pD-ps
+    FourVector<double> pi1(nucqcd::mass_d-Ernorm,-pperp1*cosphi1,-pperp1*sinphi1,-pz1); //pi=pD-ps
     FourVector<double> pn1=pi1+q;  //pn1=pi+q
     GammaStructure J0 = cross.getFFactorseq()->getCC(current, q, pi1, pn1)*polVector0;
     GammaStructure Jplus = cross.getFFactorseq()->getCC(current, q, pi1, pn1)*polVectorPlus;
@@ -1165,9 +1165,9 @@ void DQEinclusive::FSI_PVfirst_perp(numint::vector_d & res, double pz1, double p
     TSpinor ui1_up(pi1,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kDoubleMass);
   
     double Erprimenorm=sqrt(pperp2*pperp2+pz2*pz2+cross.getMassr()*cross.getMassr());
-    if(Erprimenorm<MASSD-200.){
+    if(Erprimenorm<nucqcd::mass_d-200.){
 
-      FourVector<double> pi2(MASSD-Erprimenorm,-pperp1*cosphi1-qt*cosqphi,-qt*sinqphi,-pz2); //pi2=pD-ps1+qt
+      FourVector<double> pi2(nucqcd::mass_d-Erprimenorm,-pperp1*cosphi1-qt*cosqphi,-qt*sinqphi,-pz2); //pi2=pD-ps1+qt
       FourVector<double> pn2=pi2+q; //pn2=pi2+q
       double t=pow(Ernorm-Erprimenorm,2.)-pow(pz1-pz2,2.)-qt*qt;
 
@@ -1235,10 +1235,10 @@ void DQEinclusive::FSI_PVfirst_perp(numint::vector_d & res, double pz1, double p
 	}
       }
       //extra factor of 2 because of the parity symmetry used.
-      if(!crossed) result*=2./sqrt(Ernorm*Erprimenorm)*MASSD/(2.*(MASSD-Ernorm))/abs(qvec-pz1/Ernorm*(MASSD+nu))
-      /abs(qvec-pz2/Erprimenorm*(MASSD+nu));
-      else result*=-2.*MASSD/2./sqrt((MASSD-Ernorm)*(MASSD-Erprimenorm))/sqrt(Ernorm*Erprimenorm)
-      /abs(qvec-pz1/Ernorm*(MASSD+nu))/abs(qvec-pz2/Erprimenorm*(MASSD+nu));
+      if(!crossed) result*=2./sqrt(Ernorm*Erprimenorm)*nucqcd::mass_d/(2.*(nucqcd::mass_d-Ernorm))/abs(qvec-pz1/Ernorm*(nucqcd::mass_d+nu))
+      /abs(qvec-pz2/Erprimenorm*(nucqcd::mass_d+nu));
+      else result*=-2.*nucqcd::mass_d/2./sqrt((nucqcd::mass_d-Ernorm)*(nucqcd::mass_d-Erprimenorm))/sqrt(Ernorm*Erprimenorm)
+      /abs(qvec-pz1/Ernorm*(nucqcd::mass_d+nu))/abs(qvec-pz2/Erprimenorm*(nucqcd::mass_d+nu));
     }
   }
 
@@ -1248,8 +1248,8 @@ void DQEinclusive::FSI_PVfirst_perp(numint::vector_d & res, double pz1, double p
 
 bool DQEinclusive::get_prz(vector<double> &sol, double pt, double Q2, double nu, double qvec){
   sol.clear();
-  double A=(massi*massi-getMassr()*getMassr()-MASSD*MASSD+Q2-2.*MASSD*nu)/(-2.*(MASSD+nu));
-  double B= qvec/(MASSD+nu);
+  double A=(massi*massi-getMassr()*getMassr()-nucqcd::mass_d*nucqcd::mass_d+Q2-2.*nucqcd::mass_d*nu)/(-2.*(nucqcd::mass_d+nu));
+  double B= qvec/(nucqcd::mass_d+nu);
   double aa=B*B-1.;
   double bb=2.*A*B;
   double cc=A*A-getMassr()*getMassr()-pt*pt;

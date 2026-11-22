@@ -449,40 +449,40 @@ void TKinematics2to3::ChangeIsospinChannel(int isospin)
   switch( isospin ) 
     {
     case 1:
-      fMd = MASSD;
-      fMn = M_N;
-      fMk = M_KP;
-      fMy = M_L;
+      fMd = nucqcd::mass_d;
+      fMn = nucqcd::mass_n;
+      fMk = nucqcd::mass_kp;
+      fMy = nucqcd::mass_lambda;
       break;
     case 2:
-      fMd = MASSD;
-      fMn = M_N;
-      fMk = M_KP;
-      fMy = M_S0;
+      fMd = nucqcd::mass_d;
+      fMn = nucqcd::mass_n;
+      fMk = nucqcd::mass_kp;
+      fMy = nucqcd::mass_sigma0;
       break;
     case 3:
-      fMd = MASSD;
-      fMn = M_N;
-      fMk = M_K0;
-      fMy = M_SP;
+      fMd = nucqcd::mass_d;
+      fMn = nucqcd::mass_n;
+      fMk = nucqcd::mass_k0;
+      fMy = nucqcd::mass_sigmap;
       break;
     case 4:
-      fMd = MASSD;
-      fMn = M_P;
-      fMk = M_K0;
-      fMy = M_L;
+      fMd = nucqcd::mass_d;
+      fMn = nucqcd::mass_p;
+      fMk = nucqcd::mass_k0;
+      fMy = nucqcd::mass_lambda;
       break;
     case 5:
-      fMd = MASSD;
-      fMn = M_P;
-      fMk = M_K0;
-      fMy = M_S0;
+      fMd = nucqcd::mass_d;
+      fMn = nucqcd::mass_p;
+      fMk = nucqcd::mass_k0;
+      fMy = nucqcd::mass_sigma0;
       break;
     case 6:
-      fMd = MASSD;
-      fMn = M_P;
-      fMk = M_KP;
-      fMy = M_SM;
+      fMd = nucqcd::mass_d;
+      fMn = nucqcd::mass_p;
+      fMk = nucqcd::mass_kp;
+      fMy = nucqcd::mass_sigmam;
       break;
     case 7:
       break;
@@ -1899,7 +1899,7 @@ void TKinematics2to3::UpdateKinematics()
       else
 	s23 = *fEVar;
 
-      if( s23<(pow(m2+m3,2.)-STRANGEUFLOW) ) fIsPhysical = false;
+      if( s23<(pow(m2+m3,2.)-nucqcd::strange_underflow) ) fIsPhysical = false;
 
       // we can calculate eg now, if t_{g1} is the angular variable
       if( fTh1Var==&fTgk || fTh1Var==&fTgy || fTh1Var==&fTgn )
@@ -1971,7 +1971,7 @@ void TKinematics2to3::UpdateKinematics()
 	  }
 	  else {
 	    if( sol1 && sol2 ) {
-	      if( fabs(roots[0]-roots[1]) > STRANGEUFLOW*fabs(roots[0]))
+	      if( fabs(roots[0]-roots[1]) > nucqcd::strange_underflow*fabs(roots[0]))
 		std::cout << "WARNING in TKinematics2to3::UpdateKinematics(): "
 			     << "found multiple solutions. Choosing one arbitrarily.\n";
 	      eg = roots[0];
@@ -1985,7 +1985,7 @@ void TKinematics2to3::UpdateKinematics()
     } // if( !egCalculated )
 
     double threshold = ((m1+m2+m3)*(m1+m2+m3)-fMd*fMd+fQsquared) / 2. / fMd;
-    if( eg<threshold-STRANGEUFLOW ) fIsPhysical = false;
+    if( eg<threshold-nucqcd::strange_underflow ) fIsPhysical = false;
 
     // Set 4vectors
     fGvector->SetXYZT(0.,0.,Sqrt(eg*eg+fQsquared),eg);
@@ -2169,7 +2169,7 @@ void TKinematics2to3::UpdateKinematics()
 	}
 	else {
 	  if( sol1 && sol2 ) {
-	    if( fabs(roots[0]-roots[1]) > STRANGEUFLOW*fabs(roots[0]))
+	    if( fabs(roots[0]-roots[1]) > nucqcd::strange_underflow*fabs(roots[0]))
 	      std::cout << "WARNING in TKinematics2to3::UpdateKinematics(): "
 			   << "found multiple solutions. Choosing one arbitrarily.\n";
 	    p2 = roots[0];
@@ -2461,7 +2461,7 @@ void TKinematics2to3::UpdateKinematics()
     }
 
     double threshold = (m1+m2+m3)*(m1+m2+m3);
-    if( fStot<threshold-STRANGEUFLOW ) fIsPhysical = false;
+    if( fStot<threshold-nucqcd::strange_underflow ) fIsPhysical = false;
 
     // Determine photon 4vector
     //~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2656,8 +2656,8 @@ void TKinematics2to3::UpdateKinematics()
   // Do a final check whether we are in a physical point
   // by checking conservation of energy and momentum
   // TLorentzVector sum = *fGvector + *fDvector - *fKvector - *fYvector - *fNvector;
-  // if( fabs(sum.E()) > STRANGEUFLOW || fabs(sum.X()) > STRANGEUFLOW ||
-  //     fabs(sum.Y()) > STRANGEUFLOW || fabs(sum.Z()) > STRANGEUFLOW )
+  // if( fabs(sum.E()) > nucqcd::strange_underflow || fabs(sum.X()) > nucqcd::strange_underflow ||
+  //     fabs(sum.Y()) > nucqcd::strange_underflow || fabs(sum.Z()) > nucqcd::strange_underflow )
   //   fIsPhysical = false;
   // cout << "after " << fIsPhysical << " " << sum.E() << " " << sum.X() << " " << sum.Y() << " " << sum.Z() << std::endl;
 
@@ -5034,7 +5034,7 @@ double TKinematics2to3::GetKYsystem_phikcm(EAxisConvention ac) const
   TLorentzVector vectorKcm = BoostToKYcm(GetK4(ac),ac);
 
   // and determine azimutal angle
-  if(fabs(vectorKcm.X())<STRANGEUFLOW && fabs(vectorKcm.Y())<STRANGEUFLOW)
+  if(fabs(vectorKcm.X())<nucqcd::strange_underflow && fabs(vectorKcm.Y())<nucqcd::strange_underflow)
     return 0.;
   
   return (vectorKcm).Vect().XYvector().Phi();
@@ -5047,7 +5047,7 @@ double TKinematics2to3::GetKYsystem_phiycm(EAxisConvention ac) const
   TLorentzVector vectorYcm = BoostToKYcm(GetY4(ac),ac);
 
   // and determine azimutal angle
-  if(fabs(vectorYcm.X())<STRANGEUFLOW && fabs(vectorYcm.Y())<STRANGEUFLOW)
+  if(fabs(vectorYcm.X())<nucqcd::strange_underflow && fabs(vectorYcm.Y())<nucqcd::strange_underflow)
     return 0.;
   
   return (vectorYcm).Vect().XYvector().Phi();
@@ -5060,7 +5060,7 @@ double TKinematics2to3::GetKNsystem_phikcm(EAxisConvention ac) const
   TLorentzVector vectorKcm = BoostToKNcm(GetK4(ac),ac);
 
   // and determine azimutal angle
-  if(fabs(vectorKcm.X())<STRANGEUFLOW && fabs(vectorKcm.Y())<STRANGEUFLOW)
+  if(fabs(vectorKcm.X())<nucqcd::strange_underflow && fabs(vectorKcm.Y())<nucqcd::strange_underflow)
     return 0.;
   
   return (vectorKcm).Vect().XYvector().Phi();
@@ -5073,7 +5073,7 @@ double TKinematics2to3::GetKNsystem_phincm(EAxisConvention ac) const
   TLorentzVector vectorNcm = BoostToKNcm(GetN4(ac),ac);
 
   // and determine azimutal angle
-  if(fabs(vectorNcm.X())<STRANGEUFLOW && fabs(vectorNcm.Y())<STRANGEUFLOW)
+  if(fabs(vectorNcm.X())<nucqcd::strange_underflow && fabs(vectorNcm.Y())<nucqcd::strange_underflow)
     return 0.;
   
   return (vectorNcm).Vect().XYvector().Phi();
@@ -5086,7 +5086,7 @@ double TKinematics2to3::GetYNsystem_phiycm(EAxisConvention ac) const
   TLorentzVector vectorYcm = BoostToYNcm(GetY4(ac),ac);
 
   // and determine azimutal angle
-  if(fabs(vectorYcm.X())<STRANGEUFLOW && fabs(vectorYcm.Y())<STRANGEUFLOW)
+  if(fabs(vectorYcm.X())<nucqcd::strange_underflow && fabs(vectorYcm.Y())<nucqcd::strange_underflow)
     return 0.;
   
   return (vectorYcm).Vect().XYvector().Phi();
@@ -5099,7 +5099,7 @@ double TKinematics2to3::GetYNsystem_phincm(EAxisConvention ac) const
   TLorentzVector vectorNcm = BoostToYNcm(GetN4(ac),ac);
 
   // and determine azimutal angle
-  if(fabs(vectorNcm.X())<STRANGEUFLOW && fabs(vectorNcm.Y())<STRANGEUFLOW)
+  if(fabs(vectorNcm.X())<nucqcd::strange_underflow && fabs(vectorNcm.Y())<nucqcd::strange_underflow)
     return 0.;
   
   return (vectorNcm).Vect().XYvector().Phi();

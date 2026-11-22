@@ -198,7 +198,7 @@ void GlauberDecayGridThick::print_grid(int grid) {
           phi = 0.;
         setinterp(r, costheta, phi);
         complex < double >value = getFsiGridN_interp(grid); // I moved the switch statement inside this loop. As we are printing to the terminal, efficiency is of little concern.
-        cout << r << " " << costheta << " " << phi * RADTODEGR << " " << real(value) << " " << imag(value) << endl;
+        cout << r << " " << costheta << " " << phi * nucqcd::rad_to_deg << " " << real(value) << " " << imag(value) << endl;
       }
     }
   }
@@ -705,7 +705,7 @@ void GlauberDecayGridThick::writeoutFsiCtGrid(ofstream & outfile) {
 //   double sintheta = sqrt(1. - costheta * costheta);
 //   double src = getFsiCorrelator().getCorrGrid_interp(costheta, proton);
 //   rombergerN(this, &GlauberDecayGridThick::intGlauberPhi, 0., 2. * PI, 8, results, getPrec(), 3, 5, pphiestimate, r, costheta, sintheta, proton);
-//   //cout << r << " " << acos(costheta)*RADTODEGR << " " << getFsiCorrelator()->getRindex() << endl;
+//   //cout << r << " " << acos(costheta)*nucqcd::rad_to_deg << " " << getFsiCorrelator()->getRindex() << endl;
 //   results[1] *= src;
 //   results[3] *= src;
 //   results[5] *= src;
@@ -957,7 +957,7 @@ void GlauberDecayGridThick::klaas_int_bound_ct(numint::vector_d & results, doubl
 //   double src = getFsiCorrelator().getCorrGrid_interp(r, costheta, proton);
 //   double intresults[2] = { 0., 0. };
 //   rombergerN(this, &GlauberDecayGridThick::intGlauberPhi_bound, 0., 2. * PI, 2, results, getPrec(), 3, 10, pphiestimate, b, r, costheta, sintheta, proton);
-//   //cout << r << " " << acos(costheta)*RADTODEGR << " " << getFsiCorrelator()->getRindex() << endl;
+//   //cout << r << " " << acos(costheta)*nucqcd::rad_to_deg << " " << getFsiCorrelator()->getRindex() << endl;
 //   double ct = getParticles()[0].getCTsigma(z);
 //   double decay = getParticles()[0].getDecay_sigma(z, proton);
 //   results[0] = intresults[0];
@@ -1025,7 +1025,7 @@ void GlauberDecayGridThick::klaas_int_bound_ct(numint::vector_d & results, doubl
 //   double src = getFsiCorrelator().getCorrGrid_interp(r, costheta, proton);
 //   double intresults = 0.;
 //   rombergerN(this, &GlauberDecayGridThick::intGlauberPhi_bound, 0., 2. * PI, 1, &intresults, getPrec(), 3, 5, pphiestimate, b, r, costheta, sintheta, proton);
-//   //cout << r << " " << acos(costheta)*RADTODEGR << " " << getFsiCorrelator()->getRindex() << endl;
+//   //cout << r << " " << acos(costheta)*nucqcd::rad_to_deg << " " << getFsiCorrelator()->getRindex() << endl;
 //   double ct = getParticles()[0].getCTsigma(z);
 //   double decay = getParticles()[0].getDecay_sigma(z, proton);
 //   results[0] = intresults * ct;

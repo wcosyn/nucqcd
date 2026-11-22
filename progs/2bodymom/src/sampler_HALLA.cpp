@@ -64,10 +64,10 @@ namespace HALLA {
 			double omega    = Eei - Eef;
 			TVector3 q      = ei - ef;
 			double Q2       = q.Mag2() - omega*omega; // Q^2 = q^2 - w^2
-			double xB       = Q2/(2.*MASSP*omega);	
+			double xB       = Q2/(2.*nucqcd::mass_p*omega);	
 			TVector3 e_p2   = get_e_p2(); // random direction for e_p2
 			TVector3 p1     = get_p1();
-			double E1       = sqrt( MASSP*MASSP + p1.Mag2() );
+			double E1       = sqrt( nucqcd::mass_p*nucqcd::mass_p + p1.Mag2() );
 			TVector3 k1     = p1-q;
 			double ek1_ep2  = k1.Unit().Dot(e_p2); // (e_{k1} \cdot e_{p2})
 			//   -----------------------   //
@@ -80,8 +80,8 @@ namespace HALLA {
 					ev.xB          = xB;
 					ev.Q2          = Q2;
 					ev.omega       = omega;
-					ev.mass1       = MASSP;
-					ev.mass2       = MASSP;
+					ev.mass1       = nucqcd::mass_p;
+					ev.mass2       = nucqcd::mass_p;
 					ev.k1          = k1;
 					ev.p1          = p1;
 					ev.q           = q;
@@ -173,9 +173,9 @@ namespace HALLA {
 		TVector3 p2   = TVector3();
 		p2.SetMagThetaPhi(1.,th,phi); // unit vector, mag = 1, angles
 		if (KIN_SETTING == 500 || KIN_SETTING == 625)
-			p2.RotateY(-97.*DEGRTORAD); // but now rotate to point in the right direction! @ -99 degrees (clockwise 99 deg around Y)
+			p2.RotateY(-97.*nucqcd::deg_to_rad); // but now rotate to point in the right direction! @ -99 degrees (clockwise 99 deg around Y)
 		else if (KIN_SETTING == 750)
-			p2.RotateY(-92.*DEGRTORAD);
+			p2.RotateY(-92.*nucqcd::deg_to_rad);
 		else
 			fprintf(stderr,"KIN SETTING %d NOT SUPPORTED!\n",KIN_SETTING);
 		assert( std::fabs(1.-p2.Mag()) < 1e-10); // check if e_p2 is indeed unit vector, can be removed if found to never fail
@@ -194,7 +194,7 @@ namespace HALLA {
 		ef.RotateX((1.-2.*v)*vacc);
 		//ef *= 3762. + (2.*w - 1)*0.04*3762. ; // ef varied by +- 4%
 		ef *= 3602.; // fixed ef
-		ef.RotateY(DEGRTORAD*20.3); // rotate to 20.3 degrees, now pointing in right mean direction
+		ef.RotateY(nucqcd::deg_to_rad*20.3); // rotate to 20.3 degrees, now pointing in right mean direction
 		return ef;
 	}
 
@@ -213,13 +213,13 @@ namespace HALLA {
 		
 		if (KIN_SETTING==500) {     // 500 MEV SETTINGS
 			p *= 1380 + (2.*w-1.)*0.04*1380; // 4 % spread on p
-			p.RotateY(DEGRTORAD*(-33.5)); // rotate to -32 degrees, now pointing in right mean direction
+			p.RotateY(nucqcd::deg_to_rad*(-33.5)); // rotate to -32 degrees, now pointing in right mean direction
 		} else if (KIN_SETTING==625) {  // 625 MEV SETTINGS
 			p *= 1300 + (2.*w-1.)*0.04*1300; // 4 % spread on p
-			p.RotateY(DEGRTORAD*(-29.)); // rotate to -29  degrees, now pointing in right mean direction
+			p.RotateY(nucqcd::deg_to_rad*(-29.)); // rotate to -29  degrees, now pointing in right mean direction
 		} else if (KIN_SETTING==750) {  // 750 MEV SETTINGS
 			p*= 1190  + (2.*w-1.)*0.04*1190; // 4 % spread on p
-			p.RotateY(DEGRTORAD*(-24.5)); // rotate to -24.5 degrees
+			p.RotateY(nucqcd::deg_to_rad*(-24.5)); // rotate to -24.5 degrees
 		} else {
 			fprintf(stderr,"KIN SETTING %d NOT SUPPORTED\n",KIN_SETTING);
 		}

@@ -40,6 +40,6 @@ TEST_CASE("He3wf rejects a data directory too long for the Fortran file name buf
 TEST_CASE("TKinematics rejects a format string longer than its 100-character buffer", "[fortran]") {
   std::string format = "qsquared:wlab:pklab";
   while (format.size() < 100) format += ":pklab";
-  CHECK_THROWS_AS(TKinematics2to2("", "", MASSD, MASSP, MASSN, format.c_str(), 1.e06, 600., 150.),
+  CHECK_THROWS_AS(TKinematics2to2("", "", nucqcd::mass_d, nucqcd::mass_p, nucqcd::mass_n, format.c_str(), 1.e06, 600., 150.),
                   std::length_error);
 }

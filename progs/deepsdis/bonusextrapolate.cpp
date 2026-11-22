@@ -117,12 +117,12 @@ double get_normfit_sigma_deeps_bonus(int beamindex, int Qindex, int Windex, int 
 double sigmaparam(double W, double Q2, bool Q2dep){
   if(!Q2dep||Q2<1.8E06){
       if(abs(W*W-1.232*1.232E06)<2.5E5) return 65;
-  return (25.3*1.E-06*2.3+53*(sqrt(W*W>5.76E06?5.76E06:W*W)-MASSP)*1.E-03)
+  return (25.3*1.E-06*2.3+53*(sqrt(W*W>5.76E06?5.76E06:W*W)-nucqcd::mass_p)*1.E-03)
 	/(1.8);
   }
   else{ 
     if(abs(W*W-1.232*1.232E06)<2.5E5) return 65.*1.8E06/Q2;
-    return (25.3*1.E-06*2.3+53*(sqrt(W*W>5.76E06?5.76E06:W*W)-MASSP)*1.E-03)
+    return (25.3*1.E-06*2.3+53*(sqrt(W*W>5.76E06?5.76E06:W*W)-nucqcd::mass_p)*1.E-03)
 	  /(1.E-06*Q2);
   }
 }

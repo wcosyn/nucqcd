@@ -27,10 +27,10 @@ WeakQEHadronCurrent::~WeakQEHadronCurrent(){
 
 complex<double> WeakQEHadronCurrent::getFreeMatrixEl(double Q2, bool proton, bool charged, double M_A,
 						     int current, int spinin, int spinout, int photonpol){
-  double massin=(proton?MASSP:MASSN);
-  double massout=(charged?(proton?MASSN:MASSP):(proton?MASSP:MASSN));  
+  double massin=(proton?nucqcd::mass_p:nucqcd::mass_n);
+  double massout=(charged?(proton?nucqcd::mass_n:nucqcd::mass_p):(proton?nucqcd::mass_p:nucqcd::mass_n));  
   
-//   massin=massout=MASSn;
+//   massin=massout=nucqcd::mass_nucleon;
   
   double omega=0.5*(massout*massout-massin*massin+Q2)/massin;
   double qvec = sqrt(omega*omega+Q2);
@@ -441,7 +441,7 @@ void WeakQEHadronCurrent::klaas_one_amp(numint::vector_z & results, double r, do
   sincos(phi,&sinphi,&cosphi);
   TMFSpinor wave(*(model.getPnucleus()),model.getShell(),model.getM(),r,costheta,phi);
   //no r squared because wave function already is multiplied by r
-  complex<double> exp_pr=r*exp(-I_UNIT*INVHBARC*(model.getPm()*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
+  complex<double> exp_pr=r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(model.getPm()*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
   results[1]=results[0]= exp_pr*(model.getBarcontract0down()*wave);
   results[2]=results[3]= exp_pr*(model.getBarcontractmindown()*wave);
   results[4]=results[5]= exp_pr*(model.getBarcontractplusdown()*wave);
@@ -486,7 +486,7 @@ void WeakQEHadronCurrent::klaas_all_amp(numint::vector_z & results, double r, do
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
   TMFSpinor wave(*(model.getPnucleus()),model.getShell(),model.getM(),r,costheta,phi);
-  complex<double> exp_pr=r*exp(-I_UNIT*INVHBARC*(model.getPm()*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
+  complex<double> exp_pr=r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(model.getPm()*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
   results[0*total_grid]= exp_pr*(model.getBarcontract0down()*wave);
   results[1*total_grid]= exp_pr*(model.getBarcontractmindown()*wave);
   results[2*total_grid]= exp_pr*(model.getBarcontractplusdown()*wave);
@@ -525,7 +525,7 @@ void WeakQEHadronCurrent::klaas_all_amp_medium(numint::vector_z & results, doubl
   sincos(phi,&sinphi,&cosphi);
   TMFSpinor wave(*(model.getPnucleus()),model.getShell(),model.getM(),r,costheta,phi);
   //includes phase space r
-  complex<double> exp_pr=r*exp(-I_UNIT*INVHBARC*(model.getPm()*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
+  complex<double> exp_pr=r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(model.getPm()*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
   results[0*total]= exp_pr*(spindown*Jcontr0*wave);
   results[1*total]= exp_pr*(spindown*Jcontrmin*wave);
   results[2*total]= exp_pr*(spindown*Jcontrplus*wave);
@@ -557,7 +557,7 @@ void WeakQEHadronCurrent::klaas_mult_amp(numint::vector_z & results, double r, d
   
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
-  results[total-1]= r*exp(-I_UNIT*INVHBARC*(model.getPm()*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)))
+  results[total-1]= r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(model.getPm()*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)))
 	      *(model.getBarcontract()*TMFSpinor(*(model.getPnucleus()),model.getShell(),model.getM(),r,costheta,phi));
   for(int i=0;i<total-1;++i) results[i]=results[total-1]*model.getThickGrid()->getFsiGridN_interp3(i,r,costheta,phi);
   return;

@@ -89,11 +89,11 @@ int main(int argc, char *argv[])
     //     avgcross[0]/=(data::Q2[Qindex+1]-data::Q2[Qindex])*(data::W[Windex+1]-data::W[Windex])*(data::ps[pindex+1]-data::ps[pindex])*0.2;
     //     avgcross[1]/=(data::Q2[Qindex+1]-data::Q2[Qindex])*(data::W[Windex+1]-data::W[Windex])*(data::ps[pindex+1]-data::ps[pindex])*0.2;
     bool proton =0;
-    double massi=proton? MASSP:MASSN;
-    double massr=proton? MASSN:MASSP;
+    double massi=proton? nucqcd::mass_p:nucqcd::mass_n;
+    double massr=proton? nucqcd::mass_n:nucqcd::mass_p;
     
     double Er=sqrt(massr*massr+pr*pr);
-    double Einoff=MASSD-Er;
+    double Einoff=nucqcd::mass_d-Er;
     double massoff=sqrt(Einoff*Einoff-pr*pr);
     
     double xprime=Q2/(Wprime*Wprime-massoff*massoff+Q2);
@@ -197,12 +197,12 @@ double get_normrig(int psindex, int beamindex){
 double sigmaparam(double W, double Q2, bool Q2dep){
   if(!Q2dep||Q2<1.8E06){
       if(abs(W*W-1.232*1.232E06)<2.5E5) return 65;
-  return (25.3*1.E-06*2.3+53*(sqrt(W*W>5.76E06?5.76E06:W*W)-MASSP)*1.E-03)
+  return (25.3*1.E-06*2.3+53*(sqrt(W*W>5.76E06?5.76E06:W*W)-nucqcd::mass_p)*1.E-03)
 	/(1.8);
   }
   else{ 
     if(abs(W*W-1.232*1.232E06)<2.5E5) return 65.*1.8E06/Q2;
-    return (25.3*1.E-06*2.3+53*(sqrt(W*W>5.76E06?5.76E06:W*W)-MASSP)*1.E-03)
+    return (25.3*1.E-06*2.3+53*(sqrt(W*W>5.76E06?5.76E06:W*W)-nucqcd::mass_p)*1.E-03)
 	  /(1.E-06*Q2);
   }
 }

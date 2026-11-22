@@ -112,8 +112,8 @@ void EventParser::read_events(char* fname, std::vector< struct Event>& events,Me
 				// neutron or proton can be determined from shell level
 				e.type1 = (e.shellindex1 < nuc.getPLevels())? 0 : 1; // 0 is proton,1 is neutron
 				e.type2 = (e.shellindex2 < nuc.getPLevels())? 0 : 1; // 0 is proton,1 is neutron
-				e.mass1 = (e.type1==0)? MASSP : MASSN;
-				e.mass2 = (e.type2==0)? MASSP : MASSN;
+				e.mass1 = (e.type1==0)? nucqcd::mass_p : nucqcd::mass_n;
+				e.mass2 = (e.type2==0)? nucqcd::mass_p : nucqcd::mass_n;
 				events.push_back(e);
 			}
 		}

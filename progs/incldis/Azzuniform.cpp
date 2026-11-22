@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 	fsioffsuppr2+=f2;
       }
     }
-    cout << x << " " << sqrt(Q2*(1./x-1.)+MASSN*MASSN)*1.E-03 << " " << azz << " " << 
+    cout << x << " " << sqrt(Q2*(1./x-1.)+nucqcd::mass_n*nucqcd::mass_n)*1.E-03 << " " << azz << " " << 
     azzfsi1 << " " << azzfsi2 << " " << azzfsioffsuppr1 << " " << azzfsioffsuppr2 << " " <<
     teller << " " << fsi1 << " " << fsi2 << " " << fsioffsuppr1 << " " << fsioffsuppr2 << endl;
     //cout << x << " " << teller << " " << noemer << " " << teller/noemer << endl;    

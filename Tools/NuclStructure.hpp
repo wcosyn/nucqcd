@@ -41,7 +41,7 @@
   * <BR>
   * -commented out all includes of Structures.h as only defines of constants were needed <BR>
   * <BR>
-  * -included needed constants (STRANGEUFLOW, M_P, M_N) to my file constants.hpp (some  double definitions now of course) <BR>
+  * -included needed constants (nucqcd::strange_underflow, nucqcd::mass_p, nucqcd::mass_n) to my file constants.hpp (some  double definitions now of course) <BR>
   * <BR>
   * -replaced all includes of Structures.h with include "constants.hpp" (was not even needed in TYukawaPWF.cpp) <BR>
   * <BR>
