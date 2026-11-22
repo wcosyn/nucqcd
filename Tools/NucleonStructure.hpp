@@ -116,7 +116,7 @@ public:
 private:
   std::string name; /*!< name of the paramtetrization */
   std::string dir; /*!< share dir to read input files */
-  c_mstwpdf *mstw;
+  c_mstwpdf *mstw; ///< MSTW PDF interpolation object
   
   /*! proton F2 SLAC parametrization
    * \param massi [GeV] initial mass, off-shell
@@ -151,16 +151,16 @@ private:
    * \param Q2 [MeV^2] fourmomentum sq
    */
   void getF_Alekhin(double &F1, double &F2, const bool proton, const double x, const double Q2)const;
-  /* \param proton 0 neutron, 1 proton
+  /*! \param proton 0 neutron, 1 proton
    * \param x Bjorken x
    * \param Q2 [MeV^2] fourmomentum sq
-   * return F1 in Alekhin parametriation
+   * \return F1 in Alekhin parametriation
    */
   double getF1_Alekhin(const bool proton, const double x, const double Q2) const; 
-  /* \param proton 0 neutron, 1 proton
+  /*! \param proton 0 neutron, 1 proton
    * \param x Bjorken x
    * \param Q2 [MeV^2] fourmomentum sq
-   * return F2 in Alekhin parametriation
+   * \return F2 in Alekhin parametriation
    */
   double getF2_Alekhin(const bool proton, const double x, const double Q2) const; 
   /*! returns F1 and F2 in the SLAC parametrization
@@ -171,10 +171,10 @@ private:
    * \param Q2 [MeV^2] fourmomentum sq
    */
   void getF_SLAC(double &F1, double &F2, const bool proton, const double x, const double Q2) const;
-    /* \param proton 0 neutron, 1 proton
+    /*! \param proton 0 neutron, 1 proton
    * \param x Bjorken x
    * \param Q2 [MeV^2] fourmomentum sq
-   * return F2 in SLAC parametriation
+   * \return F2 in SLAC parametriation
    */
   double getF2_SLAC(const bool proton, const double x, const double Q2) const; 
   /*! returns F1 and F2 in the Christy & Bosted parametrization
@@ -185,16 +185,16 @@ private:
    * \param Q2 [MeV^2] fourmomentum sq
    */
   void getF_CB(double &F1, double &F2, const bool proton, const double x, const double Q2) const;
-    /* \param proton 0 neutron, 1 proton
+    /*! \param proton 0 neutron, 1 proton
    * \param x Bjorken x
    * \param Q2 [MeV^2] fourmomentum sq
-   * return F1 in Christy & Bosted parametriation
+   * \return F1 in Christy & Bosted parametriation
    */
   double getF1_CB(const bool proton, const double x, const double Q2) const;
-    /* \param proton 0 neutron, 1 proton
+    /*! \param proton 0 neutron, 1 proton
    * \param x Bjorken x
    * \param Q2 [MeV^2] fourmomentum sq
-   * return F2 in Christy & Bosted parametriation
+   * \return F2 in Christy & Bosted parametriation
    */
 double getF2_CB(const bool proton, const double x, const double Q2) const;
   /*! returns F1 and F2 in the CTEQ parametrization
@@ -205,10 +205,10 @@ double getF2_CB(const bool proton, const double x, const double Q2) const;
    * \param Q2 [MeV^2] fourmomentum sq
    */
   void getF_CTEQ(double &F1, double &F2, const bool proton, const double x, const double Q2) const;
-    /* \param proton 0 neutron, 1 proton
+    /*! \param proton 0 neutron, 1 proton
    * \param x Bjorken x
    * \param Q2 [MeV^2] fourmomentum sq
-   * return F2 in CTEQ parametriation
+   * \return F2 in CTEQ parametriation
    */
 double getF2_CTEQ(const bool proton, const double x, const double Q2) const;/*!< return F2 structure function in the CTEQ parametrization */
   

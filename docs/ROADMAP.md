@@ -381,7 +381,7 @@ one commit per bug; no `[known-bug]` tests remain.
   `build/doxygen_warnings.log` by `make doc`. Undocumented entities are no longer in the output.
   The Doxyfile template was upgraded with `doxygen -u` (Doxygen 1.15; no more obsolete-tag warnings),
   and CMake sets `HAVE_DOT` only when Graphviz's `dot` is found.
-- [ ] **Doxygen gaps:** with `EXTRACT_ALL` off there are about 1400 warnings, about 1300 of them
+- [x] **Doxygen gaps:** with `EXTRACT_ALL` off there are about 1400 warnings, about 1300 of them
   undocumented members, mostly in `Tools` (`TKinematics2to3.h` alone has 300). About 80 are real doc
   errors that were already there: `\param` names that do not match the arguments, unclosed `\f$`
   formulas, and member documentation that matches no declaration. Fix the errors first, then
@@ -402,7 +402,7 @@ one commit per bug; no `[known-bug]` tests remain.
     `complex<double>` (under `using namespace std`) where the header has `std::`: the signatures now
     use `std::`. In the Doxyfile, the ROOT macros `ClassImp` and `ClassDef` are predefined (`ClassDef`
     declares `Streamer`, as ROOT's does) and `Streamer` is excluded from the docs.
-  - [ ] **Undocumented members** (1231): Tools 1049 (`TKinematics2to3.h` 303, `TKinematics.h` 107,
+  - [x] **Undocumented members** (1231, done 2026-11-22; `make doc` now gives no warnings and no errors): Tools 1049 (`TKinematics2to3.h` 303, `TKinematics.h` 107,
     `TSpinor.h` 94, `TDeuteron.h` 66, `TInterpolatingWavefunction.h` 52, ...), Knockout 91, Glauber 58,
     DIS 33. One class or library per PR.
     - [x] DIS (`Resonance`, `He3Cross`, `InclusiveCrossRes`, `Deut_Conv_EMTLF`): no warnings left.
@@ -415,6 +415,12 @@ one commit per bug; no `[known-bug]` tests remain.
     - [x] Deuteron wave function implementations: `TWavefunctionImplementation`, `TYukawaPWF`, `TGrossPWF`, `TCstPWF`, `TInterpolatingWavefunction` (150 members).
     - [x] `constants.hpp` (macro aliases); the third-party MSTW code (`mstwpdf.h/.cpp`) is excluded from the docs.
     - [x] Lorentz and Dirac algebra: `FourVector`, `Matrix`, `GammaStructure`, `TLorentzQuaternion` (132 members).
+    - [x] The rest of Tools: `TElectronKinematics`, `TLeptonKinematics`, `TMPI`, `RecMosh`,
+      `OldDeuteron` (same amplitudes as `TDeuteron`, checked; its radial functions absorb 1/sqrt(4 pi)
+      and the D-wave sign, and their documented unit fm^3/2 was wrong: MeV^-3/2),
+      `TKinematics2to2`, `TKinematics2to3WithLabAngles`, structure-function getters, and small helpers.
+      Formulas in the docs can use `amsmath` (Doxyfile `EXTRA_PACKAGES`).
+    - Still open, with the README (step 8): the Doxygen main page.
 
 ## 6. Structural refactors
 

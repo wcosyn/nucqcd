@@ -22,52 +22,47 @@ typedef int MPI_Datatype;
 #include <fstream>
 #include <TObject.h>
 
-///////////////////////////////////////////////////////////////////////////
-//                                                                       //
-// TMPI                                                                  //
-//                                                                       //
-// Global object coordinating multi-process calculations                 //
-//                                                                       //
-///////////////////////////////////////////////////////////////////////////
-
+/*! \brief Coordinates MPI calculations: one object per program (created once, it initializes MPI and
+ * finalizes it in its destructor), with the rank, the master/slave roles, output silencing for the
+ * slaves, and gathering of results of loops distributed over the processes (GatherResults) */
 class TMPI : public TObject /* FINAL */
 {
  public:
-  // Store results to be gathered in TMPI::GatherResults.
+  /// results to be gathered in GatherResults
   typedef struct { 
-    double value[NROFRES];
-    int    save; 
+    double value[NROFRES]; ///< the values
+    int    save;           ///< does this process hold the values?
   } ValueSave_t;
 
  public:
-  TMPI(int*,char***); // can only be called once.
-  ~TMPI();
+  TMPI(int*,char***); ///< initializes MPI with argc and argv; only one TMPI object can be created
+  ~TMPI(); ///< finalizes MPI
   
-  static bool IsMaster() { return fgRank==kMasterRank; }
-  static bool IsSlave() { return fgRank!=kMasterRank; }
-  static int Rank() { return fgRank; }
-  static int NumberOfProcesses() { return fgNproc; }
-  static int RankOfMaster() { return kMasterRank; }
+  static bool IsMaster() { return fgRank==kMasterRank; } ///< is this the master process?
+  static bool IsSlave() { return fgRank!=kMasterRank; } ///< is this a slave process?
+  static int Rank() { return fgRank; } ///< rank of this process
+  static int NumberOfProcesses() { return fgNproc; } ///< number of processes
+  static int RankOfMaster() { return kMasterRank; } ///< rank of the master process (0)
  
-  static std::ostream& Cout();
-  static std::ostream& Cerr();
-  static void SilenceSlaves(bool=true);
+  static std::ostream& Cout(); ///< standard output, /dev/null for the slaves
+  static std::ostream& Cerr(); ///< standard error, /dev/null for the slaves
+  static void SilenceSlaves(bool=true); ///< redirects cout and cerr of the slaves to /dev/null (false: restores them)
 
-  static void GatherResults(int,double**);
+  static void GatherResults(int,double**); ///< collects in the master the results of a loop distributed as i = Rank(), Rank()+NumberOfProcesses(), ...
       
  private:
-  TMPI(const TMPI&);
-  TMPI& operator=(const TMPI&);
-  static void CombineResults(void*,void*,int*,MPI_Datatype*);
+  TMPI(const TMPI&); ///< not copyable
+  TMPI& operator=(const TMPI&); ///< not assignable
+  static void CombineResults(void*,void*,int*,MPI_Datatype*); ///< MPI reduction operator used by GatherResults
 
  private:
-  static const int kMasterRank=0; // Rank of the master process
-  static int fgRank;  // The rank of the current process
-  static int fgNproc; // The total number of processes
-  static bool fgMpiInitialized; // Has a TMPI object been created?
-  static std::ofstream fgDevNull; // stream to /dev/null
-  static MPI_Op MPI_COMBINE_RESULTS; // Our custom MPI operator
-  static MPI_Datatype datatype;
+  static const int kMasterRank=0; ///< rank of the master process
+  static int fgRank; ///< rank of this process
+  static int fgNproc; ///< number of processes
+  static bool fgMpiInitialized; ///< has the TMPI object been created?
+  static std::ofstream fgDevNull; ///< stream to /dev/null
+  static MPI_Op MPI_COMBINE_RESULTS; ///< the reduction operator of GatherResults
+  static MPI_Datatype datatype; ///< MPI data type of ValueSave_t
   ClassDef(TMPI,0); // Global object coordinating multi-process calculations
 
 }; // class TMPI

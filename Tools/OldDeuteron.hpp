@@ -6,6 +6,13 @@
 #include <vector>
 #include <AuxFunction.hpp>
 
+/*! \brief Older implementation of the non-relativistic deuteron wave function (Paris, AV18, CD-Bonn, AV18b)
+ *
+ * deuteronwf gives the same amplitudes as TDeuteron::Wavefunction::DeuteronPState (with nucleon 1 the
+ * proton; checked numerically for AV18). The radial functions absorb factors: U = U_TDeuteron/sqrt(4 pi)
+ * and W = -W_TDeuteron/sqrt(4 pi), so the wave function is written as U + W S12/sqrt(8), and
+ * \f$ 4\pi\int p^2 (U^2+W^2)\,dp = 1 \f$.
+ */
 class OldDeuteron{
 
 public:
@@ -34,7 +41,7 @@ std::complex< double> deuteronwf(int dspin, int proton, int spinp, int spinn, do
  * @brief computes radial S-wave
  * 
  * @param p [MeV]
- * @return double [fm^3/2] S-wave
+ * @return double [MeV^-3/2] S-wave, U_TDeuteron/sqrt(4 pi)
  */
 double U(const double p);
 
@@ -42,18 +49,18 @@ double U(const double p);
  * @brief computes radial D-wave
  * 
  * @param p [MeV]
- * @return double [fm^3/2] D-wave
+ * @return double [MeV^-3/2] D-wave, -W_TDeuteron/sqrt(4 pi)
  */
 double W(const double p);
 
 
 private:
 
-std::vector<double> mass; /*< [fm^-2] mass parameters */
-std::vector<double> S_pre; /*< [fm^-1/2] S-wave frontfactor parameters */
-std::vector<double> D_pre; /*< [fm^-1/2] D-wave frontfactor parameters */
-std::string wf_name;
-double norm;
+std::vector<double> mass; /*!< mass parameters of the Yukawa terms */
+std::vector<double> S_pre; /*!< [fm^-1/2] S-wave coefficients */
+std::vector<double> D_pre; /*!< [fm^-1/2] D-wave coefficients */
+std::string wf_name; ///< name of the parametrization
+double norm; ///< normalization factor
 
 /**
  * @brief CG factor with S-wave
