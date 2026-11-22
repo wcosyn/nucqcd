@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
+#include <cmath>
 
 using namespace std;
 
@@ -53,9 +54,10 @@ void AbstractFsiCTGrid::setFilenames(string cachedir){
   fsi_ct_filename=getFsi_Filename();
   fsi_ct_filename.insert(fsi_ct_filename.size()-4,".CT");
   for(size_t i=0;i<getParticles().size();i++){
-    fsi_ct_filename.insert(fsi_ct_filename.size()-4,("."+to_string(int(getParticles()[i].getHardScale()*10))
-                                                    +"."+to_string(int(getParticles()[i].get_lc_mod()*100))
-                                                    +"."+to_string(int(getParticles()[i].get_nkt_mod()*100))));
+    // bin centres, see FastParticle::gridBinCentre
+    fsi_ct_filename.insert(fsi_ct_filename.size()-4,("."+to_string(lround(getParticles()[i].getHardScale()*10))
+                                                    +"."+to_string(lround(getParticles()[i].get_lc_mod()*100))
+                                                    +"."+to_string(lround(getParticles()[i].get_nkt_mod()*100))));
   }
   //cout << fsi_ct_filename << endl;
 }
