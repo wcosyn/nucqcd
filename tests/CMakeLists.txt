@@ -43,11 +43,11 @@ set_tests_properties(share_sandbox PROPERTIES FIXTURES_SETUP share_sandbox LABEL
 #   Executable <name> from <name>.cpp in unit/ or regression/; each Catch2 TEST_CASE becomes
 #   its own CTest test (own process: isolates Fortran COMMON blocks and other static state).
 function(nucqcd_add_test name)
-  cmake_parse_arguments(ARG "" "LABEL;TIMEOUT;DIR" "LINK" ${ARGN})
+  cmake_parse_arguments(ARG "" "LABEL;TIMEOUT;DIR" "LINK;SOURCES" ${ARGN})
   if(NOT ARG_TIMEOUT)
     set(ARG_TIMEOUT 300)
   endif()
-  add_executable(${name} ${ARG_DIR}/${name}.cpp)
+  add_executable(${name} ${ARG_DIR}/${name}.cpp ${ARG_SOURCES})
   target_link_libraries(${name} PRIVATE nucqcd_test_support ${ARG_LINK})
   # link against the libraries in build/lib, not the installed copies in <repo>/lib
   set_target_properties(${name} PROPERTIES
@@ -66,7 +66,11 @@ nucqcd_add_test(unit_cuba            DIR unit LABEL unit LINK Integrator cuba)
 nucqcd_add_test(unit_lorentz_gamma   DIR unit LABEL unit LINK MePhys cuba)
 nucqcd_add_test(unit_deuteron_wf     DIR unit LABEL unit LINK MePhys cuba)
 nucqcd_add_test(unit_kinematics      DIR unit LABEL unit LINK MePhys cuba)
-nucqcd_add_test(unit_pair            DIR unit LABEL unit LINK MePhys cuba)
+# Pair lives with its only user in progs/attic/twonucl (unfinished A(e,e'NN) code)
+set(NUCQCD_TWONUCL_DIR ${PROJECT_SOURCE_DIR}/progs/attic/twonucl)
+nucqcd_add_test(unit_pair            DIR unit LABEL unit LINK MePhys cuba
+                SOURCES ${NUCQCD_TWONUCL_DIR}/pair.cpp ${NUCQCD_TWONUCL_DIR}/newcoef.cpp)
+target_include_directories(unit_pair PRIVATE ${NUCQCD_TWONUCL_DIR})
 nucqcd_add_test(unit_constants       DIR unit LABEL unit LINK MePhys cuba)
 nucqcd_add_test(unit_meanfield       DIR unit LABEL unit LINK Glauber cuba)
 nucqcd_add_test(unit_grid_bins       DIR unit LABEL unit LINK Glauber cuba)

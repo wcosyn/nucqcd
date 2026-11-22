@@ -4,8 +4,6 @@ nucqcd_add_library(Knockout
     DeuteronMomDistr.cpp
     Model.cpp
     Cross.cpp
-    DoubleNModel.cpp
-    DoubleNCross.cpp
     RhoTCross.cpp
     PionTCross.cpp
     RhoDeuteron.cpp

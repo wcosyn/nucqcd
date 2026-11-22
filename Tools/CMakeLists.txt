@@ -51,9 +51,7 @@ nucqcd_add_library(MePhys
     TKinematics.cpp
     TKinematics2to2.cpp
     TElectronKinematics.cpp
-    pair.cpp
     recmosh.cpp
-    newcoef.cpp
     TKinematics2to3.cpp
     TKinematics2to3WithLabAngles.cpp
     TLeptonKinematics.cpp

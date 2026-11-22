@@ -168,7 +168,10 @@ one commit per bug; no `[known-bug]` tests remain.
   matrix element nearly vanishes. Observed on the way: the Paris deuteron u(r)/r and w(r)/r
   (`TDeuteron`) are numerically noisy below about 0.01 fm (w(r)/r = −0.09 at 10⁻⁴ fm), probably
   cancellations in the analytic form; this carries almost no weight in integrals over d³r.
-  Next: move the code to the attic (repo hygiene).
+  **Moved to the attic** afterwards (chosen by the author): `DoubleNModel`, `DoubleNCross` (from
+  Knockout) and `Pair`, `Newcoef` (from MePhys) now live in `progs/attic/twonucl` and are compiled
+  into `twonucl`; `unit_pair` compiles `pair.cpp` and `newcoef.cpp` from there (`nucqcd_add_test`
+  takes `SOURCES`). `RecMosh` (Moshinsky brackets, tested in `unit_moshinsky`) stays in MePhys.
 - [x] **`WeakQECross` neutral current:** the NC constructor never initialized `lepton`, but
   `getDiffWeakQECross` dereferenced it, so nuclear NC cross sections segfaulted. NC now takes its
   kinematics from the electron object.

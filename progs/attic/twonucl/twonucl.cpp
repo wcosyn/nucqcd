@@ -14,7 +14,7 @@ using namespace std;
 #include <GlauberGridThick.hpp>
 #include <TKinematics2to3.h>
 #include <TElectronKinematics.h>
-#include <DoubleNCross.hpp>
+#include "DoubleNCross.hpp"
 
 
 int main(int argc, char *argv[])
