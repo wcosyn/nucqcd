@@ -19,7 +19,12 @@
 //forward declaration
 class Resonance;
 
-/*! \brief A class that computes inclusive deuteron cross sections based on a resonance model*/
+/*! \brief A class that computes inclusive deuteron cross sections based on a resonance model
+ *
+ * The final-state interactions in inclusive DIS on the deuteron are modelled with a set of
+ * resonances (Resonance) that rescatter off the spectator nucleon, see W. Cosyn, W. Melnitchouk
+ * and M. Sargsian, Phys. Rev. C 89, 014612 (2014).
+ */
 
 class InclusiveCrossRes{
   
@@ -95,11 +100,33 @@ private:
 
   std::vector<Resonance> resonance_vec; /*!< vector that contains Resonance instances, used in the FSI amplitude */
   
+  /*! integrand over the spectator momentum for the plane-wave F2 (calc_F2Dinc)
+   * \param pr [MeV] spectator momentum \param[out] result integrand
+   * \param ap x, Q^2 [MeV^2], and a pointer to the estimate for the inner cos theta integration */
   void int_pr(double pr, double *result, va_list ap);
+  /*! integrand over the cosine of the spectator angle with q for the plane-wave F2
+   * \param costheta cos of the angle between spectator momentum and q \param[out] result integrand
+   * \param ap spectator momentum [MeV], x, Q^2 [MeV^2] */
   void int_costheta_incl(double costheta, double *result, va_list ap);
+  /*! integrand over the spectator momentum for the FSI part of F2 (calc_F2DincFSI)
+   * \param pr [MeV] spectator momentum \param[out] result integrand for the two FSI formulas of calc_F2DincFSI
+   * \param ap x, Q^2 [MeV^2], the indices of the two resonances (size_t), and a pointer to the
+   * estimate for the inner cos theta integration */
   void int_pr_fsi(double pr, double *result, va_list ap);
+  /*! integrand over the cosine of the spectator angle with q for the FSI part of F2
+   * \param costheta cos of the angle between spectator momentum and q \param[out] result integrand for the two FSI formulas of calc_F2DincFSI
+   * \param ap spectator momentum [MeV], x, Q^2 [MeV^2], the indices of the two resonances (size_t) */
   void int_costheta_incl_fsi(double costheta, double *result, va_list ap);
+  /*! integrand over the transverse momentum of the rescattering loop
+   * \param qt [MeV] transverse momentum transferred in the rescattering \param[out] results integrand for the two FSI formulas of calc_F2DincFSI
+   * \param ap the two kinematics objects (TKinematics2to2*), the deuteron wave function components
+   * (complex<double>*), the indices of the two resonances (size_t), and a pointer to the estimate for
+   * the inner azimuthal integration */
   void int_qt(double qt, double *results, va_list ap);
+  /*! integrand over the azimuthal angle of the transverse momentum of the rescattering loop
+   * \param qphi [rad] azimuthal angle \param[out] results integrand for the two FSI formulas of calc_F2DincFSI
+   * \param ap qt [MeV], the two kinematics objects (TKinematics2to2*), the deuteron wave function
+   * components (complex<double>*), the indices of the two resonances (size_t) */
   void int_qphi(double qphi, double *results, va_list ap); 
   /*! recursive method to find the pole in the fsi integration, longitudinal part,
    * also determines intermediate mass

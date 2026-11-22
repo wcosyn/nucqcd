@@ -1,5 +1,5 @@
-/*! \file DeuteronCross.hpp 
- * \brief Contains declaration of class He3Cross, computes he3 exclusive DIS cross sections
+/*! \file He3Cross.hpp 
+ * \brief Contains declaration of class He3Cross, computes He3 DIS cross sections with two tagged spectator nucleons
  * \author Wim Cosyn
  * \date 26/09/2014
  * 
@@ -43,9 +43,9 @@ public:
   double getCross (LightConeKin2to3 &kin);
   
 private:
-  He3wf wavefunction;
-  DeuteronStructure strucfunc;
-  bool proton;
+  He3wf wavefunction; /*!< He3 wave function, see He3wf */
+  DeuteronStructure strucfunc; /*!< structure functions of the struck nucleon, see DeuteronStructure */
+  bool proton; /*!< photon interacts with a proton [1] or a neutron [0] */
 
 };
 /*! @} */
