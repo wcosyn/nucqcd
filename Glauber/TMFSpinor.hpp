@@ -10,7 +10,6 @@
 
 #include <Matrix.h>
 #include <FourVector.h>
-#include <TObject.h>
 #include <complex>
 #include <GammaStructure.h>
 #include <TVector3.h>
@@ -28,7 +27,7 @@
  */
 
 
-class TMFSpinor : public TObject
+class TMFSpinor
 {
  public:
   /*! Constructor
@@ -91,7 +90,6 @@ class TMFSpinor : public TObject
    * \param CG CG coefficients already computed
    */   
   TMFSpinor(double Gr, double Fr, int m, const double *Spher_harm, double phi, Matrix<4,1> CG);
-  TMFSpinor(TRootIOCtor*); /*!< Root Constructor */
   TMFSpinor(const TMFSpinor&);  /*!< Copy Constructor */
   virtual ~TMFSpinor();  /*!< Destructor */
   TMFSpinor& operator=(const TMFSpinor&);  /*!< Copy operator */
@@ -109,7 +107,6 @@ class TMFSpinor : public TObject
  protected:
   Matrix<4,1> *fComponent; /*!< a spinor is a 4-component vector */
  
-  ClassDef(TMFSpinor,1); // Dirac spinor for on-mass shell spin-1/2 particles
 };
 
 /*! multiplication of a 4*4 matrix with a MF spinor, gives you 4*1 matrix(spinor) */

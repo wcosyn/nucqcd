@@ -9,9 +9,8 @@
 #ifndef TKINEMATICS_H
 #define TKINEMATICS_H
 
-#include <TNamed.h>
+#include <string>
 #include <TString.h>
-#include <TBuffer.h>
 // #include <Structures.h>
 #include "constants.hpp"
 #include <vector>
@@ -35,10 +34,18 @@ class TString;
  * SetFormat); each can be given a range (SetVarRange) and the grid is stepped through with Next() or
  * GoTo().
  */
-class TKinematics : public TNamed
+class TKinematics
 {
+  std::string fName;  ///< name (formerly from the ROOT base class TNamed)
+  std::string fTitle; ///< title
+
  public:
-  TKinematics(TRootIOCtor*); ///< ROOT I/O constructor; call SetFormat and SetIsospin afterwards
+  const char *GetName() const { return fName.c_str(); }  ///< name
+  const char *GetTitle() const { return fTitle.c_str(); } ///< title
+  void SetName(const char *name) { fName = name; }        ///< sets the name
+  void SetTitle(const char *title) { fTitle = title; }    ///< sets the title
+
+ public:
   /*! constructor with 2 independent variables
    * \param name,title ROOT name and title \param isospin isospin channel, see SetIsospin
    * \param formatString format string with the 2 independent variables, see SetFormat
@@ -75,7 +82,7 @@ class TKinematics : public TNamed
   void          GoTo(int stepVar1, int stepVar2); ///< proceeds to the grid point with the given step for each variable
   void          GoTo(int stepVar1, int stepVar2, int stepVar3); ///< proceeds to the grid point with the given step for each variable
   void          GoTo(int stepVar1, int stepVar2, int stepVar3, int stepVar4); ///< proceeds to the grid point with the given step for each variable
-  virtual void  Print(Option_t* option="") const; ///< prints the object and the current kinematics
+  virtual void  Print(const char* option="") const; ///< prints the object and the current kinematics
   int           VariableInfo() const; ///< prints the ranges given to the variables
   static void   Help(); ///< prints help on the format strings and variables
 
@@ -141,7 +148,6 @@ class TKinematics : public TNamed
   void          ReadFormatString(const TString); ///< processes the format string and points the independent variables at the right members
   void          ChangeIsospinChannel(int); ///< sets the masses for the isospin channel
   double        EnergyConservation(double); ///< deviation from energy conservation in the cm for meson momentum pk [MeV]
-  template <typename T> void Streamer(TBuffer&, std::vector<T>&, Version_t); ///< ROOT I/O of a vector member
   
   // Data Members
   // ------------
@@ -221,7 +227,6 @@ class TKinematics : public TNamed
   /// current step of each variable
   std::vector<int>     fStepVar;       // Step counter for each variable
 
-  ClassDef(TKinematics,5)  // Kinematics for g N -> K Y
 };
 
 

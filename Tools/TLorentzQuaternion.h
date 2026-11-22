@@ -19,7 +19,6 @@ class TLorentzVector;
 class TVector3;
 #endif
 
-#include <TObject.h>
 #include <complex>
 
 // Forward declarations
@@ -31,11 +30,10 @@ class TRotation;
  * equivalent. See J. Lambek, The Mathematical Intelligencer 17 (4), 7-15 (1995), for the decomposition
  * into a rotation and a boost.
  */
-class TLorentzQuaternion : public TObject
+class TLorentzQuaternion
 {
  public:
   TLorentzQuaternion(); ///< identity transformation
-  TLorentzQuaternion(TRootIOCtor*); ///< ROOT I/O constructor
   TLorentzQuaternion(const double, const TVector3&); ///< rotation over an angle [rad] around an axis
   TLorentzQuaternion(const TRotation&); ///< rotation
   TLorentzQuaternion(const TVector3&); ///< pure boost with velocity beta
@@ -83,7 +81,6 @@ void Decompose(double& theta, TVector3& axis, TVector3& boost) const; ///< decom
   std::complex<double> fQ2; ///< component Q2
   std::complex<double> fQ3; ///< component Q3
  
-  ClassDef(TLorentzQuaternion,1); // Lorentz transformations (boosts and rotations) represented by a biquaternion
 
 }; // class TLorentzQuaternion
 

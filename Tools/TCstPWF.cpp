@@ -75,13 +75,12 @@
 #include <cmath>
 using namespace std;
 
-ClassImp(TCstPWF)
 
 //_____________________________________________________________________
 TCstPWF::TCstPWF(int *order, double *leadingMass, double *stepMass, double *tailMass,
 		 int *exponent, double *parU, double *parW, 
 		 double *parVT, double *parVS)
-: TWavefunctionImplementation(0), fOrder(new int[4]), fCoeff(new double*[4]),
+: TWavefunctionImplementation(), fOrder(new int[4]), fCoeff(new double*[4]),
   fAlpha(new double[4]), fMx(new double[4]), fMn(new double[4]), fExp(new int[4])
 {
   // Constructor
@@ -142,12 +141,6 @@ TCstPWF::TCstPWF(int *order, double *leadingMass, double *stepMass, double *tail
 }
 
 //_____________________________________________________________________
-TCstPWF::TCstPWF(TRootIOCtor*)
-  : TWavefunctionImplementation(0), fOrder(0), fCoeff(0), fAlpha(0), fMx(0), fMn(0),
-    fExp(0)
-{
-  // ROOT I/O Constructor
-}
 
 //_____________________________________________________________________
 TCstPWF::TCstPWF(const TCstPWF& rhs)
@@ -491,46 +484,3 @@ double TCstPWF::GetG(ESpace space, EWave wave, int term, double q) const
   return g;
 }
 
-//_____________________________________________________________________
-void TCstPWF::Streamer(TBuffer &R__b){}
-// {
-//    // Stream an object of class TCstPWF.
-
-//    UInt_t R__s, R__c;
-//    if (R__b.IsReading()) {
-//       Version_t R__v = R__b.ReadVersion(&R__s, &R__c); if (R__v) { }
-//       TWavefunctionImplementation::Streamer(R__b);
-//       delete [] fOrder;
-//       fOrder = new int[4];
-//       R__b.ReadFastArray(fOrder,4);
-//       delete [] fCoeff;
-//       fCoeff = new double*[4];
-//       for(int i=0; i<4; ++i) {
-// 	fCoeff[i] = new double[fOrder[i]];
-// 	R__b.ReadFastArray(fCoeff[i],fOrder[i]);
-//       }
-//       delete [] fAlpha;
-//       fAlpha = new double[4];
-//       R__b.ReadFastArray(fAlpha,4);
-//       delete [] fMx;
-//       fMx = new double[4];
-//       R__b.ReadFastArray(fMx,4);
-//       delete [] fMn;
-//       fMn = new double[4];
-//       R__b.ReadFastArray(fMn,4);
-//       delete [] fExp;
-//       fExp = new int[4];
-//       R__b.ReadFastArray(fExp,4);
-//       R__b.CheckByteCount(R__s, R__c, TCstPWF::IsA());
-//    } else {
-//       R__c = R__b.WriteVersion(TCstPWF::IsA(), kTRUE);
-//       TWavefunctionImplementation::Streamer(R__b);
-//       R__b.WriteFastArray(fOrder,4);
-//       for(int i=0; i<4; ++i) R__b.WriteFastArray(fCoeff[i],fOrder[i]);
-//       R__b.WriteFastArray(fAlpha,4);
-//       R__b.WriteFastArray(fMx,4);
-//       R__b.WriteFastArray(fMn,4);
-//       R__b.WriteFastArray(fExp,4);
-//       R__b.SetByteCount(R__c, kTRUE);
-//    }
-// }

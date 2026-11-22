@@ -6,24 +6,8 @@
 set(SHARE_DIR "${PROJECT_SOURCE_DIR}/share")
 configure_file(constants.hpp.in "${CMAKE_CURRENT_SOURCE_DIR}/constants.hpp")
 
-set(linkdefs
-  TCstPWFLinkDef.h
-  TDeuteronLinkDef.h
-  TGrossPWFLinkDef.h
-  TInterpolatingWavefunctionLinkDef.h
-  TWavefunctionImplementationLinkDef.h
-  TYukawaPWFLinkDef.h
-  TSpinorLinkDef.h
-  TLorentzQuaternionLinkDef.h
-  TElectronKinematicsLinkDef.h
-  TKinematicsLinkDef.h
-  TKinematics2to2LinkDef.h
-  TKinematics2to3LinkDef.h
-  TKinematics2to3WithLabAnglesLinkDef.h
-  TLeptonKinematicsLinkDef.h)
 set(mpi_sources)
 if(MPI_ENABLED)
-  list(APPEND linkdefs TMPILinkDef.h)
   set(mpi_sources TMPI.cpp)
 endif()
 
@@ -68,8 +52,7 @@ nucqcd_add_library(MePhys
     grsv2000pdf_g1.f
     R199x.f
     hmrs-b.f
-  LINK root_libs GSL::gsl GSL::gslcblas
-  LINKDEFS ${linkdefs})
+  LINK root_libs GSL::gsl GSL::gslcblas)
 if(MPI_ENABLED)
   target_link_libraries(MePhys PUBLIC MPI::MPI_CXX)
 endif()

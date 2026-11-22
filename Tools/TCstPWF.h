@@ -39,7 +39,6 @@ class TCstPWF : public TWavefunctionImplementation
    * \param parU,parW,parVT,parVS [MeV^-3/2] expansion coefficients of the S, D, triplet P and singlet P waves */
   TCstPWF(int *order, double *leadingMass, double *stepMass, double *tailMass,
 	  int *exponent, double *parU, double *parW, double *parVT, double *parVS);
-  TCstPWF(TRootIOCtor*); ///< ROOT I/O constructor
   TCstPWF(const TCstPWF&); ///< copy constructor
   TCstPWF& operator=(const TCstPWF&); ///< assignment
   virtual ~TCstPWF(); ///< destructor
@@ -78,7 +77,6 @@ class TCstPWF : public TWavefunctionImplementation
   /// exponent in the expansion functions for each wave
   int     *fExp;   //[4] exponent in expansion functions
   
-  ClassDef(TCstPWF,1); //  Covariant spectator theory parametrized wavefunction
 
 }; // class TCstPWF
 

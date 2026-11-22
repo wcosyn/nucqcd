@@ -27,7 +27,6 @@ class TKinematics2to3WithLabAngles : public TKinematics2to3
 			       double var4, double var5, double var6,
 			       double Md =0.,double Mn=0., double Mk=0.,double My=0.);
   TKinematics2to3WithLabAngles(const TKinematics2to3WithLabAngles&); ///< copy constructor
-  TKinematics2to3WithLabAngles(TRootIOCtor*); ///< ROOT I/O constructor
   TKinematics2to3WithLabAngles& operator=(const TKinematics2to3WithLabAngles&); ///< assignment
   virtual ~TKinematics2to3WithLabAngles(); ///< destructor
 
@@ -50,7 +49,6 @@ class TKinematics2to3WithLabAngles : public TKinematics2to3
   /// stream to /dev/null
   static const std::ofstream fgDevNull; // stream to /dev/null
 
-  ClassDef(TKinematics2to3WithLabAngles,1);
   
 }; // class TKinematics2to3WithLabAngles
 

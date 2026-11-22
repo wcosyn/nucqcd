@@ -40,7 +40,6 @@ class TGrossPWF : public TWavefunctionImplementation
    * \param parU,parW,parVT,parVS [MeV^1/2] parameters b_{L,n} of the S, D, triplet P and singlet P waves */
   TGrossPWF(int order, double *alpha, double m0, 
 	    double *parU, double *parW, double *parVT, double *parVS);
-  TGrossPWF(TRootIOCtor*); ///< ROOT I/O constructor
   TGrossPWF(const TGrossPWF&); ///< copy constructor
   TGrossPWF& operator=(const TGrossPWF&); ///< assignment
   virtual ~TGrossPWF(); ///< destructor
@@ -77,7 +76,6 @@ class TGrossPWF : public TWavefunctionImplementation
   double *fPar;   //[4*fOrder] parameters [MeV^1/2]
 
 
-  ClassDef(TGrossPWF,1); // Gross parametrized wavefunction
 };
 
 /** @} */

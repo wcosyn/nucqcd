@@ -22,7 +22,6 @@ class TLorentzRotation;
 
 #include "Matrix.h"
 #include "FourVector.h"
-#include <TObject.h>
 #include <complex>
 #include "GammaStructure.h"
 #include <TVector3.h>
@@ -45,7 +44,7 @@ class TString;
  * Polarization::GetPauliSpinor. The negative-energy spinor v is TVSpinor; helicity spinors are
  * THelicitySpinor and THelicityVSpinor.
  */
-class TSpinor : public TObject
+class TSpinor
 {
  public:
   // forward declarations
@@ -61,7 +60,6 @@ class TSpinor : public TObject
  public:
   TSpinor(const TLorentzVector&, double mass, const Polarization&, Normalization=kDoubleMass); ///< constructor: four-momentum [MeV] (only its spatial part is used), mass [MeV], polarization, normalization
   TSpinor(const FourVector<double>&, double mass, const Polarization&, Normalization=kDoubleMass); ///< as the TLorentzVector constructor
-  TSpinor(TRootIOCtor*); ///< ROOT I/O constructor
   TSpinor(const TSpinor&); ///< copy constructor
   virtual ~TSpinor(); ///< destructor
   TSpinor& operator=(const TSpinor&); ///< assignment
@@ -87,12 +85,11 @@ class TSpinor : public TObject
   Matrix<4,1> *fComponent; //! a spinor is a 4-component vector
  private:
 
-  ClassDef(TSpinor,3); // Dirac spinor for on-mass shell spin-1/2 particles
   
   /*! \brief Spin polarization state of a spin-1/2 particle: spin up or down along the quantization
    * axis with polar angle theta and azimuthal angle phi (the z axis by default in most of the code) */
  public:
-  class Polarization : public TObject
+  class Polarization
   {
   public:
     /*! spin projection +1/2 (kUp) or -1/2 (kDown) along the quantization axis */
@@ -101,7 +98,6 @@ class TSpinor : public TObject
 
   public:   
     Polarization(double,double,State); ///< constructor: theta [rad], phi [rad] of the quantization axis, and the state
-    Polarization(TRootIOCtor*); ///< ROOT I/O constructor
     Polarization(const Polarization&); ///< copy constructor
     virtual ~Polarization(); ///< destructor
     Polarization& operator=(const Polarization&); ///< assignment
@@ -131,13 +127,12 @@ class TSpinor : public TObject
     double            fPhi; ///< [rad] azimuthal angle of the quantization axis
     State fPolarizationState; ///< spin state
 
-    ClassDef(Polarization,1); // Polarization state of a spin-1/2 Dirac particle
 
   }; // class TSpinor::Polarization
 
   /*! \brief Lorentz transformation (boosts and rotations) in spinor space, S(Lambda) as a 4x4 GammaStructure */
  public:
-  class LorentzRotation : public TObject
+  class LorentzRotation
   {
   public:
     LorentzRotation(); ///< unity
@@ -177,7 +172,6 @@ class TSpinor : public TObject
   private:
     GammaStructure fTransformation; ///< transformation matrix
 
-    ClassDef(LorentzRotation,1); // Lorentz transformations (boosts and rotations) in spinor space
 
   }; // class TSpinor::LorentzRotation  
 
@@ -190,13 +184,11 @@ class TVSpinor : public TSpinor
  public:
   TVSpinor(const TLorentzVector&, double mass, const Polarization&, Normalization=kDoubleMass); ///< constructor, see TSpinor
   TVSpinor(const FourVector<double>&, double mass, const Polarization&, Normalization=kDoubleMass); ///< constructor, see TSpinor
-  TVSpinor(TRootIOCtor*); ///< ROOT I/O constructor
   TVSpinor(const TVSpinor&); ///< copy constructor
   virtual ~TVSpinor(); ///< destructor
   TVSpinor& operator=(const TVSpinor&); ///< assignment
   virtual TVSpinor* Clone(const char* ="") const; ///< virtual copy constructor
 
-  ClassDef(TVSpinor,1); // Dirac spinor for on-mass shell spin-1/2 particles (neg.energy)
 
 }; // class TVSpinor
 
@@ -207,7 +199,6 @@ class THelicitySpinor : public TSpinor
  public:
   THelicitySpinor(const TLorentzVector&, double mass, const Polarization::State&, Normalization=kDoubleMass); ///< constructor: four-momentum [MeV], mass [MeV], helicity state, normalization
   THelicitySpinor(const FourVector<double>&, double mass, const Polarization::State&, Normalization=kDoubleMass); ///< as the TLorentzVector constructor
-  THelicitySpinor(TRootIOCtor*); ///< ROOT I/O constructor
   THelicitySpinor(const THelicitySpinor&); ///< copy constructor
   virtual ~THelicitySpinor(); ///< destructor
   THelicitySpinor& operator=(const THelicitySpinor&); ///< assignment
@@ -225,7 +216,6 @@ class THelicitySpinor : public TSpinor
  private:
   void ToHelicitySpinor(const Polarization::State&, const double phi); ///< rotates the Pauli spinors of the TSpinor constructor to the helicity basis
 
-  ClassDef(THelicitySpinor,1); // Helicity spinor for on-mass shell spin-1/2 particles (pos.energy)
 
 }; // class THelicitySpinor
 
@@ -235,7 +225,6 @@ class THelicityVSpinor : public TSpinor
  public:
   THelicityVSpinor(const TLorentzVector&, double mass, const Polarization::State&, Normalization=kDoubleMass); ///< constructor, see THelicitySpinor
   THelicityVSpinor(const FourVector<double>&, double mass, const Polarization::State&, Normalization=kDoubleMass); ///< constructor, see THelicitySpinor
-  THelicityVSpinor(TRootIOCtor*); ///< ROOT I/O constructor
   THelicityVSpinor(const THelicityVSpinor&); ///< copy constructor
   virtual ~THelicityVSpinor(); ///< destructor
   THelicityVSpinor& operator=(const THelicityVSpinor&); ///< assignment
@@ -244,7 +233,6 @@ class THelicityVSpinor : public TSpinor
  private:
   void ToHelicityVSpinor(const Polarization::State&, const double phi); ///< rotates the Pauli spinors to the helicity basis
 
-  ClassDef(THelicityVSpinor,1); // Helicity spinor for on-mass shell spin-1/2 particles (neg.energy)
 
 }; // class THelicityVSpinor
 

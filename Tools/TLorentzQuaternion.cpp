@@ -89,37 +89,30 @@ using std::atan2;
 //
 //////////////////////////////////////////////////////////////////////////
 
-ClassImp(TLorentzQuaternion)
 
 //_____________________________________________________________________
 TLorentzQuaternion::TLorentzQuaternion(const std::complex<double>& q0,
 				       const std::complex<double>& q1,
 				       const std::complex<double>& q2,
 				       const std::complex<double>& q3)
-: TObject(), fQ0(q0), fQ1(q1), fQ2(q2), fQ3(q3)
+: fQ0(q0), fQ1(q1), fQ2(q2), fQ3(q3)
 {
   // Private constructor
 }
 
 //_____________________________________________________________________
 TLorentzQuaternion::TLorentzQuaternion()
-  : TObject(), fQ0(complex<double>(1.)), fQ1(complex<double>(0.)),
+  : fQ0(complex<double>(1.)), fQ1(complex<double>(0.)),
     fQ2(complex<double>(0.)), fQ3(complex<double>(0.))
 {
   // Initialize identity transformation
 }
 
 //_____________________________________________________________________
-TLorentzQuaternion::TLorentzQuaternion(TRootIOCtor* rio)
-  : TObject(), fQ0(complex<double>(1.)), fQ1(complex<double>(0.)),
-    fQ2(complex<double>(0.)), fQ3(complex<double>(0.))
-{
-  // ROOT I/O Constructor
-}
 
 //_____________________________________________________________________
 TLorentzQuaternion::TLorentzQuaternion(const double theta, const TVector3& axis)
-  : TObject(), fQ0(complex<double>(1.)), fQ1(complex<double>(0.)),
+  : fQ0(complex<double>(1.)), fQ1(complex<double>(0.)),
     fQ2(complex<double>(0.)), fQ3(complex<double>(0.))
 {
   // Initialize rotation over angle 'theta' around axis defined by 'axis'
@@ -128,7 +121,7 @@ TLorentzQuaternion::TLorentzQuaternion(const double theta, const TVector3& axis)
 
 //_____________________________________________________________________
 TLorentzQuaternion::TLorentzQuaternion(const TRotation& rotation)
-  : TObject(), fQ0(complex<double>(1.)), fQ1(complex<double>(0.)),
+  : fQ0(complex<double>(1.)), fQ1(complex<double>(0.)),
     fQ2(complex<double>(0.)), fQ3(complex<double>(0.))
 {
   // Initialize rotation
@@ -141,7 +134,7 @@ TLorentzQuaternion::TLorentzQuaternion(const TRotation& rotation)
 
 //_____________________________________________________________________
 TLorentzQuaternion::TLorentzQuaternion(const TVector3& beta)
-  : TObject(), fQ0(complex<double>(1.)), fQ1(complex<double>(0.)),
+  : fQ0(complex<double>(1.)), fQ1(complex<double>(0.)),
     fQ2(complex<double>(0.)), fQ3(complex<double>(0.))
 {
   // Initialize pure Lorentz boost defined by boost vector 'beta'
@@ -152,7 +145,7 @@ TLorentzQuaternion::TLorentzQuaternion(const TVector3& beta)
 TLorentzQuaternion::TLorentzQuaternion(const double betaX, 
 				       const double betaY, 
 				       const double betaZ)
-  : TObject(), fQ0(complex<double>(1.)), fQ1(complex<double>(0.)),
+  : fQ0(complex<double>(1.)), fQ1(complex<double>(0.)),
     fQ2(complex<double>(0.)), fQ3(complex<double>(0.))
 {
   // Initialize pure Lorentz boost defined by components of boost vector

@@ -103,7 +103,6 @@ class TInterpolatingWavefunction : public TWavefunctionImplementation
   /// table of the singlet P wave, p space
   std::map<double,double> *fVSp; // list of L=1 singlet wave in p-space
 
-  ClassDef(TInterpolatingWavefunction,1); // Interpolated wavefunction
 
   bool inclS; ///< [1] turn on S-wave [0] off
   bool inclD; ///< [1] turn on D-wave [0] off

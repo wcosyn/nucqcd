@@ -9,8 +9,6 @@
 #ifndef TWAVEFUNCTIONIMPLEMENTATION_H
 #define TWAVEFUNCTIONIMPLEMENTATION_H
 
-#include <TROOT.h>
-#include <TObject.h>
 #include <TVector3.h>
 
 /*! \brief Interface of a deuteron wave function implementation (used by TDeuteron::Wavefunction)
@@ -19,13 +17,13 @@
  * relativistic P waves) in coordinate space [fm^-1/2], U, W in momentum space [MeV^-3/2]; see there
  * for the normalization and the sign of the D wave.
  */
-class TWavefunctionImplementation : public TObject
+class TWavefunctionImplementation
 {
  public:
   static const double fgHbarc; ///< [MeV fm] hbar c
 
  public:
-  TWavefunctionImplementation(TRootIOCtor*); ///< ROOT I/O constructor
+  TWavefunctionImplementation() = default; ///< default constructor (the derived classes used the former ROOT I/O constructor)
   virtual ~TWavefunctionImplementation(); ///< destructor
 
   // pure virtual copy constructor
@@ -69,7 +67,6 @@ class TWavefunctionImplementation : public TObject
   virtual double Radial_r(int l, double r) const; ///< [fm^-1/2] u(r) for l=0, w(r) for l=2 \param l orbital angular momentum \param r [fm]
 
 
-  ClassDef(TWavefunctionImplementation,1); // Interface for wavefunction implementation
 };
 
 /** @} */

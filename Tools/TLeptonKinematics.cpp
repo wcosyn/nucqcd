@@ -40,7 +40,6 @@ using std::cerr;
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-ClassImp(TLeptonKinematics)
 
  const double TLeptonKinematics::masse= 0.510998910;
  const double TLeptonKinematics::massmu = 105.6583715;
@@ -74,11 +73,6 @@ TLeptonKinematics::TLeptonKinematics(Lepton type)
 }
 
 //_____________________________________________________________________
-TLeptonKinematics::TLeptonKinematics(TRootIOCtor* rio)
-  : fInput(kEpsilon), fBeamEnergy(0.), fScatterAngle(0.), mass(masse)
-{
-  // ROOT I/O Constructor
-}
 
 //_____________________________________________________________________
 TLeptonKinematics::TLeptonKinematics(const TLeptonKinematics& rhs)

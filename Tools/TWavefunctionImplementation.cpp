@@ -38,16 +38,10 @@
 
 using std::cout; using std::cerr; using std::endl;
 
-ClassImp(TWavefunctionImplementation)
 
 const double TWavefunctionImplementation::fgHbarc = 197.326968;
 
 //_____________________________________________________________________
-TWavefunctionImplementation::TWavefunctionImplementation(TRootIOCtor* rio)
-  : TObject()
-{
-  // ROOT I/O Constructor
-}
 
 //_____________________________________________________________________
 TWavefunctionImplementation::~TWavefunctionImplementation()

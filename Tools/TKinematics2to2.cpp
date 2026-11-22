@@ -26,7 +26,6 @@
 
 #include "TKinematics2to2.h"
 
-ClassImp(TKinematics2to2)
 
 //_____________________________________________________________________
 TKinematics2to2::TKinematics2to2(const char *name,const char *title,
@@ -48,11 +47,6 @@ TKinematics2to2::TKinematics2to2(const char *name,const char *title,
 }
 
 //_____________________________________________________________________
-TKinematics2to2::TKinematics2to2(TRootIOCtor *rio)
-  : TKinematics(rio)
-{
-  // ROOT I/O Constructor
-}
 
 //_____________________________________________________________________
 void TKinematics2to2::SetMasses(double mN, double mK, double mY)

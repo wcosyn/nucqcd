@@ -35,7 +35,6 @@ using std::cerr;
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-ClassImp(TElectronKinematics)
 
 //_____________________________________________________________________
 TElectronKinematics::TElectronKinematics()
@@ -48,11 +47,6 @@ TElectronKinematics::TElectronKinematics()
 }
 
 //_____________________________________________________________________
-TElectronKinematics::TElectronKinematics(TRootIOCtor* rio)
-  : fInput(kEpsilon), fBeamEnergy(0.), fEpsilon(0.), fScatterAngle(0.)
-{
-  // ROOT I/O Constructor
-}
 
 //_____________________________________________________________________
 TElectronKinematics::TElectronKinematics(const TElectronKinematics& rhs)

@@ -25,14 +25,12 @@ class TKinematics2to2 : public TKinematics
 		  double mN, double mK, double mY,
 		  const char *formatString,
 		  double var1,double var2,double var3);
-  TKinematics2to2(TRootIOCtor*); ///< ROOT I/O constructor
   
   virtual void SetMasses(double mN, double mK, double mY); ///< sets the masses [MeV] and updates the kinematics
 
  protected:
   virtual double Underflow() const { return 1e-6; } ///< underflow parameter (1e-6)
   
-  ClassDef(TKinematics2to2,1)    // Kinematics for gamma N -> K Y
     
 };
 

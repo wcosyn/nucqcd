@@ -15,10 +15,9 @@
 using TMath::Sign;
 using namespace std;
 
-ClassImp(TMFSpinor)
 
 TMFSpinor::TMFSpinor(const MeanFieldNucleus &nucleus, int shellindex, int m, double r, double costheta, double phi)
-: TObject(), fComponent(new Matrix<4,1>){
+: fComponent(new Matrix<4,1>){
 
   double Gr=nucleus.getWave_G(shellindex,r);
   double Fr=nucleus.getWave_F(shellindex,r);
@@ -37,7 +36,7 @@ TMFSpinor::TMFSpinor(const MeanFieldNucleus &nucleus, int shellindex, int m, dou
 
 
 TMFSpinor::TMFSpinor(const MeanFieldNucleus &nucleus, int shellindex, int m, double Gr, double Fr, double costheta, double phi)
-: TObject(), fComponent(new Matrix<4,1>){
+: fComponent(new Matrix<4,1>){
   complex<double> spinup=exp(nucqcd::i_unit*0.5*phi*double(m-1));
   complex<double> spindown=exp(nucqcd::i_unit*0.5*phi*double(m+1));
   (*fComponent)(0,0)=nucqcd::i_unit*Gr*spinup*TDeuteron::Wavefunction::ClebschGordan(2*nucleus.getL_array()[shellindex],m-1,1,1, nucleus.getJ_array()[shellindex],m)*
@@ -53,7 +52,7 @@ TMFSpinor::TMFSpinor(const MeanFieldNucleus &nucleus, int shellindex, int m, dou
 
 
 TMFSpinor::TMFSpinor(const MeanFieldNucleus &nucleus, int shellindex, int m, double Gr, double Fr, const double *Spher_harm, double phi)
-: TObject(), fComponent(new Matrix<4,1>){
+: fComponent(new Matrix<4,1>){
   complex<double> spinup=exp(nucqcd::i_unit*0.5*phi*double(m-1));
   complex<double> spindown=exp(nucqcd::i_unit*0.5*phi*double(m+1));
   (*fComponent)(0,0)=nucqcd::i_unit*Gr*spinup*TDeuteron::Wavefunction::ClebschGordan(2*nucleus.getL_array()[shellindex],m-1,1,1, nucleus.getJ_array()[shellindex],m)*Spher_harm[0];
@@ -64,7 +63,7 @@ TMFSpinor::TMFSpinor(const MeanFieldNucleus &nucleus, int shellindex, int m, dou
 }
 
 TMFSpinor::TMFSpinor(const MeanFieldNucleus &nucleus, int shellindex, int m, double r, double costheta, double phi, Matrix<4,1> CG)
-: TObject(), fComponent(new Matrix<4,1>){
+: fComponent(new Matrix<4,1>){
 
   double Gr=nucleus.getWave_G(shellindex,r);
   double Fr=nucleus.getWave_F(shellindex,r);
@@ -83,7 +82,7 @@ TMFSpinor::TMFSpinor(const MeanFieldNucleus &nucleus, int shellindex, int m, dou
 
 
 TMFSpinor::TMFSpinor(const MeanFieldNucleus &nucleus, int shellindex, int m, double Gr, double Fr, double costheta, double phi, Matrix<4,1> CG)
-: TObject(), fComponent(new Matrix<4,1>){
+: fComponent(new Matrix<4,1>){
   complex<double> spinup=exp(nucqcd::i_unit*0.5*phi*double(m-1));
   complex<double> spindown=exp(nucqcd::i_unit*0.5*phi*double(m+1));
   (*fComponent)(0,0)=nucqcd::i_unit*Gr*spinup*CG(0,0)*
@@ -98,7 +97,7 @@ TMFSpinor::TMFSpinor(const MeanFieldNucleus &nucleus, int shellindex, int m, dou
 
 
 TMFSpinor::TMFSpinor(double Gr, double Fr, int m, const double *Spher_harm, double phi, Matrix<4,1> CG)
-: TObject(), fComponent(new Matrix<4,1>){
+: fComponent(new Matrix<4,1>){
   complex<double> spinup=exp(nucqcd::i_unit*0.5*phi*double(m-1));
   complex<double> spindown=exp(nucqcd::i_unit*0.5*phi*double(m+1));
   (*fComponent)(0,0)=nucqcd::i_unit*Gr*spinup*Spher_harm[0]*CG(0,0);
@@ -109,11 +108,6 @@ TMFSpinor::TMFSpinor(double Gr, double Fr, int m, const double *Spher_harm, doub
 
 
 //_____________________________________________________________________
-TMFSpinor::TMFSpinor(TRootIOCtor* rio)
-  : TObject(), fComponent(0)
-{
-  // ROOT I/0 Constructor
-}
 
 
 TMFSpinor::TMFSpinor(const TMFSpinor& rhs)
@@ -136,7 +130,6 @@ TMFSpinor& TMFSpinor::operator=(const TMFSpinor& rhs)
 {
   // Assignment
   if( this!=&rhs) { // avoid self-assignment
-    TObject::operator=(rhs);
     *fComponent=*rhs.fComponent;
   }
 
@@ -151,41 +144,7 @@ TMFSpinor* TMFSpinor::Clone(const char*) const
 }
 
 //______________________________________________________________________________
-void TMFSpinor::Streamer(TBuffer &R__b){}
-// {
-//   // Stream an object of class TSpinor.
 
-//   UInt_t R__s, R__c;
-  
-//   if (R__b.IsReading()) { // begin reading
-//     Version_t R__v = R__b.ReadVersion(&R__s, &R__c); if (R__v) { }
-//     TObject::Streamer(R__b);
-//     fComponent = new Matrix<4,1>;
-//     double realComponent, imagComponent;
-//     for(int i=0; i<4; ++i) {
-//       R__b >> realComponent;
-//       R__b >> imagComponent;
-//       (*fComponent)(i,0) = complex<double>(realComponent,imagComponent);
-//     }
-//     if( R__v<3 ) {
-//       cerr << "ERROR in TSpinor::Streamer(TBuffer&): "
-// 	   << "Old version of TSpinor might contain errors.\n";
-//       exit(1);
-//     }
-
-//     R__b.CheckByteCount(R__s, R__c, TMFSpinor::IsA());
-//   } // end reading 
-
-//   else { // begin writing
-//     R__c = R__b.WriteVersion(TMFSpinor::IsA(), kTRUE);
-//     TObject::Streamer(R__b);
-//     for(int i=0; i<4; ++i) {
-//       R__b << (*fComponent)(i,0).real();
-//       R__b << (*fComponent)(i,0).imag();
-//     }
-//     R__b.SetByteCount(R__c, kTRUE);
-//   } // end writing
-// }
 
 Matrix<1,4> TMFSpinor::H()
 {

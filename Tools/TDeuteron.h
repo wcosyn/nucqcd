@@ -9,9 +9,9 @@
 #ifndef TDEUTERON_H
 #define TDEUTERON_H
 
+#include <string>
 #include "TWavefunctionImplementation.h"
 //#include "TKinematics2to3.h"
-#include <TNamed.h>
 #include <TString.h>
 #include "FourVector.h"
 #include <complex>
@@ -24,7 +24,6 @@ class TLorentzVector;
 /*! \brief Namespace-like class for the deuteron: wave functions and polarization states */
 class TDeuteron
 {
-  ClassDef(TDeuteron,0); // Deuteron namespace
 
  public:
   // Forward declare the polarization class
@@ -72,12 +71,20 @@ class TDeuteron
    * Condon-Shortley phase convention.
    */
  public:
-  class Wavefunction : public TNamed
+  class Wavefunction
   {
+    std::string fName;  ///< name (formerly from the ROOT base class TNamed)
+    std::string fTitle; ///< title
+
+   public:
+    const char *GetName() const { return fName.c_str(); }  ///< name
+    const char *GetTitle() const { return fTitle.c_str(); } ///< title
+    void SetName(const char *name) { fName = name; }        ///< sets the name
+    void SetTitle(const char *title) { fTitle = title; }    ///< sets the title
+
   private:
     Wavefunction(const TString& name="", const TString& title=""); ///< private: use the named constructors
   public:
-    Wavefunction(TRootIOCtor*); ///< ROOT I/O constructor
     Wavefunction(const Wavefunction&); ///< copy constructor (clones the implementation)
     Wavefunction& operator=(const Wavefunction&); ///< assignment (clones the implementation)
     virtual ~Wavefunction();
@@ -198,7 +205,6 @@ class TDeuteron
     
     static const double          kMd;             ///< [MeV] deuteron mass used in Vertex
 
-    ClassDef(Wavefunction,1); // Strangecalc wavefunction
     
   }; // class TDeuteron::Wavefunction
 
@@ -209,11 +215,10 @@ class TDeuteron
    * (in the x-z plane); the angle phi only enters as a phase \f$ e^{-im\phi} \f$ of the
    * polarization vector, see GetPolarizationVector.
    */
-  class Polarization : public TObject
+  class Polarization
   {
   public:   
     Polarization(double,double,int); ///< constructor: polar angle theta [rad] in [0,pi], phase angle phi [rad], state -1, 0 or +1
-    Polarization(TRootIOCtor*); ///< ROOT I/O constructor
     Polarization(const Polarization&); ///< copy constructor
     virtual ~Polarization();
     Polarization& operator=(const Polarization&); ///< assignment
@@ -236,7 +241,6 @@ class TDeuteron
     double fPhi;               ///< [rad] phase angle, see GetPolarizationVector
     int    fPolarizationState; ///< polarization state -1, 0 or +1
 
-    ClassDef(Polarization,1); // Polarization state of a deuteron
 
   }; // class TDeuteron::Polarization
 

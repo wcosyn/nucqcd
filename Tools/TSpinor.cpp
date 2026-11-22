@@ -43,7 +43,6 @@ using namespace std;
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-ClassImp(TSpinor)
 
 //_____________________________________________________________________
 const FourVector< Matrix<2,2> > TSpinor::kSigmaPauli
@@ -58,7 +57,7 @@ const FourVector< Matrix<2,2> > TSpinor::kSigmaPauli
 //_____________________________________________________________________
 TSpinor::TSpinor(double px,double py,double pz,double mass, const Polarization& pol,
 		 Normalization norm, int energyState)
-  : TObject(), fComponent(new Matrix<4,1>)
+  : fComponent(new Matrix<4,1>)
 {
   // Protected Constructor
   // Allows to initialize the spinor for negative energy states. Needed by 
@@ -75,7 +74,7 @@ TSpinor::TSpinor(double px,double py,double pz,double mass, const Polarization& 
 //_____________________________________________________________________
 TSpinor::TSpinor(const TLorentzVector& v, double mass, const Polarization& pol, 
 		 Normalization norm)
-  : TObject(), fComponent(new Matrix<4,1>)
+  : fComponent(new Matrix<4,1>)
 {
   // Constructor
   //
@@ -90,7 +89,7 @@ TSpinor::TSpinor(const TLorentzVector& v, double mass, const Polarization& pol,
 //_____________________________________________________________________
 TSpinor::TSpinor(const FourVector<double>& v, double mass, const Polarization& pol,
 		 Normalization norm)
-  : TObject(), fComponent(new Matrix<4,1>)
+  : fComponent(new Matrix<4,1>)
 {
   // Constructor
   //
@@ -103,11 +102,6 @@ TSpinor::TSpinor(const FourVector<double>& v, double mass, const Polarization& p
 }
 
 //_____________________________________________________________________
-TSpinor::TSpinor(TRootIOCtor* rio)
-  : TObject(), fComponent(0)
-{
-  // ROOT I/0 Constructor
-}
 
 //_____________________________________________________________________
 TSpinor::TSpinor(const TSpinor& rhs)
@@ -130,7 +124,6 @@ TSpinor& TSpinor::operator=(const TSpinor& rhs)
 {
   // Assignment
   if( this!=&rhs) { // avoid self-assignment
-    TObject::operator=(rhs);
     *fComponent=*rhs.fComponent;
   }
 
@@ -145,41 +138,7 @@ TSpinor* TSpinor::Clone(const char*) const
 }
 
 //______________________________________________________________________________
-void TSpinor::Streamer(TBuffer &R__b){}
-// {
-//   // Stream an object of class TSpinor.
 
-//   UInt_t R__s, R__c;
-  
-//   if (R__b.IsReading()) { // begin reading
-//     Version_t R__v = R__b.ReadVersion(&R__s, &R__c); if (R__v) { }
-//     TObject::Streamer(R__b);
-//     fComponent = new Matrix<4,1>;
-//     double realComponent, imagComponent;
-//     for(int i=0; i<4; ++i) {
-//       R__b >> realComponent;
-//       R__b >> imagComponent;
-//       (*fComponent)(i,0) = complex<double>(realComponent,imagComponent);
-//     }
-//     if( R__v<3 ) {
-//       cerr << "ERROR in TSpinor::Streamer(TBuffer&): "
-// 	   << "Old version of TSpinor might contain errors.\n";
-//       exit(1);
-//     }
-
-//     R__b.CheckByteCount(R__s, R__c, TSpinor::IsA());
-//   } // end reading 
-
-//   else { // begin writing
-//     R__c = R__b.WriteVersion(TSpinor::IsA(), kTRUE);
-//     TObject::Streamer(R__b);
-//     for(int i=0; i<4; ++i) {
-//       R__b << (*fComponent)(i,0).real();
-//       R__b << (*fComponent)(i,0).imag();
-//     }
-//     R__b.SetByteCount(R__c, kTRUE);
-//   } // end writing
-// }
 
 //______________________________________________________________________________
 void TSpinor::InitializeSpinor(double px, double py, double pz, double mass,
@@ -248,7 +207,6 @@ ostream& operator<<(ostream& output, const TSpinor& rhs)
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-ClassImp(TSpinor::Polarization)
 
 //______________________________________________________________________________
 TSpinor::Polarization::Polarization(double theta, double phi,
@@ -262,11 +220,6 @@ TSpinor::Polarization::Polarization(double theta, double phi,
 }
 
 //______________________________________________________________________________
-TSpinor::Polarization::Polarization(TRootIOCtor *rio)
-  : TObject(), fTheta(0.), fPhi(0.), fPolarizationState(kUp)
-{
-  // ROOT I/O Constructor
-}
 
 //______________________________________________________________________________
 TSpinor::Polarization::Polarization(const Polarization& rhs)
@@ -287,7 +240,6 @@ TSpinor::Polarization& TSpinor::Polarization::operator=(const Polarization& rhs)
   // Assignment
 
   if( this!=&rhs) { // avoid self-assignment
-    TObject::operator=(rhs);
     fTheta = rhs.fTheta;
     fPhi = rhs.fPhi;
     fPolarizationState = rhs.fPolarizationState;
@@ -481,7 +433,6 @@ TString TSpinor::Polarization::HashName() const
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-ClassImp(TVSpinor)
 
 //_____________________________________________________________________
 TVSpinor::TVSpinor(const TLorentzVector& v, double mass, const Polarization& pol, 
@@ -500,11 +451,6 @@ TVSpinor::TVSpinor(const FourVector<double>& v, double mass, const Polarization&
 }
 
 //_____________________________________________________________________
-TVSpinor::TVSpinor(TRootIOCtor* rio)
-  : TSpinor(rio)
-{
-  // ROOT I/0 Constructor
-}
 
 //_____________________________________________________________________
 TVSpinor::TVSpinor(const TVSpinor& rhs)
@@ -553,7 +499,6 @@ TVSpinor* TVSpinor::Clone(const char*) const
 // angles of the particle's 3-momentum.
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
-ClassImp(THelicitySpinor)
 
 //_____________________________________________________________________
 THelicitySpinor::THelicitySpinor(const TLorentzVector& v, double mass, 
@@ -584,11 +529,6 @@ THelicitySpinor::THelicitySpinor(const FourVector<double>& v, double mass,
 }
 
 //_____________________________________________________________________
-THelicitySpinor::THelicitySpinor(TRootIOCtor* rio)
-  : TSpinor(rio)
-{
-  // ROOT I/0 Constructor
-}
 
 //_____________________________________________________________________
 THelicitySpinor::THelicitySpinor(const THelicitySpinor& rhs)
@@ -665,7 +605,6 @@ void THelicitySpinor::ToHelicitySpinor(const Polarization::State& polState,
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-ClassImp(THelicityVSpinor)
 
 //_____________________________________________________________________
 THelicityVSpinor::THelicityVSpinor(const TLorentzVector& v, double mass, 
@@ -692,11 +631,6 @@ THelicityVSpinor::THelicityVSpinor(const FourVector<double>& v, double mass,
 }
 
 //_____________________________________________________________________
-THelicityVSpinor::THelicityVSpinor(TRootIOCtor* rio)
-  : TSpinor(rio)
-{
-  // ROOT I/0 Constructor
-}
 
 //_____________________________________________________________________
 THelicityVSpinor::THelicityVSpinor(const THelicityVSpinor& rhs)
@@ -770,7 +704,6 @@ void THelicityVSpinor::ToHelicityVSpinor(const Polarization::State& polState,
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-ClassImp(TSpinor::LorentzRotation)
 
 //______________________________________________________________________________
 TSpinor::LorentzRotation::LorentzRotation()
@@ -946,65 +879,7 @@ void TSpinor::LorentzRotation::SetRotation(double thetaX, double thetaY, double 
 }
 
 //______________________________________________________________________________
-void TSpinor::LorentzRotation::Streamer(TBuffer &R__b){}
-// {
-//   // Stream an object of class TSpinor::LorentzRotation.
 
-//   //This works around a msvc bug and should be harmless on other platforms
-//   typedef ::TSpinor::LorentzRotation thisClass;
-//   UInt_t R__s, R__c;
-  
-//   if (R__b.IsReading()) { // begin reading
-//     Version_t R__v = R__b.ReadVersion(&R__s, &R__c); if (R__v) { }
-//     TObject::Streamer(R__b);
-
-//     // Retrieve all GammaStructure coefficients from the buffer
-//     complex<double> compCoeff[16];
-//     double real,imag;
-//     for(int i=0; i<16; ++i) {
-//       R__b >> real;
-//       R__b >> imag;
-//       compCoeff[i]=complex<double>(real,imag);
-//     }
-//     fTransformation 
-//       = GammaStructure(compCoeff[0],compCoeff[1],compCoeff[2],compCoeff[3],
-// 		       compCoeff[4],compCoeff[5],compCoeff[6],compCoeff[7],
-// 		       compCoeff[8],compCoeff[9],compCoeff[10],compCoeff[11],
-// 		       compCoeff[12],compCoeff[13],compCoeff[14],compCoeff[15]);
-
-//     R__b.CheckByteCount(R__s, R__c, thisClass::IsA());
-//   } // end reading 
-
-//   else { // begin writing
-//     R__c = R__b.WriteVersion(thisClass::IsA(), kTRUE);
-//     TObject::Streamer(R__b);
-    
-//     // We wills store the coefficients of the GammaStructure
-//     complex<double> compCoeff[16];
-//     compCoeff[0] = Trace(fTransformation.value()) /4.;
-//     compCoeff[1] = Trace(fTransformation.value()*G5) /4.;
-//     compCoeff[2] = Trace(fTransformation.value()*G0) /4.;
-//     compCoeff[3] = Trace(fTransformation.value()*G1) /-4.;
-//     compCoeff[4] = Trace(fTransformation.value()*G2) /-4.;
-//     compCoeff[5] = Trace(fTransformation.value()*G3) /-4.;
-//     compCoeff[6] = Trace(fTransformation.value()*G5G0) /-4.;
-//     compCoeff[7] = Trace(fTransformation.value()*G5G1) /4.;
-//     compCoeff[8] = Trace(fTransformation.value()*G5G2) /4.;
-//     compCoeff[9] = Trace(fTransformation.value()*G5G3) /4.;
-//     compCoeff[10] = Trace(fTransformation.value()*A1) /4.;
-//     compCoeff[11] = Trace(fTransformation.value()*A2) /4.;
-//     compCoeff[12] = Trace(fTransformation.value()*A3) /4.;
-//     compCoeff[13] = Trace(fTransformation.value()*S1) /4.;
-//     compCoeff[14] = Trace(fTransformation.value()*S2) /4.;
-//     compCoeff[15] = Trace(fTransformation.value()*S3) /4.;
-//     for(int i=0; i<16; ++i) {
-//       R__b << compCoeff[i].real();
-//       R__b << compCoeff[i].imag();
-//     }
-
-//     R__b.SetByteCount(R__c, kTRUE);
-//   } // end writing
-// }
 
 //______________________________________________________________________________
 ostream& operator<<(ostream& output, const TSpinor::LorentzRotation& rhs) 

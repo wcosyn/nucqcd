@@ -9,7 +9,6 @@
 #ifndef TELECTRONKINEMATICS_H
 #define TELECTRONKINEMATICS_H
 
-#include "TObject.h"
 #include "FourVector.h"
 // Forward declarations
 class TKinematics2to2;
@@ -21,10 +20,9 @@ class TKinematics2to3;
  *
  * Create it with one of the named constructors; the caller owns the object.
  */
-class TElectronKinematics : public TObject
+class TElectronKinematics
 {
  public:
-  TElectronKinematics(TRootIOCtor*); ///< ROOT I/O constructor
   TElectronKinematics(const TElectronKinematics&); ///< copy constructor
   TElectronKinematics& operator=(const TElectronKinematics&); ///< assignment
   virtual ~TElectronKinematics() {} // Destructor
@@ -85,7 +83,6 @@ class TElectronKinematics : public TObject
   /// tan^2 of half the electron scattering angle
   mutable double ftan2HalfAngle;
 
-  ClassDef(TElectronKinematics,1); // Abstraction of an eD->e'KYN observable
 
 }; // class TElectronKinematics
 
