@@ -44,7 +44,7 @@ extern"C"{
 
 
 
-He3wf::He3wf(string wf_name,string dir):mA_set(-1){
+He3wf::He3wf(std::string wf_name,std::string dir):mA_set(-1){
   int usecdep=0;
   if(abs(mA_set)!=1) { cerr << "invalid he3 spin value" << endl; assert(1==0);}
   string file;

@@ -104,7 +104,7 @@ void ClassGridThick_SCX::constructGrid(){
 	}
 	
 	
-	/**
+	/*
 	 * Now we add the energy dependent factor to the grid. Grid is saved without the energy dependent
 	 * sigma (total cross section) or density correction factors
 	 * What is in the grid is the expression ( - \int_{z}^{\+\infty} rho(b,z') \textrm{d}z')
@@ -142,7 +142,9 @@ void ClassGridThick_SCX::printDensityGrid(){
 /** Interpolation of grid.
  *  Transform momentum to frame where mom is // z-axis
  *  to fetch the correct fsi factor
- *  @param x the coordinates in \f$r, \, \cos \theta\ \,\text{and} \phi$\f
+ *  @param x the coordinates \f$r, \cos\theta\f$ and \f$\phi\f$
+ *  @param[out] res interpolated SCX probability
+ *  @param[out] err interpolated integration error estimate
  *  */
 double ClassGridThick_SCX::getInterp(double x[],double& res,double& err){ // x is r,costheta,phi 
 	//std::cout << "# ClassGridThick_SCX got interpolation request for " << x[0] << " " << x[1] << " " << x[2] << std::endl;

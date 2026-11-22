@@ -14,7 +14,7 @@
 using namespace std;
 
 WeakQECross::WeakQECross(TElectronKinematics *elec, MeanFieldNucleusThick *pnucleus, double precision, int integr,
-	     string dir, bool cc, double M_A_in, bool user_sigma, bool enable_ROMEA_in,double gA_s_in, double r_s2_in, 
+	     std::string dir, bool cc, double M_A_in, bool user_sigma, bool enable_ROMEA_in,double gA_s_in, double r_s2_in, 
 	      double mu_s_in, double sigma_screening)
 :homedir(dir),lepton(NULL),electron(elec),pnucl(pnucleus),reacmodel(NULL), prec(precision),integrator(integr),
 charged(cc), M_A(M_A_in), usersigma(user_sigma), gA_s(gA_s_in), r_s2(r_s2_in), mu_s(mu_s_in), sigmascreening(sigma_screening), enable_ROMEA(enable_ROMEA_in){
@@ -27,7 +27,7 @@ charged(cc), M_A(M_A_in), usersigma(user_sigma), gA_s(gA_s_in), r_s2(r_s2_in), m
 
 WeakQECross::WeakQECross(TLeptonKinematics *lep, 
 			 MeanFieldNucleusThick *pnucleus, double precision, int integr,
-	     string dir, bool cc, double M_A_in, bool user_sigma,bool enable_ROMEA_in, double gA_s_in, double r_s2_in, 
+	     std::string dir, bool cc, double M_A_in, bool user_sigma,bool enable_ROMEA_in, double gA_s_in, double r_s2_in, 
 	      double mu_s_in, double sigma_screening)
 :homedir(dir),lepton(lep),electron(NULL),pnucl(pnucleus),reacmodel(NULL), prec(precision),integrator(integr),
 charged(cc), M_A(M_A_in), usersigma(user_sigma), gA_s(gA_s_in), r_s2(r_s2_in), mu_s(mu_s_in), sigmascreening(sigma_screening), enable_ROMEA(enable_ROMEA_in){

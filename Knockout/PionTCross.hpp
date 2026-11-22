@@ -55,9 +55,9 @@ public:
   /**
    * @brief function that has parametrization for the free proton pion electroproduction cross section, taken from Tanja Horn's PhD thesis
    * 
-   * @param [GeV^2] t Mandelstam t 
-   * @param [GeV^2] Q2 Q-squared
-   * @param [GeV] W invariant mass
+   * @param t [GeV^2] Mandelstam t
+   * @param Q2 [GeV^2] Q-squared
+   * @param W [GeV] invariant mass
    * @param phipq [rad] azimuthal angle pion and electron plane
    * @param thetapq [rad] polar angle pion and electron plane
    * @param epsilon [] ratio of longitudinal to transverse virtual photon flux

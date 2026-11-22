@@ -31,9 +31,8 @@
  *  Class deliberately kept fairly modular. Only uses FastParticle.
  *  Please keep it that way. No hard coded densities etc. plz, thx.
  * 
- *  @AUTHOR Camille Colle
- *  @AFFILIATION Ghent University
- *  @DATE 21/09/2015
+ *  \author Camille Colle (Ghent University)
+ *  \date 21/09/2015
  *
  *  */
 class ClassGridThick_SCX {

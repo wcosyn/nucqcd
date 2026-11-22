@@ -206,22 +206,22 @@ const complex<double> GammaStructure::multTableCoeff[16][16] =
  * which specifies all coefficients.
  * Standard values are zero from component 7 onwards
  */
-GammaStructure::GammaStructure(const complex<double>& c1,
-			       const complex<double>& c2,
-			       const complex<double>& c3, 
-			       const complex<double>& c4,
-			       const complex<double>& c5, 
-			       const complex<double>& c6,
-			       const complex<double>& c7, 
-			       const complex<double>& c8,
-			       const complex<double>& c9, 
-			       const complex<double>& c10,
-			       const complex<double>& c11, 
-			       const complex<double>& c12,
-			       const complex<double>& c13, 
-			       const complex<double>& c14,
-			       const complex<double>& c15, 
-			       const complex<double>& c16)
+GammaStructure::GammaStructure(const std::complex<double>& c1,
+			       const std::complex<double>& c2,
+			       const std::complex<double>& c3, 
+			       const std::complex<double>& c4,
+			       const std::complex<double>& c5, 
+			       const std::complex<double>& c6,
+			       const std::complex<double>& c7, 
+			       const std::complex<double>& c8,
+			       const std::complex<double>& c9, 
+			       const std::complex<double>& c10,
+			       const std::complex<double>& c11, 
+			       const std::complex<double>& c12,
+			       const std::complex<double>& c13, 
+			       const std::complex<double>& c14,
+			       const std::complex<double>& c15, 
+			       const std::complex<double>& c16)
   : nrComp(16),
     comp(new int[16]),
     compCoeff(new complex<double>[16])
@@ -256,7 +256,7 @@ GammaStructure::GammaStructure(const complex<double>& c1,
 
 // Single component and default constructor
 
-GammaStructure::GammaStructure(const complex<double>& c1)
+GammaStructure::GammaStructure(const std::complex<double>& c1)
   : nrComp(1),
     comp(new int[1]),
     compCoeff(new complex<double>[1])
@@ -270,8 +270,8 @@ GammaStructure::GammaStructure(const complex<double>& c1)
 
 // 2 component constructor
 
-GammaStructure::GammaStructure(const complex<double>& c1,
-			       const complex<double>& c2) 
+GammaStructure::GammaStructure(const std::complex<double>& c1,
+			       const std::complex<double>& c2) 
   : nrComp(2),
     comp(new int[2]),
     compCoeff(new complex<double>[2])
@@ -289,12 +289,12 @@ GammaStructure::GammaStructure(const complex<double>& c1,
 
 // constructor with maximum 6 components
 
-GammaStructure::GammaStructure(const complex<double>& c1, 
-			       const complex<double>& c2,
-			       const complex<double>& c3, 
-			       const complex<double>& c4,
-			       const complex<double>& c5, 
-			       const complex<double>& c6) 
+GammaStructure::GammaStructure(const std::complex<double>& c1, 
+			       const std::complex<double>& c2,
+			       const std::complex<double>& c3, 
+			       const std::complex<double>& c4,
+			       const std::complex<double>& c5, 
+			       const std::complex<double>& c6) 
   : nrComp(6),
     comp(new int[6]),
     compCoeff(new complex<double>[6])
@@ -320,7 +320,7 @@ GammaStructure::GammaStructure(const complex<double>& c1,
 
 GammaStructure::GammaStructure(int nrComp_init,
 			       int* comp_init,
-			       complex<double>* compCoeff_init)
+			       std::complex<double>* compCoeff_init)
   : nrComp( nrComp_init ),
     comp( comp_init ),
     compCoeff( compCoeff_init ) 
@@ -796,7 +796,7 @@ GammaStructure GammaStructure::operator*(double factor) const
 
 // (GammaStructure * complex)
 
-GammaStructure GammaStructure::operator*(const complex<double>& factor) const
+GammaStructure GammaStructure::operator*(const std::complex<double>& factor) const
 {
     // make a copy of the GammaStructure;
     GammaStructure product = *this;
@@ -893,7 +893,7 @@ GammaStructure& GammaStructure::operator*=(double factor)
 
 //-------------------------------------------------------------------------
 
-GammaStructure& GammaStructure::operator*=(const complex<double>& factor)
+GammaStructure& GammaStructure::operator*=(const std::complex<double>& factor)
 {
   // Multiply all non-zero components with the complex double
   for(int i=0; i<nrComp; i++)

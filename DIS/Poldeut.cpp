@@ -9,7 +9,7 @@
 
 using namespace std;
 
-Poldeut::Poldeut(string wf_name, string struc_name):
+Poldeut::Poldeut(std::string wf_name, std::string struc_name):
 strucname(struc_name),
 wfname(wf_name),
 s_wave(1),

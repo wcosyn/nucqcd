@@ -8,7 +8,7 @@
 
 using namespace std;
 
-DeuteronCross::DeuteronCross(string name, bool proton, string struc_name,
+DeuteronCross::DeuteronCross(std::string name, bool proton, std::string struc_name,
 			     double sigmain, double betain, double epsilonin, double betaoffin, double lambdain, int offshellset,
 			     int looplimit
 			    ):
