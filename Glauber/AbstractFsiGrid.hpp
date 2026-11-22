@@ -108,8 +108,10 @@ public:
   double getPrec() const {return prec;}/*!< returns the integration precision */
   int getIntegrator() const{return integrator;} /*!< returns the integrator type */
   
-  /*! add particle subject to isi/fsi, checks to see that the vector contains max one incoming particle
-   *\param[in] newparticle pointer to instance of FastParticle you want to add*/
+  /*! add particle subject to isi/fsi, checks to see that the vector contains max one incoming particle.
+   * The grid stores and uses the particle moved to the centre of its grid-cache bin
+   * (FastParticle::gridBinCentre), so getParticles() returns the binned particles.
+   *\param[in] newparticle instance of FastParticle you want to add*/
   virtual void addParticle(FastParticle &newparticle); 
   void clearParticles(); /*!< Clear contents of isi/fsi particles vector*/
   void printParticles() const; /*!< Print contents of isi/fsi particles vector*/

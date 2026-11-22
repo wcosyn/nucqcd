@@ -135,8 +135,8 @@ public:
   double getSigma_decay_n() const{ return sigma_decay_n;}
   /*! [fm^2] return sigma (corrected for decay) parameter for scattering with proton(1) or neutron(0) \param proton selects proton or neutron */
   double getSigma_decay(bool proton) const{ return proton? sigma_decay_p : sigma_decay_n;}
-  double get_lc_mod(){return lc_mod;}
-  double get_nkt_mod(){return nkt_mod;}
+  double get_lc_mod() const {return lc_mod;} /*!< [] modification factor of the coherence length (CT) */
+  double get_nkt_mod() const {return nkt_mod;} /*!< [] modification factor of the initial CT sigma value */
   
   
   /*! [fm^2] return sigma parameter for scattering with nucleon from specified level
@@ -250,6 +250,15 @@ public:
    */
   void setScatter(double sigma, double beta, double eps, double p_dil);
   bool getUserset() const{return userset;} /*!< returns if user set the scattering parameters */
+  /*! Copy of this particle moved to the centre of its bin in the grid cache key, as used by the FSI
+   * grids (AbstractFsiGrid::addParticle), so that a cached grid does not depend on which kinematics
+   * in its bin was computed first. Bins: p to the nearest multiple of 10 MeV (at least 10 MeV);
+   * cos(theta) and phi to the nearest 0.1 (phi taken in [-pi,pi], and the edge bin |phi| > 3.05
+   * to pi, so particles near the phi=pi plane lie in it); the hard scale to 0.1 GeV^2; lc_mod and
+   * nkt_mod to 0.01; decay_dil to 1 MeV. The scattering parameters follow from the binned momentum;
+   * user-set ones are binned too (sigma to 0.1 fm^2 = 1 mb, beta^2 to 0.01 fm^2, epsilon to 0.01).
+   */
+  FastParticle gridBinCentre() const;
   /*! Sets the glauber parameters for a nucleon fast particle
    * \param mom [MeV]  particle momentum
    * \param sigmap [fm^2]  sigma parameter for scattering with proton

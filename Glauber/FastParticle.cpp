@@ -8,6 +8,7 @@ using namespace std;
 #include <constants.hpp>
 #include <Utilfunctions.hpp>
 #include <cassert>
+#include <cmath>
 
 using namespace std;
 
@@ -208,6 +209,7 @@ decay_dil(Copy.getDecay_dil()),
 sigma_decay_n(Copy.getSigma_decay_n()),
 sigma_decay_p(Copy.getSigma_decay_p()),
 userset(Copy.userset),
+Gamma(Copy.Gamma),
 lc_mod(Copy.lc_mod),
 nkt_mod(Copy.nkt_mod)
 {
@@ -245,6 +247,7 @@ FastParticle& FastParticle::operator=(const FastParticle& rhs)
     sigma_decay_n = rhs.getSigma_decay_n();
     sigma_decay_p = rhs.getSigma_decay_p();
     userset = rhs.userset;
+    Gamma = rhs.Gamma;
     lc_mod = rhs.lc_mod;
     nkt_mod = rhs.nkt_mod;
     for(int i=0;i<3;i++) hitb[i]=rhs.getHitbvec()[i];
@@ -854,6 +857,29 @@ void FastParticle::interpPionGlauberData(int particletype, double mom, double &s
   return;
 }
 
+
+FastParticle FastParticle::gridBinCentre() const{
+  // bins of the grid cache key (AbstractFsiGrid::setFilenames): 10 MeV in p, 0.1 in cos(theta) and
+  // phi [rad], 0.1 GeV^2 in the hard scale, 0.01 in lc_mod and nkt_mod, 1 MeV in decay_dil
+  const double pc = 10.*std::max(std::lround(p/10.),1L);
+  const double cthc = std::lround(costheta*10.)/10.;
+  const long kphi = std::lround(std::remainder(phi,2.*PI)*10.); // phi in [-pi,pi] first
+  const double phic = std::labs(kphi)>=31 ? PI : kphi/10.;    // the edge bin [3.05,pi] is centred on pi (in plane)
+  FastParticle c(particletype,incoming,pc,std::acos(cthc),phic,std::lround(hardscale*10.)/10.,Gamma,
+                 std::lround(lc_mod*100.)/100.,std::lround(nkt_mod*100.)/100.,"");
+  if(userset){
+    c.sigmap=std::lround(sigmap*10.)/10.;
+    c.sigman=std::lround(sigman*10.)/10.;
+    c.beta2p=std::lround(beta2p*100.)/100.;
+    c.beta2n=std::lround(beta2n*100.)/100.;
+    c.epsilonp=std::lround(epsilonp*100.)/100.;
+    c.epsilonn=std::lround(epsilonn*100.)/100.;
+    c.decay_dil=decay_dil;
+    c.userset=1;
+  }
+  c.decay_dil=std::round(c.decay_dil);
+  return c;
+}
 
 void FastParticle::setScatter(double sigma, double beta, double eps, double p_dil){
   setSigma(sigma);

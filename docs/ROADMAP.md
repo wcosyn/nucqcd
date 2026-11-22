@@ -23,7 +23,7 @@ same PR.
 | 2 | Repo hygiene, including branches | ✅ done (PR #4) |
 | 3 | Rename the repository | ✅ done (PR #7, tagged-poldeut PRs #1 and #2) |
 | 4 | Bug fixes | 🔶 listed bugs fixed (PRs #8, #9, #12); He3 normalization to check |
-| 5 | Low-risk modernization | 🔶 `-fopenmp`, Doxygen (PR #10), Fortran interop (#11), constants (#13, #14) and grid cache location and writes (#15) done; cache key open |
+| 5 | Low-risk modernization | 🔶 `-fopenmp`, Doxygen (PR #10), Fortran interop (#11), constants (#13, #14) and grid cache (#15, #16) done |
 | 6 | Structural refactors | ⬜ |
 | 7 | Unbundle Cuba | ⬜ (can be done any time after step 2) |
 | 8 | Repository README | ⬜ (last) |
@@ -207,7 +207,7 @@ one commit per bug; no `[known-bug]` tests remain.
   `DIS/InclusiveCross`, `Glauber/FsiCorrelator`), and `MeanFieldNucleus[Thick]` has no `operator=`.
 - [ ] **Errors:** replace `exit()` in the libraries (about 295 calls) with exceptions, so errors can be
   tested and handled. For example, Christy-Bosted calls `exit()` outside its kinematic range.
-- [ ] **Grid cache:**
+- [x] **Grid cache:**
   - [x] **Cache directory:** `Tools/GridCache.hpp` provides `nucqcd::grid_cache_dir(share)`, which is
     `$NUCQCD_GRID_DIR` if that is set and `share/grids/` otherwise. `AbstractFsiGrid` (and so all
     Glauber grids), `DistMomDistrGrid` and `ClassGridThick_SCX` use it, so the cache can live on
@@ -225,21 +225,34 @@ one commit per bug; no `[known-bug]` tests remain.
     incomplete (old files can still be truncated). Tested in `unit_grid_cache` and in a `slow` case of
     `reg_glauber_grid`. Not done for the deuteron GPD grids in `share/gpd_deutgrids/`
     (`GPD_Partons`), which are text files written point by point during the computation.
-  - [ ] **Cache key (needs a decision):** the file name is the key. It truncates the momentum to
-    10 MeV (`int(p/10)`) and rounds cos θ, φ and σ to 0.1 (`Glauber/AbstractFsiGrid.cpp`,
-    `setFilenames`); the CT key truncates the hard scale and the CT parameters. Two
-    consequences: a grid computed at p = 392 MeV is reused at 399 MeV (or at cos θ 0.96 for 0.98),
-    and since the grid is computed at whatever kinematics came first, **results depend on the
-    contents of the cache and on the order of the calculations**. The same holds within one run:
-    `updateGrids()` does nothing if the rounded name is unchanged. Also, the FSI+CT grid computed on
-    its own (`constructCtGrid`) differs from the one computed together with the FSI grid
-    (`constructAllGrids`) by up to the integration precision (6e-4 relative at precision 1e-3 in the
-    test), so which grid was cached first matters at that level too. Options: (a) compute the grid at
-    the bin centre (rounded p, cos θ, φ) so results no longer depend on history, keeping the reuse;
-    (b) key on the exact values (e.g. `%.6g`), which recomputes the grid for every new kinematics;
-    (c) keep the bins but make them finer. (a) and (b) change results; this needs the author's
-    choice. The file names also do not record the physics (model version, constants), so stale grids
-    must be deleted by hand; a version tag in the name would make that automatic.
+  - [x] **Cache key: grids at the bin centre** (option (a) of three, chosen by the author on
+    2026-11-22; the others were exact keys, which recompute every new kinematics, and finer bins). The
+    file name is the cache key and bins the kinematics: 10 MeV in p, 0.1 in cos θ and φ, 0.1 GeV² in
+    the hard scale, 0.01 in the CT parameters. Until now the grid was computed at whatever kinematics
+    came first in its bin and then reused (also within a run, by `updateGrids()`), so results
+    depended on the contents of the cache and on the order of the calculations.
+    `AbstractFsiGrid::addParticle` now stores the particle moved to the centre of its bin
+    (`FastParticle::gridBinCentre`), so the grid in a file is the same whoever computed it. The
+    bin widths are unchanged, but the bins are centred on the lattice (rounding instead of
+    truncating p and the CT parameters), so round inputs such as p = 1500 MeV, Q² = 8 GeV² and
+    lc_mod = 1 are bin centres and stay as they are. φ is taken in [-π, π] and the edge bin
+    |φ| > 3.05 goes to π, so particles near the φ = π plane lie in it. User-set scattering
+    parameters are binned too (σ to 1 mb, β² and ε to 0.01), and their key now also contains the
+    momentum, which the CT and decay grids depend on. File names end in `.key2.dat`, so grids cached
+    with the old key are not reused (delete them).
+    **Impact:** results change by the distance to the bin centre. The A(e,e'p) programs
+    (`Knockout/Model`) put the proton along z, so only the momentum moves (by at most 5 MeV): the RMSGA
+    cross sections in `reg_glauber_grid` moved by 4–6e-5 relative and were re-baselined. Particles
+    off the z axis move further: cos θ bins of 0.1 put every θ below about 18° at θ = 0, so
+    `reg_glauber_grid` now uses cos θ = 0.9 (a bin centre) instead of θ = 0.3 rad, and its grid
+    references were re-baselined. Earlier results with off-axis particles used the angle of the first
+    calculation in each bin. Finer angle bins (option (c)) remain possible if this matters.
+    Also fixed: the `FastParticle` copy constructor and assignment did not copy the decay width
+    `Gamma`, which `setScatter` and the binning use. Tested in `unit_grid_bins` and in a `slow` case
+    of `reg_glauber_grid` (two particles in the same bin give bitwise identical grids, computed or
+    read from the cache).
+  - Optional: the file names do not record the physics (model version, constants), so stale grids must still
+    be deleted by hand when the physics changes; the key version tag could be bumped for that.
 - [x] **Fortran interop:** file names reached Fortran through unbounded `strcpy`/`strcat` into fixed
   buffers: the 128-character COMMON block strings of the Alekhin and GRSV code (in both
   `NuclStructure` and `NucleonStructure`) and the 256-character He3 file name. A path longer than the

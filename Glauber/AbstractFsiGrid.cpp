@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
+#include <cmath>
 
 using namespace std;
 
@@ -28,8 +29,10 @@ AbstractFsiGrid::~AbstractFsiGrid(){
 }
   
 //add particle to the particles vector
-void AbstractFsiGrid::addParticle(FastParticle& newparticle)
+void AbstractFsiGrid::addParticle(FastParticle& particle)
 {
+  // the grid is computed for the centre of the cache bin of the particle, see FastParticle::gridBinCentre
+  FastParticle newparticle=particle.gridBinCentre();
   if (particles.empty()){
     particles.push_back(newparticle);
     if(newparticle.getParticletype()==0){
@@ -234,34 +237,29 @@ complex<double> AbstractFsiGrid::getInterp(complex<double> ***grid){
 
 /**set filenames
  *
- * To generate the filename we divide the momentum by 10 and cast it to an int.
- * This will cause the files with for example momentum 392 and 399 MeV to be interpreted the same. \n
- * Also we multiply cosTheta with 10 and round to an int. 
- * This will cause the files with for example cosTheta 0.98 and 0.96 to be interpreted the same. \n
- * Also we multiply phi with 10 and round to an int.
- * This will cause the files with for example phi 2.94 and 2.88 to interpreted the same. \n
- * 
- * Furthermore we add scattering parameters, grid sizes, and the integrator+precision used.
- * Particles with scattering parameters set by the user get their sigma, beta and epsilon in the
- * name instead of their momentum, so their files are distinct from the others. (Until 2026-11
- * they went to a directory "fixgrids" next to the cache directory, which was not created.)
+ * The file name is the cache key. It contains the particle properties the grid depends on, on the
+ * lattice of the bins of FastParticle::gridBinCentre (the particles were moved to their bin
+ * centres in addParticle, so the grid in a file is the same whichever kinematics computed it):
+ * the momentum in units of 10 MeV, cos theta and phi in units of 0.1, and sigma in mb; for
+ * particles with user-set scattering parameters also beta^2 and epsilon in units of 0.01. Then the
+ * grid sizes, the integrator and its precision, and the version of the key. \n
+ * Key versions: none (until 2026-11): p truncated to 10 MeV, grid computed at the first
+ * kinematics in the bin, no momentum for user-set parameters; key2: bin centres.
  */
 void AbstractFsiGrid::setFilenames(string cachedir){
   fsi_filename=cachedir+pnucleus->getNucleusName();
   //add all particle properties
   for(size_t i=0;i<particles.size();i++){
-    if(particles[i].getIncoming()) fsi_filename+=".inc";
-    if(particles[i].getUserset()) fsi_filename+=".Ptype"+to_string(particles[i].getParticletype())
-		  +".th"+to_string(int(round(particles[i].getCosTheta()*10)))+".ph"+to_string(int(round(particles[i].getPhi()*10)))
-		 +".sigma"+to_string(int(round(particles[i].getSigmap()*10.)))
-		 +".beta"+to_string(int(round(particles[i].getBeta2p()*100.)))
-		 +".eps"+to_string(int(round(particles[i].getEpsilonp()*100.)));
-    else fsi_filename+=".Ptype"+to_string(particles[i].getParticletype())+".p"+to_string(max(int(particles[i].getP()/10.),1))
-		  +".th"+to_string(int(round(particles[i].getCosTheta()*10)))+".ph"+to_string(int(round(particles[i].getPhi()*10)))
-		 +".sigma"+to_string(int(round(particles[i].getSigmap()*10.)));
+    const FastParticle &part=particles[i];
+    if(part.getIncoming()) fsi_filename+=".inc";
+    fsi_filename+=".Ptype"+to_string(part.getParticletype())+".p"+to_string(lround(part.getP()/10.))
+		  +".th"+to_string(lround(part.getCosTheta()*10))+".ph"+to_string(lround(part.getPhi()*10))
+		  +".sigma"+to_string(lround(part.getSigmap()*10.));
+    if(part.getUserset()) fsi_filename+=".beta"+to_string(lround(part.getBeta2p()*100.))
+		  +".eps"+to_string(lround(part.getEpsilonp()*100.));
   }
   fsi_filename+=".r"+to_string(getRgrid())+".cth"+to_string(getCthgrid())
-		+".phi"+to_string(getPhigrid())+".prec"+to_string(getPrec()*1.E05)+".intgr"+to_string(getIntegrator())+".dat";
+		+".phi"+to_string(getPhigrid())+".prec"+to_string(getPrec()*1.E05)+".intgr"+to_string(getIntegrator())+".key2.dat";
 //     cout << fsi_filename << endl;
 }
   
