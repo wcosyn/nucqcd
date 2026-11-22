@@ -100,23 +100,23 @@
 #include "ErrorMessage.hpp"
 #include "TLorentzQuaternion.h"
 #include "constants.hpp"
+#include "MathUtil.hpp"
+#include <algorithm>
+#include <cmath>
+#include <cstdlib>
 #include <iostream>
 #include <cstring>
 #include <TObjArray.h>
 #include <TObjString.h>
 #include <TString.h>
-#include <Math/Polynomial.h>
 #include <vector>
 #include <TLorentzRotation.h>
 #include <TVector2.h>
 #include <TVector3.h>
 // #include <numtoa.h>
 using std::cout; using std::cerr;
-using ROOT::Math::Polynomial;
 using std::vector;
 using std::strcmp;
-using TMath::Sqrt; using TMath::Cos; using TMath::Sin;
-using TMath::ACos; using TMath::Abs; using TMath::Power;
 
 
 //_____________________________________________________________________
@@ -1845,10 +1845,10 @@ void TKinematics2to3::UpdateKinematics()
     double e1,p1;
     if( fE1Var==&fPk || fE1Var==&fPy || fE1Var==&fPn ) {
       p1 = *fE1Var;
-      e1 = Sqrt( p1*p1 + m1*m1 );
+      e1 = std::sqrt( p1*p1 + m1*m1 );
     } else {
       e1 = *fE1Var;
-      p1 = Sqrt( e1*e1 - m1*m1 );
+      p1 = std::sqrt( e1*e1 - m1*m1 );
     }
     if(e1<0. || p1 <0.) fIsPhysical = false;
 
@@ -1860,7 +1860,7 @@ void TKinematics2to3::UpdateKinematics()
     if( fEVar==&fWlab )
       eg = fWlab;
     else if( fEVar==&fKlab )
-      eg = Sqrt( fKlab*fKlab - fQsquared );
+      eg = std::sqrt( fKlab*fKlab - fQsquared );
     else if( fEVar==&fWtot )
       eg = ( fWtot*fWtot + fQsquared - fMd*fMd ) / 2. / fMd;
     else if( fEVar==&fStot )
@@ -1893,15 +1893,15 @@ void TKinematics2to3::UpdateKinematics()
     double costh1;
     if( fTh1Var==&fTgk || fTh1Var==&fTgy || fTh1Var==&fTgn )
       costh1 = ( *fTh1Var + fQsquared - m1*m1 + 2.*eg*e1 ) 
-	/ 2. / p1 / Sqrt(eg*eg+fQsquared);
+	/ 2. / p1 / std::sqrt(eg*eg+fQsquared);
     else if( fTh1Var==&fThk || fTh1Var==&fThy || fTh1Var==&fThn )
-      costh1 = Cos( *fTh1Var );
+      costh1 = std::cos( *fTh1Var );
     else
       costh1 = *fTh1Var;
     
-    if( Abs(costh1) <= 1.0 )
+    if( std::abs(costh1) <= 1.0 )
       fIsPhysical = true && fIsPhysical;
-    else if( Abs(costh1)-1.0 < kUflow ) {
+    else if( std::abs(costh1)-1.0 < kUflow ) {
       fIsPhysical = true && fIsPhysical;
       costh1 = ( costh1>0.0 ? 1.0 : -1.0 );
     }
@@ -1912,8 +1912,8 @@ void TKinematics2to3::UpdateKinematics()
     // cos -> sin calculation is very unstable
     // when cos close to +-1.
     double sinth1=-2.;
-    if( 1.-Abs(costh1) <= kUflow) sinth1=0.;
-    else sinth1 = Sqrt(1. - costh1*costh1); 
+    if( 1.-std::abs(costh1) <= kUflow) sinth1=0.;
+    else sinth1 = std::sqrt(1. - costh1*costh1); 
 
     // Photon energy for the remaining case,
     // that is when energy is given by s_{23} or W_{23}
@@ -1925,10 +1925,9 @@ void TKinematics2to3::UpdateKinematics()
 	eg = ( s23 + fQsquared - fMd*fMd - m1*m1 + 2.*fMd*e1 ) / 2. / ( fMd - e1 );
       } 
       else {
-	Polynomial eq(pow((fMd-e1)/p1/costh1,2)-1.,
+	std::vector<double> roots = nucqcd::quadratic_real_roots(pow((fMd-e1)/p1/costh1,2)-1.,
 		      2.*(fMd-e1)/p1/costh1*(fMd*fMd+m1*m1-2.*fMd*e1-s23-fQsquared)/2./p1/costh1,
 		      pow((fMd*fMd+m1*m1-2.*fMd*e1-s23-fQsquared)/2./p1/costh1,2)-fQsquared);
-	vector<double> roots = eq.FindRealRoots();
 
 	if(roots.size() == 0 ) {
 	  fIsPhysical = false;
@@ -1969,7 +1968,7 @@ void TKinematics2to3::UpdateKinematics()
     if( eg<threshold-nucqcd::strange_underflow ) fIsPhysical = false;
 
     // Set 4vectors
-    fGvector->SetXYZT(0.,0.,Sqrt(eg*eg+fQsquared),eg);
+    fGvector->SetXYZT(0.,0.,std::sqrt(eg*eg+fQsquared),eg);
     vector1.SetXYZT(p1*sinth1,0.,p1*costh1,e1);
     
     // Determine (23) subsystem
@@ -1987,7 +1986,7 @@ void TKinematics2to3::UpdateKinematics()
     TLorentzRotation rotateTo23; 
     double rotationAngle=0.; 
     if( 1.-fabs(vector23.CosTheta())>kUflow )
-      rotationAngle = -1.*TMath::Sign(1.,vector23.X())
+      rotationAngle = -1.*std::copysign(1.,vector23.X())
 	*vector23.Vect().Angle(fGvector->Vect());
     rotateTo23.RotateY(rotationAngle);
     // Define Lorentzboost that boosts in reference frame defined above
@@ -2000,14 +1999,14 @@ void TKinematics2to3::UpdateKinematics()
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // CM energy particle 2
     double p2cm = subSystem->GetPk();
-    double e2cm = Sqrt( p2cm*p2cm + m2*m2 );
+    double e2cm = std::sqrt( p2cm*p2cm + m2*m2 );
 
     if( fKinSolution[2] == '*' ) {
       // CM angle particle 2
       double costh2cm;
       if( fTh2Var==&fKYthkcm || fTh2Var==&fKYthycm || fTh2Var==&fKNthncm ||
 	  fTh2Var==&fKNthkcm || fTh2Var==&fYNthycm || fTh2Var==&fYNthncm )
-	costh2cm = Cos(*fTh2Var);
+	costh2cm = std::cos(*fTh2Var);
       else if( fTh2Var==&fKYcosthkcm || fTh2Var==&fKYcosthycm || fTh2Var==&fKNcosthncm ||
 	       fTh2Var==&fKNcosthkcm || fTh2Var==&fYNcosthycm || fTh2Var==&fYNcosthncm )
 	costh2cm = *fTh2Var;
@@ -2017,9 +2016,9 @@ void TKinematics2to3::UpdateKinematics()
 	costh2cm = ( *fTh2Var + fQsquared - m2*m2 + 2.*wcm*e2cm ) / 2. / kcm / p2cm;
       }
       
-      if( Abs(costh2cm) <= 1.0 )
+      if( std::abs(costh2cm) <= 1.0 )
 	fIsPhysical = true && fIsPhysical;
-      else if( Abs(costh2cm)-1.0 < kUflow ) {
+      else if( std::abs(costh2cm)-1.0 < kUflow ) {
 	fIsPhysical = true && fIsPhysical;
 	costh2cm = ( costh2cm>0.0 ? 1.0 : -1.0 );
       }
@@ -2030,12 +2029,12 @@ void TKinematics2to3::UpdateKinematics()
       // cos -> sin calculation is very unstable
       // when cos close to +-1.
       double sinth2cm=-2.;
-      if( 1.-Abs(costh2cm) <= kUflow ) sinth2cm=0.;
-      else sinth2cm = Sqrt(1. - costh2cm*costh2cm); 
+      if( 1.-std::abs(costh2cm) <= kUflow ) sinth2cm=0.;
+      else sinth2cm = std::sqrt(1. - costh2cm*costh2cm); 
 
-      if( Abs(sinth2cm) <= 1.0 )
+      if( std::abs(sinth2cm) <= 1.0 )
 	fIsPhysical = true && fIsPhysical;
-      else if( Abs(sinth2cm)-1.0 < kUflow ) {
+      else if( std::abs(sinth2cm)-1.0 < kUflow ) {
 	fIsPhysical = true && fIsPhysical;
 	sinth2cm = ( sinth2cm>0.0 ? 1.0 : -1.0 );
       }
@@ -2043,8 +2042,8 @@ void TKinematics2to3::UpdateKinematics()
 	fIsPhysical = false;
 
       // set 4vector for particle 2 in (23) CM system
-      vector2.SetXYZM(p2cm*sinth2cm*Cos(*fPhi2Var),
-		      p2cm*sinth2cm*Sin(*fPhi2Var),
+      vector2.SetXYZM(p2cm*sinth2cm*std::cos(*fPhi2Var),
+		      p2cm*sinth2cm*std::sin(*fPhi2Var),
 		      p2cm*costh2cm, m2);
 
       // calculate 4vector particle 3
@@ -2067,13 +2066,13 @@ void TKinematics2to3::UpdateKinematics()
       // LAB angle particle 2
       double costh2;
       if( fTh2Var==&fThk || fTh2Var==&fThy || fTh2Var==&fThn )
-	costh2 = Cos( *fTh2Var );
+	costh2 = std::cos( *fTh2Var );
       else
 	costh2 = *fTh2Var;
       
-      if( Abs(costh2) <= 1.0 )
+      if( std::abs(costh2) <= 1.0 )
 	fIsPhysical = true && fIsPhysical;
-      else if( Abs(costh2)-1.0 < kUflow ) {
+      else if( std::abs(costh2)-1.0 < kUflow ) {
 	fIsPhysical = true && fIsPhysical;
 	costh2 = ( costh2>0.0 ? 1.0 : -1.0 );
       }
@@ -2084,12 +2083,12 @@ void TKinematics2to3::UpdateKinematics()
       // cos -> sin calculation is very unstable
       // when cos close to +-1.
       double sinth2=-2.;
-      if( 1.-Abs(costh2) <= kUflow ) sinth2=0.;
-      else sinth2 = Sqrt(1. - costh2*costh2); 
+      if( 1.-std::abs(costh2) <= kUflow ) sinth2=0.;
+      else sinth2 = std::sqrt(1. - costh2*costh2); 
       
-      if( Abs(sinth2) <= 1.0 )
+      if( std::abs(sinth2) <= 1.0 )
 	fIsPhysical = true && fIsPhysical;
-      else if( Abs(sinth2)-1.0 < kUflow ) {
+      else if( std::abs(sinth2)-1.0 < kUflow ) {
 	fIsPhysical = true && fIsPhysical;
 	sinth2 = ( sinth2>0.0 ? 1.0 : -1.0 );
       }
@@ -2107,23 +2106,22 @@ void TKinematics2to3::UpdateKinematics()
       double w23 = vector23.M();
       double p23 = (*fGvector-vector1).P();
       double costh23 = vector23.CosTheta();
-      if( 1.-fabs(costh23)<kUflow ) costh23 = TMath::Sign(1.,costh23);
+      if( 1.-fabs(costh23)<kUflow ) costh23 = std::copysign(1.,costh23);
       double sinth23 = -2.;
-      if( 1.-Abs(costh23) <= kUflow ) sinth23=0.;
-      else sinth23 = Sqrt(1. - costh23*costh23);
+      if( 1.-std::abs(costh23) <= kUflow ) sinth23=0.;
+      else sinth23 = std::sqrt(1. - costh23*costh23);
 
-      Polynomial eq(// coefficient p_2^2
-		    p23*p23*sinth23*sinth23*sinth2*sinth2*Cos(*fPhi2Var)*Cos(*fPhi2Var)
+      std::vector<double> roots = nucqcd::quadratic_real_roots(// coefficient p_2^2
+		    p23*p23*sinth23*sinth23*sinth2*sinth2*std::cos(*fPhi2Var)*std::cos(*fPhi2Var)
 		    +p23*p23*costh23*costh23*costh2*costh2
-		    -2*p23*p23*sinth23*costh23*costh2*sinth2*Cos(*fPhi2Var)
+		    -2*p23*p23*sinth23*costh23*costh2*sinth2*std::cos(*fPhi2Var)
 		    -e23*e23,
 		    // coefficient p_2
 		    2*e2cm*w23*p23*costh23*costh2
-		    -2*e2cm*w23*p23*sinth23*sinth2*Cos(*fPhi2Var),
+		    -2*e2cm*w23*p23*sinth23*sinth2*std::cos(*fPhi2Var),
 		    // constant term
 		    e2cm*e2cm*w23*w23
 		    -e23*e23*m2*m2);
-      vector<double> roots = eq.FindRealRoots();
       
       double p2 = -1.;
       if(roots.size() == 0 ) {
@@ -2136,12 +2134,12 @@ void TKinematics2to3::UpdateKinematics()
 	bool sol1=false, sol2=false;
 	  
 	if( roots[0]>0. && (e2cm*w23-roots[0]
-			    *(p23*sinth23*sinth2*Cos(*fPhi2Var)
+			    *(p23*sinth23*sinth2*std::cos(*fPhi2Var)
 			      -p23*costh23*costh2))>0. ) sol1=true;
 	  
 	if( roots.size()==2 ) {
 	  if( roots[1]>0. && (e2cm*w23-roots[1]
-			      *(p23*sinth23*sinth2*Cos(*fPhi2Var)
+			      *(p23*sinth23*sinth2*std::cos(*fPhi2Var)
 				-p23*costh23*costh2))>0. ) sol2=true;
 	}
 	  
@@ -2166,8 +2164,8 @@ void TKinematics2to3::UpdateKinematics()
       if(p2<0.) fIsPhysical = false;
 
       // set 4vector for particle 2
-      vector2.SetXYZM(sinth2*Cos(*fPhi2Var)*p2,
-		      sinth2*Sin(*fPhi2Var)*p2,
+      vector2.SetXYZM(sinth2*std::cos(*fPhi2Var)*p2,
+		      sinth2*std::sin(*fPhi2Var)*p2,
 		      costh2*p2, m2);
 
       vector3 = vector23 - vector2;
@@ -2199,23 +2197,23 @@ void TKinematics2to3::UpdateKinematics()
     //     double e1,p1;
     //     if( fE1Var==&fPk || fE1Var==&fPy || fE1Var==&fPn ) {
     //       p1 = *fE1Var;
-    //       e1 = Sqrt( p1*p1 + m1*m1 );
+    //       e1 = std::sqrt( p1*p1 + m1*m1 );
     //     } else {
     //       e1 = *fE1Var;
-    //       p1 = Sqrt( e1*e1 - m1*m1 );
+    //       p1 = std::sqrt( e1*e1 - m1*m1 );
     //     }
     //     if(e1<0. || p1 <0.) fIsPhysical = false;
 
     //     // Polar angle 1st particle
     //     double costh1;
     //     if( fTh1Var==&fThk || fTh1Var==&fThy || fTh1Var==&fThn )
-    //       costh1 = Cos( *fTh1Var );
+    //       costh1 = std::cos( *fTh1Var );
     //     else
     //       costh1 = *fTh1Var;
     
-    //     if( Abs(costh1) <= 1.0 )
+    //     if( std::abs(costh1) <= 1.0 )
     //       fIsPhysical = true && fIsPhysical;
-    //     else if( Abs(costh1)-1.0 < kUflow ) {
+    //     else if( std::abs(costh1)-1.0 < kUflow ) {
     //       fIsPhysical = true && fIsPhysical;
     //       costh1 = ( costh1>0.0 ? 1.0 : -1.0 );
     //     }
@@ -2223,7 +2221,7 @@ void TKinematics2to3::UpdateKinematics()
     //       fIsPhysical = false;
 
     //     // set 4vector
-    //     vector1.SetXYZT(p1*Sqrt(1.-costh1*costh1),0.,p1*costh1,e1);
+    //     vector1.SetXYZT(p1*std::sqrt(1.-costh1*costh1),0.,p1*costh1,e1);
 
  
     //     // Determine 4vector of 2nd particle
@@ -2232,24 +2230,24 @@ void TKinematics2to3::UpdateKinematics()
     //     double e2,p2;
     //     if( fE2Var==&fPk || fE2Var==&fPy || fE2Var==&fPn ) {
     //       p2 = *fE2Var;
-    //       e2 = Sqrt( p2*p2 + m2*m2 );
+    //       e2 = std::sqrt( p2*p2 + m2*m2 );
     //     } else {
     //       e2 = *fE2Var;
-    //       p2 = Sqrt( e2*e2 - m2*m2 );
+    //       p2 = std::sqrt( e2*e2 - m2*m2 );
     //     }
     //     if(e2<0. || p2 <0.) fIsPhysical = false;
 
     //     // Polar angle 2nd particle
     //     double costh2;
     //     if( fTh2Var==&fThk || fTh2Var==&fThy || fTh2Var==&fThn )
-    //       costh2 = Cos( *fTh2Var );
+    //       costh2 = std::cos( *fTh2Var );
     //     else
     //       costh2 = *fTh2Var;
-    //     double sinth2 = Sqrt(1. -costh2*costh2);
+    //     double sinth2 = std::sqrt(1. -costh2*costh2);
     
-    //     if( Abs(costh2) <= 1.0 )
+    //     if( std::abs(costh2) <= 1.0 )
     //       fIsPhysical = true && fIsPhysical;
-    //     else if( Abs(costh2)-1.0 < kUflow ) {
+    //     else if( std::abs(costh2)-1.0 < kUflow ) {
     //       fIsPhysical = true && fIsPhysical;
     //       costh2 = ( costh2>0.0 ? 1.0 : -1.0 );
     //     }
@@ -2257,8 +2255,8 @@ void TKinematics2to3::UpdateKinematics()
     //       fIsPhysical = false;
 
     //     // set 4vector
-    //     vector2.SetXYZT(sinth2*Cos(*fPhi2Var)*p2,
-    // 		    sinth2*Sin(*fPhi2Var)*p2,
+    //     vector2.SetXYZT(sinth2*std::cos(*fPhi2Var)*p2,
+    // 		    sinth2*std::sin(*fPhi2Var)*p2,
     // 		    costh2*p2, e2);
     
     //     // Determine 4vector of 3rd particle and photon
@@ -2282,8 +2280,8 @@ void TKinematics2to3::UpdateKinematics()
 
     //     // first we look for a lower and upper limit
     //     while( fabs( -1.*(vector1.Z()+vector2.Z()) 
-    // 		 + Sqrt(pow(e1+e2+Sqrt(p3high2+m3*m3)-fMd,2)+fQsquared) )
-    // 	 - Sqrt(p3high2-(pow(vector1.X()+vector2.X(),2)+vector2.Y()*vector2.Y()))
+    // 		 + std::sqrt(pow(e1+e2+std::sqrt(p3high2+m3*m3)-fMd,2)+fQsquared) )
+    // 	 - std::sqrt(p3high2-(pow(vector1.X()+vector2.X(),2)+vector2.Y()*vector2.Y()))
     // 	 > 0. ) {
     //       p3low2 = p3high2;
     //       p3high2 *= 2.;
@@ -2296,9 +2294,9 @@ void TKinematics2to3::UpdateKinematics()
     //     while( delta/p3low2>1e-9 && p3low2<p3high2 ) {
      
     //       if( fabs( -1.*(vector1.Z()+vector2.Z()) 
-    // 		+ Sqrt(pow(e1+e2+Sqrt(p3low2+delta/2.+m3*m3)-fMd,2)
+    // 		+ std::sqrt(pow(e1+e2+std::sqrt(p3low2+delta/2.+m3*m3)-fMd,2)
     // 		       +fQsquared) )
-    // 	  - Sqrt(p3low2+delta/2.
+    // 	  - std::sqrt(p3low2+delta/2.
     // 		 -(pow(vector1.X()+vector2.X(),2)+vector2.Y()*vector2.Y()))
     // 	  < 0. )
     // 	p3high2 -= delta/2.;
@@ -2309,12 +2307,12 @@ void TKinematics2to3::UpdateKinematics()
     //     }
     
     //     double p3=0.;
-    //     if( p3low2>=0. ) p3 = Sqrt(p3low2);
+    //     if( p3low2>=0. ) p3 = std::sqrt(p3low2);
     //     else fIsPhysical = false;
 
 
     //     // energy 3rd particle
-    //     double e3 = Sqrt( p3*p3 + m3*m3 );
+    //     double e3 = std::sqrt( p3*p3 + m3*m3 );
 
     //     // Determine photon 4vector
     //     //~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2322,23 +2320,23 @@ void TKinematics2to3::UpdateKinematics()
     //     double eg = e1 + e2 + e3 - fMd;
 
     //     // set photon 4vector
-    //     fGvector->SetXYZT(0.,0.,Sqrt(eg*eg+fQsquared),eg);
+    //     fGvector->SetXYZT(0.,0.,std::sqrt(eg*eg+fQsquared),eg);
 
     //     // Polar angle 3rd particle from (4)
-    //     double costh3 = ( Sqrt(eg*eg+fQsquared)-vector1.Z()-vector2.Z() ) / p3;
-    //     if( Abs(costh3) <= 1.0 )
+    //     double costh3 = ( std::sqrt(eg*eg+fQsquared)-vector1.Z()-vector2.Z() ) / p3;
+    //     if( std::abs(costh3) <= 1.0 )
     //       fIsPhysical = true && fIsPhysical;
-    //     else if( Abs(costh3)-1.0 < 1e-14 ) {
+    //     else if( std::abs(costh3)-1.0 < 1e-14 ) {
     //       fIsPhysical = true && fIsPhysical;
     //       costh3 = ( costh3>0.0 ? 1.0 : -1.0 );
     //     }
     //     else
     //       fIsPhysical = false;
-    //     double sinth3 = Sqrt(1. - costh3*costh3);
+    //     double sinth3 = std::sqrt(1. - costh3*costh3);
 
     //     // set 4vector 3rd particle
-    //     vector3.SetXYZT(p3*sinth3*Cos(phi3),
-    // 		    p3*sinth3*Sin(phi3),
+    //     vector3.SetXYZT(p3*sinth3*std::cos(phi3),
+    // 		    p3*sinth3*std::sin(phi3),
     // 		    p3*costh3, e3);
 
   } // end 1 + 2 (+3) case
@@ -2449,7 +2447,7 @@ void TKinematics2to3::UpdateKinematics()
     // Photon energy
     double eg = ( fStot + fQsquared - fMd*fMd ) / 2. / fMd;
     if(eg<=0.) fIsPhysical = false;
-    double klab = Sqrt(eg*eg+fQsquared);
+    double klab = std::sqrt(eg*eg+fQsquared);
 
     // set photon 4vector
     fGvector->SetXYZT(0.,0.,klab,eg);
@@ -2460,14 +2458,14 @@ void TKinematics2to3::UpdateKinematics()
     // Energy 1st particle
     double e1 = (2.*fMd*eg - *s23 + *tg1 + fMd*fMd) / 2. / fMd;
     if(e1<m1) fIsPhysical = false;
-    double p1 = Sqrt(e1*e1 - m1*m1);
+    double p1 = std::sqrt(e1*e1 - m1*m1);
 
     // Polar angle 1st particle
     double costh1 = ( *tg1 + fQsquared - m1*m1 + 2.*eg*e1 ) / 2. / klab / p1;
     
-    if( Abs(costh1) <= 1.0 )
+    if( std::abs(costh1) <= 1.0 )
       fIsPhysical = true && fIsPhysical;
-    else if( Abs(costh1)-1.0 < kUflow ) {
+    else if( std::abs(costh1)-1.0 < kUflow ) {
       fIsPhysical = true && fIsPhysical;
       costh1 = ( costh1>0.0 ? 1.0 : -1.0 );
     }
@@ -2478,8 +2476,8 @@ void TKinematics2to3::UpdateKinematics()
     // cos -> sin calculation is very unstable
     // when cos close to +-1.
     double sinth1=-2.;
-    if( 1.-Abs(costh1) <= kUflow ) sinth1=0.;
-    else sinth1 = Sqrt(1. - costh1*costh1); 
+    if( 1.-std::abs(costh1) <= kUflow ) sinth1=0.;
+    else sinth1 = std::sqrt(1. - costh1*costh1); 
 
     // set 1st particle 4vector
     vector1.SetXYZT(p1*sinth1,0.,p1*costh1,e1);
@@ -2499,7 +2497,7 @@ void TKinematics2to3::UpdateKinematics()
     TLorentzRotation rotateTo23; 
     double rotationAngle=0.; 
     if( 1.-fabs(vector23.CosTheta())>kUflow )
-      rotationAngle = -1.*TMath::Sign(1.,vector23.X())
+      rotationAngle = -1.*std::copysign(1.,vector23.X())
 	*vector23.Vect().Angle(fGvector->Vect());
     rotateTo23.RotateY(rotationAngle);
     // Define Lorentzboost that boosts in reference frame defined above
@@ -2513,19 +2511,19 @@ void TKinematics2to3::UpdateKinematics()
     // Energy 2nd particle
     double e2 = ( fMd*fMd + m2*m2 - *td2 ) / 2. / fMd;
     if(e2<m2) fIsPhysical = false;
-    double p2 = Sqrt(e2*e2 - m2*m2);
+    double p2 = std::sqrt(e2*e2 - m2*m2);
 
     // Energy 3rd particle
     double e3 = eg + fMd - e1 - e2;
     if(e3<m3) fIsPhysical = false;
-    double p3 = Sqrt(e3*e3 - m3*m3);
+    double p3 = std::sqrt(e3*e3 - m3*m3);
 
     // Polar angle 2nd particle
     double costh2 = ( *tg2 + fQsquared - m2*m2 + 2.*eg*e2 ) / 2. / klab / p2;
     
-    if( Abs(costh2) <= 1.0 )
+    if( std::abs(costh2) <= 1.0 )
       fIsPhysical = true && fIsPhysical;
-    else if( Abs(costh2)-1.0 < kUflow ) {
+    else if( std::abs(costh2)-1.0 < kUflow ) {
       fIsPhysical = true && fIsPhysical;
       costh2 = ( costh2>0.0 ? 1.0 : -1.0 );
     }
@@ -2536,8 +2534,8 @@ void TKinematics2to3::UpdateKinematics()
     // cos -> sin calculation is very unstable
     // when cos close to +-1.
     double sinth2=-2.;
-    if( 1.-Abs(costh2) <= kUflow ) sinth2=0.;
-    else sinth2 = Sqrt(1. - costh2*costh2);
+    if( 1.-std::abs(costh2) <= kUflow ) sinth2=0.;
+    else sinth2 = std::sqrt(1. - costh2*costh2);
     
     //express conservation of 4momentum: p_g+p_D=p_1+p_2+p_3 in components:
     //
@@ -2547,9 +2545,9 @@ void TKinematics2to3::UpdateKinematics()
     // Polar angle 3rd particle
     double costh3 = ( vector23.Z() - p2*costh2 ) / p3;
     
-    if( Abs(costh3) <= 1.0 )
+    if( std::abs(costh3) <= 1.0 )
       fIsPhysical = true && fIsPhysical;
-    else if( Abs(costh3)-1.0 < kUflow ) {
+    else if( std::abs(costh3)-1.0 < kUflow ) {
       fIsPhysical = true && fIsPhysical;
       costh3 = ( costh3>0.0 ? 1.0 : -1.0 );
     }
@@ -2560,14 +2558,14 @@ void TKinematics2to3::UpdateKinematics()
     // cos -> sin calculation is very unstable
     // when cos close to +-1.
     double sinth3=-2.;
-    if( 1.-Abs(costh3) <= kUflow ) sinth3=0.;
-    else sinth3 = Sqrt(1. - costh3*costh3);
+    if( 1.-std::abs(costh3) <= kUflow ) sinth3=0.;
+    else sinth3 = std::sqrt(1. - costh3*costh3);
 
     // Find azimuthal angle particle 2
     double phi2;
     if( vector1.X() != 0. ) {
       // Azimuthal angle particle 2 from (1)^2 + (2)^2
-      phi2 =ACos( ( p3*p3*sinth3*sinth3 - vector1.X()*vector1.X()
+      phi2 =std::acos( ( p3*p3*sinth3*sinth3 - vector1.X()*vector1.X()
 		    - p2*p2*sinth2*sinth2 )
 		  / 2. / vector1.X() / p2 / sinth2 ) ;
       
@@ -2581,8 +2579,8 @@ void TKinematics2to3::UpdateKinematics()
     }
 
     // set 4vector for particle 2 again
-    vector2.SetXYZT(sinth2*Cos(phi2)*p2,
-		    sinth2*Sin(phi2)*p2,
+    vector2.SetXYZT(sinth2*std::cos(phi2)*p2,
+		    sinth2*std::sin(phi2)*p2,
 		    costh2*p2, e2);
     
 
@@ -2702,20 +2700,20 @@ void TKinematics2to3::UpdateVariables()
   fTdk = (*fDvector-*fKvector).Mag2();
   fTdy = (*fDvector-*fYvector).Mag2();
   fTdn = (*fDvector-*fNvector).Mag2();
-  fKYthkcm = ACos(GetKYsystem_costhkcm());
-  fKYthycm = ACos(GetKYsystem_costhycm());
+  fKYthkcm = std::acos(GetKYsystem_costhkcm());
+  fKYthycm = std::acos(GetKYsystem_costhycm());
   fKYcosthkcm = GetKYsystem_costhkcm();
   fKYcosthycm = GetKYsystem_costhycm();
   fKYphikcm = GetKYsystem_phikcm();
   fKYphiycm = GetKYsystem_phiycm();
-  fKNthkcm = ACos(GetKNsystem_costhkcm());
-  fKNthncm = ACos(GetKNsystem_costhncm());
+  fKNthkcm = std::acos(GetKNsystem_costhkcm());
+  fKNthncm = std::acos(GetKNsystem_costhncm());
   fKNcosthkcm = GetKNsystem_costhkcm();
   fKNcosthncm = GetKNsystem_costhncm();
   fKNphikcm = GetKNsystem_phikcm();
   fKNphincm = GetKNsystem_phincm();
-  fYNthycm = ACos(GetYNsystem_costhycm());
-  fYNthncm = ACos(GetYNsystem_costhncm());
+  fYNthycm = std::acos(GetYNsystem_costhycm());
+  fYNthncm = std::acos(GetYNsystem_costhncm());
   fYNcosthycm = GetYNsystem_costhycm();
   fYNcosthncm = GetYNsystem_costhncm();
   fYNphiycm = GetYNsystem_phiycm();
@@ -4565,19 +4563,19 @@ double TKinematics2to3::GetThn() const
 //_____________________________________________________________________
 double TKinematics2to3::GetThk_deg() const 
 { 
-  return GetThk() * TMath::RadToDeg(); 
+  return GetThk() * nucqcd::rad_to_deg; 
 }
   
 //_____________________________________________________________________
 double TKinematics2to3::GetThy_deg() const 
 { 
-  return GetThy() * TMath::RadToDeg(); 
+  return GetThy() * nucqcd::rad_to_deg; 
 }
  
 //_____________________________________________________________________
 double TKinematics2to3::GetThn_deg() const 
 { 
-  return GetThn() * TMath::RadToDeg(); 
+  return GetThn() * nucqcd::rad_to_deg; 
 }
 
 //_____________________________________________________________________
@@ -4631,19 +4629,19 @@ double TKinematics2to3::GetPhin(EAxisConvention axisConvention) const
 //_____________________________________________________________________
 double TKinematics2to3::GetPhik_deg(EAxisConvention axisConvention) const
 {
-  return GetPhik(axisConvention) * TMath::RadToDeg();
+  return GetPhik(axisConvention) * nucqcd::rad_to_deg;
 }
 
 //_____________________________________________________________________
 double TKinematics2to3::GetPhiy_deg(EAxisConvention axisConvention) const
 {
-  return GetPhiy(axisConvention) * TMath::RadToDeg();
+  return GetPhiy(axisConvention) * nucqcd::rad_to_deg;
 }
 
 //_____________________________________________________________________
 double TKinematics2to3::GetPhin_deg(EAxisConvention axisConvention) const
 {
-  return GetPhin(axisConvention) * TMath::RadToDeg();
+  return GetPhin(axisConvention) * nucqcd::rad_to_deg;
 }
 
 //_____________________________________________________________________
@@ -4667,19 +4665,19 @@ double TKinematics2to3::GetThyn() const
 //_____________________________________________________________________
 double TKinematics2to3::GetThky_deg() const
 {
-  return GetThky() * TMath::RadToDeg();
+  return GetThky() * nucqcd::rad_to_deg;
 }
 
 //_____________________________________________________________________
 double TKinematics2to3::GetThkn_deg() const
 {
-  return GetThkn() * TMath::RadToDeg();
+  return GetThkn() * nucqcd::rad_to_deg;
 }
 
 //_____________________________________________________________________
 double TKinematics2to3::GetThyn_deg() const
 {
-  return GetThyn() * TMath::RadToDeg();
+  return GetThyn() * nucqcd::rad_to_deg;
 }
 
 //_____________________________________________________________________
@@ -4721,37 +4719,37 @@ double TKinematics2to3::GetTnd() const
 //_____________________________________________________________________
 double TKinematics2to3::GetKYsystem_Ek() const
 {
-  return Sqrt( fMk*fMk + fKYsystem->GetPk()*fKYsystem->GetPk() );
+  return std::sqrt( fMk*fMk + fKYsystem->GetPk()*fKYsystem->GetPk() );
 }
 
 //_____________________________________________________________________
 double TKinematics2to3::GetKYsystem_Ey() const
 {
-  return Sqrt( fMy*fMy + fKYsystem->GetPk()*fKYsystem->GetPk() );
+  return std::sqrt( fMy*fMy + fKYsystem->GetPk()*fKYsystem->GetPk() );
 }
 
 //_____________________________________________________________________
 double TKinematics2to3::GetKNsystem_Ek() const
 {
-  return Sqrt( fMk*fMk + fKNsystem->GetPk()*fKNsystem->GetPk() );
+  return std::sqrt( fMk*fMk + fKNsystem->GetPk()*fKNsystem->GetPk() );
 }
 
 //_____________________________________________________________________
 double TKinematics2to3::GetKNsystem_En() const
 {
-  return Sqrt( fMn*fMn + fKNsystem->GetPk()*fKNsystem->GetPk() );
+  return std::sqrt( fMn*fMn + fKNsystem->GetPk()*fKNsystem->GetPk() );
 }
 
 //_____________________________________________________________________
 double TKinematics2to3::GetYNsystem_Ey() const
 {
-  return Sqrt( fMy*fMy + fYNsystem->GetPk()*fYNsystem->GetPk() );
+  return std::sqrt( fMy*fMy + fYNsystem->GetPk()*fYNsystem->GetPk() );
 }
 
 //_____________________________________________________________________
 double TKinematics2to3::GetYNsystem_En() const
 {
-  return Sqrt( fMn*fMn + fYNsystem->GetPk()*fYNsystem->GetPk() );
+  return std::sqrt( fMn*fMn + fYNsystem->GetPk()*fYNsystem->GetPk() );
 }
 
 //_____________________________________________________________________
@@ -4763,7 +4761,7 @@ double TKinematics2to3::GetKYsystem_costhkcm() const
 //_____________________________________________________________________
 double TKinematics2to3::GetKYsystem_thkcm() const
 {
-  return ACos(fKYsystem->GetCosthkcm());
+  return std::acos(fKYsystem->GetCosthkcm());
 }
 
 //_____________________________________________________________________
@@ -4775,7 +4773,7 @@ double TKinematics2to3::GetKYsystem_costhycm() const
 //_____________________________________________________________________
 double TKinematics2to3::GetKYsystem_thycm() const
 {
-  return ACos(-1.0 * fKYsystem->GetCosthkcm());
+  return std::acos(-1.0 * fKYsystem->GetCosthkcm());
 }
 
 //_____________________________________________________________________
@@ -4787,7 +4785,7 @@ double TKinematics2to3::GetKNsystem_costhkcm() const
 //_____________________________________________________________________
 double TKinematics2to3::GetKNsystem_thkcm() const
 {
-  return ACos(fKNsystem->GetCosthkcm());
+  return std::acos(fKNsystem->GetCosthkcm());
 }
 
 //_____________________________________________________________________
@@ -4799,7 +4797,7 @@ double TKinematics2to3::GetKNsystem_costhncm() const
 //_____________________________________________________________________
 double TKinematics2to3::GetKNsystem_thncm() const
 {
-  return ACos(-1.0 * fKNsystem->GetCosthkcm());
+  return std::acos(-1.0 * fKNsystem->GetCosthkcm());
 }
 
 //_____________________________________________________________________
@@ -4811,7 +4809,7 @@ double TKinematics2to3::GetYNsystem_costhycm() const
 //_____________________________________________________________________
 double TKinematics2to3::GetYNsystem_thycm() const
 {
-  return ACos(-1.0 * fYNsystem->GetCosthkcm());
+  return std::acos(-1.0 * fYNsystem->GetCosthkcm());
 }
 
 //_____________________________________________________________________
@@ -4823,7 +4821,7 @@ double TKinematics2to3::GetYNsystem_costhncm() const
 //_____________________________________________________________________
 double TKinematics2to3::GetYNsystem_thncm() const
 {
-  return ACos(fYNsystem->GetCosthkcm());
+  return std::acos(fYNsystem->GetCosthkcm());
 }
 
 //_____________________________________________________________________
@@ -4907,37 +4905,37 @@ double TKinematics2to3::GetYNsystem_phincm(EAxisConvention ac) const
 //_____________________________________________________________________
 double TKinematics2to3::GetKYsystem_phikcm_deg(EAxisConvention ac) const
 {
-  return GetKYsystem_phikcm(ac) * TMath::RadToDeg();
+  return GetKYsystem_phikcm(ac) * nucqcd::rad_to_deg;
 }
 
 //_____________________________________________________________________
 double TKinematics2to3::GetKYsystem_phiycm_deg(EAxisConvention ac) const
 {
-  return GetKYsystem_phiycm(ac) * TMath::RadToDeg();
+  return GetKYsystem_phiycm(ac) * nucqcd::rad_to_deg;
 }
 
 //_____________________________________________________________________
 double TKinematics2to3::GetKNsystem_phikcm_deg(EAxisConvention ac) const
 {
-  return GetKNsystem_phikcm(ac) * TMath::RadToDeg();
+  return GetKNsystem_phikcm(ac) * nucqcd::rad_to_deg;
 }
 
 //_____________________________________________________________________
 double TKinematics2to3::GetKNsystem_phincm_deg(EAxisConvention ac) const
 {
-  return GetKNsystem_phincm(ac) * TMath::RadToDeg();
+  return GetKNsystem_phincm(ac) * nucqcd::rad_to_deg;
 }
 
 //_____________________________________________________________________
 double TKinematics2to3::GetYNsystem_phiycm_deg(EAxisConvention ac) const
 {
-  return GetYNsystem_phiycm(ac) * TMath::RadToDeg();
+  return GetYNsystem_phiycm(ac) * nucqcd::rad_to_deg;
 }
 
 //_____________________________________________________________________
 double TKinematics2to3::GetYNsystem_phincm_deg(EAxisConvention ac) const
 {
-  return GetYNsystem_phincm(ac) * TMath::RadToDeg();
+  return GetYNsystem_phincm(ac) * nucqcd::rad_to_deg;
 }
 
 //_____________________________________________________________________
@@ -5460,7 +5458,7 @@ TLorentzRotation TKinematics2to3::BoostToKYcm(EAxisConvention ac) const
   TLorentzRotation rotateToKY; 
   double rotationAngle=0.; 
   if( 1.-fabs(KYvector.CosTheta())>kUflow )
-    rotationAngle = -1.*TMath::Sign(1.,KYvector.X())
+    rotationAngle = -1.*std::copysign(1.,KYvector.X())
       *KYvector.Vect().Angle(fGvector->Vect());
   rotateToKY.RotateY( rotationAngle );
   
@@ -5485,7 +5483,7 @@ TLorentzRotation TKinematics2to3::BoostToKNcm(EAxisConvention ac) const
   TLorentzRotation rotateToKN; 
   double rotationAngle=0.; 
   if( 1.-fabs(KNvector.CosTheta())>kUflow )
-    rotationAngle = -1.*TMath::Sign(1.,KNvector.X())
+    rotationAngle = -1.*std::copysign(1.,KNvector.X())
       *KNvector.Vect().Angle(fGvector->Vect());
   rotateToKN.RotateY( rotationAngle );
   
@@ -5510,7 +5508,7 @@ TLorentzRotation TKinematics2to3::BoostToYNcm(EAxisConvention ac) const
   TLorentzRotation rotateToYN; 
   double rotationAngle=0.; 
   if( 1.-fabs(YNvector.CosTheta())>kUflow )
-    rotationAngle = -1.*TMath::Sign(1.,YNvector.X())
+    rotationAngle = -1.*std::copysign(1.,YNvector.X())
       *YNvector.Vect().Angle(fGvector->Vect());
   rotateToYN.RotateY( rotationAngle );
   
@@ -5538,7 +5536,7 @@ TLorentzRotation TKinematics2to3::BoostToGNcm(EAxisConvention ac) const
 
   // Define a rotation that puts z along the photon momentum
   TLorentzRotation rotateAxes;
-  rotateAxes.RotateY(-TMath::Sign(GvectorCM.Theta(),GvectorCM.X()));
+  rotateAxes.RotateY(-std::copysign(GvectorCM.Theta(),GvectorCM.X()));
 
   // Find the kaon vector in the KY CM with this new reference frame
   TLorentzVector KvectorCM = rotateAxes * BoostToKYcm(GetK4(ac),ac);
@@ -5564,7 +5562,7 @@ TLorentzRotation TKinematics2to3::BoostFromKYcm(EAxisConvention ac) const
   TLorentzRotation rotateToKY; 
   double rotationAngle=0.; 
   if( 1.-fabs(KYvector.CosTheta())>kUflow )
-    rotationAngle = -1.*TMath::Sign(1.,KYvector.X())
+    rotationAngle = -1.*std::copysign(1.,KYvector.X())
       *KYvector.Vect().Angle(fGvector->Vect());
   rotateToKY.RotateY( rotationAngle );
   
@@ -5589,7 +5587,7 @@ TLorentzRotation TKinematics2to3::BoostFromKNcm(EAxisConvention ac) const
   TLorentzRotation rotateToKN; 
   double rotationAngle=0.; 
   if( 1.-fabs(KNvector.CosTheta())>kUflow )
-    rotationAngle = -1.*TMath::Sign(1.,KNvector.X())
+    rotationAngle = -1.*std::copysign(1.,KNvector.X())
       *KNvector.Vect().Angle(fGvector->Vect());
   rotateToKN.RotateY( rotationAngle );
   
@@ -5614,7 +5612,7 @@ TLorentzRotation TKinematics2to3::BoostFromYNcm(EAxisConvention ac) const
   TLorentzRotation rotateToYN; 
   double rotationAngle=0.; 
   if( 1.-fabs(YNvector.CosTheta())>kUflow )
-    rotationAngle = -1.*TMath::Sign(1.,YNvector.X())
+    rotationAngle = -1.*std::copysign(1.,YNvector.X())
       *YNvector.Vect().Angle(fGvector->Vect());
   rotateToYN.RotateY( rotationAngle );
   
@@ -5643,7 +5641,7 @@ TLorentzRotation TKinematics2to3::BoostFromGNcm(EAxisConvention ac) const
 
   // Define a rotation that puts z along the photon momentum
   TLorentzRotation rotateAxes;
-  rotateAxes.RotateY(-TMath::Sign(GvectorCM.Theta(),GvectorCM.X()));
+  rotateAxes.RotateY(-std::copysign(GvectorCM.Theta(),GvectorCM.X()));
 
   // Find the kaon vector in the KY CM with this new reference frame
   TLorentzVector KvectorCM = rotateAxes * BoostToKYcm(GetK4(ac),ac);
@@ -5759,7 +5757,7 @@ TSpinor::LorentzRotation TKinematics2to3::BoostSpinorToKYcm(EAxisConvention ac) 
   TSpinor::LorentzRotation rotateToKY; 
   double rotationAngle=0.; 
   if( 1.-fabs(KYvector.CosTheta())>kUflow )
-    rotationAngle = -1.*TMath::Sign(1.,KYvector.X())
+    rotationAngle = -1.*std::copysign(1.,KYvector.X())
       *KYvector.Vect().Angle(fGvector->Vect());
   rotateToKY.RotateY( rotationAngle );
   
@@ -5785,7 +5783,7 @@ TSpinor::LorentzRotation TKinematics2to3::BoostSpinorToKNcm(EAxisConvention ac) 
   TSpinor::LorentzRotation rotateToKN; 
   double rotationAngle=0.; 
   if( 1.-fabs(KNvector.CosTheta())>kUflow )
-    rotationAngle = -1.*TMath::Sign(1.,KNvector.X())
+    rotationAngle = -1.*std::copysign(1.,KNvector.X())
       *KNvector.Vect().Angle(fGvector->Vect());
   rotateToKN.RotateY( rotationAngle );
   
@@ -5811,7 +5809,7 @@ TSpinor::LorentzRotation TKinematics2to3::BoostSpinorToYNcm(EAxisConvention ac) 
   TSpinor::LorentzRotation rotateToYN; 
   double rotationAngle=0.; 
   if( 1.-fabs(YNvector.CosTheta())>kUflow )
-    rotationAngle = -1.*TMath::Sign(1.,YNvector.X())
+    rotationAngle = -1.*std::copysign(1.,YNvector.X())
       *YNvector.Vect().Angle(fGvector->Vect());
   rotateToYN.RotateY( rotationAngle );
   
@@ -5840,11 +5838,11 @@ TSpinor::LorentzRotation TKinematics2to3::BoostSpinorToGNcm(EAxisConvention ac) 
 
   // Define a rotation that puts z along the photon momentum
   TSpinor::LorentzRotation rotateAxes;
-  rotateAxes.RotateY(-TMath::Sign(GvectorCM.Theta(),GvectorCM.X()));
+  rotateAxes.RotateY(-std::copysign(GvectorCM.Theta(),GvectorCM.X()));
 
   // Find the kaon vector in the KY CM with this new reference frame
   TLorentzVector KvectorCM 
-    = TLorentzRotation().RotateY(-TMath::Sign(GvectorCM.Theta(),GvectorCM.X())) 
+    = TLorentzRotation().RotateY(-std::copysign(GvectorCM.Theta(),GvectorCM.X())) 
     * BoostToKYcm(GetK4(ac),ac);
 
   // Define an extra rotation to a reference frame where the azimuthal
@@ -5868,7 +5866,7 @@ TSpinor::LorentzRotation TKinematics2to3::BoostSpinorFromKYcm(EAxisConvention ac
   TSpinor::LorentzRotation rotateToKY; 
   double rotationAngle=0.; 
   if( 1.-fabs(KYvector.CosTheta())>kUflow )
-    rotationAngle = -1.*TMath::Sign(1.,KYvector.X())
+    rotationAngle = -1.*std::copysign(1.,KYvector.X())
       *KYvector.Vect().Angle(fGvector->Vect());
   rotateToKY.RotateY( rotationAngle );
   
@@ -5894,7 +5892,7 @@ TSpinor::LorentzRotation TKinematics2to3::BoostSpinorFromKNcm(EAxisConvention ac
   TSpinor::LorentzRotation rotateToKN; 
   double rotationAngle=0.; 
   if( 1.-fabs(KNvector.CosTheta())>kUflow )
-    rotationAngle = -1.*TMath::Sign(1.,KNvector.X())
+    rotationAngle = -1.*std::copysign(1.,KNvector.X())
       *KNvector.Vect().Angle(fGvector->Vect());
   rotateToKN.RotateY( rotationAngle );
   
@@ -5920,7 +5918,7 @@ TSpinor::LorentzRotation TKinematics2to3::BoostSpinorFromYNcm(EAxisConvention ac
   TSpinor::LorentzRotation rotateToYN; 
   double rotationAngle=0.; 
   if( 1.-fabs(YNvector.CosTheta())>kUflow )
-    rotationAngle = -1.*TMath::Sign(1.,YNvector.X())
+    rotationAngle = -1.*std::copysign(1.,YNvector.X())
       *YNvector.Vect().Angle(fGvector->Vect());
   rotateToYN.RotateY( rotationAngle );
   
@@ -5950,11 +5948,11 @@ TSpinor::LorentzRotation TKinematics2to3::BoostSpinorFromGNcm(EAxisConvention ac
 
   // Define a rotation that puts z along the photon momentum
   TSpinor::LorentzRotation rotateAxes;
-  rotateAxes.RotateY(-TMath::Sign(GvectorCM.Theta(),GvectorCM.X()));
+  rotateAxes.RotateY(-std::copysign(GvectorCM.Theta(),GvectorCM.X()));
 
   // Find the kaon vector in the KY CM with this new reference frame
   TLorentzVector KvectorCM 
-    =  TLorentzRotation().RotateY(-TMath::Sign(GvectorCM.Theta(),GvectorCM.X()))
+    =  TLorentzRotation().RotateY(-std::copysign(GvectorCM.Theta(),GvectorCM.X()))
     * BoostToKYcm(GetK4(ac),ac);
 
   // Define an extra rotation to a reference frame where the azimuthal
@@ -5978,7 +5976,7 @@ TLorentzQuaternion TKinematics2to3::BoostQuaternionToKYcm(EAxisConvention ac) co
   TLorentzQuaternion rotateToKY; 
   double rotationAngle=0.; 
   if( 1.-fabs(KYvector.CosTheta())>kUflow )
-    rotationAngle = -1.*TMath::Sign(1.,KYvector.X())
+    rotationAngle = -1.*std::copysign(1.,KYvector.X())
       *KYvector.Vect().Angle(fGvector->Vect());
   rotateToKY.RotateY( rotationAngle );
   
@@ -6003,7 +6001,7 @@ TLorentzQuaternion TKinematics2to3::BoostQuaternionToKNcm(EAxisConvention ac) co
   TLorentzQuaternion rotateToKN; 
   double rotationAngle=0.; 
   if( 1.-fabs(KNvector.CosTheta())>kUflow )
-    rotationAngle = -1.*TMath::Sign(1.,KNvector.X())
+    rotationAngle = -1.*std::copysign(1.,KNvector.X())
       *KNvector.Vect().Angle(fGvector->Vect());
   rotateToKN.RotateY( rotationAngle );
   
@@ -6028,7 +6026,7 @@ TLorentzQuaternion TKinematics2to3::BoostQuaternionToYNcm(EAxisConvention ac) co
   TLorentzQuaternion rotateToYN; 
   double rotationAngle=0.; 
   if( 1.-fabs(YNvector.CosTheta())>kUflow )
-    rotationAngle = -1.*TMath::Sign(1.,YNvector.X())
+    rotationAngle = -1.*std::copysign(1.,YNvector.X())
       *YNvector.Vect().Angle(fGvector->Vect());
   rotateToYN.RotateY( rotationAngle );
   
@@ -6056,7 +6054,7 @@ TLorentzQuaternion TKinematics2to3::BoostQuaternionToGNcm(EAxisConvention ac) co
 
   // Define a rotation that puts z along the photon momentum
   TLorentzQuaternion rotateAxes;
-  rotateAxes.RotateY(-TMath::Sign(GvectorCM.Theta(),GvectorCM.X()));
+  rotateAxes.RotateY(-std::copysign(GvectorCM.Theta(),GvectorCM.X()));
 
   // Find the kaon vector in the KY CM with this new reference frame
   TLorentzVector KvectorCM = rotateAxes * BoostToKYcm(GetK4(ac),ac);
@@ -6082,7 +6080,7 @@ TLorentzQuaternion TKinematics2to3::BoostQuaternionFromKYcm(EAxisConvention ac) 
   TLorentzQuaternion rotateToKY; 
   double rotationAngle=0.; 
   if( 1.-fabs(KYvector.CosTheta())>kUflow )
-    rotationAngle = -1.*TMath::Sign(1.,KYvector.X())
+    rotationAngle = -1.*std::copysign(1.,KYvector.X())
       *KYvector.Vect().Angle(fGvector->Vect());
   rotateToKY.RotateY( rotationAngle );
   
@@ -6107,7 +6105,7 @@ TLorentzQuaternion TKinematics2to3::BoostQuaternionFromKNcm(EAxisConvention ac) 
   TLorentzQuaternion rotateToKN; 
   double rotationAngle=0.; 
   if( 1.-fabs(KNvector.CosTheta())>kUflow )
-    rotationAngle = -1.*TMath::Sign(1.,KNvector.X())
+    rotationAngle = -1.*std::copysign(1.,KNvector.X())
       *KNvector.Vect().Angle(fGvector->Vect());
   rotateToKN.RotateY( rotationAngle );
   
@@ -6132,7 +6130,7 @@ TLorentzQuaternion TKinematics2to3::BoostQuaternionFromYNcm(EAxisConvention ac) 
   TLorentzQuaternion rotateToYN; 
   double rotationAngle=0.; 
   if( 1.-fabs(YNvector.CosTheta())>kUflow )
-    rotationAngle = -1.*TMath::Sign(1.,YNvector.X())
+    rotationAngle = -1.*std::copysign(1.,YNvector.X())
       *YNvector.Vect().Angle(fGvector->Vect());
   rotateToYN.RotateY( rotationAngle );
   
@@ -6161,7 +6159,7 @@ TLorentzQuaternion TKinematics2to3::BoostQuaternionFromGNcm(EAxisConvention ac) 
 
   // Define a rotation that puts z along the photon momentum
   TLorentzQuaternion rotateAxes;
-  rotateAxes.RotateY(-TMath::Sign(GvectorCM.Theta(),GvectorCM.X()));
+  rotateAxes.RotateY(-std::copysign(GvectorCM.Theta(),GvectorCM.X()));
 
   // Find the kaon vector in the KY CM with this new reference frame
   TLorentzVector KvectorCM = rotateAxes * BoostToKYcm(GetK4(ac),ac);
@@ -6198,7 +6196,7 @@ double TKinematics2to3::GetPhotonThreshold() const
 {
   // Calculate the threshold photon lab energy for the current isospin
   // channel.
-  return (( Power(fMk+fMy+fMn,2.) + fQsquared - fMd*fMd ) / 2. / fMd) + kUflow;
+  return (( std::pow(fMk+fMy+fMn,2.) + fQsquared - fMd*fMd ) / 2. / fMd) + kUflow;
 }
 
 //_____________________________________________________________________
@@ -6216,7 +6214,7 @@ void TKinematics2to3::GetBoundsMomentumParticle1(double th1,
   double eg = fGvector->E();
   double stot = fMd*fMd - fQsquared + 2.*fMd*fGvector->E();
   
-  double costh1 = Cos(th1);
+  double costh1 = std::cos(th1);
   double m1=0., m23=0.;
   if( fAC==kK ) {
     m1 = fMk;
@@ -6232,23 +6230,22 @@ void TKinematics2to3::GetBoundsMomentumParticle1(double th1,
   } // particle1 = nucleon
 
   // Define the quadratic equation...
-  Polynomial eq(// |p_1|^2 coefficient
+  std::vector<double> roots = nucqcd::quadratic_real_roots(// |p_1|^2 coefficient
 		(fQsquared+eg*eg)*costh1*costh1 - (eg+fMd)*(eg+fMd),
 		// |p_1| coefficient
-		TMath::Sqrt(fQsquared+eg*eg)*costh1*(stot+m1*m1-(m23)*(m23)),
+		std::sqrt(fQsquared+eg*eg)*costh1*(stot+m1*m1-(m23)*(m23)),
 		// constant coefficient
-		(TMath::Power(stot+m1*m1-(m23)*(m23),2.)/4.
+		(std::pow(stot+m1*m1-(m23)*(m23),2.)/4.
 		 -m1*m1*(eg+fMd)*(eg+fMd)));
 
   // ...and solve
-  std::vector<double> roots = eq.FindRealRoots();
   
   if( roots[0]>roots[1] ) {
-    upper = TMath::Max(roots[0],0.);
-    lower = TMath::Max(roots[1],0.);
+    upper = std::max(roots[0],0.);
+    lower = std::max(roots[1],0.);
   } else {
-    upper = TMath::Max(roots[1],0.);
-    lower = TMath::Max(roots[0],0.);
+    upper = std::max(roots[1],0.);
+    lower = std::max(roots[0],0.);
   }
 }
 
@@ -6312,7 +6309,7 @@ double TKinematics2to3::GetMaximumScatterAngleParticle1() const
 
   if( costh1Min > 1.-kUflow ) return 0.;
 
-  return ACos(costh1Min) - kUflow;
+  return std::acos(costh1Min) - kUflow;
 }
 
 //_____________________________________________________________________

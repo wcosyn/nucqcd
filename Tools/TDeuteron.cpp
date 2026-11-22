@@ -21,20 +21,18 @@
 #include <cstring>
 #include <iostream>
 #include <cassert>
-#include <TMath.h>
 #include <TVector3.h>
 #include <TLorentzVector.h>
 #include <TLorentzRotation.h>
 #include "constants.hpp"
-#include <Math/SpecFuncMathMore.h>
 #include <gsl/gsl_sf_coupling.h>
 #include <gsl/gsl_sf_legendre.h>
+#include <cmath>
+#include <cstdlib>
 
 
 
 using std::cout; using std::cerr; using std::strcmp;
-using TMath::Sqrt; using TMath::Exp; using TMath::Pi;
-using TMath::Power; using TMath::Abs;
 using std::complex;
 
 ///////////////////////////////////////////////////////////////////////////
@@ -253,30 +251,30 @@ TDeuteron::Wavefunction* TDeuteron::Wavefunction::CreateAV18Wavefunction()
   wf->fRelativistic = false;
   wf->yukawa = true;
   
-  static double c[12] = { 0.706699E+00/Sqrt(2./Pi()),
-			  -0.169743E+00/Sqrt(2./Pi()),
-			  0.112368E+01/Sqrt(2./Pi()),
-			  -0.852995E+01/Sqrt(2./Pi()),
-			  0.195033E+02/Sqrt(2./Pi()),
-			  -0.757831E+02/Sqrt(2./Pi()),
-			  0.283739E+03/Sqrt(2./Pi()),
-			  -0.694734E+03/Sqrt(2./Pi()),
-			  0.885257E+03/Sqrt(2./Pi()),
-			  -0.720739E+03/Sqrt(2./Pi()),
-			  0.412969E+03/Sqrt(2./Pi()),
-			  -0.103336E+03/Sqrt(2./Pi())};
-  static double d[12] = { 0.176655E-01/Sqrt(2./Pi()),
-			  -0.124551E+00/Sqrt(2./Pi()),
-			  -0.108815E+01/Sqrt(2./Pi()),
-			  0.384848E+01/Sqrt(2./Pi()),
-			  -0.852442E+01/Sqrt(2./Pi()),
-			  0.209435E+02/Sqrt(2./Pi()),
-			  -0.490728E+02/Sqrt(2./Pi()),
-			  0.577382E+02/Sqrt(2./Pi()),
-			  -0.127114E+01/Sqrt(2./Pi()),
-			  -0.628361E+02/Sqrt(2./Pi()),
-			  0.581016E+02/Sqrt(2./Pi()),
-			  -0.177062E+02/Sqrt(2./Pi())};
+  static double c[12] = { 0.706699E+00/std::sqrt(2./nucqcd::pi),
+			  -0.169743E+00/std::sqrt(2./nucqcd::pi),
+			  0.112368E+01/std::sqrt(2./nucqcd::pi),
+			  -0.852995E+01/std::sqrt(2./nucqcd::pi),
+			  0.195033E+02/std::sqrt(2./nucqcd::pi),
+			  -0.757831E+02/std::sqrt(2./nucqcd::pi),
+			  0.283739E+03/std::sqrt(2./nucqcd::pi),
+			  -0.694734E+03/std::sqrt(2./nucqcd::pi),
+			  0.885257E+03/std::sqrt(2./nucqcd::pi),
+			  -0.720739E+03/std::sqrt(2./nucqcd::pi),
+			  0.412969E+03/std::sqrt(2./nucqcd::pi),
+			  -0.103336E+03/std::sqrt(2./nucqcd::pi)};
+  static double d[12] = { 0.176655E-01/std::sqrt(2./nucqcd::pi),
+			  -0.124551E+00/std::sqrt(2./nucqcd::pi),
+			  -0.108815E+01/std::sqrt(2./nucqcd::pi),
+			  0.384848E+01/std::sqrt(2./nucqcd::pi),
+			  -0.852442E+01/std::sqrt(2./nucqcd::pi),
+			  0.209435E+02/std::sqrt(2./nucqcd::pi),
+			  -0.490728E+02/std::sqrt(2./nucqcd::pi),
+			  0.577382E+02/std::sqrt(2./nucqcd::pi),
+			  -0.127114E+01/std::sqrt(2./nucqcd::pi),
+			  -0.628361E+02/std::sqrt(2./nucqcd::pi),
+			  0.581016E+02/std::sqrt(2./nucqcd::pi),
+			  -0.177062E+02/std::sqrt(2./nucqcd::pi)};
 			  
   static double m[12] = { 0.2316,
 			  1.0,
@@ -306,26 +304,26 @@ TDeuteron::Wavefunction* TDeuteron::Wavefunction::CreateAV18bWavefunction()
   wf->fRelativistic = false;
   wf->yukawa = true;
   
-  static double c[12] = { 0.105252223e+02/(4.*Pi()),
-			  0.124352529e+02/(4.*Pi()),
-			  -0.687541641e+02/(4.*Pi()),
-			  0.239111042e+03/(4.*Pi()),
-			  -0.441014422e+03/(4.*Pi()),
-			  0.300140328e+03/(4.*Pi()),
-			  -0.230639939e+03/(4.*Pi()),
-			  0.409671540e+03/(4.*Pi()),
-			  -0.733453611e+03/(4.*Pi()),
-			  0.123506081e+04/(4.*Pi()),
-			  -0.120520606e+04/(4.*Pi()),0.};
-  static double d[12] = { 0.280995496e+00/(4.*Pi()),
-			  0.334117629e-01/(4.*Pi()),
-			  -0.727192237e+00/(4.*Pi()),
-			  -0.302809607e+01/(4.*Pi()),
-			  -0.903824982e+01/(4.*Pi()),
-			  0.496045967e+01/(4.*Pi()),
-			  -0.271985613e+02/(4.*Pi()),
-			  0.125334598e+03/(4.*Pi()),
-			  -0.346742235e+03/(4.*Pi()),0.,0.,0.};
+  static double c[12] = { 0.105252223e+02/(4.*nucqcd::pi),
+			  0.124352529e+02/(4.*nucqcd::pi),
+			  -0.687541641e+02/(4.*nucqcd::pi),
+			  0.239111042e+03/(4.*nucqcd::pi),
+			  -0.441014422e+03/(4.*nucqcd::pi),
+			  0.300140328e+03/(4.*nucqcd::pi),
+			  -0.230639939e+03/(4.*nucqcd::pi),
+			  0.409671540e+03/(4.*nucqcd::pi),
+			  -0.733453611e+03/(4.*nucqcd::pi),
+			  0.123506081e+04/(4.*nucqcd::pi),
+			  -0.120520606e+04/(4.*nucqcd::pi),0.};
+  static double d[12] = { 0.280995496e+00/(4.*nucqcd::pi),
+			  0.334117629e-01/(4.*nucqcd::pi),
+			  -0.727192237e+00/(4.*nucqcd::pi),
+			  -0.302809607e+01/(4.*nucqcd::pi),
+			  -0.903824982e+01/(4.*nucqcd::pi),
+			  0.496045967e+01/(4.*nucqcd::pi),
+			  -0.271985613e+02/(4.*nucqcd::pi),
+			  0.125334598e+03/(4.*nucqcd::pi),
+			  -0.346742235e+03/(4.*nucqcd::pi),0.,0.,0.};
 			  
   static double m[12] = {0.232500e+00,
 			 0.500000e+00,
@@ -429,38 +427,38 @@ TDeuteron::Wavefunction* TDeuteron::Wavefunction::CreateGrossL4Wavefunction()
 			     138.0,    // L=1
 			     45.702 }; // L=2
 
-  static double par[4*8] = { +.40627e+0*Sqrt(1e3), // L=0
-			     -.48817e-1*Sqrt(1e3),
-			     -.14180e+0*Sqrt(1e3),
-			     -.24136e+1*Sqrt(1e3),
-			     +.59324e+1*Sqrt(1e3),
-			     -.13507e+2*Sqrt(1e3),
-			     +.19513e+2*Sqrt(1e3),
-			     -.12367e+2*Sqrt(1e3),
-			     +.10589e-1*Sqrt(1e3), // L=2
-			     -.70546e-1*Sqrt(1e3),
-			     -.84650e+0*Sqrt(1e3),
-			     +.35455e+1*Sqrt(1e3),
-			     -.13965e+2*Sqrt(1e3),
-			     +.29006e+2*Sqrt(1e3),
-			     -.20446e+2*Sqrt(1e3),
-			     -.21302e+2*Sqrt(1e3),
-			     +.75280e-3*Sqrt(1e3), // L=1 triplet
-			     +.10957e+0*Sqrt(1e3),
-			     -.55089e+0*Sqrt(1e3),
-			     +.41630e+1*Sqrt(1e3),
-			     -.16092e+2*Sqrt(1e3),
-			     +.34651e+2*Sqrt(1e3),
-			     -.45555e+2*Sqrt(1e3),
-			     +.34221e+2*Sqrt(1e3),
-			     +.41566e-3*Sqrt(1e3), // L=1 singlet
-			     +.61962e-1*Sqrt(1e3),
-			     -.60043e+0*Sqrt(1e3),
-			     +.48688e+1*Sqrt(1e3),
-			     -.23789e+2*Sqrt(1e3),
-			     +.69093e+2*Sqrt(1e3),
-			     -.12215e+3*Sqrt(1e3),
-			     +.12828e+3*Sqrt(1e3) };
+  static double par[4*8] = { +.40627e+0*std::sqrt(1e3), // L=0
+			     -.48817e-1*std::sqrt(1e3),
+			     -.14180e+0*std::sqrt(1e3),
+			     -.24136e+1*std::sqrt(1e3),
+			     +.59324e+1*std::sqrt(1e3),
+			     -.13507e+2*std::sqrt(1e3),
+			     +.19513e+2*std::sqrt(1e3),
+			     -.12367e+2*std::sqrt(1e3),
+			     +.10589e-1*std::sqrt(1e3), // L=2
+			     -.70546e-1*std::sqrt(1e3),
+			     -.84650e+0*std::sqrt(1e3),
+			     +.35455e+1*std::sqrt(1e3),
+			     -.13965e+2*std::sqrt(1e3),
+			     +.29006e+2*std::sqrt(1e3),
+			     -.20446e+2*std::sqrt(1e3),
+			     -.21302e+2*std::sqrt(1e3),
+			     +.75280e-3*std::sqrt(1e3), // L=1 triplet
+			     +.10957e+0*std::sqrt(1e3),
+			     -.55089e+0*std::sqrt(1e3),
+			     +.41630e+1*std::sqrt(1e3),
+			     -.16092e+2*std::sqrt(1e3),
+			     +.34651e+2*std::sqrt(1e3),
+			     -.45555e+2*std::sqrt(1e3),
+			     +.34221e+2*std::sqrt(1e3),
+			     +.41566e-3*std::sqrt(1e3), // L=1 singlet
+			     +.61962e-1*std::sqrt(1e3),
+			     -.60043e+0*std::sqrt(1e3),
+			     +.48688e+1*std::sqrt(1e3),
+			     -.23789e+2*std::sqrt(1e3),
+			     +.69093e+2*std::sqrt(1e3),
+			     -.12215e+3*std::sqrt(1e3),
+			     +.12828e+3*std::sqrt(1e3) };
 
   wf->fImplementation = new TGrossPWF(8,alpha,138.,
 				      par,par+8,par+(2*8),par+(3*8));
@@ -729,13 +727,14 @@ TDeuteron::Wavefunction* TDeuteron::Wavefunction::CreateTestWavefunction()
   double x,q;
   for(int i=0; i<101; ++i) {
     q = i*.05;
-    x = Exp(-q)*q;
+    x = std::exp(-q)*q;
     implementation->AddUr(q,x);
     implementation->AddWr(q,x);
   }
   for(int i=0; i<101; ++i) {
     q = i*5.;
-    x = TMath::Gaus(q,0,200.);
+    const double arg = q/200.; // a Gaussian of width 200 MeV (as TMath::Gaus(q,0,200.))
+    x = std::exp(-0.5*arg*arg);
     implementation->AddUp(q,x);
     implementation->AddWp(q,x);
   }
@@ -811,30 +810,30 @@ FourVector<GammaStructure> TDeuteron::Wavefunction::Vertex(const FourVector<doub
   // in the rest frame of the deuteron.
   double ep;
   double p;
-  if( (Abs(pD[1])<nucqcd::strange_underflow) && (Abs(pD[2])<nucqcd::strange_underflow) && (Abs(pD[3])<nucqcd::strange_underflow) ) {
+  if( (std::abs(pD[1])<nucqcd::strange_underflow) && (std::abs(pD[2])<nucqcd::strange_underflow) && (std::abs(pD[3])<nucqcd::strange_underflow) ) {
     // We are in the rest frame
     ep = p2[0];
-    p = Sqrt( p2[1]*p2[1] + p2[2]*p2[2] + p2[3]*p2[3] );
+    p = std::sqrt( p2[1]*p2[1] + p2[2]*p2[2] + p2[3]*p2[3] );
   } else {
     TLorentzRotation boost(-pD[1]/pD[0],-pD[2]/pD[0],-pD[3]/pD[0]);
     FourVector<double> p2CM = boost*p2;
     ep = p2CM[0];
-    p = Sqrt( p2CM[1]*p2CM[1] + p2CM[2]*p2CM[2] + p2CM[3]*p2CM[3] );
+    p = std::sqrt( p2CM[1]*p2CM[1] + p2CM[2]*p2CM[2] + p2CM[3]*p2CM[3] );
   }
 
   // vertex form factors: (46) in PRD 20(1979)2361.
-  double f1 = Pi()*Sqrt(2.*kMd)*(2*ep-kMd)
-    * ( GetUp(p) - GetWp(p)/Sqrt(2.) + mass/p*Sqrt(3./2.)*GetVTp(p) );
+  double f1 = nucqcd::pi*std::sqrt(2.*kMd)*(2*ep-kMd)
+    * ( GetUp(p) - GetWp(p)/std::sqrt(2.) + mass/p*std::sqrt(3./2.)*GetVTp(p) );
 
-  double f2 = Pi()*Sqrt(2.*kMd)*(2*ep-kMd)
-    * ( mass/(ep+mass)*GetUp(p) + mass*(2*ep+mass)/Sqrt(2.)/p/p*GetWp(p)
-  	+ mass/p*Sqrt(3./2.)*GetVTp(p) );
+  double f2 = nucqcd::pi*std::sqrt(2.*kMd)*(2*ep-kMd)
+    * ( mass/(ep+mass)*GetUp(p) + mass*(2*ep+mass)/std::sqrt(2.)/p/p*GetWp(p)
+  	+ mass/p*std::sqrt(3./2.)*GetVTp(p) );
 
-  double f3 = Pi()*Sqrt(2.*kMd)*ep*mass/p*Sqrt(3./2.)*GetVTp(p);
+  double f3 = nucqcd::pi*std::sqrt(2.*kMd)*ep*mass/p*std::sqrt(3./2.)*GetVTp(p);
 
-  double f4 = -Pi()*Sqrt(2.*kMd)*mass*mass/kMd
-    * ( (2*ep-kMd)*(GetUp(p)/(ep+mass) - (ep+2.*mass)/Sqrt(2.)/p/p*GetWp(p))
-  	+ kMd*Sqrt(3.)/p*GetVSp(p) );
+  double f4 = -nucqcd::pi*std::sqrt(2.*kMd)*mass*mass/kMd
+    * ( (2*ep-kMd)*(GetUp(p)/(ep+mass) - (ep+2.*mass)/std::sqrt(2.)/p/p*GetWp(p))
+  	+ kMd*std::sqrt(3.)/p*GetVSp(p) );
 
   static GammaStructure unity(1.); // unit 4x4 matrix
 
@@ -857,7 +856,7 @@ complex<double> TDeuteron::Wavefunction::SphericalHarmonic(unsigned int l, int m
   // The Condon-Shortley phase convention is used.
  
   // first calculate Y_{l|m}}(theta,phi=0)
-  double Ylm = ROOT::Math::sph_legendre(l,TMath::Abs(m),theta);
+  double Ylm = gsl_sf_legendre_sphPlm(l,std::abs(m),std::cos(theta));
   
   // (-1)^m when m is negative
   if( m<0 ) Ylm *= (1+2*(m%2));
@@ -900,8 +899,8 @@ double TDeuteron::Wavefunction::ClebschGordan(int two_j1,int two_m1,int two_j2,
   // The arguments are the j_i and m_i multiplied by two.
   
   return gsl_sf_coupling_3j(two_j1,two_j2,two_j,two_m1,two_m2,-two_m)
-    * Power(-1.,(two_j1-two_j2+two_m)/2.)
-    * Sqrt(two_j+1.);
+    * std::pow(-1.,(two_j1-two_j2+two_m)/2.)
+    * std::sqrt(two_j+1.);
 }
 
 //_____________________________________________________________________
@@ -1212,7 +1211,7 @@ void TDeuteron::Polarization::SetTheta(double theta)
 {
   // Set the polar angle of the spin quantization axis (in rad)
 
-  if( theta<0. || theta>TMath::Pi() ) {
+  if( theta<0. || theta>nucqcd::pi ) {
     throw std::out_of_range(nucqcd::ErrorMessage() << "ERROR in TDeuteron::Polarization::SetTheta(double): "
 	 << "polar angle not in range [0,pi].");
   }
@@ -2184,9 +2183,9 @@ TDeuteron::Wavefunction* TDeuteron::Wavefunction::CreateNijmegenWavefunction()
   }
   for(int i=0; i<500; ++i) {
     implementation->AddUp(p[i],
-			  up[i]/Power(TWavefunctionImplementation::fgHbarc,3./2.));
+			  up[i]/std::pow(TWavefunctionImplementation::fgHbarc,3./2.));
     implementation->AddWp(p[i],
-			  wp[i]/Power(TWavefunctionImplementation::fgHbarc,3./2.));
+			  wp[i]/std::pow(TWavefunctionImplementation::fgHbarc,3./2.));
   }
 
   wf->fImplementation = implementation;

@@ -55,11 +55,10 @@
 #include "TGrossPWF.h"
 #include "ErrorMessage.hpp"
 #include <iostream>
-#include <TMath.h>
 #include "constants.hpp"
+#include <cmath>
 
 using std::cout; using std::cerr; using std::endl;
-using TMath::Sqrt; using TMath::Power; using TMath::Exp;
 
 
 //_____________________________________________________________________
@@ -149,7 +148,7 @@ double TGrossPWF::GetUr(double r) const
   for(int i=0; i<fOrder; ++i)
     ur += fPar[kU*fOrder+i] * GetG(kR,0,i+1,r);
   
-  return ur / Sqrt(fgHbarc);
+  return ur / std::sqrt(fgHbarc);
 }
 
 //_____________________________________________________________________
@@ -164,7 +163,7 @@ double TGrossPWF::GetWr(double r) const
   for(int i=0; i<fOrder; ++i)
     wr += fPar[kW*fOrder+i] * GetG(kR,2,i+1,r);
   
-  return wr / Sqrt(fgHbarc);
+  return wr / std::sqrt(fgHbarc);
 }
 
 //_____________________________________________________________________
@@ -179,7 +178,7 @@ double TGrossPWF::GetVTr(double r) const
   for(int i=0; i<fOrder; ++i)
     vtr += fPar[kVT*fOrder+i] * GetG(kR,1,i+1,r);
   
-  return vtr / Sqrt(fgHbarc);
+  return vtr / std::sqrt(fgHbarc);
 }
 
 //_____________________________________________________________________
@@ -194,7 +193,7 @@ double TGrossPWF::GetVSr(double r) const
   for(int i=0; i<fOrder; ++i)
     vsr += fPar[kVS*fOrder+i] * GetG(kR,1,i+1,r);
   
-  return vsr / Sqrt(fgHbarc);
+  return vsr / std::sqrt(fgHbarc);
 }
 
 //_____________________________________________________________________
@@ -307,7 +306,7 @@ double TGrossPWF::GetK(int L, int term, int index) const
   // 
   // Return value is dimensionless
   
-  double K = Power(Mass(L,fOrder+index)/Mass(L,term),L);
+  double K = std::pow(Mass(L,fOrder+index)/Mass(L,term),L);
 
   for(int j=1; j<=(L+2); ++j)
     if(j!=index)
@@ -371,14 +370,14 @@ double TGrossPWF::GetF(ESpace space, int L, int index, double q) const
     
     switch(L) {
     case 0:
-      f = Exp(-1.*Mass(L,index)*q);
+      f = std::exp(-1.*Mass(L,index)*q);
       break;
     case 1:
-      f =  Exp(-1.*Mass(L,index)*q) *(1.+1./Mass(L,index)/q);
+      f =  std::exp(-1.*Mass(L,index)*q) *(1.+1./Mass(L,index)/q);
       break;
     case 2:
-      f =  Exp(-1.*Mass(L,index)*q) 
-	*(1.+3./Mass(L,index)/q+3./Power(Mass(L,index)*q,2.));
+      f =  std::exp(-1.*Mass(L,index)*q) 
+	*(1.+3./Mass(L,index)/q+3./std::pow(Mass(L,index)*q,2.));
       break;
     default:
       cerr << "ERROR in TGrossPWF::GetF(ESpace,int,int,double): "
@@ -388,7 +387,7 @@ double TGrossPWF::GetF(ESpace space, int L, int index, double q) const
   } // end r-space
   else if(space==kP) { // p-space
 
-    f = Sqrt(2./TMath::Pi())/(q*q + Mass(L,index)*Mass(L,index));
+    f = std::sqrt(2./nucqcd::pi)/(q*q + Mass(L,index)*Mass(L,index));
     switch(L) {
     case 0:
       break;
@@ -396,7 +395,7 @@ double TGrossPWF::GetF(ESpace space, int L, int index, double q) const
       f *= q/Mass(L,index);
       break;
     case 2:
-      f *= Power(q/Mass(L,index),2.);
+      f *= std::pow(q/Mass(L,index),2.);
       break;
     default:
       cerr << "ERROR in TGrossPWF::GetF(ESpace,int,int,double): "

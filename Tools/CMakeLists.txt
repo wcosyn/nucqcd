@@ -11,12 +11,16 @@ if(MPI_ENABLED)
   set(mpi_sources TMPI.cpp)
 endif()
 
+# solve_3x3 has to round as ROOT's TDecompLU did (TYukawaPWF D-wave coefficients): no fused multiply-adds
+set_source_files_properties(MathUtil.cpp PROPERTIES COMPILE_OPTIONS -ffp-contract=off)
+
 nucqcd_add_library(MePhys
   SOURCES
     NuclStructure.cpp
     NucleonStructure.cpp
     DeuteronStructure.cpp
     Utilfunctions.cpp
+    MathUtil.cpp
     GridCache.cpp
     LightConeKin2to2.cpp
     LightConeKin2to3.cpp

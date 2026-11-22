@@ -17,7 +17,6 @@
 #include <TLorentzRotation.h>
 #include <TRotation.h>
 #include "FourVector.h"
-#include <TMath.h>
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
@@ -25,7 +24,6 @@
 #include <iostream>
 #include <complex>
 
-using TMath::Sign;
 using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////
@@ -271,7 +269,7 @@ void TSpinor::Polarization::SetTheta(double theta)
 {
   // Set the polar angle of the spin quantization axis (in rad)
 
-  if( theta<0. || theta>TMath::Pi() ) {
+  if( theta<0. || theta>nucqcd::pi ) {
     throw std::out_of_range(nucqcd::ErrorMessage() << "ERROR in TSpinor::Polarization::SetTheta(double): "
 	 << "polar angle not in range [0,pi].");
   }
@@ -1015,16 +1013,16 @@ void THelicitySpinor::WickRotationEulerAngles(const TLorentzRotation& l,
       assert(1==0);
     }
   }
-  const Double_t sinTheta = TMath::Sqrt(s2);
+  const Double_t sinTheta = std::sqrt(s2);
 
   if ( fabs(sinTheta) > underflow  ) {
     Double_t cscTheta = 1/sinTheta;
     Double_t cosAbsPhi =  wickRotation.ZY() * cscTheta;
-    if( TMath::Abs(cosAbsPhi-1.) < underflow ) {
+    if( std::abs(cosAbsPhi-1.) < underflow ) {
       cosAbsPhi = 1.;
-    } else if( TMath::Abs(cosAbsPhi+1.) < underflow ) {
+    } else if( std::abs(cosAbsPhi+1.) < underflow ) {
       cosAbsPhi = -1.;
-    } else if ( TMath::Abs(cosAbsPhi) > 1 ) {        // NaN-proofing
+    } else if ( std::abs(cosAbsPhi) > 1 ) {        // NaN-proofing
       cerr << "Error in  THelicitySpinor::WickRotationEulerAngles("
 	   << "const TLorentzRotation&,const TLorentzVector&,"
 	   << "double&,double&,double&): "
@@ -1033,8 +1031,8 @@ void THelicitySpinor::WickRotationEulerAngles(const TLorentzRotation& l,
     }
     Double_t absPhi;
     if( fabs(cosAbsPhi-1.) < underflow ) absPhi = 0.;
-    else if( fabs(cosAbsPhi+1.) < underflow ) absPhi = TMath::Pi();
-    else absPhi= TMath::ACos(cosAbsPhi);
+    else if( fabs(cosAbsPhi+1.) < underflow ) absPhi = nucqcd::pi;
+    else absPhi= std::acos(cosAbsPhi);
     if (wickRotation.ZX() > 0) {
       alpha = absPhi;
     } else if (wickRotation.ZX() < 0) {
@@ -1042,14 +1040,14 @@ void THelicitySpinor::WickRotationEulerAngles(const TLorentzRotation& l,
     } else if (wickRotation.ZY() > 0) {
       alpha = 0.0;
     } else {
-      alpha = TMath::Pi();
+      alpha = nucqcd::pi;
     }
   } else {              // sinTheta == 0 so |Fzz| = 1
     Double_t cosAbsPhi = wickRotation.XX();
     Double_t absPhi;
     if( fabs(cosAbsPhi-1.) < underflow ) absPhi = 0.;
-    else if( fabs(cosAbsPhi+1.) < underflow ) absPhi = TMath::PiOver2();
-    else absPhi= .5 * TMath::ACos(cosAbsPhi);
+    else if( fabs(cosAbsPhi+1.) < underflow ) absPhi = (nucqcd::pi/2.);
+    else absPhi= .5 * std::acos(cosAbsPhi);
     if (wickRotation.XY() > 0) {
       alpha =  -absPhi;
     } else if (wickRotation.XY() < 0) {
@@ -1057,24 +1055,24 @@ void THelicitySpinor::WickRotationEulerAngles(const TLorentzRotation& l,
     } else if (wickRotation.XX()>0) {
       alpha = 0.0;
     } else {
-      alpha = wickRotation.ZZ() * TMath::PiOver2();
+      alpha = wickRotation.ZZ() * (nucqcd::pi/2.);
     }
   }
 
   // GetYPhi()
-  alpha += TMath::Pi()/2.0;
+  alpha += nucqcd::pi/2.0;
 
   // GetYTheta()
   double cosBeta = wickRotation.ZZ();
   if( fabs(cosBeta-1.) < underflow ) beta = 0.;
-  else if( fabs(cosBeta+1.) < underflow ) beta = TMath::Pi();
-  else beta = TMath::ACos(cosBeta);
+  else if( fabs(cosBeta+1.) < underflow ) beta = nucqcd::pi;
+  else beta = std::acos(cosBeta);
 
   // GetXPsi(): store the finalPsi in gamma
   if ( fabs(sinTheta) > underflow ) {
     Double_t cscTheta = 1/sinTheta;
     Double_t cosAbsPsi =  - wickRotation.YZ() * cscTheta;
-    if ( TMath::Abs(cosAbsPsi) > 1 ) {        // NaN-proofing
+    if ( std::abs(cosAbsPsi) > 1 ) {        // NaN-proofing
       cerr << "WARNING in  THelicitySpinor::WickRotationEulerAngles("
 	   << "const TLorentzRotation&,const TLorentzVector&,"
 	   << "double&,double&,double&): "
@@ -1083,18 +1081,18 @@ void THelicitySpinor::WickRotationEulerAngles(const TLorentzRotation& l,
     }
     Double_t absPsi;
     if( fabs(cosAbsPsi-1.) < underflow ) absPsi = 0.;
-    else if( fabs(cosAbsPsi+1.) < underflow ) absPsi = TMath::Pi();
-    else absPsi= TMath::ACos(cosAbsPsi);
+    else if( fabs(cosAbsPsi+1.) < underflow ) absPsi = nucqcd::pi;
+    else absPsi= std::acos(cosAbsPsi);
     if (wickRotation.XZ() > 0) {
       gamma = absPsi;
     } else if (wickRotation.XZ() < 0) {
       gamma = -absPsi;
     } else {
-      gamma = (wickRotation.YZ() < 0) ? 0 : TMath::Pi();
+      gamma = (wickRotation.YZ() < 0) ? 0 : nucqcd::pi;
     }
   } else {              // sinTheta == 0 so |Fzz| = 1
     Double_t cosAbsPsi = wickRotation.XX();
-    if ( TMath::Abs(cosAbsPsi) > 1 ) {        // NaN-proofing
+    if ( std::abs(cosAbsPsi) > 1 ) {        // NaN-proofing
       cerr << "WARNING in  THelicitySpinor::WickRotationEulerAngles("
 	   << "const TLorentzRotation&,const TLorentzVector&,"
 	   << "double&,double&,double&): "
@@ -1103,19 +1101,19 @@ void THelicitySpinor::WickRotationEulerAngles(const TLorentzRotation& l,
     }
     Double_t absPsi;
     if( fabs(cosAbsPsi-1.) < underflow ) absPsi = 0.;
-    else if( fabs(cosAbsPsi+1.) < underflow ) absPsi = TMath::PiOver2();
-    else absPsi= .5 * TMath::ACos(cosAbsPsi);
+    else if( fabs(cosAbsPsi+1.) < underflow ) absPsi = (nucqcd::pi/2.);
+    else absPsi= .5 * std::acos(cosAbsPsi);
     if (wickRotation.YX() > 0) {
       gamma = absPsi;
     } else if (wickRotation.YX() < 0) {
       gamma = -absPsi;
     } else {
-      gamma = (wickRotation.XX() > 0) ? 0 : TMath::PiOver2();
+      gamma = (wickRotation.XX() > 0) ? 0 : (nucqcd::pi/2.);
     }
   }
 
   // GetYPsi()
-  gamma -= TMath::Pi()/2.0;
+  gamma -= nucqcd::pi/2.0;
 }
 
 //______________________________________________________________________________
@@ -1138,8 +1136,8 @@ Matrix<2,2> THelicitySpinor::RotationMatrix(const TLorentzQuaternion& l,
   WickRotation(l,p).Decompose(omega,axis,boost);
   const double theta = axis.Theta();
   const double phi = axis.Phi();
-  const complex<double> expIphi = exp(complex<double>(0.,phi+TMath::PiOver2()));
-  const complex<double> expMIphi = exp(complex<double>(0.,-phi+TMath::PiOver2()));
+  const complex<double> expIphi = exp(complex<double>(0.,phi+(nucqcd::pi/2.)));
+  const complex<double> expMIphi = exp(complex<double>(0.,-phi+(nucqcd::pi/2.)));
 
   // This formula is taken from Eq.(18) in section (6.2.4) of "Quantum Theory
   // of Angular Momentum" by D.Varshalovich, A.Moskalev, V.Khersonskii.

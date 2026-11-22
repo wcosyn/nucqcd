@@ -66,6 +66,7 @@ nucqcd_add_test(unit_cuba            DIR unit LABEL unit LINK Integrator cuba)
 nucqcd_add_test(unit_lorentz_gamma   DIR unit LABEL unit LINK MePhys cuba)
 nucqcd_add_test(unit_deuteron_wf     DIR unit LABEL unit LINK MePhys cuba)
 nucqcd_add_test(unit_kinematics      DIR unit LABEL unit LINK MePhys cuba)
+nucqcd_add_test(unit_mathutil        DIR unit LABEL unit LINK MePhys cuba)
 # Pair lives with its only user in progs/attic/twonucl (unfinished A(e,e'NN) code)
 set(NUCQCD_TWONUCL_DIR ${PROJECT_SOURCE_DIR}/progs/attic/twonucl)
 nucqcd_add_test(unit_pair            DIR unit LABEL unit LINK MePhys cuba

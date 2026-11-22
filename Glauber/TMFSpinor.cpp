@@ -3,7 +3,6 @@
 //#include <numtoa.h>
 // #include <TString.h>
 #include <FourVector.h>
-#include <TMath.h>
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
@@ -12,7 +11,6 @@
 #include <complex>
 #include <TDeuteron.h>
 
-using TMath::Sign;
 using namespace std;
 
 
