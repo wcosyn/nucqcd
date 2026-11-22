@@ -254,7 +254,8 @@ public:
    * grids (AbstractFsiGrid::addParticle), so that a cached grid does not depend on which kinematics
    * in its bin was computed first. Bins: p to the nearest multiple of 10 MeV (at least 10 MeV);
    * cos(theta) and phi to the nearest 0.1 (phi taken in [-pi,pi], and the edge bin |phi| > 3.05
-   * to pi, so particles near the phi=pi plane lie in it); the hard scale to 0.1 GeV^2; lc_mod and
+   * to pi, so particles near the phi=pi plane lie in it; phi is 0 when the binned cos(theta) is +-1,
+   * since it is irrelevant along the z axis); the hard scale to 0.1 GeV^2; lc_mod and
    * nkt_mod to 0.01; decay_dil to 1 MeV. The scattering parameters follow from the binned momentum;
    * user-set ones are binned too (sigma to 0.1 fm^2 = 1 mb, beta^2 to 0.01 fm^2, epsilon to 0.01).
    */

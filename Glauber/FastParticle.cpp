@@ -864,7 +864,8 @@ FastParticle FastParticle::gridBinCentre() const{
   const double pc = 10.*std::max(std::lround(p/10.),1L);
   const double cthc = std::lround(costheta*10.)/10.;
   const long kphi = std::lround(std::remainder(phi,2.*PI)*10.); // phi in [-pi,pi] first
-  const double phic = std::labs(kphi)>=31 ? PI : kphi/10.;    // the edge bin [3.05,pi] is centred on pi (in plane)
+  double phic = std::labs(kphi)>=31 ? PI : kphi/10.;          // the edge bin [3.05,pi] is centred on pi (in plane)
+  if(std::fabs(cthc)==1.) phic=0.; // along the z axis phi is irrelevant: phi=0 gives the in-plane symmetry and one cache file
   FastParticle c(particletype,incoming,pc,std::acos(cthc),phic,std::lround(hardscale*10.)/10.,Gamma,
                  std::lround(lc_mod*100.)/100.,std::lround(nkt_mod*100.)/100.,"");
   if(userset){

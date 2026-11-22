@@ -44,7 +44,14 @@ TEST_CASE("gridBinCentre moves the kinematics to the bin centre", "[gridbins]") 
   // the scattering parameters follow from the binned momentum
   CHECK(proton(1506., 0., 0.).gridBinCentre().getSigmap() == proton(1510., 0., 0.).getSigmap());
   // cos(theta) to 0.1: theta = 0.3 rad (cos 0.955) is computed along the z axis
-  CHECK_THAT(proton(1500., 0.3, 0.).gridBinCentre().getCosTheta(), WithinAbs(1., 1e-15));
+  // exactly 1, so the faster single-particle code for cos(theta) == 1 is used
+  CHECK(proton(1500., 0.3, 0.).gridBinCentre().getCosTheta() == 1.);
+  CHECK(proton(1500., 0.3, 0.).gridBinCentre().getTheta() == 0.);
+  CHECK(proton(1500., 0., 0.).gridBinCentre().getCosTheta() == 1.);
+  CHECK(proton(1500., PI - 0.2, 0.).gridBinCentre().getCosTheta() == -1.);
+  // along the z axis phi is set to 0 (in-plane symmetry, one cache file)
+  CHECK(proton(1500., 0.3, 0.73).gridBinCentre().getPhi() == 0.);
+  CHECK(proton(1500., PI - 0.2, -2.).gridBinCentre().getPhi() == 0.);
   CHECK_THAT(proton(1500., 0.47, 0.).gridBinCentre().getCosTheta(), WithinAbs(0.9, 1e-15));
   // phi to 0.1, taken in [-pi,pi]; the edge bin |phi| > 3.05 goes to pi (the phi=pi plane)
   CHECK_THAT(proton(1500., 1., 0.73).gridBinCentre().getPhi(), WithinAbs(0.7, 1e-15));

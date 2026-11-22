@@ -236,7 +236,9 @@ one commit per bug; no `[known-bug]` tests remain.
     bin widths are unchanged, but the bins are centred on the lattice (rounding instead of
     truncating p and the CT parameters), so round inputs such as p = 1500 MeV, Q² = 8 GeV² and
     lc_mod = 1 are bin centres and stay as they are. φ is taken in [-π, π] and the edge bin
-    |φ| > 3.05 goes to π, so particles near the φ = π plane lie in it. User-set scattering
+    |φ| > 3.05 goes to π, so particles near the φ = π plane lie in it. When the binned cos θ is ±1, φ is set to 0:
+    it is irrelevant along the z axis, and φ = 0 gives the in-plane symmetry and a single cache file. cos θ = 1
+    stays exactly 1, so single particles near the z axis use the faster code for `getCosTheta() == 1.`. User-set scattering
     parameters are binned too (σ to 1 mb, β² and ε to 0.01), and their key now also contains the
     momentum, which the CT and decay grids depend on. File names end in `.key2.dat`, so grids cached
     with the old key are not reused (delete them).
