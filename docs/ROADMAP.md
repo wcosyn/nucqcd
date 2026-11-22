@@ -150,11 +150,12 @@ one commit per bug; no `[known-bug]` tests remain.
   variables" (and exited), so `DoubleNCross` (`progs/attic/twonucl`) could not run. Fixed by copying
   the first tokens first (and using `snprintf`); it was the only such call in the code. Tested in
   `unit_kinematics` (12C(e,e'pn) kinematics: conservation laws, and the solutions are built).
-- [ ] **`TKinematics2to3WithLabAngles::GetSolution` has no masses for isospin channel 7 (found
+- [x] **`TKinematics2to3WithLabAngles::GetSolution` has no masses for isospin channel 7 (found
   during step 5).** `UpdateKinematics` constructs the solutions as `TKinematics2to3` without passing
   the masses, so for channel 7 (masses given by the caller, used for A(e,e'pN)) their masses are 0
-  and their vectors NaN. The object itself is correct, and no code calls `GetSolution`. Fix: pass
-  `fMd, fMn, fMk, fMy`.
+  and their vectors NaN. The object itself is correct, and no code calls `GetSolution`. **Fixed:**
+  the masses `fMd, fMn, fMk, fMy` are passed (channels 1–6 set their own masses anyway). Tested in
+  `unit_kinematics` (the solutions conserve energy and momentum and reproduce the input).
 - [ ] **`DoubleNModel` (found during step 5).** (1) The z component of r₂ in the integrand used
   φ₂ instead of cos θ₂. (2) With `pw = 1` the FSI grids are not created, but the integrand still
   calls them: segfault. (3) With SRC correlations on (`corr = 1`) the result is NaN (not yet

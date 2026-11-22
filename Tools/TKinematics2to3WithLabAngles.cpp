@@ -639,7 +639,8 @@ void TKinematics2to3WithLabAngles::UpdateKinematics()
 					formatString,
 					GetVar(1), GetVar(2),
 					GetVar(3), GetVar(4),
-					costh2cm,phi2cm);
+					costh2cm,phi2cm,
+					fMd,fMn,fMk,fMy); // isospin channel 7 takes its masses from here
 
   } // end initializing fSolutions
 

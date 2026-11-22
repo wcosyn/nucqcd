@@ -77,8 +77,20 @@ TEST_CASE("TKinematics2to3WithLabAngles for A(e,e'pn): solutions and conservatio
   CHECK_THAT(out.E(), WithinRel(in.E(), 1e-10));
   CHECK_THAT((out - in).Vect().Mag(), WithinAbs(0., 1e-6));
   for (int i = 0; i < kin.GetNumberOfSolutions(); i++) {
-    // the solutions were built from a valid format string
-    CHECK_THAT(kin.GetSolution(i).GetQsquared(), WithinRel(Q2, 1e-9));
-    CHECK_THAT(kin.GetSolution(i).GetWlab(), WithinRel(omega, 1e-9));
+    // the solutions were built from a valid format string, and with the masses (until 2026-11 they
+    // got none in isospin channel 7, so their vectors were NaN)
+    const TKinematics2to3 &sol = kin.GetSolution(i);
+    CHECK_THAT(sol.GetQsquared(), WithinRel(Q2, 1e-9));
+    CHECK_THAT(sol.GetWlab(), WithinRel(omega, 1e-9));
+    CHECK(sol.IsPhysical());
+    CHECK_THAT(sol.GetD4().M(), WithinRel(mA, 1e-9));
+    CHECK_THAT(sol.GetY4().M(), WithinRel(mA2, 1e-9));
+    CHECK_THAT(sol.GetPn(), WithinRel(pn, 1e-9));
+    CHECK_THAT(sol.GetN3().Theta(), WithinAbs(thn, 1e-9));
+    CHECK_THAT(sol.GetK3().Theta(), WithinAbs(thk, 1e-9));
+    const TLorentzVector sol_in = sol.GetG4() + sol.GetD4();
+    const TLorentzVector sol_out = sol.GetN4() + sol.GetK4() + sol.GetY4();
+    CHECK_THAT(sol_out.E(), WithinRel(sol_in.E(), 1e-10));
+    CHECK_THAT((sol_out - sol_in).Vect().Mag(), WithinAbs(0., 1e-6));
   }
 }
