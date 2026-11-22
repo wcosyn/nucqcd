@@ -101,14 +101,16 @@ struct Ftor_conv {
       Ftor_conv &p = * (Ftor_conv *) param;
       p.f(ret,x[0],x[1],x[2], *p.emt,p.t,p.pold_in, p.pold_out,p.deltax, p.GFF_A, p.GFF_J, p.GFF_D);
     }
-    Deut_Conv_EMTLF *emt;
-    double t; // [MeV^2]
-    double scale; ///< [GeV]
-    int pold_in;
-    int pold_out;
-    double deltax; //[MeV]
-    double GFF_A, GFF_J, GFF_D;
-    
+    Deut_Conv_EMTLF *emt; ///< EMT object from which this integration is called
+    double t; ///< [MeV^2] momentum transfer squared
+    double scale; ///< [GeV] not used
+    int pold_in; ///< polarization of the initial deuteron (-1, 0, +1)
+    int pold_out; ///< polarization of the final deuteron (-1, 0, +1)
+    double deltax; ///< [MeV] perpendicular component of the momentum transfer, along the x axis
+    double GFF_A; ///< nucleon gravitational form factor A(t)
+    double GFF_J; ///< nucleon gravitational form factor J(t)
+    double GFF_D; ///< nucleon gravitational form factor D(t)
+    /// integrand, see int_k3
     void (*f)(numint::vector_z & res, double alpha_1, double kperp, double kphi, Deut_Conv_EMTLF &emt,
               double t, int pold_in, int pold_out,  double deltax, double GFF_A, double GFF_J, double GFF_D);
       };
@@ -125,12 +127,14 @@ struct Ftor_conv_real{
       Ftor_conv_real &p = * (Ftor_conv_real *) param;
       p.f(ret,x[0],x[1],x[2], *p.emt,p.t,p.deltax, p.GFF_A, p.GFF_J, p.GFF_D);
     }
-    Deut_Conv_EMTLF *emt;
-    double t; // [MeV^2]
-    double scale; ///< [GeV]
-    double deltax; //[MeV]
-    double GFF_A, GFF_J, GFF_D;
-    
+    Deut_Conv_EMTLF *emt; ///< EMT object from which this integration is called
+    double t; ///< [MeV^2] momentum transfer squared
+    double scale; ///< [GeV] not used
+    double deltax; ///< [MeV] perpendicular component of the momentum transfer, along the x axis
+    double GFF_A; ///< nucleon gravitational form factor A(t)
+    double GFF_J; ///< nucleon gravitational form factor J(t)
+    double GFF_D; ///< nucleon gravitational form factor D(t)
+    /// integrand, see int_k3_real
     void (*f)(numint::vector_d & res, double alpha_1, double kperp, double kphi, Deut_Conv_EMTLF &emt,
               double t, double deltax, double GFF_A, double GFF_J, double GFF_D);
       };
@@ -194,7 +198,7 @@ static std::vector< std::complex<double> > getGFF_nucl(const int sigma_in, const
                         const double GFF_A, const double GFF_J, const double GFF_D);
 
 std::unique_ptr<TDeuteron::Wavefunction> wfref; /*!< contains instance of deuteron wave function*/
-TInterpolatingWavefunction wf;
+TInterpolatingWavefunction wf; /*!< interpolation of wfref on a grid (0-1000 MeV in p, 0-20 fm in r), used in the integrands */
 
 
 };

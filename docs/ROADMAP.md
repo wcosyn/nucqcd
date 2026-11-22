@@ -381,6 +381,7 @@ one commit per bug; no `[known-bug]` tests remain.
   - [ ] **Undocumented members** (1231): Tools 1049 (`TKinematics2to3.h` 303, `TKinematics.h` 107,
     `TSpinor.h` 94, `TDeuteron.h` 66, `TInterpolatingWavefunction.h` 52, ...), Knockout 91, Glauber 58,
     DIS 33. One class or library per PR.
+    - [x] DIS (`Resonance`, `He3Cross`, `InclusiveCrossRes`, `Deut_Conv_EMTLF`): no warnings left.
 
 ## 6. Structural refactors
 
