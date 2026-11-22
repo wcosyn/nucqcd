@@ -181,12 +181,13 @@ one commit per bug; no `[known-bug]` tests remain.
   `interpPionGlauberData`. Tested in `unit_grid_bins`. Cached π⁻ grids (`Ptype3` in the file name)
   were computed with the old parameters; the cache key contains σ, so most of them are not reused,
   but delete them to be sure.
-- [ ] **`TDeuteron::Wavefunction` error handling (found while documenting `TDeuteron`).**
+- [x] **`TDeuteron::Wavefunction` error handling (found while documenting `TDeuteron`).**
   `CreateWavefunction(name)` prints a warning and returns a null pointer for an unknown name (e.g.
   "Nijmegen" instead of "nijm3"), so the caller crashes later; it should throw
   `std::invalid_argument`. `getResidu()` on a non-Yukawa wave function asserts and, with assertions
   off (release builds), falls off the end without a return value (undefined behaviour); it should
-  throw `std::logic_error`. No behaviour change for valid input.
+  throw `std::logic_error`. No behaviour change for valid input. **Fixed:** both throw, with the list
+  of known names in the message. Tested in `unit_deuteron_wf`.
 - [x] **`WeakQECross` neutral current:** the NC constructor never initialized `lepton`, but
   `getDiffWeakQECross` dereferenced it, so nuclear NC cross sections segfaulted. NC now takes its
   kinematics from the electron object.

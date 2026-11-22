@@ -787,8 +787,8 @@ TDeuteron::Wavefunction* TDeuteron::Wavefunction::CreateWavefunction(const TStri
   else if(!name.CompareTo("test",TString::kIgnoreCase))
     wf = CreateTestWavefunction();
   else
-    cerr << "WARNING in TDeuteron::Wavefunction::CreateWavefunction(const TString&): "
-	 << "unknown wavefunction.\n";
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "TDeuteron::Wavefunction::CreateWavefunction: unknown wave function \""
+                                << name.Data() << "\" (known: cdbonn, cdbonn87, paris, av18, av18b, nijm3, grossiib, grossl4, grosswjc1, grosswjc2, test)");
   
   return wf;
 }
@@ -1149,10 +1149,8 @@ complex<double> TDeuteron::Wavefunction::DeuteronRState(const TStrangePolarizati
 double TDeuteron::Wavefunction::getResidu() const{
   
   if(yukawa) return dynamic_cast<TYukawaPWF *>(fImplementation)->getResidu();
-  else {
-    cerr << "not a valid wf form for pole residu extraction" << std::endl;
-    assert(1==0);
-  }
+  throw std::logic_error(nucqcd::ErrorMessage() << "TDeuteron::Wavefunction::getResidu: wave function " << GetName()
+                         << " is not of Yukawa type, no pole residue available");
 }
 
 
