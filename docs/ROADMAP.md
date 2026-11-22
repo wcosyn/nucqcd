@@ -571,6 +571,17 @@ Add LHAPDF6 sets as a parametrization in `NucleonStructure` (and so in `NuclStru
 - [ ] **Tests:** as in poldeut (`tests/test_lhapdf.py`): parton-model sums and isospin against direct
   LHAPDF calls, F1 from F2 and R, the WW table against a direct integration, with CT18LO and
   NNPDFpol11_100; the tests skip when LHAPDF or the sets are not installed.
+- [ ] **Explicit combinations of parametrizations.** `NuclStructure` silently replaces Christy-Bosted
+  by SLAC above W^2 = 9 GeV^2 (and `getName()` then returns "SLAC", which `DeuteronStructure` relies
+  on), while `NucleonStructure` uses CB up to W^2 = 25 GeV^2 and throws above; the same name "CB" thus
+  behaves differently in the two classes (now documented). When LHAPDF sets are added, a resonance-region
+  fit at low W and a DIS parametrization or PDF set at high W will be a common need. Make that an
+  explicit, configurable combination in `NucleonStructure`, as in poldeut (`CombinedStructure`, and the
+  (W, Q^2)-domain adapters `FromNucleonStructure` of `inclusive.py`), e.g. "CB+SLAC" or
+  "CB+LHAPDF:CT18LO" with the W^2 boundary as a parameter, instead of a hidden rename in a
+  constructor; keep "CB" in `NuclStructure` as an alias of the current behaviour (CB below 9 GeV^2,
+  SLAC above) so results do not change, and let `DeuteronStructure` ask whether F1 is to be built from
+  F2 instead of comparing names.
 - [ ] Optionally, replace the bundled MSTW grid code (`mstwpdf.h/.cpp`, `share/mstw_grids`) by the
   LHAPDF set `MSTW2008lo68cl`, after checking that F2 agrees.
 
