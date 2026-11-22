@@ -11,35 +11,10 @@ using namespace std;
 MeanFieldNucleusThick::MeanFieldNucleusThick(const int nucleus, const string & dir)
  : MeanFieldNucleus(nucleus,dir) {
    //cout << "Initializing nucleus with thickness..." << endl;
-   protondensity=NULL;
-   neutrondensity=NULL;
-   totaldensity=NULL;
    constructDensity();
    
 }
 
-MeanFieldNucleusThick::MeanFieldNucleusThick(const MeanFieldNucleusThick &rhs): MeanFieldNucleus(rhs){
-  protondensity=new double[getWF_r_lines()];
-  neutrondensity=new double[getWF_r_lines()];
-  totaldensity = new double[getWF_r_lines()];
-  for(int j=0;j<getWF_r_lines();j++){
-    protondensity[j]=rhs.protondensity[j];
-    neutrondensity[j]=rhs.neutrondensity[j];
-    totaldensity[j]=rhs.totaldensity[j];
-  }
-  
-}
-
-
-MeanFieldNucleusThick::~MeanFieldNucleusThick(){
-  //cout << "Cleaning up thickness nucleus..." << getInputfile() << endl;
-  delete [] protondensity;
-  protondensity=NULL;
-  delete [] neutrondensity;
-  protondensity=NULL;
-  delete [] totaldensity;
-  totaldensity=NULL;
-}
 
 /**
  * Construct the mean densities
@@ -47,15 +22,15 @@ MeanFieldNucleusThick::~MeanFieldNucleusThick(){
  * so \f$ \int d^{2} \Omega \int \textrm{d} r^{2} \rho(r) = 1 \f$
  */
 void MeanFieldNucleusThick::constructDensity(){
-  if(protondensity!=NULL||neutrondensity!=NULL||totaldensity!=NULL){
+  if(!protondensity.empty()||!neutrondensity.empty()||!totaldensity.empty()){
     cerr<< "Warning: densities already initialized, skipping..." << endl;
     return;
   }
   
   double norm=2.*PI;
-  protondensity=new double[getWF_r_lines()];
-  neutrondensity=new double[getWF_r_lines()];
-  totaldensity = new double[getWF_r_lines()];
+  protondensity.assign(getWF_r_lines(),0.);
+  neutrondensity.assign(getWF_r_lines(),0.);
+  totaldensity.assign(getWF_r_lines(),0.);
   
   for(int j=0;j<getWF_r_lines();j++){
     protondensity[j]=0.;
@@ -123,7 +98,7 @@ double MeanFieldNucleusThick::getProtonDensity(const double r) const{
     cerr << "r out of range in getWave_Rpart: " << r << endl;
     exit(1);
   }
-  return interpolate(protondensity,r,getWF_r_step(),getWF_r_lines(),1); 
+  return interpolate(protondensity.data(),r,getWF_r_step(),getWF_r_lines(),1); 
 }
 
 double MeanFieldNucleusThick::getNeutronDensity(const double r) const{
@@ -131,7 +106,7 @@ double MeanFieldNucleusThick::getNeutronDensity(const double r) const{
     cerr << "r out of range in getWave_Rpart: " << r << endl;
     exit(1);
   }
-  return interpolate(neutrondensity,r,getWF_r_step(),getWF_r_lines(),1); 
+  return interpolate(neutrondensity.data(),r,getWF_r_step(),getWF_r_lines(),1); 
 }
 
 double MeanFieldNucleusThick::getTotalDensity(const double r) const{
@@ -139,7 +114,7 @@ double MeanFieldNucleusThick::getTotalDensity(const double r) const{
     cerr << "r out of range in getWave_Rpart: " << r << endl;
     exit(1);
   }
-  return interpolate(totaldensity,r,getWF_r_step(),getWF_r_lines(),1); 
+  return interpolate(totaldensity.data(),r,getWF_r_step(),getWF_r_lines(),1); 
 }
 
 double MeanFieldNucleusThick::getDensity(const double r, bool proton) const{

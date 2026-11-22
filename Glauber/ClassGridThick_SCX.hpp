@@ -1,6 +1,7 @@
 #ifndef CLASS_GRIDTHICK_SCX_HPP
 #define CLASS_GRIDTHICK_SCX_HPP
 
+#include <vector>
 #include <cmath>
 #include "FastParticle.hpp"
 #include <iostream>
@@ -39,7 +40,6 @@ class ClassGridThick_SCX {
 	public:
 		/** make sure both bpoints and zpoints are always larger than 2 plz **/
 		ClassGridThick_SCX(double (*densf)(double,void*),void* p,const char* densName,double rmax, FastParticle* fp,int bpoints, int zpoints,char* SHAREDIR);
-		~ClassGridThick_SCX();
 		void constructGrid();
 		void printGrid();
 		void printDensityGrid();
@@ -47,7 +47,7 @@ class ClassGridThick_SCX {
 		double getInterp(double[],double& res,double& err); // remember x is r,cos\theta and \phi
 		
 		double get_dens_fctr(){ return _dens_fctr; }; 
-        void   set_dens_fctr(double d){ assert(_grid==NULL); _dens_fctr = d; }; /**< this should be called before constructGrid */
+        void   set_dens_fctr(double d){ assert(_grid.empty()); _dens_fctr = d; }; /**< this should be called before constructGrid */
 		
 		
 	private:
@@ -58,8 +58,8 @@ class ClassGridThick_SCX {
 		int _bpoints,_zpoints;/**< number of points in b,z */
 		double _bstep,_zstep; /**< step sizes in b and z for interpolation grid */
 		double _dens_fctr;    /**< correction for density normalization. Density should be normed to A for A particles...*/
-		double** _grid;       /**< SCX probability data goes here */
-		double** _errorGrid;  /**< integrator error estimations go here */
+		std::vector<std::vector<double>> _grid;       /**< SCX probability data goes here */
+		std::vector<std::vector<double>> _errorGrid;  /**< integrator error estimations go here */
 		std::string _filename;  /**< input/output file for the grid (in the grid cache directory) */
 };
 

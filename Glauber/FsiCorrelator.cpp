@@ -21,14 +21,9 @@ corr_rgrid(rgrid),corr_cthgrid(cthgrid),corr_phigrid(6),pnucleus(inputnucleus)
   invrstep=corr_rgrid/pnucleus->getRange();
   invcthstep=corr_cthgrid/2.;
   setCorrFilename(dir);
-  corrgridfull=new double*[getCorr_rgrid()];
-  corrgridproton=new double*[getCorr_rgrid()];
-  corrgridneutron=new double*[getCorr_rgrid()];
-  for(int i=0;i<getCorr_rgrid();i++){
-    corrgridfull[i]=new double[getCorr_cthgrid()];
-    corrgridproton[i]=new double[getCorr_cthgrid()];
-    corrgridneutron[i]=new double[getCorr_cthgrid()];
-  }
+  corrgridfull.assign(getCorr_rgrid(),std::vector<double>(getCorr_cthgrid(),0.));
+  corrgridproton.assign(getCorr_rgrid(),std::vector<double>(getCorr_cthgrid(),0.));
+  corrgridneutron.assign(getCorr_rgrid(),std::vector<double>(getCorr_cthgrid(),0.));
   functionmatrix=NULL;
   x=NULL;
   ifstream infile(corrfilename.c_str(),ios::in|ios::binary);
@@ -73,18 +68,6 @@ corr_rgrid(rgrid),corr_cthgrid(cthgrid),corr_phigrid(6),pnucleus(inputnucleus)
 
 }
 
-//mem cleanup
-FsiCorrelator::~FsiCorrelator(){
-  //cout << "Cleaning up correlator class object" << endl;
-  for(int i=0;i<corr_rgrid;i++){
-    delete []corrgridfull[i];
-    delete []corrgridproton[i];
-    delete []corrgridneutron[i];
-  }
-  delete [] corrgridfull;
-  delete [] corrgridproton;
-  delete [] corrgridneutron;    
-}
 
 //get corrfilename
 const string FsiCorrelator::getCorrFilename() const{
@@ -294,7 +277,7 @@ void FsiCorrelator::printCorrGridAll() const{
 
 
 
-void FsiCorrelator::constructCorrgrid(const double *density, double **corrgrid){
+void FsiCorrelator::constructCorrgrid(const double *density, std::vector<std::vector<double>> &corrgrid){
 
   cout << "Constructing correlation grid..." << endl;
   functionmatrix = new double *[TOTALGRIDPNTS];//TOTALGRIDPNTS= getCorr_rgrid()*getCorr_thgrid()

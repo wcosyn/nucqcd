@@ -236,9 +236,31 @@ one commit per bug; no `[known-bug]` tests remain.
   cached rho Glauber grids in `share/grids/`, since the file names do not record the mass.
   `DEGRTORAD`/`RADTODEGR` are now exactly π/180 and 180/π (they were accurate to about 1e-9); no
   reference moved.
-- [ ] **Ownership:** use smart pointers for owned members and rule-of-zero classes. About 17 classes own
-  raw pointers without copy or assignment operators (e.g. `Knockout/Model`, `Knockout/Cross`,
-  `DIS/InclusiveCross`, `Glauber/FsiCorrelator`), and `MeanFieldNucleus[Thick]` has no `operator=`.
+- [x] **Ownership:** classes that own memory now either copy it correctly or cannot be copied. A
+  build with the copy operations of all owning classes deleted showed that only `Cross` is copied
+  (`vector<Cross>` in `progs/onenucl/JlabPAC16_calc`); `Cross` creates its `Model` per call and owns
+  nothing in between, so that copy was already safe.
+  - `std::unique_ptr` for the deuteron wave function of `DQEinclusive`, `InclusiveCross`,
+    `InclusiveCrossRes` and `Deut_Conv_EMTLF` (movable, not copyable; their destructors are gone).
+  - `std::vector<std::unique_ptr<…>>` for the grids of `PionTCross` and `RhoTCross`. These grids point
+    to the member `nucleusthick`, so the classes are neither copyable nor movable (deleted copy
+    operations). The unused `pdistgrid` member was removed.
+  - `std::vector` for the arrays of `MeanFieldNucleus` (quantum numbers, F/G grids, Y_κ grids),
+    `MeanFieldNucleusThick` (densities), `FsiCorrelator` (correlation grids) and `ClassGridThick_SCX`:
+    rule of zero, so the hand-written copy constructors and destructors are gone and assignment,
+    which was missing for `MeanFieldNucleus[Thick]`, now works. The getters of the 1D arrays still
+    return `const` pointers; `getF`/`getG`/`getYkappa`/`getYminkappa` (unused outside the class) return
+    `const` references to the vectors.
+  - The Glauber grids (`AbstractFsiGrid` and everything derived from it, so also `Model`, which holds
+    grids by value) are not copyable: copy operations deleted on `AbstractFsiGrid`. Their grid
+    arrays (up to 5D `complex<double>` raw arrays, used in the interpolation and the binary cache
+    I/O) stay raw pointers for now; converting them belongs with the grid-hierarchy refactor in
+    step 6.
+  Tested in `unit_ownership` (compile-time checks of which classes are copyable or movable, and
+  copies and assignments of `MeanFieldNucleusThick` that outlive the original). Function-local
+  `new`/`delete` pairs (scratch arrays in integrands) were left alone. Not covered: the Tools
+  classes with hand-written copy operations (`TKinematics2to3`, the `T*PWF` wave functions,
+  `GammaStructure`, ...), which were not checked line by line.
 - [ ] **Errors:** replace `exit()` in the libraries (about 295 calls) with exceptions, so errors can be
   tested and handled. For example, Christy-Bosted calls `exit()` outside its kinematic range.
 - [x] **Grid cache:**

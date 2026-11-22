@@ -10,6 +10,7 @@
 #define DQEINCLUSIVE_HPP
 
 #include <string>
+#include <memory>
 #include <TElectronKinematics.h>
 #include <NucleonEMOperator.hpp>
 #include <TDeuteron.h>
@@ -40,7 +41,6 @@ public:
    */
   DQEinclusive(bool proton, int FFparam, std::string wavename, TElectronKinematics &elec,
 		 int offshell, double betaoffin=8., double lambdain=1.2);
-  ~DQEinclusive(); /*!< Destructor */
   /*! Calculates the plane-wave inclusive cross section, just the deuteron incl F_L structure function
    * \param Q2 [MeV^2] Q^2 of virtual photon
    * \param x [] bjorken x
@@ -98,7 +98,7 @@ public:
   
   
   void setOffshell(const int offshell){offshellset=offshell;} /*!< set offshell parametrization */
-  TDeuteron::Wavefunction* getDeutwf() const{return wf;} /*!< get instance to deuteron wave function */
+  TDeuteron::Wavefunction* getDeutwf() const{return wf.get();} /*!< get instance to deuteron wave function */
   NucleonEMOperator* getFFactorseq() const{return ffactorseq;} /*!< get instance to form factors */
   NucleonEMOperator* getFFactorsdiff() const{return ffactorsdiff;} /*!< get instance to form factors */
   double getMassr() const{return massr;}
@@ -134,7 +134,7 @@ private:
    */
   int offshellset;
   double minpcm;  /*!< [MeV] minimum center of mass relative momentum for nucleon pair in the intermediate state, to check eikonal condition! */
-  TDeuteron::Wavefunction *wf; /*!< pointer to deuteron wave funtion, see TDeuteron */
+  std::unique_ptr<TDeuteron::Wavefunction> wf; /*!< pointer to deuteron wave funtion, see TDeuteron */
   TElectronKinematics electron; /*!< electron kinematis, see TElectronKinematics */
   NucleonEMOperator *ffactorseq;  /*!< nucleon form factors, see NucleonEMOperator, nucleon is equal to "proton" from constructor */
   NucleonEMOperator *ffactorsdiff;  /*!< nucleon form factors, see NucleonEMOperator, nucleon is diff to "proton", needed in crossed diagrams */

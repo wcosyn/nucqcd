@@ -10,6 +10,8 @@
 #define PIONTCROSS_HPP
 
 
+#include <memory>
+#include <vector>
 #include <MeanFieldNucleusThick.hpp>
 // #include <TKinematics2to2.h>
 #include <DistMomDistrGrid.hpp>
@@ -35,7 +37,9 @@ public:
 	    const bool userset, const double usersigma, const double precision, const int integrator,
 	    const int maxEval
  	  );
-  ~PionTCross(); /*!<Destructor */
+  // not copyable or movable: the grids point to the member nucleusthick
+  PionTCross(const PionTCross&) = delete;
+  PionTCross& operator=(const PionTCross&) = delete;
   /*! Calculate cross section integrated over z at fixed t, cross section is dsigma/dEe'dOmega_e'dtdphi
    * \param results [???] all the different computed cross sections
    * \param Ebeam [MeV] beam energy
@@ -72,9 +76,8 @@ private:
   double abserror; /*!< absolute error in interations */
   int maxEval; /*!< max # of function evaluations in integration*/
   MeanFieldNucleusThick nucleusthick; /*!< nucleus instance */
-  DistMomDistrGrid **pdistgrid; /*!< array of distorted momentum distribution grid, one for each shell level */
   std::map<double,DistMomDistrGrid> distgridmap; /*!< map used to store distorted momentum distributions */
-  GlauberGridThick **pfsigrid; /*!< array of Glauber FSI grid, one for each shell level */
+  std::vector<std::unique_ptr<GlauberGridThick>> pfsigrid; /*!< array of Glauber FSI grid, one for each shell level */
 //   TKinematics2to2 *pkin;
 //  FastParticle *prho;
  /*!Calculates an array of momentum distributions for all different FSI situations

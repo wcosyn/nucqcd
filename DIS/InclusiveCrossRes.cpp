@@ -17,15 +17,9 @@ offshellset(offshell),
 electron(elec),
 structure(elec,proton,strucname){
 
-  wf = TDeuteron::Wavefunction::CreateWavefunction(wavename);
+  wf.reset(TDeuteron::Wavefunction::CreateWavefunction(wavename));
   
 }
-
-
-InclusiveCrossRes::~InclusiveCrossRes(){
- delete wf; 
-}
-
 
 
 double InclusiveCrossRes::calc_F2Dinc(double Q2,double x){

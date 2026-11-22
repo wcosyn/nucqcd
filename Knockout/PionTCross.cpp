@@ -13,32 +13,20 @@ pmax(p_max),
 userset(user_set),
 usersigma(user_sigma),
 nucleusthick(nucleus,dir),
-pdistgrid(NULL),
-pfsigrid(NULL),
 prec(precision),
 integrator(integr),
 abserror(1.E-012),
 maxEval(max_Eval){
 
-  pfsigrid = new GlauberGridThick*[nucleusthick.getTotalLevels()];
 //   pdistgrid = new DistMomDistrGrid*[nucleusthick.getTotalLevels()];
   for(int i=0;i<nucleusthick.getTotalLevels();i++){
-    pfsigrid[i] = new GlauberGridThick(60,20,5,&nucleusthick,prec,2,homedir);
+    pfsigrid.push_back(std::make_unique<GlauberGridThick>(60,20,5,&nucleusthick,prec,2,homedir));
 //     pdistgrid[i] = new DistMomDistrGrid(i, pmax, 30,20,5,pfsigrid[i],1.E-03,2,2E04,0.,homedir);
   }
   nrofcross=pfsigrid[0]->getNumber_of_grids()+1;
   cout << "Number of cross sections: " << nrofcross << endl;
 }
 
-PionTCross::~PionTCross(){
-  
-  for(int i=0;i<nucleusthick.getTotalLevels();i++){
-//     delete pdistgrid[i];
-    delete pfsigrid[i];
-  }
-//   delete [] pdistgrid;
-  delete [] pfsigrid;
-}
 
 void PionTCross::getCross(double *results, const double Ebeam, const double Eout, const double theta_e){
 
@@ -85,14 +73,14 @@ void PionTCross::getMomdistr(double *results, double ppi, double thetapi, double
   map<double,DistMomDistrGrid>::iterator it=distgridmap.find(key);
 //   cout << key << " " << thetarho << " " << shell  << endl;
   if(it==distgridmap.end()){
-    distgridmap[key]=DistMomDistrGrid(shell, pmax, 30,20,5,pfsigrid[shell],1.E-03,2,5E04,0.,homedir);
-//     distgridmap.insert(pair<double,DistMomDistrGrid>(key,DistMomDistrGrid(shell, pmax, 30,20,5,pfsigrid[shell],1.E-03,2,2E04,0.,homedir)));
-    distgridmap[key].updateGrids(pfsigrid[shell],shell,rot);
+    distgridmap[key]=DistMomDistrGrid(shell, pmax, 30,20,5,pfsigrid[shell].get(),1.E-03,2,5E04,0.,homedir);
+//     distgridmap.insert(pair<double,DistMomDistrGrid>(key,DistMomDistrGrid(shell, pmax, 30,20,5,pfsigrid[shell].get(),1.E-03,2,2E04,0.,homedir)));
+    distgridmap[key].updateGrids(pfsigrid[shell].get(),shell,rot);
 //     distgridmap[key].printRho_grid(0);
 //     cout << endl << endl;
     it=distgridmap.find(key);
   }
-  else distgridmap[key].updateGrids(pfsigrid[shell],shell,rot);
+  else distgridmap[key].updateGrids(pfsigrid[shell].get(),shell,rot);
 
   results[nrofcross-1] = distgridmap[key].getRhopwGridFull_interp(pm);
   //fsi
@@ -100,7 +88,7 @@ void PionTCross::getMomdistr(double *results, double ppi, double thetapi, double
 //    if(pm>200.&&results[0]>50.) {distgridmap[key].printRho_grid(0); cout  << endl << endl << endl;}
   
   
-//   pdistgrid[shell]->updateGrids(pfsigrid[shell],shell,rot);
+//   pdistgrid[shell]->updateGrids(pfsigrid[shell].get(),shell,rot);
 //   //plane-wave
 //   results[nrofcross-1] = pdistgrid[shell]->getRhopwGridFull_interp(pm);
 //   //fsi

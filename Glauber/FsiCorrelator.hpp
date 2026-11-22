@@ -9,6 +9,7 @@
 #ifndef FSICORRELATOR_H
 #define FSICORRELATOR_H
 
+#include <vector>
 #include <string>
 
 #include "MeanFieldNucleusThick.hpp"
@@ -29,7 +30,6 @@ public:
    */
   FsiCorrelator(MeanFieldNucleusThick *inputnucleus, const int rgrid, const int cthgrid,
     const std::string dir);
-  ~FsiCorrelator();/*!< Destructor */
   
   const std::string getCorrFilename() const; /*!< returns filename for the gamma function grids */
   int getCorr_rgrid() const;/*!<  returns the gridsize in r*/
@@ -96,9 +96,9 @@ private:
   double comp_t_interp; /*!<  1-s*/
   int rindex; /*!<  the index for r used in the 3d interpolation*/
   int cthindex; /*!<  the index for theta used in the 3d interpolation*/
-  double **corrgridfull; /*!< gamma grid for full density */
-  double **corrgridproton; /*!< gamma grid for proton density*/
-  double **corrgridneutron;  /*!< gamma grid for neutron density*/
+  std::vector<std::vector<double>> corrgridfull; /*!< gamma grid for full density */
+  std::vector<std::vector<double>> corrgridproton; /*!< gamma grid for proton density*/
+  std::vector<std::vector<double>> corrgridneutron;  /*!< gamma grid for neutron density*/
   double **functionmatrix; /*!< grid that helps to construct corr grid*/
   double *x; /*!< grid that helps to construct corr grid*/
   
@@ -108,7 +108,7 @@ private:
    * \param density pointer to the density
    * \param corrgrid array with the gamma grid that will be filled
    */
-  void constructCorrgrid(const double *density, double **corrgrid); 
+  void constructCorrgrid(const double *density, std::vector<std::vector<double>> &corrgrid); 
   void constructMatrixSet(const double *density); /*!< construct matrix used to solve integration equation*/
   void newt(int *check);/*!< newton minimizationmethod for multi-dim */
   void ConstructJacobian(double **Jacobian);/*!< construct Jacobian for solving integration equation */

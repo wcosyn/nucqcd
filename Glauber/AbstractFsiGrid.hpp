@@ -82,6 +82,11 @@ public:
   AbstractFsiGrid(const int r_grid, const int cth_grid, const int phi_grid, MeanFieldNucleus *pnucl, 
 		  double prec, int integrator, std::string dir);
   virtual ~AbstractFsiGrid(); /*!< Destructor */
+  // Not copyable: the derived grids own their (up to 5-dimensional) grid arrays as raw pointers and
+  // have no copy operations, so a copy would delete them twice. Converting the arrays to owning
+  // containers belongs with the refactor of the grid hierarchy (docs/ROADMAP.md, step 6).
+  AbstractFsiGrid(const AbstractFsiGrid&) = delete;
+  AbstractFsiGrid& operator=(const AbstractFsiGrid&) = delete;
   
   const std::string getFsi_Filename() const{ return fsi_filename;} /*!< returns filename for regular fsi grid */
   const std::string getDir() const{ return dir;}/*!< returns the grid cache directory (with trailing /) */ 

@@ -14,7 +14,7 @@ using namespace std;
 Deut_Conv_EMTLF::Deut_Conv_EMTLF(const string &wfname){
 
 
-    wfref = TDeuteron::Wavefunction::CreateWavefunction(wfname);
+    wfref.reset(TDeuteron::Wavefunction::CreateWavefunction(wfname));
     for(int i=0;i<=1000;i++){
         wf.AddUp(i,wfref->GetUp(i));
         wf.AddWp(i,wfref->GetWp(i));
@@ -22,13 +22,6 @@ Deut_Conv_EMTLF::Deut_Conv_EMTLF(const string &wfname){
         wf.AddWr(i*0.02,wfref->GetWr(i*0.02));        
     }
 }
-
-Deut_Conv_EMTLF::~Deut_Conv_EMTLF(){
-      delete wfref;
-}
-
-
-
 
 void Deut_Conv_EMTLF::int_k3(numint::vector_z & res, double alpha1, double kperp, double kphi, Deut_Conv_EMTLF &emt,
               double t, int pold_in, int pold_out, double deltax, double GFF_A, double GFF_J, double GFF_D){

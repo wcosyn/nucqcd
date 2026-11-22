@@ -10,6 +10,8 @@
 #define RHOTCROSS_HPP
 
 
+#include <memory>
+#include <vector>
 #include <MeanFieldNucleusThick.hpp>
 // #include <TKinematics2to2.h>
 #include <DistMomDistrGrid.hpp>
@@ -40,7 +42,9 @@ public:
 	    const bool userset, const double usersigma, const double precision, const int integrator,
 	    const int maxEval, const double p_dil, const int particletype
  	  );
-  ~RhoTCross(); /*!<Destructor */
+  // not copyable or movable: the grids point to the member nucleusthick
+  RhoTCross(const RhoTCross&) = delete;
+  RhoTCross& operator=(const RhoTCross&) = delete;
   /*! Calculate cross section integrated over z at fixed t, cross section is dsigma/dEe'dOmega_e'dtdphi
    * \param results [GeV^-1] all the different computed cross sections
    * \param Ebeam [GeV] beam energy
@@ -92,9 +96,8 @@ private:
   double pdil; /*!< [MeV] momentum used in time dilatation of decay width */
   int particle_type; /*!< 4 regular rho, 5 more CT rho, 6 less Ct rho */
   MeanFieldNucleusThick nucleusthick; /*!< nucleus instance */
-  DistMomDistrGrid **pdistgrid; /*!< array of distorted momentum distribution grid, one for each shell level */
   std::map<double,DistMomDistrGrid> distgridmap; /*!< map used to store distorted momentum distributions */
-  GlauberDecayGridThick **pfsigrid; /*!< array of Glauber FSI grid, one for each shell level */
+  std::vector<std::unique_ptr<GlauberDecayGridThick>> pfsigrid; /*!< array of Glauber FSI grid, one for each shell level */
 //   TKinematics2to2 *pkin;
 //  FastParticle *prho;
   /*! function that gets integrated over pm, all different fsi outputs / fixed t calculations

@@ -34,8 +34,6 @@ public:
    * \param dir std::string containing the dir were all input is located
    */
   MeanFieldNucleusThick(const int nucleus = 0, const std::string & dir = "."); 
-  MeanFieldNucleusThick(const MeanFieldNucleusThick &rhs); /*!< Copy Constructor */
-  ~MeanFieldNucleusThick(); /*!< Destructor */
   //ALL DENSITIES ARE TIMES R^2 ALREADY!!!!!!!!!!!!
   //I REPEAT
   //ALL DENSITIES ARE TIMES R^2 ALREADY!!!!!!!!!!!!
@@ -57,15 +55,15 @@ public:
    *\return r*r*density(r)
    */  
   double getDensity(const double r, const double *density) const; //get total density for r
-  const double * getProtonDensity() const {return protondensity;} /*!< returns the proton density array */
-  const double * getNeutronDensity() const {return neutrondensity;} /*!< returns the neutron density array */
-  const double * getTotalDensity() const {return totaldensity;} /*!< returns the total density array */
-  const double * getDensity(int proton) const {  return proton? protondensity:neutrondensity;} /*!< returns the proton (1) or neutron (0) density array \param proton selects proton (1) or neutron(0) density*/
+  const double * getProtonDensity() const {return protondensity.data();} /*!< returns the proton density array */
+  const double * getNeutronDensity() const {return neutrondensity.data();} /*!< returns the neutron density array */
+  const double * getTotalDensity() const {return totaldensity.data();} /*!< returns the total density array */
+  const double * getDensity(int proton) const {  return proton? protondensity.data():neutrondensity.data();} /*!< returns the proton (1) or neutron (0) density array \param proton selects proton (1) or neutron(0) density*/
 
 private:
-  double *protondensity; /*!< neutron density array*/
-  double *neutrondensity; /*!< proton density array*/
-  double *totaldensity; /*!< total density array*/
+  std::vector<double> protondensity; /*!< neutron density array*/
+  std::vector<double> neutrondensity; /*!< proton density array*/
+  std::vector<double> totaldensity; /*!< total density array*/
   void constructDensity(); /*!< Construct all density arrays, includes a factor r^2!!!!*/
   
   

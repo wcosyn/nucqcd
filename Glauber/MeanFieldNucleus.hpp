@@ -13,6 +13,7 @@
 #include <string>
 #include <complex>
 #include <map>
+#include <vector>
 #define GRIDP 201 /*!< \def defines number of gridpoints for the Y_kappa grids*/
 
 
@@ -32,8 +33,6 @@ public:
    * \param dir std::string containing the dir were all input is located
    */
   MeanFieldNucleus(const int nucleus, const std::string & dir = ".");
-  MeanFieldNucleus(const MeanFieldNucleus&); /*!< copy constructor */
-  ~MeanFieldNucleus();/*!< Destructor */
  
   /*! An enum so we don't have to look up which nucleus corresponds to which number all the time */
   enum Type { He, C, O, Fe, Pb, Al, Cu, Au, Fe54, Ca40, Ca48 };
@@ -50,11 +49,11 @@ public:
   int getPLevels() const { return plevels;}/*!< Returns total number of proton shells */
   int getNLevels() const {return nlevels;}/*!< Returns total number of neutron shells */
   int getTotalLevels() const {return totallevels;} /*!< Returns total number of shells*/
-  const int* getN_array() const {return n_array;} /*!< Returns array with all the n quantum numbers of each shell*/
-  const int* getKappas() const {return kappas;} /*!< Returns array with all the kappa quantum numbers of each shell*/
-  const int* getL_array() const {return l_array;} /*!< Returns array with all the l quantum numbers of each shell*/
-  const int* getLbar_array() const {return lbar_array;} /*!< Returns array with all the l_bar quantum numbers of each shell*/
-  const int* getJ_array() const {return j_array;} /*!< Returns array with all the j quantum numbers of each shell, 2*j is returned so integer values!!!!*/
+  const int* getN_array() const {return n_array.data();} /*!< Returns array with all the n quantum numbers of each shell*/
+  const int* getKappas() const {return kappas.data();} /*!< Returns array with all the kappa quantum numbers of each shell*/
+  const int* getL_array() const {return l_array.data();} /*!< Returns array with all the l quantum numbers of each shell*/
+  const int* getLbar_array() const {return lbar_array.data();} /*!< Returns array with all the l_bar quantum numbers of each shell*/
+  const int* getJ_array() const {return j_array.data();} /*!< Returns array with all the j quantum numbers of each shell, 2*j is returned so integer values!!!!*/
   double getMassA() const {return massA;} /*!< Returns the nucleus mass*/
   /*! Returns the mass of A-1 (either Z-1 or N-1 depending on level)
    * \param level shell level of minus 1 particle */
@@ -64,16 +63,16 @@ public:
   double getMassA_min_pp() const {return massA_min_pp;} /*!< Returns the mass of the A-2(Z-2,N) nucleus*/
   double getMassA_min_pn() const {return massA_min_pn;} /*!< Returns the mass of the A-2(Z-1,N-1) nucleus*/
   double getMassA_min_nn() const {return massA_min_nn;} /*!< Returns the mass of the A-2(Z,N-2) nucleus*/
-  const double* getExcitation() const {return excitation;} /*!< Returns an array with all the excitation energies of the shells*/
+  const double* getExcitation() const {return excitation.data();} /*!< Returns an array with all the excitation energies of the shells*/
   const std::string getInputfile() const {return inputfile;} /*!< Returns a std::string with the location of the inputfile*/
   
   double getRange() const {return range;} /*!< Returns the range [fm] in r of the radial wave functions of the nucleons*/
   double getWF_r_step() const {return wf_r_step;} /*!< Returns stepsize of the grid for the radial wave functions*/
   int getWF_r_lines() const {return wf_r_lines;} /*!< Returns the grid size of the radial wave functions grid*/
-  double** getF() const {return F;} /*!< Returns the grids for F(r) */
-  double** getG() const {return G;} /*!< Returns the grids for G(r) */
-  double*** getYkappa() const {return Ykappa;} /*!< Returns the grids for Y_kappa^2 */
-  double*** getYminkappa() const {return Yminkappa;} /*!< Returns the grids for Y_{-kappa}^2 */
+  const std::vector<std::vector<double>> &getF() const {return F;} /*!< Returns the grids for F(r) */
+  const std::vector<std::vector<double>> &getG() const {return G;} /*!< Returns the grids for G(r) */
+  const std::vector<std::vector<std::vector<double>>> &getYkappa() const {return Ykappa;} /*!< Returns the grids for Y_kappa^2 */
+  const std::vector<std::vector<std::vector<double>>> &getYminkappa() const {return Yminkappa;} /*!< Returns the grids for Y_{-kappa}^2 */
   
   /*! Computes the Dirac spinor of at (r,costheta,phi) for the nucleon from shell shellindex and orbital quantum number m
    * \param wave Dirac spinor of bound nucleon is stored here
@@ -139,18 +138,18 @@ private:
   int plevels; /*!< number of proton shells*/
   int nlevels; /*!< number of neutron shells*/
   int totallevels; /*!< total number of shells*/
-  int *n_array; /*!< array with the n quantum number for every shell*/
-  int *kappas; /*!< array with the kappa quantum number for every shell*/
-  int *l_array;/*!< array with the l quantum number for every shell*/
-  int *lbar_array; /*!< array with the l_bar quantum number for every shell*/
-  int *j_array; /*!< array with the j quantum number for every shell (2*j!!!!!, so integer)*/
+  std::vector<int> n_array; /*!< array with the n quantum number for every shell*/
+  std::vector<int> kappas; /*!< array with the kappa quantum number for every shell*/
+  std::vector<int> l_array;/*!< array with the l quantum number for every shell*/
+  std::vector<int> lbar_array; /*!< array with the l_bar quantum number for every shell*/
+  std::vector<int> j_array; /*!< array with the j quantum number for every shell (2*j!!!!!, so integer)*/
   double massA; /*!< mass of the nucleus */
   double massA_min_proton; /*!< mass of A-1(Z-1)*/
   double massA_min_neutron; /*!< mass of A-1(Z)*/
   double massA_min_pp; /*!< mass of A-2(Z-2)*/
   double massA_min_pn; /*!< mass of A-2(Z-1)*/
   double massA_min_nn; /*!< mass of A-2(Z)*/
-  double *excitation; /*!< array with excitation energy of every shell*/
+  std::vector<double> excitation; /*!< array with excitation energy of every shell*/
   std::string inputfile; /*!< inputfile for the nucleus*/
   std::string rgridfile;/*!< file location of the radial wave funtions*/
 
@@ -169,8 +168,8 @@ private:
    */
   void setNucleusName(const int nucleus); /*!< set the stirng with the name of the nucleus */
   
-  double **F; /*!< Array with grid for F(r) of every shell*/
-  double **G; /*!< Array with grid for G(r) of every shell*/
+  std::vector<std::vector<double>> F; /*!< Array with grid for F(r) of every shell*/
+  std::vector<std::vector<double>> G; /*!< Array with grid for G(r) of every shell*/
   double range; /*!< [fm]Range in r of the radial wave function grids*/
   double wf_r_step; /*!< stepsize of the radial wf grids*/
   int wf_r_lines; /*!< size of the radial wf grids*/
@@ -181,8 +180,8 @@ private:
    */
   void readRgrids(const int nucleus, const std::string &dir); 
 
-  double ***Ykappa; /*!< Array with grid for Y_kappa(costheta) for every shell and m (only positive!!!,[0->1/2,1->3/2,etc]) */
-  double ***Yminkappa; /*!< Array with grid for Y_{-kappa(costheta)} for every shell and m (only positive!!!,[0->1/2,1->3/2,etc]) */
+  std::vector<std::vector<std::vector<double>>> Ykappa; /*!< Array with grid for Y_kappa(costheta) for every shell and m (only positive!!!,[0->1/2,1->3/2,etc]) */
+  std::vector<std::vector<std::vector<double>>> Yminkappa; /*!< Array with grid for Y_{-kappa(costheta)} for every shell and m (only positive!!!,[0->1/2,1->3/2,etc]) */
   void constructThetaArray(); /*!< Construct the Y_kappa and Y_{-kappa} grids */
   
 };

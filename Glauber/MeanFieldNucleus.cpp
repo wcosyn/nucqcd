@@ -44,24 +44,24 @@ MeanFieldNucleus::MeanFieldNucleus(const int nucleus, const string & dir){
     file >> nlevels;
     totallevels=plevels+nlevels;
     file.ignore(500,'\n');
-    excitation = new double[totallevels];
+    excitation.assign(totallevels,0);
     for(int i=0;i<plevels;i++) file >> excitation[i]; //read in proton excitation energies
     file.ignore(500,'\n');
     for(int i=plevels;i<totallevels;i++) file >> excitation[i]; //neutron excitation energies
     for(int j=0;j<3;j++) file.ignore(500,'\n');
-    n_array = new int[totallevels];
+    n_array.assign(totallevels,0);
     for(int i=0;i<plevels;i++) file >> n_array[i]; //read in kappa for proton levels
     file.ignore(500,'\n');
     for(int i=plevels;i<totallevels;i++) file >> n_array[i]; //read in kappa for neutron levels
     file.ignore(500,'\n');
-    kappas = new int[totallevels];
+    kappas.assign(totallevels,0);
     for(int i=0;i<plevels;i++) file >> kappas[i]; //read in kappa for proton levels
     file.ignore(500,'\n');
     for(int i=plevels;i<totallevels;i++) file >> kappas[i]; //read in kappa for neutron levels
     file.close();
-    l_array = new int[totallevels];
-    lbar_array = new int[totallevels];
-    j_array = new int[totallevels];
+    l_array.assign(totallevels,0);
+    lbar_array.assign(totallevels,0);
+    j_array.assign(totallevels,0);
     for(int i=0;i<totallevels;i++){
       l_array[i]=kappas[i]>0? kappas[i]:-kappas[i]-1;
       lbar_array[i]=kappas[i]>0? kappas[i]-1:-kappas[i];
@@ -82,113 +82,13 @@ MeanFieldNucleus::MeanFieldNucleus(const int nucleus, const string & dir){
     exit(1);
   }
   
-  F=NULL;
-  G=NULL;
   //read in F&G grids
   readRgrids(nucleus, dir);
   
-  Ykappa=NULL;
-  Yminkappa=NULL;
   //read in Ykappa grids
   constructThetaArray();
 }
 
-// copy constructor
-MeanFieldNucleus::MeanFieldNucleus(const MeanFieldNucleus& rhs){
-    nucleusname = rhs.nucleusname;
-    A = rhs.A;
-    Z = rhs.Z;
-    N = rhs.N;
-    onlyoneproton = rhs.onlyoneproton;
-    onlyoneneutron = rhs.onlyoneneutron;
-    finalmproton = rhs.finalmproton;
-    finalmneutron = rhs.finalmneutron;
-    plevels = rhs.plevels;
-    nlevels = rhs.nlevels;
-    totallevels = rhs.totallevels;
-    
-    n_array = new int[totallevels];
-    kappas = new int[totallevels];
-    excitation = new double[totallevels];
-    l_array = new int[totallevels];
-    lbar_array = new int[totallevels];
-    j_array = new int[totallevels];
-    
-    for (int i=0; i<totallevels;i++){
-        n_array[i]     = rhs.n_array[i];
-        kappas[i]      = rhs.kappas[i];
-        excitation[i] = rhs.excitation[i];
-        l_array[i]      = rhs.l_array[i];
-        lbar_array[i] = rhs.lbar_array[i];
-        j_array[i]      = rhs.j_array[i];
-    }
-    
-    massA = rhs.massA; 
-    massA_min_proton = rhs.massA_min_proton; 
-    massA_min_neutron = rhs. massA_min_neutron; 
-    massA_min_pp = rhs.massA_min_pp; 
-    massA_min_pn = rhs.massA_min_pn; 
-    massA_min_nn = rhs.massA_min_nn; 
-    
-    
-    inputfile = rhs.inputfile;
-    rgridfile = rhs.rgridfile;
-    
-    range = rhs.range;
-    wf_r_lines = rhs.wf_r_lines;
-    wf_r_step = rhs.wf_r_step;
-    
-    F = new double*[totallevels];
-    G = new double*[totallevels];
-    
-    for(int i=0;i<totallevels;i++){
-        F[i] = new double[wf_r_lines];
-        G[i] = new double[wf_r_lines];
-        for(int j=0;j<wf_r_lines;j++){
-            G[i][j] = rhs.G[i][j];
-            F[i][j] = rhs.F[i][j];
-            }
-    }
-    
-    Ykappa=NULL;
-    Yminkappa=NULL;
-    constructThetaArray();
-}
-
-//destructor
-MeanFieldNucleus::~MeanFieldNucleus(){
-  //cout << "Cleaning up nucleus..." << inputfile << endl;
-  for(int i=0;i<totallevels;i++){
-    delete [] F[i];
-    delete [] G[i];
-  }
-  delete []F;
-  F=NULL;
-  delete []G;
-  G=NULL;
-  for(int i=0;i<totallevels;i++){
-    for(int j=0;j<abs(kappas[i]);j++){
-	delete [] Yminkappa[i][j]; delete [] Ykappa[i][j];
-    }
-    delete [] Yminkappa[i]; delete [] Ykappa[i];      
-  }
-  delete [] Yminkappa; delete [] Ykappa;
-  Yminkappa=NULL;
-  Ykappa=NULL;
-  delete []kappas;
-  kappas=NULL;
-  delete []l_array;
-  l_array=NULL;
-  delete []lbar_array;
-  lbar_array=NULL;
-  delete []j_array;
-  j_array=NULL;
-  delete []excitation;
-  excitation=NULL;
-  delete []n_array;
-  n_array=NULL;
-  
-}
 
 
 
@@ -322,7 +222,7 @@ void MeanFieldNucleus::setNucleusName(const int nucleus){
 
 
 void MeanFieldNucleus::readRgrids(const int nucleus, const string &dir){
-  if(F!=NULL||G!=NULL){
+  if(!F.empty()||!G.empty()){
      cerr << "Warning: F & G already initialized!!" << endl << "skipping initialization..." << endl;
      return;
   }
@@ -333,15 +233,15 @@ void MeanFieldNucleus::readRgrids(const int nucleus, const string &dir){
   
   if(file.is_open()){
     //cout << "Reading in F&G grids..." << endl;
-    F = new double*[totallevels];
-    G = new double*[totallevels];
+    F.assign(totallevels,std::vector<double>());
+    G.assign(totallevels,std::vector<double>());
     file >> range;
     file >> wf_r_step;
     file >> wf_r_lines;
     wf_r_lines--;
     int dummy;
     for(int i=0;i<totallevels;i++){
-      F[i] = new double[wf_r_lines], G[i] = new double[wf_r_lines];
+      F[i].assign(wf_r_lines,0.); G[i].assign(wf_r_lines,0.);
       file >> dummy;
       for(int j=0;j<wf_r_lines;j++){
 	file >> dummy;
@@ -386,22 +286,20 @@ void MeanFieldNucleus::constructThetaArray(){
 
   //memory reservation
   //calculation of the grid
-  if(Yminkappa!=NULL||Ykappa!=NULL){
+  if(!Yminkappa.empty()||!Ykappa.empty()){
     cerr << "Ykappa grids have already been initialized, skipping..." << endl;
     return;
   }
   //cout << "Initializing Ykappa grids..." << endl;
-  Yminkappa=new double**[totallevels];
-  Ykappa=new double**[totallevels];
+  Yminkappa.assign(totallevels,std::vector<std::vector<double>>());
+  Ykappa.assign(totallevels,std::vector<std::vector<double>>());
 
   for(int i=0;i<totallevels;i++){
-    Yminkappa[i]=new double*[abs(kappas[i])]; 
-    Ykappa[i]=new double*[abs(kappas[i])];
+    Yminkappa[i].assign(abs(kappas[i]),std::vector<double>(GRIDP,0.));
+    Ykappa[i].assign(abs(kappas[i]),std::vector<double>(GRIDP,0.));
 
     for(int j=0;j<abs(kappas[i]);j++){
       int m=2*j+1;  //2*m_j
-      Yminkappa[i][j]=new double[GRIDP];
-      Ykappa[i][j]=new double[GRIDP];	
 
       for(int k=0;k<GRIDP;k++){
 	Yminkappa[i][j][k]=0.;
@@ -435,7 +333,7 @@ double MeanFieldNucleus::getWave_F(const int shellindex, const double r) const{
     cerr << "r out of range in getWave_F: " << r << " " << r-range << endl;
     exit(1);
   }
-  return interpolate(getF()[shellindex],r,wf_r_step,wf_r_lines,1);  
+  return interpolate(getF()[shellindex].data(),r,wf_r_step,wf_r_lines,1);  
 }
 
 
@@ -444,18 +342,18 @@ double MeanFieldNucleus::getWave_G(const int shellindex, const double r) const{
     cerr << "r out of range in getWave_G: " << r << " " << r-range << endl;
     exit(1);
   }
-  return interpolate(getG()[shellindex],r,wf_r_step,wf_r_lines,1);
+  return interpolate(getG()[shellindex].data(),r,wf_r_step,wf_r_lines,1);
 }
   
 
 //interpolation of the Ykappa grid
 double MeanFieldNucleus::getYkappacos(const int shellindex, const int m, const double costheta) const{
- return  interpolate(getYkappa()[shellindex][m],costheta,double(2./(GRIDP-1)),GRIDP,-(GRIDP-1)/2);
+ return  interpolate(getYkappa()[shellindex][m].data(),costheta,double(2./(GRIDP-1)),GRIDP,-(GRIDP-1)/2);
 }
 
 //interpolation of the Yminkappa grid
 double MeanFieldNucleus::getYminkappacos(const int shellindex, const int m, const double costheta) const{
- return  interpolate(getYminkappa()[shellindex][m],costheta,double(2./(GRIDP-1)),GRIDP,-(GRIDP-1)/2);
+ return  interpolate(getYminkappa()[shellindex][m].data(),costheta,double(2./(GRIDP-1)),GRIDP,-(GRIDP-1)/2);
 }
 //get exp(I*phi/2*m_l)
 complex<double> MeanFieldNucleus::getWave_Phipart(const int m, const int spin, const double phi) const{
