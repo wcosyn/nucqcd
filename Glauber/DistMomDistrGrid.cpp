@@ -10,6 +10,7 @@ using namespace std;
 #include "AbstractFsiCTGrid.hpp"
 #include <constants.hpp>
 #include <Utilfunctions.hpp>
+#include <GridCache.hpp>
 #include <AuxFunction.hpp>
 #include <FourVector.h>
 #include <Matrix.h>
@@ -38,7 +39,7 @@ pmax(p_max),
 filledgrid(0),
 filledctgrid(0),
 filledallgrid(0),
-dir(homedir+"/grids/"),
+dir(nucqcd::grid_cache_dir(homedir)),
 pgrid(p_grid),
 cthgrid(cth_grid),
 phigrid(phi_grid),
@@ -723,60 +724,47 @@ void DistMomDistrGrid::fillGrids(TRotation & rot){
   setFilenames(dir);
   ifstream infile(rho_filename.c_str(),ios::in|ios::binary);
   //check if object has been created sometime earlier and read it in
+  bool read=false;
   if(infile.is_open()){
     //cout << "Reading in FSI grid from memory: " << rho_filename << endl;
     readinRhoGrid(infile);
-    filledgrid=1;
+    read=!infile.fail(); // a truncated file sets failbit
     infile.close();
+    if(read) filledgrid=1;
+    else cerr << "Grid file is incomplete, recomputing it: " << rho_filename << endl;
   }
-  else{
+  if(!read){
     cout << "Constructing all grids" << endl;
     constructAllGrids(rot);
     filledgrid=filledallgrid=filledctgrid=1;
-    ofstream outfile(rho_filename.c_str(),ios::out|ios::binary);
-    if(outfile.is_open()){
-      cout << "Writing out FSI grid: " << rho_filename << endl;
-      writeoutRhoGrid(outfile);
-      outfile.close();
-    }
-    else{
-      cerr << "could not open file for writing fsi grid output: " << rho_filename << endl;
-    }
-    ofstream outfile2(rhoct_filename.c_str(),ios::out|ios::binary);
-    if(outfile2.is_open()){
-      cout << "Writing out FSI+CT grid: " << rhoct_filename << endl;
-      writeoutRhoCtGrid(outfile2);
-      outfile2.close();
-      return;
-    }
-    else{
-      cerr << "could not open file for writing FSICT grid output: " << rhoct_filename << endl;
-    }
+    if(nucqcd::write_file_atomically(rho_filename,[this](ofstream &outfile){ writeoutRhoGrid(outfile); }))
+      cout << "Wrote FSI grid: " << rho_filename << endl;
+    if(nucqcd::write_file_atomically(rhoct_filename,[this](ofstream &outfile){ writeoutRhoCtGrid(outfile); }))
+      cout << "Wrote FSI+CT grid: " << rhoct_filename << endl;
+    return;
   } 
+  readinOrConstructCtGrid(rot);
+}
+
+void DistMomDistrGrid::readinOrConstructCtGrid(TRotation & rot){
   ifstream infile2(rhoct_filename.c_str(),ios::in|ios::binary);
   //check if object has been created sometime earlier and read it in
   if(infile2.is_open()){
     //cout << "Reading in FSI+CT grid from memory: " << rhoct_filename << endl;
     readinRhoCtGrid(infile2);
-    filledctgrid=1;
+    bool read=!infile2.fail(); // a truncated file sets failbit
     infile2.close();
-  }
-  else{
-    cout << "Constructing FSI+CT grid" << endl;
-    constructCtGrid(rot);
-    filledctgrid=1;
-    ofstream outfile(rhoct_filename.c_str(),ios::out|ios::binary);
-    if(outfile.is_open()){
-      cout << "Writing out FSI+CT grid: " << rhoct_filename << endl;
-      writeoutRhoCtGrid(outfile);
-      outfile.close();
+    if(read){
+      filledctgrid=1;
       return;
     }
-    else{
-      cerr << "could not open file for writing corrgrid output: " << rhoct_filename << endl;
-    }    
+    cerr << "Grid file is incomplete, recomputing it: " << rhoct_filename << endl;
   }
-  
+  cout << "Constructing FSI+CT grid" << endl;
+  constructCtGrid(rot);
+  filledctgrid=1;
+  if(nucqcd::write_file_atomically(rhoct_filename,[this](ofstream &outfile){ writeoutRhoCtGrid(outfile); }))
+    cout << "Wrote FSI+CT grid: " << rhoct_filename << endl;
 }
 
 
@@ -803,29 +791,7 @@ void DistMomDistrGrid::updateGrids(AbstractFsiCTGrid *pfsi_grid, int shell, TRot
     if(old_rhoct_filename.compare(rhoct_filename)){
 //      cout << "fsict grid not equal " << endl << rhoct_filename << endl << old_rhoct_filename << endl;
     
-      ifstream infile2(rhoct_filename.c_str(),ios::in|ios::binary);
-      //check if object has been created sometime earlier and read it in
-      if(infile2.is_open()){
-      // cout << "Reading in FSI+CT grid from memory: " << fsi_ct_filename << endl;
-	readinRhoCtGrid(infile2);
-	filledctgrid=1;
-	infile2.close();
-      }
-      else{
-// 	cout << "Constructing FSI+CT grid" << endl;
-	constructCtGrid(rot);
-	filledctgrid=1;
-	ofstream outfile(rhoct_filename.c_str(),ios::out|ios::binary);
-	if(outfile.is_open()){
-	  //cout << "Writing out FSI+CT grid: " << fsi_ct_filename << endl;
-	  writeoutRhoCtGrid(outfile);
-	  outfile.close();
-	  return;
-	}
-	else{
-	  cerr << "could not open file for writing corrgrid output: " << rhoct_filename << endl;
-	}    
-      }
+      readinOrConstructCtGrid(rot);
     }
 //   else cout << "fsict grid equal to the earlier one, doing nothing" << endl << rhoct_filename << endl << old_rhoct_filename << endl;
 

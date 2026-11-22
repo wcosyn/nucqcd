@@ -70,6 +70,7 @@ nucqcd_add_test(unit_constants       DIR unit LABEL unit LINK MePhys cuba)
 nucqcd_add_test(unit_meanfield       DIR unit LABEL unit LINK Glauber cuba)
 nucqcd_add_test(unit_moshinsky       DIR unit LABEL unit LINK MePhys cuba)
 nucqcd_add_test(unit_fortran_string  DIR unit LABEL unit LINK MePhys cuba)
+nucqcd_add_test(unit_grid_cache      DIR unit LABEL unit LINK MePhys cuba)
 
 # ---- regression tests: golden values from master (tests/reference/*.ref) ---------------------
 nucqcd_add_test(reg_nucleon_structure DIR regression LABEL regression LINK MePhys cuba)

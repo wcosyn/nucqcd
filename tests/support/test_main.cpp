@@ -7,5 +7,7 @@ int main(int argc, char *argv[]) {
   // Cuba forks worker processes by default; run it serially so results are reproducible
   // (an explicit CUBACORES in the environment wins).
   setenv("CUBACORES", "0", 0);
+  // grids go to the sandbox share dir, never to a user cache set with NUCQCD_GRID_DIR
+  unsetenv("NUCQCD_GRID_DIR");
   return Catch::Session().run(argc, argv);
 }

@@ -14,6 +14,7 @@
 
 #include <cmath>
 #include <complex>
+#include <cstdlib>
 #include <filesystem>
 #include <memory>
 #include <sstream>
@@ -78,4 +79,47 @@ TEST_CASE("RMSGA A(e,e'p) cross section for carbon (default 120x36x5 grids)", "[
     CHECK_REF(refs, key.str(), rmsga, 1e-5, 1e-30);
     CHECK_REF(refs, key.str() + "_transparency", rmsga / pw, 1e-5);
   }
+}
+
+TEST_CASE("Glauber grid cache: NUCQCD_GRID_DIR and recovery from a truncated file", "[glauber][gridcache]") {
+  namespace fs = std::filesystem;
+  const std::string dir = nucqcd_test::share_dir();
+  const fs::path cache = fs::path(dir) / "grid_cache_test" / "glauber_env";
+  fs::remove_all(cache);
+  setenv("NUCQCD_GRID_DIR", cache.c_str(), 1);
+  MeanFieldNucleusThick carbon(MeanFieldNucleus::C, dir);
+  FastParticle proton(0, 0, 1200., 0.5, 0., 8., 0., 1., 1., dir);  // not used by the other tests
+  std::complex<double> computed;
+  std::string fsi_file, fsict_file;
+  {
+    GlauberGridThick grid(8, 4, 2, &carbon, 1.E-03, 2, dir);
+    grid.addParticle(proton);
+    grid.fillGrids();
+    computed = grid.getFsiCtGridFull_interp3(1.5, 0.3, 1.);
+    fsi_file = grid.getFsi_Filename();
+    fsict_file = grid.getFsi_Ct_Filename();
+  }
+  // both files are in the directory from NUCQCD_GRID_DIR, without temporary files, and not in share/grids
+  CHECK(fs::path(fsi_file).parent_path() == cache);
+  CHECK(fs::exists(fsi_file));
+  CHECK(fs::exists(fsict_file));
+  int files = 0;
+  for ([[maybe_unused]] const auto &e : fs::directory_iterator(cache)) files++;
+  CHECK(files == 2);
+  CHECK_FALSE(fs::exists(fs::path(dir) / "grids" / fs::path(fsi_file).filename()));
+
+  // a truncated cache file (e.g. from a crash under the old non-atomic writes) is recomputed
+  fs::resize_file(fsict_file, fs::file_size(fsict_file) / 2);
+  {
+    GlauberGridThick grid(8, 4, 2, &carbon, 1.E-03, 2, dir);
+    grid.addParticle(proton);
+    grid.fillGrids();
+    // constructCtGrid() integrates the CT grid on its own instead of together with the FSI grid
+    // (constructAllGrids), so the adaptive integrator converges differently: equal within the
+    // integration precision 1e-3 (the difference is about 6e-4)
+    CHECK(std::abs(grid.getFsiCtGridFull_interp3(1.5, 0.3, 1.) - computed) <= 2e-3 * std::abs(computed));
+  }
+  CHECK(fs::file_size(fsict_file) == fs::file_size(fsi_file));
+  unsetenv("NUCQCD_GRID_DIR");
+  fs::remove_all(cache);
 }

@@ -53,7 +53,8 @@ Tests do not use `share/` directly. The fixture `share_sandbox` (re)creates `bui
 - read-only data directories are symlinked
 - `input/` is copied, because the code writes into it
 - `grids/` is emptied on every ctest run, so Glauber grids are always recomputed by the code under
-  test, and your `share/grids/` cache is never read or written
+  test, and your `share/grids/` cache is never read or written (the test `main()` unsets
+  `NUCQCD_GRID_DIR`, so a cache directory set in your environment is not used either)
 
 Pass `nucqcd_test::share_dir()` wherever a class takes a `dir`/`homedir`. Classes that use the
 compiled-in `HOMEDIR` (MSTW, GRSV) only read from `share/`.

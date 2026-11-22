@@ -7,6 +7,7 @@ using namespace std;
 #include "AbstractFsiCTGrid.hpp"
 #include "constants.hpp"
 #include <Utilfunctions.hpp>
+#include <GridCache.hpp>
 
 AbstractFsiCTGrid::AbstractFsiCTGrid(int r_grid, int cth_grid, int phi_grid, MeanFieldNucleus *pnucl, 
 				     double prec, int integrator, string homedir):
@@ -46,8 +47,8 @@ complex<double> AbstractFsiCTGrid::getFsiCtGridFull_interp1(const double phi){
 }
 
 //set filenames
-void AbstractFsiCTGrid::setFilenames(string homedir){
-  AbstractFsiGrid::setFilenames(homedir);
+void AbstractFsiCTGrid::setFilenames(string cachedir){
+  AbstractFsiGrid::setFilenames(cachedir);
   //cout << "bla " << getFsi_Filename() << endl;
   fsi_ct_filename=getFsi_Filename();
   fsi_ct_filename.insert(fsi_ct_filename.size()-4,".CT");
@@ -59,6 +60,29 @@ void AbstractFsiCTGrid::setFilenames(string homedir){
   //cout << fsi_ct_filename << endl;
 }
   
+//reads the fsi+ct grid from its cache file if that exists and is complete, otherwise computes and writes it
+void AbstractFsiCTGrid::readinOrConstructCtGrid(){
+  ifstream infile2(fsi_ct_filename.c_str(),ios::in|ios::binary);
+  //check if object has been created sometime earlier and read it in
+  if(infile2.is_open()){
+    // cout << "Reading in FSI+CT grid from memory: " << fsi_ct_filename << endl;
+    readinFsiCtGrid(infile2);
+    bool read=!infile2.fail(); // a truncated file sets failbit
+    infile2.close();
+    if(read){
+      filledctgrid=filledallgrid=1;
+      return;
+    }
+    cerr << "FSI+CT grid file is incomplete, recomputing it: " << fsi_ct_filename << endl;
+  }
+  //we have to calc the grid
+//   cout << "Constructing FSI+CT grid" << endl;
+  constructCtGrid(); // ! pure virtual
+  filledctgrid=filledallgrid=1;
+  //write it out now too
+  nucqcd::write_file_atomically(fsi_ct_filename,[this](ofstream &outfile){ writeoutFsiCtGrid(outfile); });
+}
+
 //fills the grids, uses pure virtual functions!!!!
 void AbstractFsiCTGrid::fillGrids(){
   AbstractFsiGrid::fillGrids(); // fill regular FSI (RMSGA) grid, this function is implemented in AbstractFsiGrid but it uses pure virtual functions
@@ -67,44 +91,10 @@ void AbstractFsiCTGrid::fillGrids(){
     //ct grid was filled while constructing RMSGA grid
     filledctgrid=1;
     //write to file
-    ofstream outfile2(fsi_ct_filename.c_str(),ios::out|ios::binary);
-    if(outfile2.is_open()){
-      //cout << "Writing out FSI+CT grid: " << fsi_ct_filename << endl;
-      writeoutFsiCtGrid(outfile2);
-      outfile2.close();
-      return;
-    }
-    else{
-      cerr << "could not open file for writing FSICT grid output: " << fsi_ct_filename << endl;
-    }
+    nucqcd::write_file_atomically(fsi_ct_filename,[this](ofstream &outfile){ writeoutFsiCtGrid(outfile); });
   }
   //grid is still empty
-  else{
-    ifstream infile2(fsi_ct_filename.c_str(),ios::in|ios::binary);
-    //check if object has been created sometime earlier and read it in
-    if(infile2.is_open()){
-     // cout << "Reading in FSI+CT grid from memory: " << fsi_ct_filename << endl;
-      readinFsiCtGrid(infile2);
-      filledctgrid=filledallgrid=1;
-      infile2.close();
-    }
-    //we have to calc the grid
-    else{
-//       cout << "Constructing FSI+CT grid" << endl;
-      constructCtGrid(); // ! pure virtual
-      filledctgrid=filledallgrid=1;
-      //write it out now too
-      ofstream outfile(fsi_ct_filename.c_str(),ios::out|ios::binary);
-      if(outfile.is_open()){
-        //cout << "Writing out FSI+CT grid: " << fsi_ct_filename << endl;
-        writeoutFsiCtGrid(outfile);
-        outfile.close();
-        return;
-      } else {
-        cerr << "could not open file for writing corrgrid output: " << fsi_ct_filename << endl;
-      }
-    }
-  }
+  else readinOrConstructCtGrid();
 }
 
 //updates the grids, uses pure virtual functions!!!!
@@ -119,28 +109,7 @@ void AbstractFsiCTGrid::updateGrids(){
   //check is something is different so we needto update the grids
   if(old_fsi_ct_filename.compare(fsi_ct_filename)){
 //     cout << "fsict grid not equal " << endl << fsi_ct_filename << endl << old_fsi_ct_filename << endl;
-    ifstream infile2(fsi_ct_filename.c_str(),ios::in|ios::binary);
-    //check if object has been created sometime earlier and read it in
-    if(infile2.is_open()){
-      //cout << "Reading in FSI+CT grid from memory: " << fsi_ct_filename << endl;
-      readinFsiCtGrid(infile2);
-      filledctgrid=filledallgrid=1;
-      infile2.close();
-    }
-    else{
-//       cout << "Constructing FSI+CT grid" << endl;
-      constructCtGrid();
-      filledctgrid=filledallgrid=1;
-      ofstream outfile(fsi_ct_filename.c_str(),ios::out|ios::binary);
-      if(outfile.is_open()){
-        //cout << "Writing out FSI+CT grid: " << fsi_ct_filename << endl;
-        writeoutFsiCtGrid(outfile);
-        outfile.close();
-        return;
-      } else {
-        cerr << "could not open file for writing corrgrid output: " << fsi_ct_filename << endl;
-      }
-    }
+    readinOrConstructCtGrid();
   }
 //   else cout << "fsict grid equal to the earlier one, doing nothing" << endl << fsi_ct_filename << endl << old_fsi_ct_filename << endl;
   

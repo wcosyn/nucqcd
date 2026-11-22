@@ -7,10 +7,11 @@ using namespace std;
 #include "AbstractFsiGrid.hpp"
 #include <constants.hpp>
 #include <Utilfunctions.hpp>
+#include <GridCache.hpp>
 
 AbstractFsiGrid::AbstractFsiGrid(int r_grid, int cth_grid, int phi_grid, 
 				 MeanFieldNucleus *pnucl, double precision, int integr, string homedir):
-filledgrid(0),filledallgrid(0),dir(homedir+"/grids/"),rgrid(r_grid),cthgrid(cth_grid),
+filledgrid(0),filledallgrid(0),dir(nucqcd::grid_cache_dir(homedir)),rgrid(r_grid),cthgrid(cth_grid),
 phigrid(phi_grid),allinplane(0),totalprotonout(0), totalneutronout(0),
 protonknockout(0), neutronknockout(0),pnucleus(pnucl),number_of_grids(1),prec(precision),integrator(integr){
   
@@ -241,16 +242,12 @@ complex<double> AbstractFsiGrid::getInterp(complex<double> ***grid){
  * This will cause the files with for example phi 2.94 and 2.88 to interpreted the same. \n
  * 
  * Furthermore we add scattering parameters, grid sizes, and the integrator+precision used.
+ * Particles with scattering parameters set by the user get their sigma, beta and epsilon in the
+ * name instead of their momentum, so their files are distinct from the others. (Until 2026-11
+ * they went to a directory "fixgrids" next to the cache directory, which was not created.)
  */
-void AbstractFsiGrid::setFilenames(string homedir){
-  for(size_t i=0;i<particles.size();i++){
-    //check if scatt parameters were set by user
-    if(particles[i].getUserset()){
-      homedir.insert(homedir.find_last_of("/")-5,"fix");
-      break;
-    }
-  }
-  fsi_filename=homedir+pnucleus->getNucleusName();
+void AbstractFsiGrid::setFilenames(string cachedir){
+  fsi_filename=cachedir+pnucleus->getNucleusName();
   //add all particle properties
   for(size_t i=0;i<particles.size();i++){
     if(particles[i].getIncoming()) fsi_filename+=".inc";
@@ -288,25 +285,20 @@ void AbstractFsiGrid::fillGrids(){
   setFilenames(dir);
   ifstream infile(fsi_filename.c_str(),ios::in|ios::binary);
   //check if object has been created sometime earlier and read it in
+  bool read=false;
   if(infile.is_open()){
     //cout << "Reading in FSI grid from memory: " << fsi_filename << endl;
     readinFsiGrid(infile); // ! pure virtual
-    filledgrid=1;
+    read=!infile.fail(); // a truncated file sets failbit
     infile.close();
+    if(read) filledgrid=1;
+    else cerr << "FSI grid file is incomplete, recomputing it: " << fsi_filename << endl;
   }
-  else{
+  if(!read){
 //     cout << "Constructing all grids" << endl;
     constructAllGrids(); // ! pure virtual
     filledgrid=filledallgrid=1;
-    ofstream outfile(fsi_filename.c_str(),ios::out|ios::binary); // the ios::out here is somewhat redundant as ofstream defaults to ios::out
-    if(outfile.is_open()){
-      //cout << "Writing out FSI grid: " << fsi_filename << endl;
-      writeoutFsiGrid(outfile); // ! pure virtual
-      outfile.close();
-    }
-    else{
-      cerr << "could not open file for writing fsi grid output: " << fsi_filename << endl;
-    }
+    nucqcd::write_file_atomically(fsi_filename,[this](ofstream &outfile){ writeoutFsiGrid(outfile); }); // ! pure virtual
   } 
 }
   

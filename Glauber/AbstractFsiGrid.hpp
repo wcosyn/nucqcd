@@ -77,13 +77,14 @@ public:
    * \param prec the precision you want in the integrations
    * \param integrator which integrator (0:Wim's romberg fubini sort of thing, 1:Klaas thingy, 2:adaptive MIT thingy
    * \param dir string that contains dir with all input, should be the ./share subdir of the project!
+   * The grids are cached in dir/grids/, or in $NUCQCD_GRID_DIR if that is set (see GridCache.hpp).
    */
   AbstractFsiGrid(const int r_grid, const int cth_grid, const int phi_grid, MeanFieldNucleus *pnucl, 
 		  double prec, int integrator, std::string dir);
   virtual ~AbstractFsiGrid(); /*!< Destructor */
   
   const std::string getFsi_Filename() const{ return fsi_filename;} /*!< returns filename for regular fsi grid */
-  const std::string getDir() const{ return dir;}/*!< returns dir where all input/output is located */ 
+  const std::string getDir() const{ return dir;}/*!< returns the grid cache directory (with trailing /) */ 
   int getRgrid() const { return rgrid;}/*!<  returns the gridsize in r*/
   int getCthgrid() const { return cthgrid;}/*!<  returns the gridsize in theta*/
   int getPhigrid() const {return phigrid;}/*!<  returns the gridsize in phi*/
@@ -184,7 +185,7 @@ public:
   bool getFilledallgrid() const{return filledallgrid;}
   
 protected:
-  virtual void setFilenames(std::string dir); /*!< set filenames of the grids \param dir share dir where all input/output is located */ 
+  virtual void setFilenames(std::string dir); /*!< set filenames of the grids \param dir grid cache directory, plus the file name prefixes of the derived classes */ 
   bool filledgrid; /*!< denotes if the grid has been filled */
   bool filledallgrid; /*!< denotes if allthe (possible) grids have been filled */
   double r_hit;  /*!< r coordinate of the hard interaction point, what the grid depens on */
@@ -200,7 +201,7 @@ protected:
   int integrator; /*!< which integrator (0:Wim's romberg fubini sort of thing, 1:Klaas thingy, 2:adaptive MIT thingy */
   
 private:
-  std::string dir;  /*!< dir where all input/output is located */ 
+  std::string dir;  /*!< grid cache directory (with trailing /) */ 
   
   int rgrid; /*!<  the gridsize in r*/
   int cthgrid; /*!<  the gridsize in theta*/
