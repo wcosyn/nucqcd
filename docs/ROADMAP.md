@@ -131,13 +131,18 @@ one commit per bug; no `[known-bug]` tests remain.
   (Jacobi coordinates p₁₂, p₃, as used inside `getwavemod_tm.f`) before trusting He3 results. The
   normalization of the momentum grid in the `.form` files, the `INVHBARC³` conversion in `He3wf::getWF`
   and the sum of the three cyclic Faddeev components are the places to look.
-- [ ] **Stale FSI+CT grid after `updateGrids()` (found during step 5).** `AbstractFsiGrid::fillGrids`
+- [x] **Stale FSI+CT grid after `updateGrids()` (found during step 5).** `AbstractFsiGrid::fillGrids`
   sets `filledallgrid` when it computes the grids, but does not clear it when it reads the FSI grid
   from the cache. If a grid object first computes a grid and then, in `updateGrids()` for new
   kinematics, finds the new FSI grid in the cache, `AbstractFsiCTGrid::fillGrids` takes the old
   FSI+CT grid still in memory as the new one, uses it, and overwrites the new FSI+CT cache file with
-  it. This affects Glauber+CT results in runs that mix computed and cached grids. To be fixed in its
-  own PR.
+  it. This affects Glauber+CT results in runs that mix computed and cached grids (the reproducer
+  gave a CT grid 11% off, from the previous particle). **Fixed:** reading the FSI grid now clears
+  `filledallgrid`, so the FSI+CT grid is read or computed for the new particle. The getters that check
+  `filledallgrid` are all in classes with a CT grid, whose `fillGrids` sets it again; `ROMEAGrid` checks
+  `filledgrid`, and `DistMomDistrGrid` has its own logic without this bug. Tested in a `slow` case
+  of `reg_glauber_grid`. **FSI+CT grid files cached before this fix may be wrong** (those written by
+  a run that had computed a grid before reading another one from the cache); delete them if in doubt.
 - [x] **`WeakQECross` neutral current:** the NC constructor never initialized `lepton`, but
   `getDiffWeakQECross` dereferenced it, so nuclear NC cross sections segfaulted. NC now takes its
   kinematics from the electron object.
