@@ -526,11 +526,17 @@ standard) from everything that only computes cross sections.
 
 **Phases** (each its own PR, full test suite including `slow` after each; values must not change):
 
-1. [ ] **Drop the ROOT dictionaries and base classes.** Remove `ClassDef`/`ClassImp`, the LinkDef
-   files and their `rootcling` step, the `TRootIOCtor` constructors and the hand-written `Streamer`s;
-   replace `TObject`/`TNamed` bases by nothing or a `std::string` name where the name is used. First
-   check that no program writes these objects to a ROOT file. Low risk; removes `rootcling` from the
-   build and the `.pcm` files from `lib/`.
+1. [x] **Drop the ROOT dictionaries and base classes** (done 2026-11-22). No program writes these
+   objects to ROOT files (the `TTree`s of `progs/GPD` hold plain numbers). Removed: `ClassDef`/
+   `ClassImp`, the 16 LinkDef files and the `rootcling` step (`nucqcd_root_dictionary` in
+   `cmake/NucQCD.cmake`), the `.pcm` files, the `TRootIOCtor` constructors, and the (already empty)
+   `Streamer`s with their commented-out old bodies (~1000 lines in all). The `TObject` bases are gone;
+   the three `TNamed` classes (`TKinematics`, `TKinematics2to3`, `TDeuteron::Wavefunction`) keep a name
+   and title as `std::string` members with `GetName`/`GetTitle`/`SetName`/`SetTitle`, so the
+   constructors that programs call are unchanged. `TKinematics::Print` takes `const char*` instead of
+   ROOT's `Option_t*`. The derived wave functions constructed their base through the ROOT I/O
+   constructor (`TWavefunctionImplementation(0)`); it now has a default constructor. The Doxyfile no
+   longer needs the `ClassDef` predefinitions. All tests pass with unchanged references.
 2. [ ] **Small math.** `TMath` → `<cmath>` and `nucqcd::` constants; `ROOT::Math::sph_legendre` →
    GSL (`gsl_sf_legendre_sphPlm`, already used in `SphericalHarmonicCos`) or C++17
    `std::sph_legendre`; `ROOT::Math::Polynomial` roots → `gsl_poly_complex_solve`; the

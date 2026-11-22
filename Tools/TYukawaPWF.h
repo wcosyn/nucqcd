@@ -9,7 +9,6 @@
 #ifndef TYUKAWAPWF_H
 #define TYUKAWAPWF_H
 
-#include <TROOT.h>
 #include "TWavefunctionImplementation.h"
 
 /*! \brief Non-relativistic deuteron wave function as a sum of N Yukawa terms with masses m_i
@@ -23,7 +22,6 @@ class TYukawaPWF : public TWavefunctionImplementation
  public:
   TYukawaPWF(int order, double alpha, double m0, double *c, double *d); ///< constructor: order N, masses m_i = alpha + (i-1) m0 with alpha, m0 [fm^-1], coefficients c (S wave), d (D wave) [fm^1/2]
   TYukawaPWF(int order, double *c, double *d, double *m); ///< constructor: order N, coefficients c, d [fm^1/2] and masses m [fm^-1]
-  TYukawaPWF(TRootIOCtor*); ///< ROOT I/O constructor
   TYukawaPWF(const TYukawaPWF&); ///< copy constructor
   TYukawaPWF& operator=(const TYukawaPWF&); ///< assignment
   virtual ~TYukawaPWF(); ///< destructor
@@ -61,7 +59,6 @@ class TYukawaPWF : public TWavefunctionImplementation
   /// [fm^-1] masses (when given explicitly)
   double *fM;	//[fOrder] parameters for masses [fm^-1]	
 
-  ClassDef(TYukawaPWF,1); // Yukawa parametrized wavefunction
   
 };
 

@@ -118,7 +118,6 @@ using std::strcmp;
 using TMath::Sqrt; using TMath::Cos; using TMath::Sin;
 using TMath::ACos; using TMath::Abs; using TMath::Power;
 
-ClassImp(TKinematics2to3)
 
 //_____________________________________________________________________
 const double TKinematics2to3::kUflow = 1.e-7;
@@ -130,7 +129,7 @@ TKinematics2to3::TKinematics2to3(const char *name, const char *title,
 				 double var1, double var2, double var3,
 				 double var4, double var5, double var6,
 				 double Md, double Mn, double Mk, double My)
-  : TNamed(name,title), fKYsystem(0), fKNsystem(0), fYNsystem(0),
+  : fName(name),fTitle(title), fKYsystem(0), fKNsystem(0), fYNsystem(0),
     fKvector(0), fYvector(0), fNvector(0), fGvector(0), fDvector(0),
     fIsospin(0), fMd(Md), fMk(Mk), fMy(My), fMn(Mn), fIsPhysical(false),
     fQsquared(0), fWlab(0), fKlab(0), fEk(0), fEy(0), fEn(0),
@@ -207,7 +206,7 @@ TKinematics2to3::TKinematics2to3(const char *name, const char *title,
 
 //_____________________________________________________________________
 TKinematics2to3::TKinematics2to3(const TKinematics2to3& toCopy)
-  : TNamed(toCopy), fKYsystem(0), fKNsystem(0), fYNsystem(0),
+  : fName(toCopy.fName),fTitle(toCopy.fTitle), fKYsystem(0), fKNsystem(0), fYNsystem(0),
     fKvector(0), fYvector(0), fNvector(0), fGvector(0), fDvector(0),
     fIsospin(toCopy.fIsospin), fMd(toCopy.fMd), fMk(toCopy.fMk), 
     fMy(toCopy.fMy), fMn(toCopy.fMn), fIsPhysical(toCopy.fIsPhysical),
@@ -271,26 +270,6 @@ TKinematics2to3::TKinematics2to3(const TKinematics2to3& toCopy)
 }
 
 //_____________________________________________________________________
-TKinematics2to3::TKinematics2to3(TRootIOCtor *rio)
-  : TNamed(), fKYsystem(0), fKNsystem(0), fYNsystem(0),
-    fKvector(0), fYvector(0), fNvector(0), fGvector(0), fDvector(0),
-    fIsospin(0), fMd(0), fMk(0), fMy(0), fMn(0), fIsPhysical(false),
-    fQsquared(0), fWlab(0), fKlab(0), fEk(0), fEy(0), fEn(0),
-    fPk(0), fPy(0), fPn(0), fThk(0), fThy(0), fThn(0), fCosthk(0),
-    fCosthy(0), fCosthn(0), fPhik(0), fPhiy(0), fPhin(0), fWtot(0),
-    fWky(0), fWkn(0), fWyn(0), fStot(0), fSky(0), fSkn(0), fSyn(0), fTgk(0),
-    fTgy(0), fTgn(0), fKYcosthkcm(0), fKYcosthycm(0), fKNcosthkcm(0),
-    fKNcosthncm(0), fYNcosthycm(0), fYNcosthncm(0),
-    fVar(0), fE1Var(0), fTh1Var(0), fE2Var(0), fTh2Var(0), fPhi2Var(0),
-    fTdk(0), fTdy(0), fTdn(0), fKYphikcm(0), fKYphiycm(0), fKNphikcm(0),
-    fKNphincm(0), fYNphiycm(0), fYNphincm(0), fKYthkcm(0), fKYthycm(0),
-    fKNthkcm(0), fKNthncm(0), fYNthycm(0), fYNthncm(0),
-    fEVar(0), fIsVar(0), fLowerLimit(0), fUpperLimit(0),
-    fStepSize(0), fNumberOfSteps(0), fStep(0), fFormat(0),
-    fAC(kN), fKinSolution(0), fNrOfPhysicals(-1)
-{
-  // ROOT I/O constructor
-}
 
 //_____________________________________________________________________
 TKinematics2to3::~TKinematics2to3()
@@ -323,7 +302,9 @@ TKinematics2to3& TKinematics2to3::operator=(const TKinematics2to3& toCopy)
 
   if( this!=&toCopy ) { // avoid self-assignment
     
-    TNamed::operator=(toCopy);
+    fName=toCopy.fName;
+    
+    fTitle=toCopy.fTitle;
     
     ChangeIsospinChannel(toCopy.fIsospin);
     fAC = toCopy.fAC;
@@ -4388,189 +4369,7 @@ bool TKinematics2to3::IsFixed(int varNumber) const
 }
 
 //______________________________________________________________________________
-void TKinematics2to3::Streamer(TBuffer &R__b){}
-// {
-//   // Stream an object of class TKinematics2to3.
 
-//   // We implement it ourselfs to be able to initialize the persistent member **fVar.
-//   // This comes down to calling ReadFormatString(fFormat) after reading the buffer.
-//   // See ROOT user guide chpt.11 -> Streamers for more info
-//   UInt_t R__s, R__c;
-//   if (R__b.IsReading()) {
-//     Version_t R__v = R__b.ReadVersion(&R__s, &R__c); if (R__v) { }
-//     TNamed::Streamer(R__b);
-//     delete [] fFormat;
-//     fFormat = new char[100];
-//     char *tempFormat = new char[100]; // Added by PVC
-//     R__b.ReadFastArray(tempFormat,100); // Added by PVC
-//     delete [] fKinSolution;
-//     fKinSolution = new char[4];
-//     R__b.ReadFastArray(fKinSolution,4);
-//     R__b >> fIsospin;
-//     R__b >> (Int_t&)fAC;
-//     R__b >> fMd;
-//     R__b >> fMk;
-//     R__b >> fMy;
-//     R__b >> fMn;
-//     R__b >> fIsPhysical;
-//     R__b >> fQsquared;
-//     R__b >> fWlab;
-//     R__b >> fKlab;
-//     R__b >> fEk;
-//     R__b >> fEy;
-//     R__b >> fEn;
-//     R__b >> fPk;
-//     R__b >> fPy;
-//     R__b >> fPn;
-//     R__b >> fThk;
-//     R__b >> fThy;
-//     R__b >> fThn;
-//     R__b >> fCosthk;
-//     R__b >> fCosthy;
-//     R__b >> fCosthn;
-//     R__b >> fPhik;
-//     R__b >> fPhiy;
-//     R__b >> fPhin;
-//     R__b >> fWtot;
-//     R__b >> fWky;
-//     R__b >> fWkn;
-//     R__b >> fWyn;
-//     R__b >> fStot;
-//     R__b >> fSky;
-//     R__b >> fSkn;
-//     R__b >> fSyn;
-//     R__b >> fTgk;
-//     R__b >> fTgy;
-//     R__b >> fTgn;
-//     R__b >> fTdk;
-//     R__b >> fTdy;
-//     R__b >> fTdn;
-//     R__b >> fKYthkcm;
-//     R__b >> fKYthycm;
-//     R__b >> fKYcosthkcm;
-//     R__b >> fKYcosthycm;
-//     R__b >> fKYphikcm;
-//     R__b >> fKYphiycm;
-//     R__b >> fKNthkcm;
-//     R__b >> fKNthncm;
-//     R__b >> fKNcosthkcm;
-//     R__b >> fKNcosthncm;
-//     R__b >> fKNphikcm;
-//     R__b >> fKNphincm;
-//     R__b >> fYNthycm;
-//     R__b >> fYNthncm;
-//     R__b >> fYNcosthycm;
-//     R__b >> fYNcosthncm;
-//     R__b >> fYNphiycm;
-//     R__b >> fYNphincm;
-//     R__b >> fKYsystem;
-//     R__b >> fKNsystem;
-//     R__b >> fYNsystem;
-//     R__b >> fKvector;
-//     R__b >> fYvector;
-//     R__b >> fNvector;
-//     R__b >> fGvector;
-//     R__b >> fDvector;
-//     delete [] fIsVar;
-//     fIsVar = new bool[6];
-//     R__b.ReadFastArray(fIsVar,6);
-//     delete [] fLowerLimit;
-//     fLowerLimit = new double[6];
-//     R__b.ReadFastArray(fLowerLimit,6);
-//     delete [] fUpperLimit;
-//     fUpperLimit = new double[6];
-//     R__b.ReadFastArray(fUpperLimit,6);
-//     delete [] fStepSize;
-//     fStepSize = new double[6];
-//     R__b.ReadFastArray(fStepSize,6);
-//     delete [] fNumberOfSteps;
-//     fNumberOfSteps = new int[6];
-//     R__b.ReadFastArray(fNumberOfSteps,6);
-//     R__b >> fStep;
-//     R__b >> fNrOfPhysicals;
-//     R__b.CheckByteCount(R__s, R__c, TKinematics2to3::IsA());
-//     fVar    = new double*[6];  // Added by PVC
-//     ReadFormatString(tempFormat); // Added by PVC
-//     delete[] tempFormat;
-//   } else {
-//     R__c = R__b.WriteVersion(TKinematics2to3::IsA(), kTRUE);
-//     TNamed::Streamer(R__b);
-//     R__b.WriteFastArray(fFormat,100);
-//     R__b.WriteFastArray(fKinSolution,4);
-//     R__b << fIsospin;
-//     R__b << (Int_t)fAC;
-//     R__b << fMd;
-//     R__b << fMk;
-//     R__b << fMy;
-//     R__b << fMn;
-//     R__b << fIsPhysical;
-//     R__b << fQsquared;
-//     R__b << fWlab;
-//     R__b << fKlab;
-//     R__b << fEk;
-//     R__b << fEy;
-//     R__b << fEn;
-//     R__b << fPk;
-//     R__b << fPy;
-//     R__b << fPn;
-//     R__b << fThk;
-//     R__b << fThy;
-//     R__b << fThn;
-//     R__b << fCosthk;
-//     R__b << fCosthy;
-//     R__b << fCosthn;
-//     R__b << fPhik;
-//     R__b << fPhiy;
-//     R__b << fPhin;
-//     R__b << fWtot;
-//     R__b << fWky;
-//     R__b << fWkn;
-//     R__b << fWyn;
-//     R__b << fStot;
-//     R__b << fSky;
-//     R__b << fSkn;
-//     R__b << fSyn;
-//     R__b << fTgk;
-//     R__b << fTgy;
-//     R__b << fTgn;
-//     R__b << fTdk;
-//     R__b << fTdy;
-//     R__b << fTdn;
-//     R__b << fKYthkcm;
-//     R__b << fKYthycm;
-//     R__b << fKYcosthkcm;
-//     R__b << fKYcosthycm;
-//     R__b << fKYphikcm;
-//     R__b << fKYphiycm;
-//     R__b << fKNthkcm;
-//     R__b << fKNthncm;
-//     R__b << fKNcosthkcm;
-//     R__b << fKNcosthncm;
-//     R__b << fKNphikcm;
-//     R__b << fKNphincm;
-//     R__b << fYNthycm;
-//     R__b << fYNthncm;
-//     R__b << fYNcosthycm;
-//     R__b << fYNcosthncm;
-//     R__b << fYNphiycm;
-//     R__b << fYNphincm;
-//     R__b << fKYsystem;
-//     R__b << fKNsystem;
-//     R__b << fYNsystem;
-//     R__b << fKvector;
-//     R__b << fYvector;
-//     R__b << fNvector;
-//     R__b << fGvector;
-//     R__b << fDvector;
-//     R__b.WriteFastArray(fIsVar,6);
-//     R__b.WriteFastArray(fLowerLimit,6);
-//     R__b.WriteFastArray(fUpperLimit,6);
-//     R__b.WriteFastArray(fStepSize,6);
-//     R__b.WriteFastArray(fNumberOfSteps,6);
-//     R__b << fStep;
-//     R__b << fNrOfPhysicals;
-//     R__b.SetByteCount(R__c, kTRUE);
-//   }
 // }
 
 //_____________________________________________________________________

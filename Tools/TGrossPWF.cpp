@@ -61,12 +61,11 @@
 using std::cout; using std::cerr; using std::endl;
 using TMath::Sqrt; using TMath::Power; using TMath::Exp;
 
-ClassImp(TGrossPWF)
 
 //_____________________________________________________________________
 TGrossPWF::TGrossPWF(int order, double *alpha, double m0, 
 		     double *parU, double *parW, double *parVT, double *parVS)
-: TWavefunctionImplementation(0),
+: TWavefunctionImplementation(),
   fOrder(order), fAlpha(new double[3]), fM0(m0), fPar(new double[4*order])
 {
   // Constructor
@@ -97,11 +96,6 @@ TGrossPWF::TGrossPWF(int order, double *alpha, double m0,
 }
 
 //_____________________________________________________________________
-TGrossPWF::TGrossPWF(TRootIOCtor*)
-  : TWavefunctionImplementation(0), fOrder(0), fAlpha(0), fM0(0), fPar(0)
-{
-  // ROOT I/O Constructor
-}
 
 //_____________________________________________________________________
 TGrossPWF::TGrossPWF(const TGrossPWF& rhs)

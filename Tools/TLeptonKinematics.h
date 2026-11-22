@@ -9,7 +9,6 @@
 #ifndef TLEPTONKINEMATICS_H
 #define TLEPTONKINEMATICS_H
 
-#include "TObject.h"
 #include <FourVector.h>
 
 // Forward declarations
@@ -28,10 +27,9 @@ class TKinematics2to3;
  * Kinematics are solved when you pass a TKinematics2to2 or TKinematics2to3 object to the Getters.
  */
 
-class TLeptonKinematics : public TObject
+class TLeptonKinematics
 {
  public:
-  TLeptonKinematics(TRootIOCtor*); /*!< ROOT I/O Constructor */
   TLeptonKinematics(const TLeptonKinematics&); /*!< copy constructor */
   TLeptonKinematics& operator=(const TLeptonKinematics&); /*!< assignment operator */
   virtual ~TLeptonKinematics() {} /*!< Destructor */
@@ -104,7 +102,6 @@ class TLeptonKinematics : public TObject
 //   mutable double ftan2HalfAngle; /*!< tan squared of half of the lepton scattering angle */
   double mass; /*!< [MeV] mass of outgoing lepton */
   
-  ClassDef(TLeptonKinematics,1); /*!< Root shizzle */
 
 }; 
 /** @} */

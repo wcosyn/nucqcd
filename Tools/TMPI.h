@@ -20,12 +20,11 @@ typedef int MPI_Op;
 typedef int MPI_Datatype;
 #endif
 #include <fstream>
-#include <TObject.h>
 
 /*! \brief Coordinates MPI calculations: one object per program (created once, it initializes MPI and
  * finalizes it in its destructor), with the rank, the master/slave roles, output silencing for the
  * slaves, and gathering of results of loops distributed over the processes (GatherResults) */
-class TMPI : public TObject /* FINAL */
+class TMPI /* FINAL */
 {
  public:
   /// results to be gathered in GatherResults
@@ -63,7 +62,6 @@ class TMPI : public TObject /* FINAL */
   static std::ofstream fgDevNull; ///< stream to /dev/null
   static MPI_Op MPI_COMBINE_RESULTS; ///< the reduction operator of GatherResults
   static MPI_Datatype datatype; ///< MPI data type of ValueSave_t
-  ClassDef(TMPI,0); // Global object coordinating multi-process calculations
 
 }; // class TMPI
 

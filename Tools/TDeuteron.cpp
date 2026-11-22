@@ -45,7 +45,6 @@ using std::complex;
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-ClassImp(TDeuteron)
 
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
@@ -83,7 +82,6 @@ ClassImp(TDeuteron)
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-ClassImp(TDeuteron::Wavefunction)
 
 //_____________________________________________________________________
 const double TDeuteron::Wavefunction::kMd = 1877.05;
@@ -91,22 +89,17 @@ const double TDeuteron::Wavefunction::kMd = 1877.05;
 //_____________________________________________________________________
 TDeuteron::Wavefunction::Wavefunction(const TString& name,
 			     const TString& title)
-  : TNamed(name,title), fRelativistic(0), fImplementation(0), yukawa(0)
+  : fName(name),fTitle(title), fRelativistic(0), fImplementation(0), yukawa(0)
 {
   // Default constructor is private
   // User are only allowed to use named constructors
 }
 
 //_____________________________________________________________________
-TDeuteron::Wavefunction::Wavefunction(TRootIOCtor*)
-  : TNamed(), fRelativistic(0), fImplementation(0), yukawa(0)
-{
-  // ROOT I/O Constructor
-}
 
 //_____________________________________________________________________
 TDeuteron::Wavefunction::Wavefunction(const Wavefunction& rhs)
-  : TNamed(rhs), fRelativistic(rhs.fRelativistic), fImplementation(0), yukawa(rhs.yukawa)
+  : fName(rhs.fName),fTitle(rhs.fTitle), fRelativistic(rhs.fRelativistic), fImplementation(0), yukawa(rhs.yukawa)
 {
   // Copy constructor
 
@@ -119,7 +112,8 @@ TDeuteron::Wavefunction& TDeuteron::Wavefunction::operator=(const Wavefunction& 
   // Assignment
 
   if( this!=&rhs ) { // avoid self-assignment
-    TNamed::operator=(rhs);
+    fName=rhs.fName;
+    fTitle=rhs.fTitle;
     fRelativistic = rhs.fRelativistic;
     yukawa=rhs.yukawa;
     delete fImplementation;
@@ -1163,7 +1157,6 @@ double TDeuteron::Wavefunction::getResidu() const{
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-ClassImp(TDeuteron::Polarization)
 
 //______________________________________________________________________________
 TDeuteron::Polarization::Polarization(double theta, double phi, int polState)
@@ -1175,11 +1168,6 @@ TDeuteron::Polarization::Polarization(double theta, double phi, int polState)
 }
 
 //______________________________________________________________________________
-TDeuteron::Polarization::Polarization(TRootIOCtor *rio)
-  : TObject(), fTheta(0.), fPhi(0.), fPolarizationState(-5)
-{
-  // ROOT I/O Constructor
-}
 
 //______________________________________________________________________________
 TDeuteron::Polarization::Polarization(const Polarization& rhs)
@@ -1200,7 +1188,6 @@ TDeuteron::Polarization& TDeuteron::Polarization::operator=(const Polarization& 
   // Assignment
 
   if( this!=&rhs) { // avoid self-assignment
-    TObject::operator=(rhs);
     fTheta = rhs.fTheta;
     fPhi = rhs.fPhi;
     fPolarizationState = rhs.fPolarizationState;

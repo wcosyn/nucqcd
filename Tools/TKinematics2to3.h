@@ -10,10 +10,10 @@
 #ifndef TKINEMATICS2TO3_H
 #define TKINEMATICS2TO3_H
 
+#include <string>
 #include "TSpinor.h"
 #include "TKinematics2to2.h"
 #include "FourVector.h"
-#include <TNamed.h>
 #include <TLorentzVector.h>
 #include <TLorentzRotation.h>
 #include <TMath.h>
@@ -45,8 +45,17 @@ class TLorentzQuaternion;
  * the format string (see SetFormat); each can be given a range (SetVarRange) and the grid is
  * stepped through with Next() or GoTo().
  */
-class TKinematics2to3 : public TNamed
+class TKinematics2to3
 {
+  std::string fName;  ///< name (formerly from the ROOT base class TNamed)
+  std::string fTitle; ///< title
+
+ public:
+  const char *GetName() const { return fName.c_str(); }  ///< name
+  const char *GetTitle() const { return fTitle.c_str(); } ///< title
+  void SetName(const char *name) { fName = name; }        ///< sets the name
+  void SetTitle(const char *title) { fTitle = title; }    ///< sets the title
+
   friend class TKinematics2to3WithLabAngles;
 
  public:
@@ -79,7 +88,6 @@ class TKinematics2to3 : public TNamed
 		  double var4, double var5, double var6,
 		  double Md=0., double Mn=0., double Mk=0., double My=0.);
   TKinematics2to3(const TKinematics2to3&); ///< Copy constructor
-  TKinematics2to3(TRootIOCtor*); ///< ROOT I/O constructor
   virtual ~TKinematics2to3();
   TKinematics2to3& operator=(const TKinematics2to3&); ///< assignment
 
@@ -497,7 +505,6 @@ class TKinematics2to3 : public TNamed
   mutable int      fNrOfPhysicals; // Number of physical steps (-1 if not determined)
   
   
-  ClassDef(TKinematics2to3,1)     // Kinematics for gamma D -> K Y N
     
 };
 

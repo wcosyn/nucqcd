@@ -60,12 +60,11 @@
 
 using std::cout; using std::cerr; using std::endl;
 
-ClassImp(TYukawaPWF)
 
 //_____________________________________________________________________
 TYukawaPWF::TYukawaPWF(int order, double alpha, double m0,
 		       double *c, double *d)
-: TWavefunctionImplementation(0), fOrder(order), fAlpha(alpha), fM0(m0),
+: TWavefunctionImplementation(), fOrder(order), fAlpha(alpha), fM0(m0),
   fC(new double[order]), fD(new double[order]), fM(NULL)
 {
   // Constructor
@@ -129,7 +128,7 @@ TYukawaPWF::TYukawaPWF(int order, double alpha, double m0,
 }
 
 TYukawaPWF::TYukawaPWF(int order, double *c, double *d, double *m)
-: TWavefunctionImplementation(0), fOrder(order),
+: TWavefunctionImplementation(), fOrder(order),
   fC(new double[order]), fD(new double[order]), fM(new double[order])
 {
   // Constructor
@@ -192,15 +191,10 @@ TYukawaPWF::TYukawaPWF(int order, double *c, double *d, double *m)
 }
 
 //_____________________________________________________________________
-TYukawaPWF::TYukawaPWF(TRootIOCtor*)
-  : TWavefunctionImplementation(0), fOrder(0), fAlpha(0), fM0(0), fC(0), fD(0)
-{
-  // ROOT I/O Constructor
-}
 
 //_____________________________________________________________________
 TYukawaPWF::TYukawaPWF(const TYukawaPWF& rhs)
-  : TWavefunctionImplementation(0),
+  : TWavefunctionImplementation(),
     fOrder(rhs.fOrder), fAlpha(rhs.fAlpha), fM0(rhs.fM0),
     fC(new double[rhs.fOrder]), fD(new double[rhs.fOrder])
 {
