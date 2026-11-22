@@ -157,11 +157,11 @@ private:
  
   NucleonEMOperator isopartner; /*!< we need the isospin partner in EM FF to compute the weak ones! */
  
-  void setF1_weak();
-  void setF2_weak();
-  void setGE_weak();
-  void setGM_weak();  
-  void setGA_weak();
+  void setF1_weak(); /*!< computes the weak F1 from the EM form factors of the nucleon and its isospin partner (plus the strangeness and Weinberg-angle terms for the neutral current) */
+  void setF2_weak(); /*!< computes the weak kappa F2, in the same way as setF1_weak */
+  void setGE_weak(); /*!< computes the weak GE = F1 - tau F2 */
+  void setGM_weak(); /*!< computes the weak GM = F1 + F2 */
+  void setGA_weak(); /*!< computes the axial form factor GA, a dipole with axial mass M_A (plus strangeness for the neutral current) */
   /*! gives you a dipole form factor 
    * \param [in] Q2 [MeV^2] fourmomentum sq
    * \param mass [MeV] axial nucleon mass

@@ -14,7 +14,7 @@
 #include <complex>
 #include <map>
 #include <vector>
-#define GRIDP 201 /*!< \def defines number of gridpoints for the Y_kappa grids*/
+#define GRIDP 201 /*!< number of grid points in cos(theta) for the Y_kappa grids */
 
 
 

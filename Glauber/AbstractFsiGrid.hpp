@@ -142,8 +142,14 @@ public:
   void setCthinterp(const double costheta); /*!< sets the thindex variable used in the 3d interpolation */
   void setPhiinterp(const double phi); /*!< sets the phiindex variable used in the 3d interpolation */
   
+  /*! sets the interpolation indices and weights in r, cos(theta) and phi
+   * \param r [fm] radial coordinate \param theta cos of the polar angle (despite the name)
+   * \param phi [rad] azimuthal angle; with all particles in the x-z plane, phi > pi is mirrored to 2pi-phi */
   void setinterp(const double r, const double theta, const double phi);
+  /*! sets the interpolation indices and weights in cos(theta) and phi (r set before)
+   * \param costheta cos of the polar angle \param phi [rad] azimuthal angle */
   void setinterp(const double costheta, const double phi);
+  /*! sets the interpolation index and weight in phi (r and cos(theta) set before) \param phi [rad] azimuthal angle */
   void setinterp(const double phi);
   
   /*!returns the value of the fsi grid for a certain situation at coordinate (r,theta,phi) that has been set previously
@@ -183,13 +189,13 @@ public:
    we don't have to fill the grids or compute them again and the situation remains as before.*/
   virtual void updateGrids();  
   
-  double getR_hit() const{return r_hit;}
-  double getCostheta_hit() const{return costheta_hit;}
-  double getSintheta_hit() const{return sintheta_hit;}
-  double getPhi_hit() const{return phi_hit;}
-  double getCosphi_hit() const{return cosphi_hit;}
-  double getSinphi_hit() const{return sinphi_hit;}
-  bool getFilledallgrid() const{return filledallgrid;}
+  double getR_hit() const{return r_hit;} /*!< [fm] r of the hard interaction point */
+  double getCostheta_hit() const{return costheta_hit;} /*!< cos(theta) of the hard interaction point */
+  double getSintheta_hit() const{return sintheta_hit;} /*!< sin(theta) of the hard interaction point */
+  double getPhi_hit() const{return phi_hit;} /*!< [rad] phi of the hard interaction point */
+  double getCosphi_hit() const{return cosphi_hit;} /*!< cos(phi) of the hard interaction point */
+  double getSinphi_hit() const{return sinphi_hit;} /*!< sin(phi) of the hard interaction point */
+  bool getFilledallgrid() const{return filledallgrid;} /*!< true when all grids (FSI and FSI+CT) are filled for the current particles */
   
 protected:
   virtual void setFilenames(std::string dir); /*!< set filenames of the grids \param dir grid cache directory, plus the file name prefixes of the derived classes */ 
@@ -223,7 +229,7 @@ private:
   double comp_t_interp; /*!<  1-t*/
   double comp_u_interp; /*!<  1-u*/
   int rindex; /*!<  the index for r used in the 3d interpolation*/
-  int cthindex; ;/*!<  the index for theta used in the 3d interpolation*/
+  int cthindex; /*!<  the index for cos(theta) used in the 3d interpolation*/
   int phiindex; /*!<  the index for phi used in the 3d interpolation */
   bool allinplane; /*!<  1 if all the isi/fsi particles lie in the x-z plane, can be used to exploit symmetry in phi */
   

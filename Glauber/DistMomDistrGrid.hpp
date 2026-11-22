@@ -70,24 +70,24 @@ public:
   int getPhiindex() const{return phiindex;}/*!<  returns the index for phi used in the 3d interpolation */
   AbstractFsiCTGrid * const getPfsigrid() const{return pfsigrid;}/*!<  returns the pointer to the AbstractFsiCTGrid instance */
   
-  bool getFilledgrid() const{return filledgrid;}
-  bool getFilledctgrid() const{return filledctgrid;}
-  bool getFilledallgrid() const{return filledallgrid;}
-  const TVector3 & getPvec_hit() const{return pvec_hit;}
-  double getP_hit() const{return p_hit;}
-  double getCostheta_hit() const{return costheta_hit;}
-  double getSintheta_hit() const{return sintheta_hit;}
-  double getPhi_hit() const{return phi_hit;}
-  double getCosphi_hit() const{return cosphi_hit;}
-  double getSinphi_hit() const{return sinphi_hit;}
-  const Matrix<1,4>& getUpm_bar() const{return Upm_bar;}
+  bool getFilledgrid() const{return filledgrid;} /*!< true when the (FSI) grid is filled */
+  bool getFilledctgrid() const{return filledctgrid;} /*!< true when the FSI+CT grid is filled */
+  bool getFilledallgrid() const{return filledallgrid;} /*!< true when all grids are filled */
+  const TVector3 & getPvec_hit() const{return pvec_hit;} /*!< [MeV] momentum at which the distribution is computed */
+  double getP_hit() const{return p_hit;} /*!< [MeV] norm of that momentum */
+  double getCostheta_hit() const{return costheta_hit;} /*!< cos(theta) of that momentum */
+  double getSintheta_hit() const{return sintheta_hit;} /*!< sin(theta) of that momentum */
+  double getPhi_hit() const{return phi_hit;} /*!< [rad] phi of that momentum */
+  double getCosphi_hit() const{return cosphi_hit;} /*!< cos(phi) of that momentum */
+  double getSinphi_hit() const{return sinphi_hit;} /*!< sin(phi) of that momentum */
+  const Matrix<1,4>& getUpm_bar() const{return Upm_bar;} /*!< spinor that gets contracted with the mean-field spinor of the nucleon */
   double getPrec() const{return prec;} /*!< returns the precision in the integrations */
-  int getIntegrator() const{return integrator;}
-  int getMaxEval() const{return maxEval;}
-  double getThetarot() const{return thetarot;}
-  double* const getRhopwgrid() const{return rhopwgrid;}
-  double**** const getRhogrid() const{return rhogrid;}
-  double**** const getRhoctgrid() const{return rhoctgrid;}
+  int getIntegrator() const{return integrator;} /*!< choice of integrator, see the constructor */
+  int getMaxEval() const{return maxEval;} /*!< maximum number of evaluations in the integrations */
+  double getThetarot() const{return thetarot;} /*!< [rad] rotation angle between the momentum frame and the Glauber frame */
+  double* const getRhopwgrid() const{return rhopwgrid;} /*!< plane-wave momentum distribution grid (depends on |p| only) */
+  double**** const getRhogrid() const{return rhogrid;} /*!< distorted momentum distribution grids (without CT) */
+  double**** const getRhoctgrid() const{return rhoctgrid;} /*!< distorted momentum distribution grids with CT */
   
   void printRho_grid(int gridindex);  /*!< Prints the rho grid for a certain situation*/
   void printRhopw_grid();  /*!< Prints the rho plane wave grid */
@@ -107,6 +107,7 @@ public:
   double getRhoGridFull_interp1(int gridindex, const double phi);
   /*!returns the value of the momentum distribution for a certain situation at coordinate (p,theta,phi) that has been set previously*/
   double getRhoGridFull_interp(int gridindex);
+  /*! returns the plane-wave momentum distribution at |p| \param p [MeV] momentum, at most getPmax() */
   double getRhopwGridFull_interp(double p);
 
    
@@ -148,10 +149,10 @@ private:
   double comp_t_interp; /*!<  1-t*/
   double comp_u_interp; /*!<  1-u*/
   int pindex; /*!<  the index for r used in the 3d interpolation*/
-  int cthindex; ;/*!<  the index for theta used in the 3d interpolation*/
+  int cthindex; /*!<  the index for cos(theta) used in the 3d interpolation*/
   int phiindex; /*!<  the index for phi used in the 3d interpolation */
   AbstractFsiCTGrid *pfsigrid;/*!<  the pointer to the fsigrid instance */
-  int number_of_Grids;
+  int number_of_Grids; /*!< number of FSI grids of pfsigrid (half of them without CT, half with) */
   
   void setFilenames(std::string dir); /*!< set filenames of the grids \param dir dir where all input/output is located */ 
 
