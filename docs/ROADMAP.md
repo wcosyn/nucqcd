@@ -412,6 +412,7 @@ one commit per bug; no `[known-bug]` tests remain.
     - [x] `TKinematics2to3.h` (303 members).
     - [x] `TKinematics.h` (107 members).
     - [x] `TSpinor.h` (94 members), with the spinor conventions.
+    - [x] Deuteron wave function implementations: `TWavefunctionImplementation`, `TYukawaPWF`, `TGrossPWF`, `TCstPWF`, `TInterpolatingWavefunction` (150 members).
 
 ## 6. Structural refactors
 

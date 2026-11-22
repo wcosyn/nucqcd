@@ -4,6 +4,7 @@
 
 #include <OldDeuteron.hpp>
 #include <TDeuteron.h>
+#include <TInterpolatingWavefunction.h>
 #include <constants.hpp>
 
 #include <TVector3.h>
@@ -164,4 +165,25 @@ TEST_CASE("TDeuteron::Wavefunction: errors are exceptions", "[deuteron][errors]"
   CHECK_NOTHROW(make_wf("nijm3"));
   CHECK_THROWS_AS(make_wf("nijm3")->getResidu(), std::logic_error);
   CHECK(make_wf("AV18")->getResidu() > 0.);
+}
+
+TEST_CASE("TInterpolatingWavefunction states have the TDeuteron conventions", "[deuteron]") {
+  // Deut_Conv_EMTLF and Poldeut use an interpolated copy of a TDeuteron wave function, and
+  // TInterpolatingWavefunction has its own DeuteronPState/DeuteronRState: same signs and couplings
+  auto wf = make_wf("AV18");
+  TInterpolatingWavefunction interp;
+  for (int i = 0; i <= 1000; i++) {
+    interp.AddUp(i, wf->GetUp(i));
+    interp.AddWp(i, wf->GetWp(i));
+    interp.AddUr(i * 0.02, wf->GetUr(i * 0.02));
+    interp.AddWr(i * 0.02, wf->GetWr(i * 0.02));
+  }
+  const TVector3 dir(std::sin(1.) * std::cos(2.), std::sin(1.) * std::sin(2.), std::cos(1.));
+  const TVector3 p = 150. * dir, r = 2. * dir;  // on grid points of the tables, so no interpolation error
+  for (int M = -2; M <= 2; M += 2)
+    for (int s1 = -1; s1 <= 1; s1 += 2)
+      for (int s2 = -1; s2 <= 1; s2 += 2) {
+        CHECK(std::abs(interp.DeuteronPState(M, s2, s1, p) - wf->DeuteronPState(M, s2, s1, p)) < 1e-12 * wf->GetUp(150.));
+        CHECK(std::abs(interp.DeuteronRState(M, s2, s1, r) - wf->DeuteronRState(M, s2, s1, r)) < 1e-12 * wf->GetUr(2.));
+      }
 }
