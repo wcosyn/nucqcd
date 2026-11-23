@@ -10,13 +10,13 @@
 #ifndef TKINEMATICS2TO3_H
 #define TKINEMATICS2TO3_H
 
+#include <cmath>
 #include <string>
 #include "TSpinor.h"
 #include "TKinematics2to2.h"
 #include "FourVector.h"
 #include <TLorentzVector.h>
 #include <TLorentzRotation.h>
-#include <TMath.h>
 
 // Forward declarations
 class TString;
@@ -157,11 +157,11 @@ class TKinematics2to3
   double         GetThky() const; ///< angle between the photon and the total momentum of the K-Y pair, in the lab [rad, 0-pi]
   double         GetThkn() const; ///< angle between the photon and the total momentum of the K-N pair, in the lab [rad, 0-pi]
   double         GetThyn() const; ///< angle between the photon and the total momentum of the Y-N pair, in the lab [rad, 0-pi]
-  double         GetCosthky() const     { return TMath::Cos(GetThky()); } ///< cosine of the angle between the photon and the total momentum of the K-Y pair
-  double         GetCosthkn() const     { return TMath::Cos(GetThkn()); } ///< cosine of the angle between the photon and the total momentum of the K-N pair
-  double         GetCosthyn() const     { return TMath::Cos(GetThyn()); } ///< cosine of the angle between the photon and the total momentum of the Y-N pair
+  double         GetCosthky() const     { return std::cos(GetThky()); } ///< cosine of the angle between the photon and the total momentum of the K-Y pair
+  double         GetCosthkn() const     { return std::cos(GetThkn()); } ///< cosine of the angle between the photon and the total momentum of the K-N pair
+  double         GetCosthyn() const     { return std::cos(GetThyn()); } ///< cosine of the angle between the photon and the total momentum of the Y-N pair
   double         GetQsquared() const    { return -1*fGvector->Mag2(); } ///< [MeV^2] Q^2 = -q^2 of the photon
-  double         GetWtot() const        { return TMath::Sqrt(GetStot()); } ///< [MeV] total invariant mass W
+  double         GetWtot() const        { return std::sqrt(GetStot()); } ///< [MeV] total invariant mass W
   double         GetWky() const         { return fKYsystem->GetW(); } ///< [MeV] invariant mass of the K-Y subsystem
   double         GetWkn() const         { return fKNsystem->GetW(); } ///< [MeV] invariant mass of the K-N subsystem
   double         GetWyn() const         { return fYNsystem->GetW(); } ///< [MeV] invariant mass of the Y-N subsystem

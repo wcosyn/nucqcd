@@ -40,12 +40,11 @@ End_Html */
 // #include "TMPI.h"
 #include "TKinematics2to3WithLabAngles.h"
 #include "constants.hpp"
+#include "MathUtil.hpp"
+#include <algorithm>
+#include <cmath>
+#include <cstdlib>
 #include <TLorentzRotation.h>
-#include <TMath.h>
-using TMath::Cos; using TMath::Sin;
-using TMath::Abs; using TMath::Sqrt;
-#include <Math/Polynomial.h>
-using ROOT::Math::Polynomial;
 #include <iostream>
 using std::cout; using std::cerr;
 #include <cassert>
@@ -259,10 +258,10 @@ void TKinematics2to3WithLabAngles::UpdateKinematics()
   double e1,p1;
   if( fE1Var==&fPk || fE1Var==&fPy || fE1Var==&fPn ) {
     p1 = *fE1Var;
-    e1 = Sqrt( p1*p1 + m1*m1 );
+    e1 = std::sqrt( p1*p1 + m1*m1 );
   } else {
     e1 = *fE1Var;
-    p1 = Sqrt( e1*e1 - m1*m1 );
+    p1 = std::sqrt( e1*e1 - m1*m1 );
   }
   if(e1<0. || p1 <0.) fIsPhysical = false;
 
@@ -274,7 +273,7 @@ void TKinematics2to3WithLabAngles::UpdateKinematics()
   if( fEVar==&fWlab )
     eg = fWlab;
   else if( fEVar==&fKlab )
-    eg = Sqrt( fKlab*fKlab - fQsquared );
+    eg = std::sqrt( fKlab*fKlab - fQsquared );
   else if( fEVar==&fWtot )
     eg = ( fWtot*fWtot + fQsquared - fMd*fMd ) / 2. / fMd;
   else if( fEVar==&fStot )
@@ -307,15 +306,15 @@ void TKinematics2to3WithLabAngles::UpdateKinematics()
   double costh1;
   if( fTh1Var==&fTgk || fTh1Var==&fTgy || fTh1Var==&fTgn )
     costh1 = ( *fTh1Var + fQsquared - m1*m1 + 2.*eg*e1 ) 
-      / 2. / p1 / Sqrt(eg*eg+fQsquared);
+      / 2. / p1 / std::sqrt(eg*eg+fQsquared);
   else if( fTh1Var==&fThk || fTh1Var==&fThy || fTh1Var==&fThn )
-    costh1 = Cos( *fTh1Var );
+    costh1 = std::cos( *fTh1Var );
   else
     costh1 = *fTh1Var;
     
-  if( Abs(costh1) <= 1.0 )
+  if( std::abs(costh1) <= 1.0 )
     fIsPhysical = true && fIsPhysical;
-  else if( Abs(costh1)-1.0 < kUflow ) {
+  else if( std::abs(costh1)-1.0 < kUflow ) {
     fIsPhysical = true && fIsPhysical;
     costh1 = ( costh1>0.0 ? 1.0 : -1.0 );
   }
@@ -326,8 +325,8 @@ void TKinematics2to3WithLabAngles::UpdateKinematics()
   // cos -> sin calculation is very unstable
   // when cos close to +-1.
   double sinth1=-2.;
-  if( 1.-Abs(costh1) <= kUflow) sinth1=0.;
-  else sinth1 = Sqrt(1. - costh1*costh1); 
+  if( 1.-std::abs(costh1) <= kUflow) sinth1=0.;
+  else sinth1 = std::sqrt(1. - costh1*costh1); 
 
   // Photon energy for the remaining case,
   // that is when energy is given by s_{23} or W_{23}
@@ -339,10 +338,9 @@ void TKinematics2to3WithLabAngles::UpdateKinematics()
       eg = ( s23 + fQsquared - fMd*fMd - m1*m1 + 2.*fMd*e1 ) / 2. / ( fMd - e1 );
     } 
     else {
-      Polynomial eq(pow((fMd-e1)/p1/costh1,2)-1.,
+      std::vector<double> roots = nucqcd::quadratic_real_roots(pow((fMd-e1)/p1/costh1,2)-1.,
 		    2.*(fMd-e1)/p1/costh1*(fMd*fMd+m1*m1-2.*fMd*e1-s23-fQsquared)/2./p1/costh1,
 		    pow((fMd*fMd+m1*m1-2.*fMd*e1-s23-fQsquared)/2./p1/costh1,2)-fQsquared);
-      vector<double> roots = eq.FindRealRoots();
 
       if(roots.size() == 0 ) {
 	fIsPhysical = false;
@@ -383,7 +381,7 @@ void TKinematics2to3WithLabAngles::UpdateKinematics()
   if( eg<threshold-nucqcd::strange_underflow ) fIsPhysical = false;
 
   // Set 4vectors
-  fGvector->SetXYZT(0.,0.,Sqrt(eg*eg+fQsquared),eg);
+  fGvector->SetXYZT(0.,0.,std::sqrt(eg*eg+fQsquared),eg);
   vector1.SetXYZT(p1*sinth1,0.,p1*costh1,e1);
     
   // Determine (23) subsystem
@@ -401,7 +399,7 @@ void TKinematics2to3WithLabAngles::UpdateKinematics()
   TLorentzRotation rotateTo23; 
   double rotationAngle=0.; 
   if( 1.-fabs(vector23.CosTheta())>kUflow )
-    rotationAngle = -1.*TMath::Sign(1.,vector23.X())
+    rotationAngle = -1.*std::copysign(1.,vector23.X())
       *vector23.Vect().Angle(fGvector->Vect());
   rotateTo23.RotateY(rotationAngle);
   // Define Lorentzboost that boosts in reference frame defined above
@@ -414,19 +412,19 @@ void TKinematics2to3WithLabAngles::UpdateKinematics()
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // CM energy particle 2
   double p2cm = subSystem->GetPk();
-  double e2cm = Sqrt( p2cm*p2cm + m2*m2 );
+  double e2cm = std::sqrt( p2cm*p2cm + m2*m2 );
 
   
   // LAB angle particle 2
   double costh2;
   if( fTh2Var==&fThk || fTh2Var==&fThy || fTh2Var==&fThn )
-    costh2 = Cos( *fTh2Var );
+    costh2 = std::cos( *fTh2Var );
   else
     costh2 = *fTh2Var;
       
-  if( Abs(costh2) <= 1.0 )
+  if( std::abs(costh2) <= 1.0 )
     fIsPhysical = true && fIsPhysical;
-  else if( Abs(costh2)-1.0 < kUflow ) {
+  else if( std::abs(costh2)-1.0 < kUflow ) {
     fIsPhysical = true && fIsPhysical;
     costh2 = ( costh2>0.0 ? 1.0 : -1.0 );
   }
@@ -437,12 +435,12 @@ void TKinematics2to3WithLabAngles::UpdateKinematics()
   // cos -> sin calculation is very unstable
   // when cos close to +-1.
   double sinth2=-2.;
-  if( 1.-Abs(costh2) <= kUflow ) sinth2=0.;
-  else sinth2 = Sqrt(1. - costh2*costh2); 
+  if( 1.-std::abs(costh2) <= kUflow ) sinth2=0.;
+  else sinth2 = std::sqrt(1. - costh2*costh2); 
       
-  if( Abs(sinth2) <= 1.0 )
+  if( std::abs(sinth2) <= 1.0 )
     fIsPhysical = true && fIsPhysical;
-  else if( Abs(sinth2)-1.0 < kUflow ) {
+  else if( std::abs(sinth2)-1.0 < kUflow ) {
     fIsPhysical = true && fIsPhysical;
     sinth2 = ( sinth2>0.0 ? 1.0 : -1.0 );
   }
@@ -460,23 +458,22 @@ void TKinematics2to3WithLabAngles::UpdateKinematics()
   double w23 = vector23.M();
   double p23 = (*fGvector-vector1).P();
   double costh23 = vector23.CosTheta();
-  if( 1.-fabs(costh23)<kUflow ) costh23 = TMath::Sign(1.,costh23);
+  if( 1.-fabs(costh23)<kUflow ) costh23 = std::copysign(1.,costh23);
   double sinth23 = -2.;
-  if( 1.-Abs(costh23) <= kUflow ) sinth23=0.;
-  else sinth23 = Sqrt(1. - costh23*costh23);
+  if( 1.-std::abs(costh23) <= kUflow ) sinth23=0.;
+  else sinth23 = std::sqrt(1. - costh23*costh23);
 
-  Polynomial eq(// coefficient p_2^2
-		p23*p23*sinth23*sinth23*sinth2*sinth2*Cos(*fPhi2Var)*Cos(*fPhi2Var)
+  std::vector<double> roots = nucqcd::quadratic_real_roots(// coefficient p_2^2
+		p23*p23*sinth23*sinth23*sinth2*sinth2*std::cos(*fPhi2Var)*std::cos(*fPhi2Var)
 		+p23*p23*costh23*costh23*costh2*costh2
-		-2*p23*p23*sinth23*costh23*costh2*sinth2*Cos(*fPhi2Var)
+		-2*p23*p23*sinth23*costh23*costh2*sinth2*std::cos(*fPhi2Var)
 		-e23*e23,
 		// coefficient p_2
 		2*e2cm*w23*p23*costh23*costh2
-		-2*e2cm*w23*p23*sinth23*sinth2*Cos(*fPhi2Var),
+		-2*e2cm*w23*p23*sinth23*sinth2*std::cos(*fPhi2Var),
 		// constant term
 		e2cm*e2cm*w23*w23
 		-e23*e23*m2*m2);
-  vector<double> roots = eq.FindRealRoots();
       
   double p2 = -1.;
   if(roots.size() == 0 ) {
@@ -490,12 +487,12 @@ void TKinematics2to3WithLabAngles::UpdateKinematics()
     bool sol1=false, sol2=false;
 	  
     if( roots[0]>0. && (e2cm*w23-roots[0]
-			*(p23*sinth23*sinth2*Cos(*fPhi2Var)
+			*(p23*sinth23*sinth2*std::cos(*fPhi2Var)
 			  -p23*costh23*costh2))>0. ) sol1=true;
 	  
     if( roots.size()==2 ) {
       if( roots[1]>0. && (e2cm*w23-roots[1]
-			  *(p23*sinth23*sinth2*Cos(*fPhi2Var)
+			  *(p23*sinth23*sinth2*std::cos(*fPhi2Var)
 			    -p23*costh23*costh2))>0. ) sol2=true;
     }
 	  
@@ -522,8 +519,8 @@ void TKinematics2to3WithLabAngles::UpdateKinematics()
   if(p2<0.) fIsPhysical = false;
 
   // set 4vector for particle 2
-  vector2.SetXYZM(sinth2*Cos(*fPhi2Var)*p2,
-		  sinth2*Sin(*fPhi2Var)*p2,
+  vector2.SetXYZM(sinth2*std::cos(*fPhi2Var)*p2,
+		  sinth2*std::sin(*fPhi2Var)*p2,
 		  costh2*p2, m2);
 
   vector3 = vector23 - vector2;
@@ -591,8 +588,8 @@ void TKinematics2to3WithLabAngles::UpdateKinematics()
     
     // Build the vector in the lab and boost it!
     TLorentzVector vector2cm;
-    vector2cm.SetXYZM(sinth2*Cos(*fPhi2Var)*roots[i],
-		      sinth2*Sin(*fPhi2Var)*roots[i],
+    vector2cm.SetXYZM(sinth2*std::cos(*fPhi2Var)*roots[i],
+		      sinth2*std::sin(*fPhi2Var)*roots[i],
 		      costh2*roots[i], m2);
     vector2cm = boostCM23 * rotateTo23 * vector2cm;
 

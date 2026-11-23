@@ -7,7 +7,7 @@
 #
 # Options: BUILD_PROGS, PARTONS_ENABLED, MPI_ENABLED, STATIC_BUILD (all OFF by default),
 # BUILD_TESTING (ON by default; tests in tests/, run with 'ctest', see tests/README.md).
-# ROOT (with MathMore and Minuit2) is found through its CMake config: source thisroot.sh,
+# ROOT (with Minuit2; MathMore is no longer needed) is found through its CMake config: source thisroot.sh,
 # or ROOT in /opt/root is used.
 cmake_minimum_required(VERSION 3.16)
 project(nucqcd LANGUAGES C CXX Fortran)
@@ -67,11 +67,8 @@ endif()
 add_compile_options(-Wall -Wextra "$<$<CONFIG:Release>:${NUCQCD_RELEASE_FLAGS}>" "$<$<CONFIG:Debug>:-g>")
 
 # ---- external dependencies -------------------------------------------------------------------
-find_package(ROOT 6 CONFIG REQUIRED COMPONENTS MathMore Minuit Minuit2
+find_package(ROOT 6 CONFIG REQUIRED COMPONENTS Minuit Minuit2
              HINTS "$ENV{ROOTSYS}/cmake" /opt/root/cmake)
-if(NOT ROOT_mathmore_FOUND)
-  message(FATAL_ERROR "ROOT has to be built with MathMore (ROOT in ${ROOT_DIR})")
-endif()
 message(STATUS "ROOT ${ROOT_VERSION} in ${ROOT_DIR}")
 # ROOT's libraries are linked by path (ROOT_LIBRARIES) rather than through the ROOT:: targets,
 # because those require ROOT's own C++ standard (C++23 for ROOT 6.40) and would switch the

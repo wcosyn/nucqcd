@@ -519,7 +519,7 @@ standard) from everything that only computes cross sections.
 | `TString` | the format-string parsing of `TKinematics*`, `TDeuteron` names | ~114 |
 | `TObject`/`TNamed`, `ClassDef`/`ClassImp`, LinkDef dictionaries, `TRootIOCtor`, `Streamer` | 16 classes (`T*` in Tools, `TMFSpinor`) | ROOT I/O is never used in the libraries |
 | `TMath` | constants and small functions | a few dozen |
-| mathmore: `ROOT::Math::sph_legendre`, `ROOT::Math::Polynomial` | `TDeuteron` (spherical harmonics), `TKinematics2to3WithLabAngles` (quartic roots) | 3 |
+| mathmore: `ROOT::Math::sph_legendre`, `ROOT::Math::Polynomial` | `TDeuteron` (spherical harmonics), `TKinematics2to3(WithLabAngles)` (quadratic roots) | 6 |
 | `TMatrixT`, `TVectorT`, `TDecompLU` | `TYukawaPWF` (a linear solve) | 1 file |
 | Minuit2 / `TF1` / fitting | programs only | ~15 programs (`F2_largex_fit`, `deepsdis` fits, `GPD/diDVCS*`) |
 | `TFile`, `TTree`, histograms, `TCanvas` | programs only | ~5 programs |
@@ -537,11 +537,22 @@ standard) from everything that only computes cross sections.
    ROOT's `Option_t*`. The derived wave functions constructed their base through the ROOT I/O
    constructor (`TWavefunctionImplementation(0)`); it now has a default constructor. The Doxyfile no
    longer needs the `ClassDef` predefinitions. All tests pass with unchanged references.
-2. [ ] **Small math.** `TMath` → `<cmath>` and `nucqcd::` constants; `ROOT::Math::sph_legendre` →
-   GSL (`gsl_sf_legendre_sphPlm`, already used in `SphericalHarmonicCos`) or C++17
-   `std::sph_legendre`; `ROOT::Math::Polynomial` roots → `gsl_poly_complex_solve`; the
-   `TMatrixT`/`TDecompLU` solve in `TYukawaPWF` → `gsl_linalg_LU`. Removes the need for mathmore.
-   Low risk; compare the roots and the Yukawa coefficients with the old code in a test.
+2. [x] **Small math** (done 2026-11-22). `TMath` → `<cmath>` (`std::sqrt`, `std::pow`, `std::copysign`
+   for `Sign`, ...) and the `nucqcd::pi`/`nucqcd::rad_to_deg` constants (the same doubles); the
+   unnormalized `TMath::Gaus` of the test wave function written out. `ROOT::Math::sph_legendre(l,m,θ)`
+   → `gsl_sf_legendre_sphPlm(l,m,cos θ)`, as in `SphericalHarmonicCos`. The new `Tools/MathUtil.hpp`
+   has `nucqcd::quadratic_real_roots` (the `Polynomial` roots in `TKinematics2to3(WithLabAngles)`
+   are quadratics; ROOT solves them with `gsl_poly_complex_solve_quadratic` and keeps the roots with
+   imaginary part 0, and so does this function, whereas `gsl_poly_solve_quadratic` differs in the last
+   bit when b = 0) and `nucqcd::solve_3x3` for the `TYukawaPWF` boundary conditions, a copy of
+   `TDecompLU`'s algorithm (Crout with implicit pivoting) rather than `gsl_linalg_LU`, which differs
+   by up to 1e-9 relative. `MathUtil.cpp` is compiled with `-ffp-contract=off`: with the fused
+   multiply-adds of `-march=native` the D-wave coefficients changed in the last bits, and w(r) near
+   r = 0, where the terms cancel, by up to 2e-4 relative. Both functions were compared with ROOT on
+   millions of random inputs without a difference, and the deuteron wave functions (all
+   parametrizations, r and p space, off-shell parts), spherical harmonics and 2→3 kinematics were
+   bitwise the same before and after; `unit_mathutil` keeps ROOT reference values. MathMore is no
+   longer a required ROOT component. The programs still use `TMath` (phase 6).
 3. [ ] **`TString` → `std::string`.** Mostly the format-string parsing of `TKinematics`,
    `TKinematics2to3` (`Tokenize`, `Contains`, case-insensitive `CompareTo`) and the wave-function names
    in `TDeuteron`. Medium risk: keep the case-insensitive comparisons; the format-string unit tests

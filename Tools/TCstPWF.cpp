@@ -68,7 +68,6 @@
 #include "TCstPWF.h"
 #include "ErrorMessage.hpp"
 #include <iostream>
-#include <TMath.h>
 #include <gsl/gsl_sf_bessel.h>
 #include "constants.hpp"
 #include <cassert>
@@ -418,7 +417,7 @@ double TCstPWF::GetG(ESpace space, EWave wave, int term, double q) const
 
   if( (term>0) && (term<fOrder[wave]) ) {
     if( space==kP ) {
-      g = sqrt(2./TMath::Pi())
+      g = sqrt(2./nucqcd::pi)
 	* pow(q,AngularMomentum(wave))
 	* Mass(wave,term)*Mass(wave,term)
 	* pow(Mass(wave,term+1),2*fExp[wave]-AngularMomentum(wave))
@@ -454,7 +453,7 @@ double TCstPWF::GetG(ESpace space, EWave wave, int term, double q) const
   }
   else if( term == fOrder[wave] ) {
     if( space==kP ) {
-      g = sqrt(2./TMath::Pi())
+      g = sqrt(2./nucqcd::pi)
 	* pow(q,AngularMomentum(wave))
 	* pow(fMn[wave],2*fExp[wave]+1-AngularMomentum(wave))
 	/ pow( fMn[wave]*fMn[wave] + q*q, fExp[wave]+.5);
@@ -469,11 +468,11 @@ double TCstPWF::GetG(ESpace space, EWave wave, int term, double q) const
       double Z = fMn[wave] * q;
 
       if( wave==kU )
-	g = 2./3./TMath::Pi() * fMn[wave]*fMn[wave] *Z*Z *gsl_sf_bessel_k1_scaled(Z)*exp(-Z);
+	g = 2./3./nucqcd::pi * fMn[wave]*fMn[wave] *Z*Z *gsl_sf_bessel_k1_scaled(Z)*exp(-Z);
       else if( wave==kW )
-	g = 2./15./TMath::Pi() * fMn[wave]*fMn[wave]*Z*Z*Z*gsl_sf_bessel_k0_scaled(Z)*exp(-Z);
+	g = 2./15./nucqcd::pi * fMn[wave]*fMn[wave]*Z*Z*Z*gsl_sf_bessel_k0_scaled(Z)*exp(-Z);
       else
-	g = 2./3./TMath::Pi() * fMn[wave]*fMn[wave] *Z*Z *gsl_sf_bessel_k0_scaled(Z)*exp(-Z);
+	g = 2./3./nucqcd::pi * fMn[wave]*fMn[wave] *Z*Z *gsl_sf_bessel_k0_scaled(Z)*exp(-Z);
     } // else space==kR
   }
   else {

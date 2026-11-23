@@ -53,10 +53,10 @@
 // #include "Structures.h"
 #include <iostream>
 #include <cstdlib>
-#include <TMath.h>
-#include <TDecompLU.h>
-#include <TVectorT.h>
-#include <TMatrixT.h>
+#include "MathUtil.hpp"
+#include "constants.hpp"
+#include <array>
+#include <cmath>
 
 using std::cout; using std::cerr; using std::endl;
 
@@ -97,7 +97,7 @@ TYukawaPWF::TYukawaPWF(int order, double alpha, double m0,
 
   // To find D_n, D_(n-1) and D_(n-2) we solve a 3x3
   // set of equations.
-  // We use ROOT's LU decomposition solver method.
+  // We use an LU decomposition (nucqcd::solve_3x3, same algorithm as ROOT's TDecompLU).
   double sumD=0., sumDm=0., sumD_m=0.;
   for(int i=0; i<fOrder-3; ++i) {
     sumD += fD[i];
@@ -105,7 +105,7 @@ TYukawaPWF::TYukawaPWF(int order, double alpha, double m0,
     sumD_m += fD[i]/Mass(i+1)/Mass(i+1);
   }
    
-  double elements[9] = {1/Mass(fOrder)/Mass(fOrder),
+  const std::array<double,9> matrix = {1/Mass(fOrder)/Mass(fOrder),
 			1/Mass(fOrder-1)/Mass(fOrder-1),
 			1/Mass(fOrder-2)/Mass(fOrder-2),
 			1.,1.,1.,
@@ -113,14 +113,7 @@ TYukawaPWF::TYukawaPWF(int order, double alpha, double m0,
 			Mass(fOrder-1)*Mass(fOrder-1),
 			Mass(fOrder-2)*Mass(fOrder-2),
   };
-  TMatrixD extMatrix(3,3,elements);
-  elements[0]=-1.*sumD_m;
-  elements[1]=-1.*sumD;
-  elements[2]=-1.*sumDm;
-  TVectorD sol(3,elements);
-  TDecompLU lu(extMatrix);
-  lu.SetTol(1e-16);
-  lu.Solve(sol);
+  const std::array<double,3> sol = nucqcd::solve_3x3(matrix, {-1.*sumD_m, -1.*sumD, -1.*sumDm});
 
   fD[fOrder-3] = sol[2];
   fD[fOrder-2] = sol[1];
@@ -160,7 +153,7 @@ TYukawaPWF::TYukawaPWF(int order, double *c, double *d, double *m)
 
   // To find D_n, D_(n-1) and D_(n-2) we solve a 3x3
   // set of equations.
-  // We use ROOT's LU decomposition solver method.
+  // We use an LU decomposition (nucqcd::solve_3x3, same algorithm as ROOT's TDecompLU).
   double sumD=0., sumDm=0., sumD_m=0.;
   for(int i=0; i<fOrder-3; ++i) {
     sumD += fD[i];
@@ -168,7 +161,7 @@ TYukawaPWF::TYukawaPWF(int order, double *c, double *d, double *m)
     sumD_m += fD[i]/Mass(i+1)/Mass(i+1);
   }
    
-  double elements[9] = {1/Mass(fOrder)/Mass(fOrder),
+  const std::array<double,9> matrix = {1/Mass(fOrder)/Mass(fOrder),
 			1/Mass(fOrder-1)/Mass(fOrder-1),
 			1/Mass(fOrder-2)/Mass(fOrder-2),
 			1.,1.,1.,
@@ -176,14 +169,7 @@ TYukawaPWF::TYukawaPWF(int order, double *c, double *d, double *m)
 			Mass(fOrder-1)*Mass(fOrder-1),
 			Mass(fOrder-2)*Mass(fOrder-2),
   };
-  TMatrixD extMatrix(3,3,elements);
-  elements[0]=-1.*sumD_m;
-  elements[1]=-1.*sumD;
-  elements[2]=-1.*sumDm;
-  TVectorD sol(3,elements);
-  TDecompLU lu(extMatrix);
-  lu.SetTol(1e-16);
-  lu.Solve(sol);
+  const std::array<double,3> sol = nucqcd::solve_3x3(matrix, {-1.*sumD_m, -1.*sumD, -1.*sumDm});
 
   fD[fOrder-3] = sol[2];
   fD[fOrder-2] = sol[1];
@@ -263,7 +249,7 @@ double TYukawaPWF::GetUp(double p) const
   for(int i=0; i<fOrder; ++i)
       radial += fC[i] / ( p*p/fgHbarc/fgHbarc + Mass(i+1)*Mass(i+1) );
 
-  return radial * TMath::Sqrt(2./TMath::Pi()) / pow(fgHbarc,3/2.);
+  return radial * std::sqrt(2./nucqcd::pi) / pow(fgHbarc,3/2.);
 }
 
 //_____________________________________________________________________
@@ -278,7 +264,7 @@ double TYukawaPWF::GetWp(double p) const
   for(int i=0; i<fOrder; ++i)
       radial -= fD[i] / ( p*p/fgHbarc/fgHbarc + Mass(i+1)*Mass(i+1) );
 
-  return radial * TMath::Sqrt(2./TMath::Pi()) / pow(fgHbarc,3/2.);
+  return radial * std::sqrt(2./nucqcd::pi) / pow(fgHbarc,3/2.);
 }
 
 double TYukawaPWF::GetUpoff(const TVector3& p) const{
@@ -289,7 +275,7 @@ double TYukawaPWF::GetUpoff(const TVector3& p) const{
       radial += fC[i] / ( p.Mag()*p.Mag()/fgHbarc/fgHbarc + Mass(i+1)*Mass(i+1) )
 		  /sqrt(p.Perp2()/fgHbarc/fgHbarc+Mass(i+1)*Mass(i+1));
 
-  return radial * TMath::Sqrt(2./TMath::Pi()) / pow(fgHbarc,3/2.);
+  return radial * std::sqrt(2./nucqcd::pi) / pow(fgHbarc,3/2.);
   
 }
 
@@ -301,7 +287,7 @@ double TYukawaPWF::GetWpoff1(const TVector3& p) const{
       radial -= fD[i] / ( p.Mag()*p.Mag()/fgHbarc/fgHbarc + Mass(i+1)*Mass(i+1) )
 		  /sqrt(p.Perp2()/fgHbarc/fgHbarc+Mass(i+1)*Mass(i+1));
 
-  return radial * TMath::Sqrt(2./TMath::Pi()) / pow(fgHbarc,3/2.);
+  return radial * std::sqrt(2./nucqcd::pi) / pow(fgHbarc,3/2.);
   
 }
 
@@ -312,7 +298,7 @@ double TYukawaPWF::GetWpoff2(double pperp2) const{
       radial -= fD[i] / ( Mass(i+1)*Mass(i+1) )
 		  /sqrt(pperp2/fgHbarc/fgHbarc+Mass(i+1)*Mass(i+1));
 
-  return radial * TMath::Sqrt(2./TMath::Pi()) / pow(fgHbarc,3/2.);
+  return radial * std::sqrt(2./nucqcd::pi) / pow(fgHbarc,3/2.);
   
 }
 
@@ -347,7 +333,7 @@ double TYukawaPWF::GetUr(double r) const
   double radial=0.;
 
   for(int i=0; i<fOrder; ++i)
-    radial += fC[i]*TMath::Exp(-1.*Mass(i+1)*r);
+    radial += fC[i]*std::exp(-1.*Mass(i+1)*r);
 
   return radial;
 }
@@ -367,8 +353,8 @@ double TYukawaPWF::GetWr(double r) const
     return 0;
 
   for(int i=0; i<fOrder; ++i)
-    radial += fD[i]*TMath::Exp(-1.*Mass(i+1)*r)
-      * (1.+ 3./Mass(i+1)/r + 3/TMath::Power(Mass(i+1)*r,2.));
+    radial += fD[i]*std::exp(-1.*Mass(i+1)*r)
+      * (1.+ 3./Mass(i+1)/r + 3/std::pow(Mass(i+1)*r,2.));
 
   return radial;
 }
@@ -393,5 +379,5 @@ double TYukawaPWF::GetVSr(double r) const
   return 0;
 }
 double TYukawaPWF::getResidu() const{
-  return fC[0]*sqrt(2.*fgHbarc)/TMath::Pi(); //MeV^1/2, coefficient that goes with p^2+m[0]^2, times 2 because of t/(p^2+m[0]^2) jacobian
+  return fC[0]*sqrt(2.*fgHbarc)/nucqcd::pi; //MeV^1/2, coefficient that goes with p^2+m[0]^2, times 2 because of t/(p^2+m[0]^2) jacobian
 }
