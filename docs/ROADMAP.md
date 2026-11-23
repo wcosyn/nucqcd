@@ -24,7 +24,7 @@ same PR.
 | 3 | Rename the repository | ✅ done (PR #7, tagged-poldeut PRs #1 and #2) |
 | 4 | Bug fixes | ✅ done: listed bugs (PRs #8, #9, #12); found later: stale FSI+CT grid (#18), kinematics (#19, #20, #33), DoubleNModel/Pair (#21, then moved to the attic in #22), π⁻ Glauber parameters (#28), TDeuteron errors (#31), He3 spin sum (#47) and factor A in `He3Cross` (#48). New bugs found later are added here |
 | 5 | Low-risk modernization | ✅ done: `-fopenmp`, Fortran interop (#11), constants (#13, #14), grid cache (#15–#17), ownership (#23), exceptions (#24), Doxygen (#10, #25–#30, #32, #34–#39: no warnings left) |
-| 6 | Structural refactors | ⬜ |
+| 6 | Structural refactors | 🔶 constants macros and `NuclStructure` merge done; code layout: `Tools` split done, prefixed includes and `.hpp` next |
 | 7 | Unbundle Cuba | ⬜ (can be done any time after step 2) |
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
 | 9 | Decouple from ROOT where possible | 🔶 phases 1 (#44), 2 (#45) and 3 done, 4–6 to do |
@@ -33,19 +33,20 @@ same PR.
 
 ## Where we are / next up
 
-*Updated 2026-11-22 (end of session; the next session continues on another computer).*
+*Updated 2026-11-23.*
 
-**Done recently** (PRs #44–#51): ROOT decoupling phases 1–3 (dictionaries, small math, `TString`);
-step 10 (LHAPDF structure functions, explicit combinations such as `"CB+SLAC@9"`, MSTW through
-LHAPDF, bundled MSTW code removed); He3 fixed (spin sum in `He3wf`, factor A in `He3Cross`; values
-changed with the author's OK); step 11 part 1 (`nucqcd::RunLog`) and the replacement of `Bookkeep` by
-`RunLog` in the 8 programs that used it.
+**Done recently** (PRs #44–#51 and the `Tools` split): ROOT decoupling phases 1–3 (dictionaries, small
+math, `TString`); step 10 (LHAPDF structure functions, explicit combinations such as `"CB+SLAC@9"`,
+MSTW through LHAPDF, bundled MSTW code removed); He3 fixed (spin sum in `He3wf`, factor A in
+`He3Cross`; values changed with the author's OK); step 11 part 1 (`nucqcd::RunLog`) and the
+replacement of `Bookkeep` by `RunLog` in the 8 programs that used it; step 6 code layout item 1:
+`Tools` split into Core, Kinematics, WaveFunctions and StructureFunctions (`MePhys` kept as an
+INTERFACE target).
 
-**Recommended next step: step 6, the code layout** (see "Code layout" under step 6): first split
-`Tools` into Core, Kinematics, WaveFunctions and StructureFunctions (with `MePhys` kept as an
-INTERFACE target, so programs do not change), then in one PR prefixed includes from the repository
-root plus `.hpp` as the only extension. Doing this before ROOT phase 4 means phase 4 converts code
-that is already in its final libraries.
+**Recommended next step: step 6, code layout items 2 and 3, in one PR:** prefixed includes with the
+repository root as include root (`#include <Tools/WaveFunctions/TDeuteron.hpp>`), and `.hpp` as the
+only header extension (`git mv` of the 19 `.h` files in Tools and the one in GPD_Partons). Scripted
+rewrite of the ~1250 `#include` lines.
 
 **After that:** ROOT phase 4 (own vector and Lorentz types, ~700 uses; test every method against
 ROOT first), together with `namespace nucqcd` class by class; then step 11 part 2 (`RunLog` in the
@@ -488,21 +489,32 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   stays (no general `include/`/`src/` split: that pays off for libraries installed for outside
   projects, which nucqcd's are not, and moving every file would cost the `git blame` history). What
   does not follow good practice, in this order:
-  1. **Split `Tools` (library `MePhys`)**, a grab-bag of 36 headers plus Fortran, into libraries with a
-     clear dependency order (proposal, to be checked against the actual includes):
-     - `Core`: `constants`, `ErrorMessage`, `FortranString`, `StringUtil`, `MathUtil`, `Utilfunctions`,
-       `AuxFunction`, `GridCache`, `RunLog`, the Dirac/Lorentz algebra (`FourVector`, `Matrix`,
-       `GammaStructure`, `TLorentzQuaternion`, `TSpinor`), `recmosh`, and `TMPI` (with MPI);
-     - `Kinematics`: `TKinematics`, `TKinematics2to2`, `TKinematics2to3(WithLabAngles)`,
-       `TElectronKinematics`, `TLeptonKinematics`, `LightConeKin2to2/2to3`;
-     - `WaveFunctions`: `TDeuteron` and its implementations (`TWavefunctionImplementation`,
-       `TYukawaPWF`, `TGrossPWF`, `TCstPWF`, `TInterpolatingWavefunction`), `OldDeuteron`, `He3wf`
-       (with the Fortran `getwavemod_tm.f`, `clebsch.f`, `spline.f`);
-     - `StructureFunctions`: `NucleonStructure`, `NuclStructure`, `LHAPDFStructure`,
-       `DeuteronStructure`, and the Fortran parametrizations (Alekhin, Christy-Bosted, CTEQ, GRSV,
-       HMRS, R1990/R1998).
-     Glauber, Knockout and DIS then link only what they use. `MePhys` can stay as an INTERFACE target
-     that links all four, so programs need no change.
+  1. ✅ **Split `Tools` (library `MePhys`)** (done 2026-11-23): the 36 headers plus Fortran are now
+     four libraries, one per subdirectory (moved with `git mv`), each linking the ones before it:
+     - `Tools/Core` (`libToolsCore`): `constants`, `ErrorMessage`, `FortranString`, `StringUtil`,
+       `MathUtil`, `Utilfunctions`, `AuxFunction`, `GridCache`, `RunLog`, the Dirac/Lorentz algebra
+       (`FourVector`, `Matrix`, `GammaStructure`, `TLorentzQuaternion`, `TSpinor`), `recmosh`, and
+       `TMPI` (with MPI);
+     - `Tools/Kinematics` (`libToolsKinematics`): `TKinematics`, `TKinematics2to2`,
+       `TKinematics2to3(WithLabAngles)`, `TElectronKinematics`, `TLeptonKinematics`,
+       `LightConeKin2to2/2to3`;
+     - `Tools/WaveFunctions` (`libToolsWaveFunctions`, links Kinematics because `TDeuteron.h` uses
+       `TKinematics2to3`): `TDeuteron` and its implementations, `OldDeuteron`, `He3wf` with the
+       Fortran `getwavemod_tm.f`, `clebsch.f`, `spline.f` (only used by `getwavemod_tm.f`);
+     - `Tools/StructureFunctions` (`libToolsStructureFunctions`, links Kinematics for
+       `DeuteronStructure`, but not WaveFunctions): `NucleonStructure`, `NuclStructure`,
+       `LHAPDFStructure`, `DeuteronStructure`, and the Fortran parametrizations.
+
+     The libraries have a `Tools` prefix because `libCore.so` would clash with ROOT's `libCore.so`
+     (the RPATH of the programs contains both `lib/` directories). `MePhys` is an INTERFACE target
+     that links all four (`MePhysST` with `STATIC_BUILD`), so programs are unchanged. Glauber and
+     Knockout link `ToolsWaveFunctions` (Glauber only for `TDeuteron::Wavefunction::ClebschGordan` in
+     `TMFSpinor`; moving that function to Core would let Glauber link Core only), DIS and GPD_Partons
+     link `ToolsStructureFunctions`, and each test links the smallest library it needs.
+     `nucqcd_add_library` now links with `--no-undefined` (Linux), so a missing dependency in a `LINK`
+     list is a link error; the whole tree (programs and PARTONS included) builds with it. The include
+     lines are unchanged (every library directory is still a public include directory); they change
+     in item 2. Not tested: `MPI_ENABLED` (no MPI on the development machine).
   2. **Prefixed includes, with the repository root as the include root.** Every library directory is
      now a public include directory, so code writes `#include <Matrix.h>`, `<constants.hpp>`,
      `<Utilfunctions.hpp>`: generic names that can collide with headers of ROOT, PARTONS or LHAPDF on

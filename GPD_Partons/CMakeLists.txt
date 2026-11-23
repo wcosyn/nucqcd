@@ -12,7 +12,7 @@ nucqcd_add_library(GPD
     src/TransGPD_set.cpp
     src/TwoVector_Deut.cpp
     src/TwoVector_Nucl.cpp
-  LINK partons_libs MePhys Integrator Glauber cuba)
+  LINK partons_libs ToolsStructureFunctions Integrator Glauber cuba)
 # the headers are in include/, not next to this file
 target_include_directories(GPD PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 if(STATIC_BUILD)

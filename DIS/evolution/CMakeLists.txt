@@ -1,6 +1,6 @@
 # libEvolution: QCD evolution (Fortran 90).
 # Built with CMake's default flags only (-O3 for Release), as it always was: it is not linked to
-# MePhys/Integrator, through which the project flags used to reach the other libraries.
+# the Tools libraries or Integrator, through which the project flags used to reach the other libraries.
 # (-march=native could change its floating-point results slightly; the !$omp directives in
 # evolvers.f90 and wrappers.f90 are therefore inactive.)
 set_property(DIRECTORY PROPERTY COMPILE_OPTIONS "")

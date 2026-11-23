@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 
   const std::vector<std::string> arg_names={"nucleus", "nucleus shell", "scattered electron angle [degrees]", "scattered electron energy [MeV]", "phi angle between electron and hadron plane [degrees]", "medium modifications ([0] no, [1] CQM, [2] QSM)"};
 
-  nucqcd::RunLog runlog(argc, argv, arg_names);  // run bookkeeping as "# " lines (Tools/RunLog.hpp)
+  nucqcd::RunLog runlog(argc, argv, arg_names);  // run bookkeeping as "# " lines (Tools/Core/RunLog.hpp)
   std::cout << "# compiled from file: " << __FILE__ << std::endl;
 
   double Ein=600.;

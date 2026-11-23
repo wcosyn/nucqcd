@@ -1,4 +1,4 @@
-// MePhys: Tools/StringUtil.hpp, the std::string helpers that replace TString (roadmap step 9, phase 3).
+// MePhys: Tools/Core/StringUtil.hpp, the std::string helpers that replace TString (roadmap step 9, phase 3).
 #include <test_support.hpp>
 
 #include <StringUtil.hpp>

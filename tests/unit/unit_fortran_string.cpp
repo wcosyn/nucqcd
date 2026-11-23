@@ -1,4 +1,4 @@
-// Tools/FortranString.hpp: bounded copies into the fixed-size character buffers shared with Fortran
+// Tools/Core/FortranString.hpp: bounded copies into the fixed-size character buffers shared with Fortran
 // (COMMON blocks of the Alekhin and GRSV code, the He3 wave-function file name), and the length
 // checks in the classes that use them. Before 2026-11 these were strcpy/strcat copies that overflowed
 // silently for long paths.

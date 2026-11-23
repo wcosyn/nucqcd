@@ -1,4 +1,4 @@
-// Tools/GridCache.hpp: location of the grid cache (NUCQCD_GRID_DIR or <share>/grids/) and atomic
+// Tools/Core/GridCache.hpp: location of the grid cache (NUCQCD_GRID_DIR or <share>/grids/) and atomic
 // writes of cache files (temporary file + rename, so no truncated cache file is ever left behind).
 #include <test_support.hpp>
 

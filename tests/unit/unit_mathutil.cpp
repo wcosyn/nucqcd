@@ -1,4 +1,4 @@
-// MePhys: Tools/MathUtil.hpp, the replacements of ROOT's MathMore polynomial roots and of TDecompLU
+// MePhys: Tools/Core/MathUtil.hpp, the replacements of ROOT's MathMore polynomial roots and of TDecompLU
 // (roadmap step 9, phase 2). The reference values (hex floats) were computed with ROOT 6.40:
 // ROOT::Math::Polynomial(a,b,c).FindRealRoots() and TDecompLU (tolerance 1e-16) followed by Solve.
 // Before the switch both replacements were also compared with ROOT on millions of random inputs (no

@@ -10,4 +10,4 @@ nucqcd_add_library(Knockout
     WeakQEHadronCurrent.cpp
     WeakQECross.cpp
     DQEinclusive.cpp
-  LINK MePhys Integrator Glauber)
+  LINK ToolsWaveFunctions Integrator Glauber)

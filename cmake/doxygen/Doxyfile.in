@@ -1000,7 +1000,10 @@ WARN_LOGFILE           = @PROJECT_BINARY_DIR@/doxygen_warnings.log
 INPUT                  = @PROJECT_SOURCE_DIR@/Glauber \
                          @PROJECT_SOURCE_DIR@/Knockout \
                          @PROJECT_SOURCE_DIR@/DIS \
-                         @PROJECT_SOURCE_DIR@/Tools
+                         @PROJECT_SOURCE_DIR@/Tools/Core \
+                         @PROJECT_SOURCE_DIR@/Tools/Kinematics \
+                         @PROJECT_SOURCE_DIR@/Tools/WaveFunctions \
+                         @PROJECT_SOURCE_DIR@/Tools/StructureFunctions
 
 # This tag can be used to specify the character encoding of the source files
 # that Doxygen parses. Internally Doxygen uses the UTF-8 encoding. Doxygen uses

@@ -1,4 +1,4 @@
-// MePhys/DIS: He3 wave function (Tools/He3wf, a wrapper around Fortran code by Misak Sargsian, data from the
+// MePhys/DIS: He3 wave function (Tools/WaveFunctions/He3wf, a wrapper around Fortran code by Misak Sargsian, data from the
 // Bochum group): normalization, rotation invariance and antisymmetry.
 // Until 2026-11 He3wf::getWF fixed ms3 = mA - ms1 - ms2, which left out the D- and P-wave components
 // whose nucleon spins do not add up to mA: the norm was 0.971 for AV18 and the spin-summed density was

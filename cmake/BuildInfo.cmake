@@ -1,4 +1,4 @@
-# Writes the git state of the source tree into ${OUT} (a C++ fragment included by Tools/RunLog.cpp).
+# Writes the git state of the source tree into ${OUT} (a C++ fragment included by Tools/Core/RunLog.cpp).
 # Run at every build (custom target nucqcd_git_info); the file is only rewritten when the state
 # changes, so nothing is recompiled otherwise.  Usage: cmake -DSRC=<source dir> -DOUT=<file> -P BuildInfo.cmake
 find_package(Git QUIET)

@@ -1,102 +1,25 @@
-# libMePhys: general physics and math (kinematics, spinors, deuteron wave functions,
-# nucleon/nuclear structure functions and PDFs, partly in Fortran).
+# Tools: general physics and math, in four libraries (roadmap step 6, "Code layout"), each linking
+# the ones before it:
+#   ToolsCore               constants, errors, string/math utilities, grid cache, RunLog, the Dirac
+#                           and Lorentz algebra (FourVector, Matrix, GammaStructure, TSpinor, ...)
+#   ToolsKinematics         TKinematics*, TElectronKinematics, TLeptonKinematics, LightConeKin*
+#   ToolsWaveFunctions      deuteron (TDeuteron and its parametrizations, OldDeuteron) and He3 (He3wf)
+#   ToolsStructureFunctions nucleon/deuteron structure functions and PDFs (NucleonStructure, ...)
+# (StructureFunctions needs Kinematics, not WaveFunctions.) The names carry a "Tools" prefix
+# because a libCore.so would collide with ROOT's.
+#
+# MePhys, the former single library, is an INTERFACE target that links all four, so programs that
+# link MePhys need no change.
 
-# constants.hpp (physical constants and HOMEDIR = <repo>/share) is generated in the source
-# directory, so that code compiled outside CMake can include it too; it is git-ignored.
-set(SHARE_DIR "${PROJECT_SOURCE_DIR}/share")
-configure_file(constants.hpp.in "${CMAKE_CURRENT_SOURCE_DIR}/constants.hpp")
+add_subdirectory(Core)
+add_subdirectory(Kinematics)
+add_subdirectory(WaveFunctions)
+add_subdirectory(StructureFunctions)
 
-set(mpi_sources)
-if(MPI_ENABLED)
-  set(mpi_sources TMPI.cpp)
-endif()
-
-# Build information for nucqcd::RunLog: the configuration (configure time) and the git state of the
-# source tree (refreshed at every build by cmake/BuildInfo.cmake; the file only changes with the state)
-set(NUCQCD_GENERATED_DIR "${PROJECT_BINARY_DIR}/generated")
-set(NUCQCD_BUILD_TYPE "${CMAKE_BUILD_TYPE}")
-if(NOT NUCQCD_BUILD_TYPE)
-  set(NUCQCD_BUILD_TYPE "none")
-endif()
-string(TOUPPER "${NUCQCD_BUILD_TYPE}" build_type_upper)
-set(NUCQCD_FLAGS_STRING "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${build_type_upper}} -Wall -Wextra")
-if(NUCQCD_BUILD_TYPE STREQUAL "Release")
-  list(JOIN NUCQCD_RELEASE_FLAGS " " release_flags)
-  string(APPEND NUCQCD_FLAGS_STRING " ${release_flags}")
-endif()
-string(STRIP "${NUCQCD_FLAGS_STRING}" NUCQCD_FLAGS_STRING)
-string(REGEX REPLACE " +" " " NUCQCD_FLAGS_STRING "${NUCQCD_FLAGS_STRING}")
-set(NUCQCD_LIBRARIES_STRING "ROOT ${ROOT_VERSION}, GSL ${GSL_VERSION}")
-if(LHAPDF_FOUND)
-  string(APPEND NUCQCD_LIBRARIES_STRING ", LHAPDF ${LHAPDF_VERSION}")
-endif()
-configure_file("${PROJECT_SOURCE_DIR}/cmake/nucqcd_build_config.inc.in" "${NUCQCD_GENERATED_DIR}/nucqcd_build_config.inc" @ONLY)
-add_custom_target(nucqcd_git_info
-  COMMAND ${CMAKE_COMMAND} -DSRC=${PROJECT_SOURCE_DIR} -DOUT=${NUCQCD_GENERATED_DIR}/nucqcd_git_info.inc
-          -P ${PROJECT_SOURCE_DIR}/cmake/BuildInfo.cmake
-  BYPRODUCTS ${NUCQCD_GENERATED_DIR}/nucqcd_git_info.inc
-  COMMENT "git state of the source tree for nucqcd::RunLog")
-set_property(SOURCE RunLog.cpp APPEND PROPERTY INCLUDE_DIRECTORIES "${NUCQCD_GENERATED_DIR}")
-
-# solve_3x3 has to round as ROOT's TDecompLU did (TYukawaPWF D-wave coefficients): no fused multiply-adds
-set_source_files_properties(MathUtil.cpp PROPERTIES COMPILE_OPTIONS -ffp-contract=off)
-
-nucqcd_add_library(MePhys
-  SOURCES
-    NuclStructure.cpp
-    NucleonStructure.cpp
-    LHAPDFStructure.cpp
-    DeuteronStructure.cpp
-    Utilfunctions.cpp
-    RunLog.cpp
-    MathUtil.cpp
-    GridCache.cpp
-    LightConeKin2to2.cpp
-    LightConeKin2to3.cpp
-    He3wf.cpp
-    TCstPWF.cpp
-    TDeuteron.cpp
-    TGrossPWF.cpp
-    TInterpolatingWavefunction.cpp
-    TWavefunctionImplementation.cpp
-    TYukawaPWF.cpp
-    Matrix.cpp
-    GammaStructure.cpp
-    FourVector.cpp
-    TSpinor.cpp
-    TLorentzQuaternion.cpp
-    TKinematics.cpp
-    TKinematics2to2.cpp
-    TElectronKinematics.cpp
-    recmosh.cpp
-    TKinematics2to3.cpp
-    TKinematics2to3WithLabAngles.cpp
-    TLeptonKinematics.cpp
-    OldDeuteron.cpp
-    ${mpi_sources}
-    # Fortran
-    alekhin.f
-    F1F209_test.f
-    cteq.f
-    spline.f
-    clebsch.f
-    getwavemod_tm.f
-    grsv2000pdf_g1.f
-    R199x.f
-    hmrs-b.f
-  LINK root_libs GSL::gsl GSL::gslcblas)
-if(MPI_ENABLED)
-  target_link_libraries(MePhys PUBLIC MPI::MPI_CXX)
-endif()
-add_dependencies(MePhys nucqcd_git_info)
+add_library(MePhys INTERFACE)
+target_link_libraries(MePhys INTERFACE ToolsCore ToolsKinematics ToolsWaveFunctions ToolsStructureFunctions)
 if(STATIC_BUILD)
-  add_dependencies(MePhysST nucqcd_git_info)
-endif()
-if(TARGET PkgConfig::LHAPDF)
-  # LHAPDFStructure.cpp uses LHAPDF only when NUCQCD_HAVE_LHAPDF is defined (it throws otherwise)
-  set_property(SOURCE LHAPDFStructure.cpp APPEND PROPERTY COMPILE_DEFINITIONS NUCQCD_HAVE_LHAPDF)
-  target_link_libraries(MePhys PUBLIC PkgConfig::LHAPDF)
-  if(STATIC_BUILD)
-    target_link_libraries(MePhysST PUBLIC PkgConfig::LHAPDF)
-  endif()
+  add_library(MePhysST INTERFACE)
+  target_link_libraries(MePhysST INTERFACE
+    ToolsCoreST ToolsKinematicsST ToolsWaveFunctionsST ToolsStructureFunctionsST)
 endif()

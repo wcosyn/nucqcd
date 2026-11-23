@@ -1,6 +1,6 @@
-// Regression: nucleon structure functions (Tools/NucleonStructure, mostly Fortran parametrizations).
+// Regression: nucleon structure functions (Tools/StructureFunctions/NucleonStructure, mostly Fortran parametrizations).
 // Each parametrization is its own TEST_CASE, i.e. its own process (Fortran COMMON/SAVE state).
-// Tools/NuclStructure is a second wrapper around the same parametrizations; it is the one used by
+// Tools/StructureFunctions/NuclStructure is a second wrapper around the same parametrizations; it is the one used by
 // DeuteronStructure (DeuteronCross, InclusiveCross, He3Cross), so the two are checked against each other.
 #include <test_support.hpp>
 

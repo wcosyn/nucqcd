@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 
   const std::vector<std::string> arg_names={"Q^2 [GeV^2]", "wave function", "nucleon structure function parametrization", "beam energy [GeV]"};
 
-  nucqcd::RunLog runlog(argc, argv, arg_names);  // run bookkeeping as "# " lines (Tools/RunLog.hpp)
+  nucqcd::RunLog runlog(argc, argv, arg_names);  // run bookkeeping as "# " lines (Tools/Core/RunLog.hpp)
   std::cout << "# compiled from file: " << __FILE__ << std::endl;
 
 

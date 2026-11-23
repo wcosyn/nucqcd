@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 
     const std::vector<std::string> arg_names={"nucleus", "nucleus shell", "medium modifications ([0] no, [1] CQM, [2] QSM)", "with density output as well", "filename that has exp kinematics sample"};
 
-    nucqcd::RunLog runlog(argc, argv, arg_names);  // run bookkeeping as "# " lines (Tools/RunLog.hpp)
+    nucqcd::RunLog runlog(argc, argv, arg_names);  // run bookkeeping as "# " lines (Tools/Core/RunLog.hpp)
     std::cout << "# compiled from file: " << __FILE__ << std::endl;
 
     //double Ein=600.2;

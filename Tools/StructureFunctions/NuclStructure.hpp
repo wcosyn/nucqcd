@@ -3,8 +3,14 @@
  * \date 29/08/2012
  * \brief This code implements classes to do a lot of general medium physics stuff
  * 
- * \details 
- * 
+ * \details
+ *
+ * Since 2026-11 (roadmap step 6) the code in Tools is split into four libraries, one per
+ * subdirectory, each linking the ones before it: libToolsCore (Tools/Core: constants, errors,
+ * utilities, RunLog, the Dirac/Lorentz algebra), libToolsKinematics (Tools/Kinematics),
+ * libToolsWaveFunctions (Tools/WaveFunctions: deuteron and He3) and libToolsStructureFunctions
+ * (Tools/StructureFunctions). The CMake target MePhys links all four. <BR><BR>
+ *
  * I jacked and hacked most of the stuff included here from the strangecalc libraries.
  * Generally I did not doxygen-ize these classes.  The relevant API can be found at 
  * http://rprmodel.ugent.be/api/. <BR><BR>

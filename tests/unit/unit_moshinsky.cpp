@@ -1,4 +1,4 @@
-// Tools/recmosh: Moshinsky brackets <(n l, N Lambda) L | (n1 l1, n2 l2) L> (equal masses), computed
+// Tools/Core/recmosh: Moshinsky brackets <(n l, N Lambda) L | (n1 l1, n2 l2) L> (equal masses), computed
 // recursively. They form an orthogonal transformation within each oscillator shell E and total L.
 #include <test_support.hpp>
 

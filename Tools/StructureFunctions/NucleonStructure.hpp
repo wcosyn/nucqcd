@@ -136,7 +136,7 @@ public:
    * \throw std::logic_error for other parametrizations (GRSV: the static getG1plusg2_grsv2000) */
   double getG1plusg2(const bool proton, const double x, const double Q2) const;
   
-  /*! returns the g1 structure function from the grsv2000 parametrization (leading order,  hep-ph/0011215, Tools/grsv2000pdf_g1.f )
+  /*! returns the g1 structure function from the grsv2000 parametrization (leading order,  hep-ph/0011215, Tools/StructureFunctions/grsv2000pdf_g1.f )
    * \param proton 1=proton 0=neutron
    * \param x Bjorken x nucleon
    * \param Q2 [MeV^2] virtual photon four-momentum sq
@@ -161,7 +161,7 @@ public:
   static double getr1998(const double x, const double Q2);
 
 
-  /*! returns the g1+g2 structure function using the Wandura-Wilczek relation [g1+g2=int dy/y g1(y)] from the grsv2000 parametrization (leading order,  hep-ph/0011215, Tools/grsv2000pdf_g1.f )
+  /*! returns the g1+g2 structure function using the Wandura-Wilczek relation [g1+g2=int dy/y g1(y)] from the grsv2000 parametrization (leading order,  hep-ph/0011215, Tools/StructureFunctions/grsv2000pdf_g1.f )
    * This sum of structure functions is related to the transversity pdfs (and higher twist).
    * \param proton 1=proton 0=neutron
    * \param x Bjorken x nucleon
