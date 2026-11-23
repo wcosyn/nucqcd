@@ -52,13 +52,13 @@
 //////////////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
-#include "ErrorMessage.hpp"
+#include <Tools/Core/ErrorMessage.hpp>
 #include <iomanip>
 #include <cstdlib>
 #include <cstring>
 #include <cmath>
-#include "StringUtil.hpp"
-#include "TKinematics.h"
+#include <Tools/Core/StringUtil.hpp>
+#include <Tools/Kinematics/TKinematics.hpp>
 // #include <numtoa.h>
 #include <vector>
 #include <cassert>

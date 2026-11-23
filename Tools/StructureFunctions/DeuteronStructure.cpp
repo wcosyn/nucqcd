@@ -4,8 +4,8 @@
 #include <cstdlib>
 #include <iomanip> 
 
-#include "DeuteronStructure.hpp"
-#include "NuclStructure.hpp"
+#include <Tools/StructureFunctions/DeuteronStructure.hpp>
+#include <Tools/StructureFunctions/NuclStructure.hpp>
 
 
 using namespace std;

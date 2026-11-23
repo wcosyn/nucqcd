@@ -5,8 +5,8 @@
 
 using namespace std;
 
-#include <RhoDeuteron.hpp>
-#include <Utilfunctions.hpp>
+#include <Knockout/RhoDeuteron.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
 #include <string>
 
 void tzint(double tz, double* result, va_list ap);

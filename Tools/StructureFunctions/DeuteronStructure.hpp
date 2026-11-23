@@ -9,10 +9,10 @@
 #ifndef DEUTERONSTRUCTURE_HPP
 #define DEUTERONSTRUCTURE_HPP
 
-#include "TKinematics2to2.h"
-#include "TElectronKinematics.h"
+#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/Kinematics/TElectronKinematics.hpp>
 #include <string>
-#include "LightConeKin2to2.hpp"
+#include <Tools/Kinematics/LightConeKin2to2.hpp>
 
 /*! \brief A class to compute a variety of deuteron structure functions */
 class DeuteronStructure{

@@ -7,8 +7,8 @@
  *  @author Camille Colle
  */
 
-#include "MeanFieldNucleus.hpp"
-#include "MeanFieldNucleusThick.hpp"
+#include <Glauber/MeanFieldNucleus.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
 #define SHAREDIR nucqcd::share_dir
 #include <iostream>
 extern "C" {

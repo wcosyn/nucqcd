@@ -1,6 +1,6 @@
-#include "InclusiveCross.hpp"
-#include <Utilfunctions.hpp>
-#include <AuxFunction.hpp>
+#include <DIS/InclusiveCross.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
+#include <Tools/Core/AuxFunction.hpp>
 // #include <gsl/gsl_poly.h>
 
 using namespace std;

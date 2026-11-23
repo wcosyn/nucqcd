@@ -1,4 +1,4 @@
-#include "RunLog.hpp"
+#include <Tools/Core/RunLog.hpp>
 
 #include "nucqcd_build_config.inc"  // NUCQCD_BUILD_TYPE, ... (generated at configure time)
 #include "nucqcd_git_info.inc"      // NUCQCD_GIT_DESCRIBE, NUCQCD_GIT_DATE (generated at build time)

@@ -1,7 +1,7 @@
-#include "RhoDeuteron.hpp"
-#include <AuxFunction.hpp>
-#include <FastParticle.hpp>
-#include <Utilfunctions.hpp>
+#include <Knockout/RhoDeuteron.hpp>
+#include <Tools/Core/AuxFunction.hpp>
+#include <Glauber/FastParticle.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
 #define MASS_N (nucqcd::mass_p+nucqcd::mass_n)*0.5E-03
 
 using namespace std;

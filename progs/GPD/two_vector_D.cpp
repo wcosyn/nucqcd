@@ -20,7 +20,7 @@
 #include <partons/modules/gpd/GPDGK16Numerical.h>
 
 
-#include <TwoVector_Deut.hpp>
+#include <GPD_Partons/TwoVector_Deut.hpp>
 
 #include <locale.h>
 

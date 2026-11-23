@@ -3,12 +3,12 @@
 // plane-wave nuclear cross sections for charged and neutral current.
 #include <test_support.hpp>
 
-#include <MeanFieldNucleusThick.hpp>
-#include <TElectronKinematics.h>
-#include <TKinematics2to2.h>
-#include <TLeptonKinematics.h>
-#include <WeakQECross.hpp>
-#include <constants.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/Kinematics/TLeptonKinematics.hpp>
+#include <Knockout/WeakQECross.hpp>
+#include <Tools/Core/constants.hpp>
 
 #include <memory>
 #include <sstream>

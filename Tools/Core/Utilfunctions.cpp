@@ -6,8 +6,8 @@
 
 using namespace std;
 
-#include "Utilfunctions.hpp"
-#include "constants.hpp"
+#include <Tools/Core/Utilfunctions.hpp>
+#include <Tools/Core/constants.hpp>
 
 ////////////////////////////////////////
 //calculates points between whom      //  

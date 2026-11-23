@@ -8,12 +8,12 @@
 
 using namespace std;
 
-#include <constants.hpp>
-#include <TKinematics2to2.h>
-#include <TElectronKinematics.h>
-#include <NuclStructure.hpp>
-#include <InclusiveCrossRes.hpp>
-#include <Resonance.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/StructureFunctions/NuclStructure.hpp>
+#include <DIS/InclusiveCrossRes.hpp>
+#include <DIS/Resonance.hpp>
 
 //args are 
 //1. symm (-1 asymm delta 0 symm delta 1 no delta)

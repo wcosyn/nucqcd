@@ -28,8 +28,8 @@
 #include "bonusdata.h"
 #include "bonusfits2.h"
 
-#include <DeuteronCross.hpp>
-#include <NuclStructure.hpp>
+#include <DIS/DeuteronCross.hpp>
+#include <Tools/StructureFunctions/NuclStructure.hpp>
 
 using std::cerr;
 using std::cout;

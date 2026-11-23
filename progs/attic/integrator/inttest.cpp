@@ -5,12 +5,12 @@
 
 using namespace std;
 
-#include <numint/array.hpp>
-#include <numint/numint.hpp>
-#include <numint/typedef.hpp>
+#include <Integrator/numint/array.hpp>
+#include <Integrator/numint/numint.hpp>
+#include <Integrator/numint/typedef.hpp>
 #include <cmath>
 #include <vector>
-#include <adaptive/cubature.h>
+#include <Integrator/adaptive/cubature.h>
 
 int main(int argc, char *argv[])
 {

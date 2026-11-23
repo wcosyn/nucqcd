@@ -6,11 +6,11 @@
  */
 
 
-#include <FourVector.h>
-#include <TSpinor.h>
-#include "MeanFieldNucleus.hpp"
-#include "TMFSpinor.hpp"
-#include "MeanFieldNucleusThick.hpp"
+#include <Tools/Core/FourVector.hpp>
+#include <Tools/Core/TSpinor.hpp>
+#include <Glauber/MeanFieldNucleus.hpp>
+#include <Glauber/TMFSpinor.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
 #include <iostream>
 
 using std::string;

@@ -5,10 +5,10 @@
 // otherwise.
 #include <test_support.hpp>
 
-#include <LHAPDFStructure.hpp>
-#include <NuclStructure.hpp>
-#include <NucleonStructure.hpp>
-#include <constants.hpp>
+#include <Tools/StructureFunctions/LHAPDFStructure.hpp>
+#include <Tools/StructureFunctions/NuclStructure.hpp>
+#include <Tools/StructureFunctions/NucleonStructure.hpp>
+#include <Tools/Core/constants.hpp>
 
 #if __has_include(<LHAPDF/LHAPDF.h>)
 #include <LHAPDF/LHAPDF.h>

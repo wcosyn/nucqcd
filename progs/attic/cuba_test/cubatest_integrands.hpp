@@ -2,7 +2,7 @@
 #ifndef CUBA_TEST_INTEGRANDS
 #define CUBA_TEST_INTEGRANDS
 #include <cmath>
-#include <numint/numint.hpp>
+#include <Integrator/numint/numint.hpp>
 #include <vector>
 using std::vector;
 

@@ -12,10 +12,10 @@
 
 #include <string>
 #include <memory>
-#include <TElectronKinematics.h>
-#include <DeuteronStructure.hpp>
-#include <TDeuteron.h>
-#include <numint/numint.hpp>
+#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/StructureFunctions/DeuteronStructure.hpp>
+#include <Tools/WaveFunctions/TDeuteron.hpp>
+#include <Integrator/numint/numint.hpp>
 
 
 /*! \brief A class that computes inclusive deuteron cross sections */

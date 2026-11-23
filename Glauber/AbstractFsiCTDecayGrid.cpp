@@ -5,9 +5,9 @@
 
 using namespace std;
 
-#include "AbstractFsiCTDecayGrid.hpp"
-#include "constants.hpp"
-#include <Utilfunctions.hpp>
+#include <Glauber/AbstractFsiCTDecayGrid.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
 
 AbstractFsiCTDecayGrid::AbstractFsiCTDecayGrid(int r_grid, int cth_grid, int phi_grid, MeanFieldNucleus *pnucl, 
 					       double prec, int integrator, string homedir):

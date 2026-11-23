@@ -7,8 +7,8 @@
 
 using namespace std;
 
-#include <constants.hpp>
-#include <Poldeut.hpp>
+#include <Tools/Core/constants.hpp>
+#include <DIS/Poldeut.hpp>
 
 
 int main(int argc, char *argv[])

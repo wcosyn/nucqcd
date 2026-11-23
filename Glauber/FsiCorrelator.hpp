@@ -12,7 +12,7 @@
 #include <vector>
 #include <string>
 
-#include "MeanFieldNucleusThick.hpp"
+#include <Glauber/MeanFieldNucleusThick.hpp>
 
 /*! \brief A class for all things needed in correlated fsi/isi calculations
  * 

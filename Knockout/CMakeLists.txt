@@ -2,8 +2,8 @@
 nucqcd_add_library(Knockout
   SOURCES
     DeuteronMomDistr.cpp
-    Model.cpp
-    Cross.cpp
+    EMQEHadronCurrent.cpp
+    EMQECross.cpp
     RhoTCross.cpp
     PionTCross.cpp
     RhoDeuteron.cpp

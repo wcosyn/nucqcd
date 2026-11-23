@@ -19,10 +19,10 @@
 using std::cout;
 using std::endl;
 
-#include <constants.hpp>
-#include <DeuteronCross.hpp>
+#include <Tools/Core/constants.hpp>
+#include <DIS/DeuteronCross.hpp>
 #include "bonusfits.h"
-#include <NuclStructure.hpp>
+#include <Tools/StructureFunctions/NuclStructure.hpp>
 #include "bonusdata.h"
 #include "bonusfits2.h"
 

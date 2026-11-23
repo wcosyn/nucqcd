@@ -11,7 +11,7 @@
 
 #include <string>
 #include <TVector3.h>
-#include <FourVector.h>
+#include <Tools/Core/FourVector.hpp>
 
 /*! \brief A class that initializes all lightcone variables for a two body scattering process, 
  *written with DIS on a deuteron with spectator in mind!

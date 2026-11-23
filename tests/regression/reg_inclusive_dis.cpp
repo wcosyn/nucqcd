@@ -2,8 +2,8 @@
 // kinematics as in progs/incldis/disincres.cpp.
 #include <test_support.hpp>
 
-#include <InclusiveCross.hpp>
-#include <TElectronKinematics.h>
+#include <DIS/InclusiveCross.hpp>
+#include <Tools/Kinematics/TElectronKinematics.hpp>
 
 #include <memory>
 #include <sstream>

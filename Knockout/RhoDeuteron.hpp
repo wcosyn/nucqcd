@@ -10,13 +10,13 @@
 #define RHODEUTERON_HPP
 
 
-#include <MeanFieldNucleusThick.hpp>
-// #include <TKinematics2to2.h>
-#include <DistMomDistrGrid.hpp>
-#include <GlauberDecayGridThick.hpp>
-#include <FastParticle.hpp>
-#include <TDeuteron.h>
-#include "DeuteronMomDistr.hpp"
+#include <Glauber/MeanFieldNucleusThick.hpp>
+// #include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Glauber/DistMomDistrGrid.hpp>
+#include <Glauber/GlauberDecayGridThick.hpp>
+#include <Glauber/FastParticle.hpp>
+#include <Tools/WaveFunctions/TDeuteron.hpp>
+#include <Knockout/DeuteronMomDistr.hpp>
 
 
 

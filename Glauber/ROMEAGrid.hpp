@@ -11,8 +11,8 @@
 #include <cstdarg>
 #include <fstream>
 
-#include "AbstractFsiGrid.hpp"
-#include <numint/numint.hpp>
+#include <Glauber/AbstractFsiGrid.hpp>
+#include <Integrator/numint/numint.hpp>
 
 /*! \brief A class for a ROMEA ISI/FSI grid, implementing the abstract AbstractFsiGrid class
  *

@@ -4,7 +4,7 @@
 #include <cstdlib>
 #include <complex>
 #include <vector>
-#include <AuxFunction.hpp>
+#include <Tools/Core/AuxFunction.hpp>
 
 /*! \brief Older implementation of the non-relativistic deuteron wave function (Paris, AV18, CD-Bonn, AV18b)
  *

@@ -20,16 +20,16 @@
 
 using namespace std;
 
-#include <MeanFieldNucleusThick.hpp>
-#include <constants.hpp>
-#include <TKinematics2to2.h>
-#include <TElectronKinematics.h>
-#include <TLeptonKinematics.h>
-#include <WeakQECross.hpp>
-#include <Utilfunctions.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/Kinematics/TLeptonKinematics.hpp>
+#include <Knockout/WeakQECross.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
 //headers for integration 
-#include <numint/numint.hpp>
-#include <numint/numint2Cuba.hpp>
+#include <Integrator/numint/numint.hpp>
+#include <Integrator/numint/numint2Cuba.hpp>
 
 #include "fluxes.h"
 

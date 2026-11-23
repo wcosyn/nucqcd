@@ -12,8 +12,8 @@
 #include <config.h>
 #endif
 
-#include <numint/typedef.hpp>
-#include <numint/quadrature.hpp>
+#include <Integrator/numint/typedef.hpp>
+#include <Integrator/numint/quadrature.hpp>
 
 OPEN_NUMINT_NAMESPACE
 

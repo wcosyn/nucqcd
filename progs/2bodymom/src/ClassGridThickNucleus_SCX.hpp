@@ -6,10 +6,10 @@
 // later generic rewrite (any spherical density). Renamed from ClassGridThick_SCX in 2026: both were
 // linked into the same programs (ODR violation).
 
-#include "numint/numint.hpp"
+#include <Integrator/numint/numint.hpp>
 #include <cmath>
-#include "FastParticle.hpp"
-#include "MeanFieldNucleusThick.hpp"
+#include <Glauber/FastParticle.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
 #include <complex>
 using std::complex;
 #include <iostream>

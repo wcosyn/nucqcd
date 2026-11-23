@@ -1,12 +1,12 @@
-// Regression: A(e,e'p) in the plane-wave approximation (Knockout/Cross); free electron-proton
+// Regression: A(e,e'p) in the plane-wave approximation (Knockout/EMQECross); free electron-proton
 // cross section and bound-nucleon cross sections per shell. No Glauber grids are computed.
 #include <test_support.hpp>
 
-#include <Cross.hpp>
-#include <MeanFieldNucleusThick.hpp>
-#include <TElectronKinematics.h>
-#include <TKinematics2to2.h>
-#include <constants.hpp>
+#include <Knockout/EMQECross.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/Core/constants.hpp>
 
 #include <filesystem>
 #include <memory>
@@ -21,7 +21,7 @@ void check_nucleus(const char *name) {
   const std::string dir = nucqcd_test::share_dir();
   MeanFieldNucleusThick nucl(MeanFieldNucleus::TypeNames.at(name), dir);
   std::unique_ptr<TElectronKinematics> elec(TElectronKinematics::CreateWithBeamEnergy(3245.));
-  Cross obs(*elec, &nucl, 1.E-05, 2, dir, false, 1.);
+  EMQECross obs(*elec, &nucl, 1.E-05, 2, dir, false, 1.);
   for (double pm : {50., 150., 250.}) {
     TKinematics2to2 kin("", "", nucl.getMassA(), nucl.getMassA_min_proton(), nucqcd::mass_p, "qsquared:wlab:pklab", 1.8E06,
                         1000., pm);

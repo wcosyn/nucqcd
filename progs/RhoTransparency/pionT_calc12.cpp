@@ -3,9 +3,9 @@
 
 using namespace std;
 
-#include <PionTCross.hpp>
-#include <Utilfunctions.hpp>
-#include <RunLog.hpp>
+#include <Knockout/PionTCross.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
+#include <Tools/Core/RunLog.hpp>
 #include <vector>
 #include <string>
 

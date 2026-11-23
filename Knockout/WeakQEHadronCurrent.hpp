@@ -10,17 +10,17 @@
 #ifndef MODEL_HPP
 #define MODEL_HPP
 
-#include <FourVector.h>
-#include <MeanFieldNucleusThick.hpp>
-#include <AbstractFsiCTGrid.hpp>
-#include <TKinematics2to2.h>
-#include <NucleonWeakOperator.hpp>
+#include <Tools/Core/FourVector.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Glauber/AbstractFsiCTGrid.hpp>
+#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Glauber/NucleonWeakOperator.hpp>
 #include <TVector3.h>
-#include <GlauberGridThick.hpp>
-#include <OneGlauberGrid.hpp>
-#include <ROMEAGrid.hpp>
-#include <numint/numint.hpp>
-#include <TSpinor.h>
+#include <Glauber/GlauberGridThick.hpp>
+#include <Glauber/OneGlauberGrid.hpp>
+#include <Glauber/ROMEAGrid.hpp>
+#include <Integrator/numint/numint.hpp>
+#include <Tools/Core/TSpinor.hpp>
 
 #include <string>
 #include <cstdarg>

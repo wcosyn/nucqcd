@@ -7,10 +7,10 @@ using namespace std;
 
 #include <iostream>
 #include <cmath>
-#include "constants.hpp"
+#include <Tools/Core/constants.hpp>
 
-#include <Deut_Conv_GPD_T.hpp>
-#include "TransGPD_set.hpp"
+#include <GPD_Partons/Deut_Conv_GPD_T.hpp>
+#include <GPD_Partons/TransGPD_set.hpp>
 
 int main(int argc, char *argv[]){
     std::string wf=argv[2];

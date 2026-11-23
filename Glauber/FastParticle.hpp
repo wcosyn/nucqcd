@@ -12,7 +12,7 @@
 #include <string>
 #include <TVector3.h>
 
-#include "MeanFieldNucleus.hpp"
+#include <Glauber/MeanFieldNucleus.hpp>
 
 
 /*! \brief A Class for a fast particle ejected from a nucleus

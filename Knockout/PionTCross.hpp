@@ -12,11 +12,11 @@
 
 #include <memory>
 #include <vector>
-#include <MeanFieldNucleusThick.hpp>
-// #include <TKinematics2to2.h>
-#include <DistMomDistrGrid.hpp>
-#include <GlauberGridThick.hpp>
-#include <FastParticle.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+// #include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Glauber/DistMomDistrGrid.hpp>
+#include <Glauber/GlauberGridThick.hpp>
+#include <Glauber/FastParticle.hpp>
 #include <map>
 
 

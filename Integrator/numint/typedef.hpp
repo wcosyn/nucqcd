@@ -18,9 +18,9 @@
 
 #include <complex>
 #include <vector>
-#include <numint/macros.hpp>
+#include <Integrator/numint/macros.hpp>
 
-#include <numint/array.hpp>
+#include <Integrator/numint/array.hpp>
 
 OPEN_NUMINT_NAMESPACE
 

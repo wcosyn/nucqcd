@@ -12,11 +12,11 @@
 
 #include <memory>
 #include <vector>
-#include <MeanFieldNucleusThick.hpp>
-// #include <TKinematics2to2.h>
-#include <DistMomDistrGrid.hpp>
-#include <GlauberDecayGridThick.hpp>
-#include <FastParticle.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+// #include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Glauber/DistMomDistrGrid.hpp>
+#include <Glauber/GlauberDecayGridThick.hpp>
+#include <Glauber/FastParticle.hpp>
 #include <map>
 
 // #define NROFRES 9 /*!< number of different cross sections calculated, 1 pw, 8 glaubers */

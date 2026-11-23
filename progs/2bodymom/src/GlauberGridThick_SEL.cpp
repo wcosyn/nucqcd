@@ -1,6 +1,6 @@
 #include "GlauberGridThick_SEL.hpp"
 #include <gsl/gsl_sf_bessel.h>
-#include <numint/numint.hpp>
+#include <Integrator/numint/numint.hpp>
 #include <fstream>
 #include "2bodymom.hpp"
 /** integration struct 

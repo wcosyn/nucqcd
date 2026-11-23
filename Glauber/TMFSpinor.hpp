@@ -8,13 +8,13 @@
 #ifndef TMFSPINOR_H
 #define TMFSPINOR_H
 
-#include <Matrix.h>
-#include <FourVector.h>
+#include <Tools/Core/Matrix.hpp>
+#include <Tools/Core/FourVector.hpp>
 #include <complex>
-#include <GammaStructure.h>
+#include <Tools/Core/GammaStructure.hpp>
 #include <TVector3.h>
 #include <iostream>
-#include "MeanFieldNucleus.hpp"
+#include <Glauber/MeanFieldNucleus.hpp>
 
 /*! \brief A class for dirac spinor representing a mean-field wave function of a certain nucleon in a nucleus.
  * 

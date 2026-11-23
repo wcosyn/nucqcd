@@ -1,6 +1,6 @@
-#include "InclusiveCrossRes.hpp"
-#include "Resonance.hpp"
-#include <AuxFunction.hpp>
+#include <DIS/InclusiveCrossRes.hpp>
+#include <DIS/Resonance.hpp>
+#include <Tools/Core/AuxFunction.hpp>
 
 using namespace std;
 

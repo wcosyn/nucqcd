@@ -5,20 +5,20 @@
 
 using namespace std;
 
-#include <MeanFieldNucleusThick.hpp>
-#include <FsiCorrelator.hpp>
-#include <FastParticle.hpp>
-#include <constants.hpp>
-#include <GlauberGrid.hpp>
-#include <OneGlauberGrid.hpp>
-#include <GlauberGridThick.hpp>
-#include <TKinematics2to2.h>
-#include <TElectronKinematics.h>
-#include <Cross.hpp>
-#include <Utilfunctions.hpp>
-#include <RunLog.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Glauber/FsiCorrelator.hpp>
+#include <Glauber/FastParticle.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Glauber/GlauberGrid.hpp>
+#include <Glauber/OneGlauberGrid.hpp>
+#include <Glauber/GlauberGridThick.hpp>
+#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Knockout/EMQECross.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
+#include <Tools/Core/RunLog.hpp>
 #include <vector>
-#include <NucleonEMOperator.hpp>
+#include <Glauber/NucleonEMOperator.hpp>
 
 //run ./observables [Q2 [MeV^2]] [omega] [missing momentum]
 int main(int argc, char *argv[])
@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 
   cout << thetaq*nucqcd::rad_to_deg << endl; 
 
-  Cross obs(*elec,&nucleus,prec,integrator,homedir,screening,scr);
+  EMQECross obs(*elec,&nucleus,prec,integrator,homedir,screening,scr);
 
   cout << "q|omega|nucl_p|nucl_thetaq|pm|pm_thetaq|xs_fsisrc|xs_pw|Tratio|rhod|rhopw" << endl;
   for(int i=1;i<=30;++i){

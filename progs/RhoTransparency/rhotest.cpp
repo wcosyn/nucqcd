@@ -5,16 +5,16 @@
 
 using namespace std;
 
-#include <MeanFieldNucleusThick.hpp>
-#include <FsiCorrelator.hpp>
-#include <FastParticle.hpp>
-#include <constants.hpp>
-#include <GlauberGrid.hpp>
-#include <OneGlauberGrid.hpp>
-#include <GlauberGridThick.hpp>
-#include <GlauberDecayGridThick.hpp>
-#include <DistMomDistrGrid.hpp>
-#include <TMFSpinor.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Glauber/FsiCorrelator.hpp>
+#include <Glauber/FastParticle.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Glauber/GlauberGrid.hpp>
+#include <Glauber/OneGlauberGrid.hpp>
+#include <Glauber/GlauberGridThick.hpp>
+#include <Glauber/GlauberDecayGridThick.hpp>
+#include <Glauber/DistMomDistrGrid.hpp>
+#include <Glauber/TMFSpinor.hpp>
 #include <TRotation.h>
 
 int main(int argc, char *argv[])

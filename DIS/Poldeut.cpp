@@ -1,11 +1,11 @@
-#include "Poldeut.hpp"
-#include <FourVector.h>
-#include <NuclStructure.hpp>
-#include <NucleonStructure.hpp>
+#include <DIS/Poldeut.hpp>
+#include <Tools/Core/FourVector.hpp>
+#include <Tools/StructureFunctions/NuclStructure.hpp>
+#include <Tools/StructureFunctions/NucleonStructure.hpp>
 #include <TVector3.h>
 #include <cassert>
-#include <TDeuteron.h>
-#include <constants.hpp>
+#include <Tools/WaveFunctions/TDeuteron.hpp>
+#include <Tools/Core/constants.hpp>
 
 using namespace std;
 

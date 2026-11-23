@@ -1,14 +1,14 @@
-#include "TMFSpinor.hpp"
-#include <constants.hpp>
+#include <Glauber/TMFSpinor.hpp>
+#include <Tools/Core/constants.hpp>
 //#include <numtoa.h>
-#include <FourVector.h>
+#include <Tools/Core/FourVector.hpp>
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
 // #include <climits>
 #include <iostream>
 #include <complex>
-#include <TDeuteron.h>
+#include <Tools/WaveFunctions/TDeuteron.hpp>
 
 using namespace std;
 

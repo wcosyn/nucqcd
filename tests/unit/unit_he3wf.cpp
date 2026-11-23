@@ -5,9 +5,9 @@
 // not rotation invariant (ROADMAP step 4, "He3 normalization").
 #include <test_support.hpp>
 
-#include <He3Cross.hpp>
-#include <He3wf.hpp>
-#include <constants.hpp>
+#include <DIS/He3Cross.hpp>
+#include <Tools/WaveFunctions/He3wf.hpp>
+#include <Tools/Core/constants.hpp>
 
 #include <TVector3.h>
 #include <gsl/gsl_integration.h>

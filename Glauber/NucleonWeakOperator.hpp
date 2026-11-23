@@ -9,10 +9,10 @@
 #define NUCLEONWEAKOPERATOR_HPP
 
 #include <iostream>
-#include "constants.hpp"
-#include "FourVector.h"
-#include "GammaStructure.h"
-#include "NucleonEMOperator.hpp"
+#include <Tools/Core/constants.hpp>
+#include <Tools/Core/FourVector.hpp>
+#include <Tools/Core/GammaStructure.hpp>
+#include <Glauber/NucleonEMOperator.hpp>
 
 
 /*! \brief A class that contains the EM coupling to the nucleon.

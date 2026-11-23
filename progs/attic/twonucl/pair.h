@@ -25,7 +25,7 @@ using std::vector;
 
 using namespace std;
 
-#include "TDeuteron.h"
+#include <Tools/WaveFunctions/TDeuteron.hpp>
 
 class Pair
 {

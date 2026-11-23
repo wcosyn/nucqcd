@@ -4,10 +4,10 @@
 // silently for long paths.
 #include <test_support.hpp>
 
-#include <FortranString.hpp>
-#include <He3wf.hpp>
-#include <TKinematics2to2.h>
-#include <constants.hpp>
+#include <Tools/Core/FortranString.hpp>
+#include <Tools/WaveFunctions/He3wf.hpp>
+#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/Core/constants.hpp>
 
 #include <stdexcept>
 #include <string>

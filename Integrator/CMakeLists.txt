@@ -37,3 +37,10 @@ target_include_directories(cuba INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(cuba INTERFACE "${CUBA_LIBRARY}")
 add_dependencies(cuba cuba_external)
 install(FILES "${CUBA_LIBRARY}" DESTINATION lib)
+
+# numint.hpp includes numint2Cuba.hpp and so <Cuba/cuba.h>: everything that uses numint needs the
+# Cuba header (and libcuba.a, whose objects are only linked in where Cuba is actually called).
+target_link_libraries(Integrator PUBLIC cuba)
+if(STATIC_BUILD)
+  target_link_libraries(IntegratorST PUBLIC cuba)
+endif()

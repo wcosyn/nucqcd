@@ -8,10 +8,10 @@
 #include <iostream>
 #include <cstdarg>
 #include <cstdlib>
-#include <TDeuteron.h>
+#include <Tools/WaveFunctions/TDeuteron.hpp>
 #include <complex>
-#include <numint/numint.hpp>
-#include <TInterpolatingWavefunction.h>
+#include <Integrator/numint/numint.hpp>
+#include <Tools/WaveFunctions/TInterpolatingWavefunction.hpp>
 
 /**
  * @brief Class implements deuteron LF EMT densities, see draft paper with Adam

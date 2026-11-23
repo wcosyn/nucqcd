@@ -12,12 +12,12 @@
 
 using namespace std;
 
-#include <constants.hpp>
-#include <NuclStructure.hpp>
-#include <NucleonStructure.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Tools/StructureFunctions/NuclStructure.hpp>
+#include <Tools/StructureFunctions/NucleonStructure.hpp>
 
-#include <TDeuteron.h>
-#include <numint/numint.hpp>
+#include <Tools/WaveFunctions/TDeuteron.hpp>
+#include <Integrator/numint/numint.hpp>
 
 
 void k_int(numint::vector_d & res, double knorm, double kcosth, TDeuteron::Wavefunction *wfref,

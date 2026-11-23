@@ -1,13 +1,13 @@
-#include "He3wf.hpp"
-#include "FortranString.hpp"
+#include <Tools/WaveFunctions/He3wf.hpp>
+#include <Tools/Core/FortranString.hpp>
 #include <iostream>
 #include <cmath>
 #include <cstdarg>
 #include <cstdlib>
 #include <cstring>
 #include <stdexcept>
-#include "ErrorMessage.hpp"
-#include <constants.hpp>
+#include <Tools/Core/ErrorMessage.hpp>
+#include <Tools/Core/constants.hpp>
 
 using namespace std;
 

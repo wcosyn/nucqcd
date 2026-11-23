@@ -1,5 +1,5 @@
 #include "cubatest_integrands.hpp"
-#include <numint/numint.hpp>
+#include <Integrator/numint/numint.hpp>
 #include <cstdio>
 #include <cmath>
 #include <iostream>

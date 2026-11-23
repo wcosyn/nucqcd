@@ -48,13 +48,13 @@
 //                                                                    //
 ////////////////////////////////////////////////////////////////////////
 
-#include "TYukawaPWF.h"
-#include "ErrorMessage.hpp"
+#include <Tools/WaveFunctions/TYukawaPWF.hpp>
+#include <Tools/Core/ErrorMessage.hpp>
 // #include "Structures.h"
 #include <iostream>
 #include <cstdlib>
-#include "MathUtil.hpp"
-#include "constants.hpp"
+#include <Tools/Core/MathUtil.hpp>
+#include <Tools/Core/constants.hpp>
 #include <array>
 #include <cmath>
 

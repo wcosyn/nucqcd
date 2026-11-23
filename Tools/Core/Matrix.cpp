@@ -2,7 +2,7 @@
  * Matrix.cpp
  *
  * All declarations for class Matrix<K,L> are done inside
- * the header file (Matrix.h)
+ * the header file (Matrix.hpp)
  *
  * Friend function that takes square root of 2x2 matrix is
  * declared here.
@@ -12,8 +12,8 @@
  */
 
 
-#include "Matrix.h"
-#include "ErrorMessage.hpp"
+#include <Tools/Core/Matrix.hpp>
+#include <Tools/Core/ErrorMessage.hpp>
 #include <iostream>
 using std::cout; using std::cerr; using std::endl;
 #include <complex>

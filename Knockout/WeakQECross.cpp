@@ -1,15 +1,15 @@
-#include "WeakQECross.hpp"
+#include <Knockout/WeakQECross.hpp>
 
 #include <cmath>
-#include <TSpinor.h>
-#include <OneGlauberGrid.hpp>
-#include <GlauberGridThick.hpp>
-#include <TMFSpinor.hpp>
+#include <Tools/Core/TSpinor.hpp>
+#include <Glauber/OneGlauberGrid.hpp>
+#include <Glauber/GlauberGridThick.hpp>
+#include <Glauber/TMFSpinor.hpp>
 #include <cassert>
-#include <constants.hpp>
-#include <GammaStructure.h>
-#include <NucleonWeakOperator.hpp>
-#include <Utilfunctions.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Tools/Core/GammaStructure.hpp>
+#include <Glauber/NucleonWeakOperator.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
 
 using namespace std;
 

@@ -1,8 +1,8 @@
 // Integrator library: numint quadratures and adaptive cubature against exact integrals.
 #include <test_support.hpp>
 
-#include <adaptive/cubature.h>
-#include <numint/numint.hpp>
+#include <Integrator/adaptive/cubature.h>
+#include <Integrator/numint/numint.hpp>
 
 #include <cmath>
 #include <vector>

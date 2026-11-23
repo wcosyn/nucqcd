@@ -1,13 +1,13 @@
-#include "Deut_Conv_EMTLF.hpp"
-#include <constants.hpp>
+#include <DIS/Deut_Conv_EMTLF.hpp>
+#include <Tools/Core/constants.hpp>
 #include <cassert>
-#include <numint/numint.hpp>
+#include <Integrator/numint/numint.hpp>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <algorithm>
 #include <iterator>
-#include <AuxFunction.hpp>
+#include <Tools/Core/AuxFunction.hpp>
 
 using namespace std;
 

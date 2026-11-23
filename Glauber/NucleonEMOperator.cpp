@@ -1,6 +1,6 @@
-#include "NucleonEMOperator.hpp"
-#include <ErrorMessage.hpp>
-#include "MeanFieldNucleusThick.hpp"
+#include <Glauber/NucleonEMOperator.hpp>
+#include <Tools/Core/ErrorMessage.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
 using namespace std;
 
 const FourVector<GammaStructure> NucleonEMOperator::gamma_mu=FourVector<GammaStructure>(GammaStructure(0.,0.,1.),

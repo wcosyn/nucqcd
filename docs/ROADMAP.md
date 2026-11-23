@@ -24,7 +24,7 @@ same PR.
 | 3 | Rename the repository | ✅ done (PR #7, tagged-poldeut PRs #1 and #2) |
 | 4 | Bug fixes | ✅ done: listed bugs (PRs #8, #9, #12); found later: stale FSI+CT grid (#18), kinematics (#19, #20, #33), DoubleNModel/Pair (#21, then moved to the attic in #22), π⁻ Glauber parameters (#28), TDeuteron errors (#31), He3 spin sum (#47) and factor A in `He3Cross` (#48). New bugs found later are added here |
 | 5 | Low-risk modernization | ✅ done: `-fopenmp`, Fortran interop (#11), constants (#13, #14), grid cache (#15–#17), ownership (#23), exceptions (#24), Doxygen (#10, #25–#30, #32, #34–#39: no warnings left) |
-| 6 | Structural refactors | 🔶 constants macros and `NuclStructure` merge done; code layout: `Tools` split done, prefixed includes and `.hpp` next |
+| 6 | Structural refactors | 🔶 done: constants macros, `NuclStructure` merge, code layout items 1–3 (`Tools` split, prefixed includes, `.hpp`), `Model`/`Cross` renamed; to do: namespace, Glauber grids, model selection, MPI, integrators, long files |
 | 7 | Unbundle Cuba and cubature | ⬜ (can be done any time after step 2) |
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
 | 9 | Decouple from ROOT where possible | 🔶 phases 1 (#44), 2 (#45) and 3 done, 4–6 to do |
@@ -35,22 +35,17 @@ same PR.
 
 *Updated 2026-11-23.*
 
-**Done recently** (PRs #44–#51 and the `Tools` split): ROOT decoupling phases 1–3 (dictionaries, small
-math, `TString`); step 10 (LHAPDF structure functions, explicit combinations such as `"CB+SLAC@9"`,
-MSTW through LHAPDF, bundled MSTW code removed); He3 fixed (spin sum in `He3wf`, factor A in
-`He3Cross`; values changed with the author's OK); step 11 part 1 (`nucqcd::RunLog`) and the
-replacement of `Bookkeep` by `RunLog` in the 8 programs that used it; step 6 code layout item 1:
-`Tools` split into Core, Kinematics, WaveFunctions and StructureFunctions (`MePhys` kept as an
-INTERFACE target).
+**Done recently** (PRs #44–#52 and the include PR): ROOT decoupling phases 1–3; step 10 (LHAPDF);
+He3 fixes; step 11 part 1 (`RunLog`); step 6 code layout: `Tools` split into Core, Kinematics,
+WaveFunctions and StructureFunctions (#52), then includes as paths from the repository root, `.hpp`
+as the only extension, and `Model`/`Cross` renamed to `EMQEHadronCurrent`/`EMQECross`.
 
-**Recommended next step: step 6, code layout items 2 and 3, in one PR (with the rename of `Model`/`Cross` to `EMQEHadronCurrent`/`EMQECross`):** prefixed includes with the
-repository root as include root (`#include <Tools/WaveFunctions/TDeuteron.hpp>`), and `.hpp` as the
-only header extension (`git mv` of the 19 `.h` files in Tools and the one in GPD_Partons). Scripted
-rewrite of the ~1250 `#include` lines.
+**Recommended next step:** a quick one first, "Retire MPI (`TMPI`)" (step 6); then ROOT phase 4 (own
+vector and Lorentz types) together with `namespace nucqcd` (code layout item 4), class by class.
 
-**After that:** ROOT phase 4 (own vector and Lorentz types, ~700 uses; test every method against
-ROOT first), together with `namespace nucqcd` class by class; then step 11 part 2 (`RunLog` in the
-other ~69 programs, `// ` headers to `# `) together with ROOT phase 6 (programs), and ROOT phase 5
+ROOT phase 4 touches ~700 uses; test every method against ROOT first.
+
+**After that:** step 11 part 2 (`RunLog` in the other ~69 programs, `// ` headers to `# `) together with ROOT phase 6 (programs), and ROOT phase 5
 (ROOT optional in the build).
 
 **Open choices for the author:** the PDG constants update (changes values); whether to unbundle Cuba
@@ -515,19 +510,24 @@ Do these one at a time, running the full test suite (including `slow`) after eac
      list is a link error; the whole tree (programs and PARTONS included) builds with it. The include
      lines are unchanged (every library directory is still a public include directory); they change
      in item 2. Not tested: `MPI_ENABLED` (no MPI on the development machine).
-  2. **Prefixed includes, with the repository root as the include root.** Every library directory is
-     now a public include directory, so code writes `#include <Matrix.h>`, `<constants.hpp>`,
-     `<Utilfunctions.hpp>`: generic names that can collide with headers of ROOT, PARTONS or LHAPDF on
-     the include path, and every header is visible from everywhere (public linking), so the layering
-     is not visible or enforced. Change to paths like `#include <Tools/WaveFunctions/TDeuteron.hpp>`
-     (directory = library): one change in `nucqcd_add_library` (include root = repository root
-     instead of the library directory), plus a scripted rewrite of the ~1250 `#include` lines (the
-     headers' own includes, Fortran-interface headers, programs, tests). Do it **after** the split, so
-     the paths change only once. GPD_Partons, which already has `include/`, becomes
-     `<GPD_Partons/...>` the same way.
-  3. **One header extension: `.hpp`.** Tools has 19 `.h` (the strangecalc/ROOT-style `T*` classes,
-     `FourVector`, `Matrix`, ...) and 17 `.hpp`; the other libraries use `.hpp` (GPD_Partons has one
-     `.h`). Rename with `git mv` in the same PR as 2, since every include of them changes anyway.
+  2. ✅ **Prefixed includes, with the repository root as the include root** (done 2026-11-23).
+     Every library directory used to be a public include directory, so code wrote
+     `#include <Matrix.h>`, `<constants.hpp>`: generic names that could collide with headers of ROOT,
+     PARTONS or LHAPDF, with the layering invisible. Now `nucqcd_add_library` exports only the
+     repository root, and includes are paths from there (`#include <Tools/WaveFunctions/TDeuteron.hpp>`,
+     `<Integrator/numint/numint.hpp>`). Scripted rewrite of 1075 `#include` lines in 290 files
+     (libraries, programs including the attic, tests; line endings kept); headers local to a program
+     keep their quoted includes. GPD_Partons was flattened (its `include/` and `src/` moved next to
+     its `CMakeLists.txt`, as in the other libraries), so its headers are `<GPD_Partons/...>`; its
+     unused `include/examples.h` (declarations of PARTONS example functions, never implemented or
+     included) was removed. Found along the way: `numint.hpp` includes `<Cuba/cuba.h>`, which only
+     worked because the Integrator directory (with the `Cuba` symlink) was on every include path;
+     `Integrator` now links the `cuba` target publicly. `cubature.c` includes its own header as
+     `"cubature.h"`. Doxygen shows the include paths from the repository root
+     (`STRIP_FROM_INC_PATH`).
+  3. ✅ **One header extension: `.hpp`** (done 2026-11-23, same PR): the 19 `.h` headers in Tools
+     were renamed with `git mv`, and their `\file` tags and mentions updated. Only the third-party
+     `Integrator/adaptive/cubature.h` and Cuba keep `.h`.
   4. **Namespace `nucqcd`.** 64 of the library headers declare their classes in the global
      namespace (`Matrix`, `Model`, `Cross`, `Resonance`, `FastParticle`, ...), the same collision
      risk at the symbol level. Add the namespace class by class, best together with ROOT phase 4,
@@ -563,12 +563,11 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   `cube_romb` in `Model.cpp:744` and `progs/momdistr/momdistr.cpp`. Then remove
   `Integrator/numint/cube_romb.cpp` (and `cube_tr`/`fubini`/`vfubini` if unused) and its tests in
   `unit_numint`, and simplify the `integrator` flag (an enum, see "Model selection" below).
-- [ ] **Better names for `Model` and `Cross`** (Knockout, the A(e,e'N) amplitude and cross section;
-  author's request 2026-11-23). The names are too generic (also a collision risk without a
-  namespace). Agreed with the author (2026-11-23): `EMQEHadronCurrent`/`EMQECross`, following
-  `WeakQEHadronCurrent`/`WeakQECross` and `NucleonEMOperator`/`NucleonWeakOperator`. About 19
-  files outside the classes use them. Best done in the PR with the prefixed includes (code layout
-  items 2 and 3), when every include changes anyway.
+- [x] **Better names for `Model` and `Cross`** (done 2026-11-23, in the include PR): `Knockout/Model`
+  and `Knockout/Cross` are now `EMQEHadronCurrent` and `EMQECross` (files and classes, `git mv`),
+  following `WeakQEHadronCurrent`/`WeakQECross` and `NucleonEMOperator`/`NucleonWeakOperator`; the
+  class names were replaced in the 19 files that include them (library, programs including the
+  attic, tests). Also fixed: the `\file` tag of `DQEinclusive.hpp` said `Cross.hpp`.
 - [ ] **Model selection:** use enums or factory registries instead of model-name strings (about 700
   string comparisons). A typo should fail at compile time, not with `exit()` at runtime.
 - [x] **Merge `NuclStructure` into `NucleonStructure`.** The parametrizations are now implemented

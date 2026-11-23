@@ -9,9 +9,9 @@
 #define NUCLEONEMOPERATOR_HPP
 
 #include <iostream>
-#include "constants.hpp"
-#include "FourVector.h"
-#include "GammaStructure.h"
+#include <Tools/Core/constants.hpp>
+#include <Tools/Core/FourVector.hpp>
+#include <Tools/Core/GammaStructure.hpp>
 
 class MeanFieldNucleusThick; //forward declaration
 

@@ -6,7 +6,7 @@
 // (solve_3x3 gives the TYukawaPWF D-wave coefficients; their values are pinned by reg_deuteron_wf).
 #include <test_support.hpp>
 
-#include <MathUtil.hpp>
+#include <Tools/Core/MathUtil.hpp>
 
 #include <array>
 #include <cmath>

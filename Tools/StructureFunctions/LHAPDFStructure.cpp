@@ -1,7 +1,7 @@
-#include "LHAPDFStructure.hpp"
-#include "ErrorMessage.hpp"
-#include "NucleonStructure.hpp"
-#include "constants.hpp"
+#include <Tools/StructureFunctions/LHAPDFStructure.hpp>
+#include <Tools/Core/ErrorMessage.hpp>
+#include <Tools/StructureFunctions/NucleonStructure.hpp>
+#include <Tools/Core/constants.hpp>
 
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_integration.h>

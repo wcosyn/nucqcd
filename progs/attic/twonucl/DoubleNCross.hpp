@@ -13,9 +13,9 @@
 #ifndef DOUBLENCROSS_HPP
 #define DOUBLENCROSS_HPP
 
-#include <TElectronKinematics.h>
-#include <MeanFieldNucleusThick.hpp>
-#include <TKinematics2to3WithLabAngles.h>
+#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Tools/Kinematics/TKinematics2to3WithLabAngles.hpp>
 #include "DoubleNModel.hpp"
 
 /*! \brief A class used to compute A(e,e'NN) cross sections */

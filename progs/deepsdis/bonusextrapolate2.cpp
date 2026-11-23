@@ -9,12 +9,12 @@
 
 using namespace std;
 
-#include <constants.hpp>
-#include <TKinematics2to2.h>
-#include <TElectronKinematics.h>
-#include <DeuteronStructure.hpp>
-#include <DeuteronMomDistr.hpp>
-#include <DeuteronCross.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/StructureFunctions/DeuteronStructure.hpp>
+#include <Knockout/DeuteronMomDistr.hpp>
+#include <DIS/DeuteronCross.hpp>
 #include "bonusdata.h"
 #include "bonusfits.h"
 

@@ -1,5 +1,5 @@
-/*! \file Cross.hpp 
- * \brief Contains declaration of class , used to compute D(e,e') inclusive cross sections (QE part)
+/*! \file DQEinclusive.hpp 
+ * \brief Contains declaration of class DQEinclusive, used to compute D(e,e') inclusive cross sections (QE part)
  * \author Wim Cosyn
  * \date 12/01/2014
  * 
@@ -11,11 +11,11 @@
 
 #include <string>
 #include <memory>
-#include <TElectronKinematics.h>
-#include <NucleonEMOperator.hpp>
-#include <TDeuteron.h>
-#include <numint/numint.hpp>
-#include <GammaStructure.h> 
+#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Glauber/NucleonEMOperator.hpp>
+#include <Tools/WaveFunctions/TDeuteron.hpp>
+#include <Integrator/numint/numint.hpp>
+#include <Tools/Core/GammaStructure.hpp> 
 #include <vector>
 
 //forward declaration

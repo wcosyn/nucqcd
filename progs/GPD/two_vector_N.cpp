@@ -20,8 +20,8 @@
 #include <partons/modules/gpd/GPDGK16Numerical.h>
 
 
-#include <TwoVector_Nucl.hpp>
-#include <constants.hpp>
+#include <GPD_Partons/TwoVector_Nucl.hpp>
+#include <Tools/Core/constants.hpp>
 
 
 using namespace std;

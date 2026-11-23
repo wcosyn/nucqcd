@@ -4,34 +4,34 @@
 // MeanFieldNucleus[Thick] had a copy constructor but no assignment.
 #include <test_support.hpp>
 
-#include <ClassGridThick_SCX.hpp>
-#include <DQEinclusive.hpp>
-#include <Deut_Conv_EMTLF.hpp>
-#include <FsiCorrelator.hpp>
-#include <GlauberDecayGridThick.hpp>
-#include <GlauberGrid.hpp>
-#include <GlauberGridThick.hpp>
-#include <InclusiveCross.hpp>
-#include <InclusiveCrossRes.hpp>
-#include <MeanFieldNucleusThick.hpp>
-#include <Model.hpp>
-#include <OneGlauberGrid.hpp>
-#include <PionTCross.hpp>
-#include <ROMEAGrid.hpp>
-#include <Resonance.hpp>
-#include <RhoTCross.hpp>
+#include <Glauber/ClassGridThick_SCX.hpp>
+#include <Knockout/DQEinclusive.hpp>
+#include <DIS/Deut_Conv_EMTLF.hpp>
+#include <Glauber/FsiCorrelator.hpp>
+#include <Glauber/GlauberDecayGridThick.hpp>
+#include <Glauber/GlauberGrid.hpp>
+#include <Glauber/GlauberGridThick.hpp>
+#include <DIS/InclusiveCross.hpp>
+#include <DIS/InclusiveCrossRes.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Knockout/EMQEHadronCurrent.hpp>
+#include <Glauber/OneGlauberGrid.hpp>
+#include <Knockout/PionTCross.hpp>
+#include <Glauber/ROMEAGrid.hpp>
+#include <DIS/Resonance.hpp>
+#include <Knockout/RhoTCross.hpp>
 
 #include <complex>
 #include <memory>
 #include <type_traits>
 
-// grids own raw arrays: not copyable (and neither is Model, which holds grids)
+// grids own raw arrays: not copyable (and neither is EMQEHadronCurrent, which holds grids)
 static_assert(!std::is_copy_constructible_v<GlauberGrid> && !std::is_copy_assignable_v<GlauberGrid>);
 static_assert(!std::is_copy_constructible_v<GlauberGridThick> && !std::is_copy_assignable_v<GlauberGridThick>);
 static_assert(!std::is_copy_constructible_v<GlauberDecayGridThick>);
 static_assert(!std::is_copy_constructible_v<OneGlauberGrid>);
 static_assert(!std::is_copy_constructible_v<ROMEAGrid>);
-static_assert(!std::is_copy_constructible_v<Model>);
+static_assert(!std::is_copy_constructible_v<EMQEHadronCurrent>);
 // their grids point to a member nucleus: neither copyable nor movable
 static_assert(!std::is_copy_constructible_v<PionTCross> && !std::is_move_constructible_v<PionTCross>);
 static_assert(!std::is_copy_constructible_v<RhoTCross> && !std::is_move_constructible_v<RhoTCross>);

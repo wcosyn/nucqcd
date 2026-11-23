@@ -14,11 +14,11 @@
 #ifndef DOUBLENMODEL_HPP
 #define DOUBLENMODEL_HPP
 
-#include <FourVector.h>
-#include <MeanFieldNucleusThick.hpp>
-#include <GlauberGridThick.hpp>
-#include <TKinematics2to3WithLabAngles.h>
-#include <NucleonEMOperator.hpp>
+#include <Tools/Core/FourVector.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Glauber/GlauberGridThick.hpp>
+#include <Tools/Kinematics/TKinematics2to3WithLabAngles.hpp>
+#include <Glauber/NucleonEMOperator.hpp>
 #include <TVector3.h>
 #include "pair.h"
 

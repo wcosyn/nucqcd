@@ -5,14 +5,14 @@
 
 #include <catch2/matchers/catch_matchers_string.hpp>
 
-#include <ErrorMessage.hpp>
-#include <FastParticle.hpp>
-#include <GlauberGridThick.hpp>
-#include <Matrix.h>
-#include <MeanFieldNucleusThick.hpp>
-#include <NucleonStructure.hpp>
-#include <TKinematics2to3.h>
-#include <constants.hpp>
+#include <Tools/Core/ErrorMessage.hpp>
+#include <Glauber/FastParticle.hpp>
+#include <Glauber/GlauberGridThick.hpp>
+#include <Tools/Core/Matrix.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Tools/StructureFunctions/NucleonStructure.hpp>
+#include <Tools/Kinematics/TKinematics2to3.hpp>
+#include <Tools/Core/constants.hpp>
 
 #include <stdexcept>
 #include <string>

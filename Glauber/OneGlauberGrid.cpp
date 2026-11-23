@@ -1,13 +1,13 @@
 #include <complex>
-#include <ErrorMessage.hpp>
+#include <Tools/Core/ErrorMessage.hpp>
 #include <iostream>
 #include <cstdlib>
 
 using namespace std;
 
-#include "OneGlauberGrid.hpp"
-#include <Utilfunctions.hpp>
-#include <AuxFunction.hpp>
+#include <Glauber/OneGlauberGrid.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
+#include <Tools/Core/AuxFunction.hpp>
 
 //constructor, calls glaubergrid's constructor
 OneGlauberGrid::OneGlauberGrid(const int r_grid, const int cth_grid, MeanFieldNucleus *pnucl, 

@@ -1,7 +1,7 @@
-#include "RhoTCross.hpp"
-#include <AuxFunction.hpp>
+#include <Knockout/RhoTCross.hpp>
+#include <Tools/Core/AuxFunction.hpp>
 #include <TRotation.h>
-#include <Utilfunctions.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
 
 using namespace std;
 

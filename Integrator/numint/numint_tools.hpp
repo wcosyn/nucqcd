@@ -12,8 +12,8 @@
 #ifndef NUMINT_TOOLS_HPP
 #define NUMINT_TOOLS_HPP 1
 
-#include <numint/macros.hpp>
-#include <numint/typedef.hpp>
+#include <Integrator/numint/macros.hpp>
+#include <Integrator/numint/typedef.hpp>
 #include <iomanip>
 #include <iostream>
 #include <cstdlib>

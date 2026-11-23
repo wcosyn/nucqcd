@@ -12,20 +12,20 @@
 
 using namespace std;
 
-#include <MeanFieldNucleusThick.hpp>
-#include <FsiCorrelator.hpp>
-#include <FastParticle.hpp>
-#include <constants.hpp>
-#include <GlauberGrid.hpp>
-#include <OneGlauberGrid.hpp>
-#include <GlauberGridThick.hpp>
-#include <TKinematics2to2.h>
-#include <TElectronKinematics.h>
-#include <Cross.hpp>
-#include <Utilfunctions.hpp>
-#include <RunLog.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Glauber/FsiCorrelator.hpp>
+#include <Glauber/FastParticle.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Glauber/GlauberGrid.hpp>
+#include <Glauber/OneGlauberGrid.hpp>
+#include <Glauber/GlauberGridThick.hpp>
+#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Knockout/EMQECross.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
+#include <Tools/Core/RunLog.hpp>
 #include <vector>
-#include <NucleonEMOperator.hpp>
+#include <Glauber/NucleonEMOperator.hpp>
 
 //run ./observables [Q2 [MeV^2]] [omega] [missing momentum]
 int main(int argc, char *argv[])
@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
         //double Emiss_model = nucleus.getMassA_min_proton()+nucleus.getExcitation()[shell]+nucqcd::mass_p-nucleus.getMassA();
 
         TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ein);
-        Cross obs(*elec,&nucleus,prec,integrator,homedir,screening,scr);
+        EMQECross obs(*elec,&nucleus,prec,integrator,homedir,screening,scr);
         //mass Amin1 is tweaked to correspond to exp sample Emiss
         TKinematics2to2 kin("","",nucleus.getMassA(),Emiss_sample-nucqcd::mass_p+nucleus.getMassA(),
 	    	nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);

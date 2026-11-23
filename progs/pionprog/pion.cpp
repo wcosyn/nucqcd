@@ -5,7 +5,7 @@
 #include <string>
 using namespace std;
 
-#include <FastParticle.hpp>
+#include <Glauber/FastParticle.hpp>
 int main(int argc, char *argv[])
 {
   double sigmap[151],sigman[151], beta2p[151], beta2n[151], epsp[151], epsn[151];

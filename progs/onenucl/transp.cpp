@@ -6,20 +6,20 @@
 
 using namespace std;
 
-#include <MeanFieldNucleusThick.hpp>
-#include <constants.hpp>
-#include <TKinematics2to2.h>
-#include <TElectronKinematics.h>
-#include <Cross.hpp>
-#include <Utilfunctions.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Knockout/EMQECross.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
 #include <vector>
-#include <numint/numint.hpp>
+#include <Integrator/numint/numint.hpp>
 
 
 void intPm(const double pm, double *results, va_list ap);
 void intcosth(const double costh, double *results, va_list ap);
 void getBound(double &high, double &low, MeanFieldNucleusThick &nucleus, double Q2, double omega, int shell);
-void adap_intPm(numint::vector_d &, double costhetacm,Cross* pObs, MeanFieldNucleusThick *pNucleus, TElectronKinematics *elec,
+void adap_intPm(numint::vector_d &, double costhetacm,EMQECross* pObs, MeanFieldNucleusThick *pNucleus, TElectronKinematics *elec,
 		double Q2, double omega, int current, double *cthmax);
 
 
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
   MeanFieldNucleusThick Nucleus(atoi(argv[1]),homedir);
   //TKinematics2to2 kin("","",.getMassA(),Carbon.getMassA_min_proton(),nucqcd::mass_p,"qsquared:wlab:pklab",atof(argv[1]),atof(argv[2]),atof(argv[3]));
   TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ein);
-  Cross obs(*elec,&Nucleus,prec, 2, homedir, userset, screening);
+  EMQECross obs(*elec,&Nucleus,prec, 2, homedir, userset, screening);
 
 //   double k=sqrt(Q2+omega*omega);
 //   double Eout=Ein-omega;
@@ -119,14 +119,14 @@ int main(int argc, char *argv[])
       Ftor &p = * (Ftor *) param;
       p.f(ret,x[0],p.pObs,p.pNucleus,p.elec,p.Q2,p.omega,p.current,p.cthmax);
     }
-    Cross *pObs;
+    EMQECross *pObs;
     MeanFieldNucleusThick *pNucleus;
     TElectronKinematics *elec;
     double Q2;
     double omega;
     int current;
     double *cthmax;
-    void (*f)(numint::vector_d &, double pm,Cross* pObs, MeanFieldNucleusThick *pNucleus, TElectronKinematics *elec,
+    void (*f)(numint::vector_d &, double pm,EMQECross* pObs, MeanFieldNucleusThick *pNucleus, TElectronKinematics *elec,
 	  double Q2, double omega, int current, double *cthmax);
 
   };
@@ -185,7 +185,7 @@ int main(int argc, char *argv[])
   return 0;
 }
 
-void adap_intPm(numint::vector_d & results, double costhetacm,Cross* pObs, MeanFieldNucleusThick *pNucleus, TElectronKinematics *elec,
+void adap_intPm(numint::vector_d & results, double costhetacm,EMQECross* pObs, MeanFieldNucleusThick *pNucleus, TElectronKinematics *elec,
 		double Q2, double omega, int current, double *cthmax){
 		  
   results=numint::vector_d(2*pNucleus->getTotalLevels()+4,0.);
@@ -242,7 +242,7 @@ void adap_intPm(numint::vector_d & results, double costhetacm,Cross* pObs, MeanF
 
 
 void intPm(const double costhcm, double *results, va_list ap){
-  Cross* p_obs = va_arg(ap,Cross*);
+  EMQECross* p_obs = va_arg(ap,EMQECross*);
   TElectronKinematics* elec = va_arg(ap,TElectronKinematics*);
   MeanFieldNucleusThick* pnucleus = va_arg(ap,MeanFieldNucleusThick*);
   double Q2 = va_arg(ap,double);

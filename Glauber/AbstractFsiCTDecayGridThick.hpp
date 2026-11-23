@@ -11,10 +11,10 @@
 
 #include <string>
 
-#include "AbstractFsiDecayGridThick.hpp"
-#include "AbstractFsiCTDecayGrid.hpp"
-#include "MeanFieldNucleusThick.hpp"
-#include "FsiCorrelator.hpp"
+#include <Glauber/AbstractFsiDecayGridThick.hpp>
+#include <Glauber/AbstractFsiCTDecayGrid.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Glauber/FsiCorrelator.hpp>
 
 /*! \brief An abstract class for a ISI/FSI grid using thickness approximation, including a CT grid and Decay grids
  * 

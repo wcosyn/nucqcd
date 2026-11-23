@@ -9,21 +9,21 @@
 using std::cout;
 using std::endl;
 
-#include <TMFSpinor.hpp>
-#include <TSpinor.h>
-#include <FourVector.h>
-#include <constants.hpp>
-#include <MeanFieldNucleus.hpp>
+#include <Glauber/TMFSpinor.hpp>
+#include <Tools/Core/TSpinor.hpp>
+#include <Tools/Core/FourVector.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Glauber/MeanFieldNucleus.hpp>
 #include <string>
 using std::string;
 #include <iostream>
 using std::cout;
 using std::endl;
-#include "GammaStructure.h"
+#include <Tools/Core/GammaStructure.hpp>
 #include <fstream>
 using std::ofstream;
 #include <cassert>
-#include <numint/numint.hpp>
+#include <Integrator/numint/numint.hpp>
 
 void printArray(MeanFieldNucleus&, const int*);
 void myIntegrandumFunction(double & res, const numint::array<double,3> &x, MeanFieldNucleus& nuc, int n, int m);

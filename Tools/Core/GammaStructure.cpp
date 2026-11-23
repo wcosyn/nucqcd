@@ -1,5 +1,5 @@
 /*
- * GammaStructure.h
+ * GammaStructure.hpp
  *
  * This class represents a general complex 4x4 matrix
  * The matrix is decomposed in a complete set of gamma matrices:
@@ -15,8 +15,8 @@
  *
  */
 
-#include "GammaStructure.h"
-#include "constants.hpp"
+#include <Tools/Core/GammaStructure.hpp>
+#include <Tools/Core/constants.hpp>
 #include <iostream>
 using std::cout; using std::cerr; using std::endl;
 using std::ostream;

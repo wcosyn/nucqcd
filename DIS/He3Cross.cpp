@@ -1,6 +1,6 @@
-#include "He3Cross.hpp"
+#include <DIS/He3Cross.hpp>
 #include <fstream>
-#include <FourVector.h>
+#include <Tools/Core/FourVector.hpp>
 #include <TVector3.h>
 
 using namespace std;

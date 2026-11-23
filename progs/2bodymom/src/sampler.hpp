@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "event.hpp"
-#include "MeanFieldNucleusThick.hpp"
+#include <Glauber/MeanFieldNucleusThick.hpp>
 #include <cstdlib>
 #include <cstdio>
 

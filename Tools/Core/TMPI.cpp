@@ -10,7 +10,7 @@
 #ifdef STRANGEDEUTERON_MPI
 #include <mpi.h>
 #endif
-#include "TMPI.h"
+#include <Tools/Core/TMPI.hpp>
 #include <cstdlib>
 #include <cstdio>
 #include <iostream>

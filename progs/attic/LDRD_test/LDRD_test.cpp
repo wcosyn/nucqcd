@@ -5,11 +5,11 @@
 
 using namespace std;
 
-#include <constants.hpp>
-#include <DeuteronCross.hpp>
-#include <He3Cross.hpp>
-#include <LightConeKin2to3.hpp>
-#include <LightConeKin2to2.hpp>
+#include <Tools/Core/constants.hpp>
+#include <DIS/DeuteronCross.hpp>
+#include <DIS/He3Cross.hpp>
+#include <Tools/Kinematics/LightConeKin2to3.hpp>
+#include <Tools/Kinematics/LightConeKin2to2.hpp>
 
 
 

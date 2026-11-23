@@ -52,10 +52,10 @@
 //                                                                    //
 ////////////////////////////////////////////////////////////////////////
 
-#include "TGrossPWF.h"
-#include "ErrorMessage.hpp"
+#include <Tools/WaveFunctions/TGrossPWF.hpp>
+#include <Tools/Core/ErrorMessage.hpp>
 #include <iostream>
-#include "constants.hpp"
+#include <Tools/Core/constants.hpp>
 #include <cmath>
 
 using std::cout; using std::cerr; using std::endl;

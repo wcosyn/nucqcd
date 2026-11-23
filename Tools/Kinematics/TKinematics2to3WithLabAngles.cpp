@@ -37,10 +37,10 @@ separate solutions can be accessed with GetSolution(int).
 End_Html */
 ///////////////////////////////////////////////////////////////////////////
 
-// #include "TMPI.h"
-#include "TKinematics2to3WithLabAngles.h"
-#include "constants.hpp"
-#include "MathUtil.hpp"
+// #include <Tools/Core/TMPI.hpp>
+#include <Tools/Kinematics/TKinematics2to3WithLabAngles.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Tools/Core/MathUtil.hpp>
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>

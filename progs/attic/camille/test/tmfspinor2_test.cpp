@@ -9,17 +9,17 @@
 using std::cout;
 using std::endl;
 
-#include <TMFSpinor.hpp>
-#include <TSpinor.h>
+#include <Glauber/TMFSpinor.hpp>
+#include <Tools/Core/TSpinor.hpp>
 
-#include <constants.hpp>
-#include <MeanFieldNucleus.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Glauber/MeanFieldNucleus.hpp>
 #include <string>
 using std::string;
 #include <iostream>
 using std::cout;
 using std::endl;
-#include <numint/numint.hpp>
+#include <Integrator/numint/numint.hpp>
 #include <iomanip>
 using std::setw;
 

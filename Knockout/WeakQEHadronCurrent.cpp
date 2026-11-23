@@ -1,8 +1,8 @@
-#include "WeakQEHadronCurrent.hpp"
-#include <ErrorMessage.hpp>
-#include <TSpinor.h>
-#include <TMFSpinor.hpp>
-#include <AuxFunction.hpp>
+#include <Knockout/WeakQEHadronCurrent.hpp>
+#include <Tools/Core/ErrorMessage.hpp>
+#include <Tools/Core/TSpinor.hpp>
+#include <Glauber/TMFSpinor.hpp>
+#include <Tools/Core/AuxFunction.hpp>
 
 using namespace std;
 

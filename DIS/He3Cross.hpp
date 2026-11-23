@@ -10,9 +10,9 @@
 #ifndef HE3CROSS_HPP
 #define HE3CROSS_HPP
 
-#include <He3wf.hpp>
-#include <DeuteronStructure.hpp>
-#include <LightConeKin2to3.hpp>
+#include <Tools/WaveFunctions/He3wf.hpp>
+#include <Tools/StructureFunctions/DeuteronStructure.hpp>
+#include <Tools/Kinematics/LightConeKin2to3.hpp>
 
 #include <string>
 

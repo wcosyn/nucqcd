@@ -1,13 +1,13 @@
 #include <iostream>
-#include <ErrorMessage.hpp>
+#include <Tools/Core/ErrorMessage.hpp>
 #include <cstdlib>
 #include <fstream>
 
 using namespace std; 
 
-#include "FastParticle.hpp"
-#include <constants.hpp>
-#include <Utilfunctions.hpp>
+#include <Glauber/FastParticle.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
 #include <cassert>
 #include <cmath>
 

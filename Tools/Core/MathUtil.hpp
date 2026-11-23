@@ -14,7 +14,7 @@
 #ifndef MATHUTIL_HPP
 #define MATHUTIL_HPP
 
-#include "ErrorMessage.hpp"
+#include <Tools/Core/ErrorMessage.hpp>
 
 #include <gsl/gsl_poly.h>
 

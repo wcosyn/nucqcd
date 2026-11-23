@@ -1,6 +1,6 @@
 #include "ClassGridThickNucleus_SCX.hpp"
 #include <gsl/gsl_sf_bessel.h>
-#include <numint/numint.hpp>
+#include <Integrator/numint/numint.hpp>
 #include <fstream>
 #include "2bodymom.hpp"
 

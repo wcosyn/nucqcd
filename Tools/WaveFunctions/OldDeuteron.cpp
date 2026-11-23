@@ -1,10 +1,10 @@
 #include <cassert>
-#include "ErrorMessage.hpp"
+#include <Tools/Core/ErrorMessage.hpp>
 
 using namespace std;
 
-#include "constants.hpp"
-#include "OldDeuteron.hpp"
+#include <Tools/Core/constants.hpp>
+#include <Tools/WaveFunctions/OldDeuteron.hpp>
 
 #define NORMFACTOR 11.4081948 //1/nucqcd::hbarc^{3/2}
 

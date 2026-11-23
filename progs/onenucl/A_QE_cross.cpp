@@ -5,16 +5,16 @@
 
 using namespace std;
 
-#include <MeanFieldNucleusThick.hpp>
-#include <FsiCorrelator.hpp>
-#include <FastParticle.hpp>
-#include <constants.hpp>
-#include <GlauberGrid.hpp>
-#include <OneGlauberGrid.hpp>
-#include <GlauberGridThick.hpp>
-#include <TKinematics2to2.h>
-#include <TElectronKinematics.h>
-#include <Cross.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Glauber/FsiCorrelator.hpp>
+#include <Glauber/FastParticle.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Glauber/GlauberGrid.hpp>
+#include <Glauber/OneGlauberGrid.hpp>
+#include <Glauber/GlauberGridThick.hpp>
+#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Knockout/EMQECross.hpp>
 
 
 //run ./onenucl [Q2 [MeV^2]] [omega] [missing momentum]
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
   TKinematics2to2 kin("","",Carbon.getMassA(),Carbon.getMassA_min_proton(),nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
 //   TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(4627.);  //Monaghan Data
   TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(3245.); //Dutta Data
-  Cross obs(*elec,&Carbon,prec,integrator,homedir,screening,scr);
+  EMQECross obs(*elec,&Carbon,prec,integrator,homedir,screening,scr);
   double free=obs.getElCross(kin,2,0.,2E03)*nucqcd::hbarc*nucqcd::hbarc;
   vector<double> cross;
 
@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 
   MeanFieldNucleusThick Fe(3,homedir);
   TKinematics2to2 kin2("","",Fe.getMassA(),Fe.getMassA_min_proton(),nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
-  Cross obs2(*elec,&Fe,prec,integrator,homedir,screening,scr);
+  EMQECross obs2(*elec,&Fe,prec,integrator,homedir,screening,scr);
   obs2.getDiffCross(kin2, 2, 0, 0, 0, 1, 0, 0.,2E04,1,0,1.,1.);
   obs2.getDiffCross(kin2, 2, 0, 0, 0, 1, 1, 0.,2E04,1,0,1.,1.);
   obs2.getDiffCross(kin2, 2, 0, 0, 0, 1, 2, 0.,2E04,1,0,1.,1.);
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 // 
 //       //   cout << crossp << " " << crosss << " " << crosspsrc << " " << crosspct << " " << crosspsrcct << " " << crossppw << endl;
 //   //cout << obs.getElCross(kin,0.) << " " << obs.getElCross(kin,PI) <<endl;
-// //   Model test(&Carbon,0,homedir);
+// //   EMQEHadronCurrent test(&Carbon,0,homedir);
 // //   cout << test.getMatrixEl(kin,-1,0,0,-1,1,1) << endl;
 // //   
   delete elec;

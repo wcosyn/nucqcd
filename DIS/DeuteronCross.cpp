@@ -1,8 +1,8 @@
-#include "DeuteronCross.hpp"
+#include <DIS/DeuteronCross.hpp>
 #include <fstream>
 #include <TLorentzRotation.h>
-#include <FourVector.h>
-#include <NuclStructure.hpp>
+#include <Tools/Core/FourVector.hpp>
+#include <Tools/StructureFunctions/NuclStructure.hpp>
 #include <TVector3.h>
 #include <cassert>
 
