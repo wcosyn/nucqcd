@@ -67,7 +67,7 @@ void DeuteronStructure::getStructureFunctions(TKinematics2to2 &kin, double &FL, 
   double W_sq=pow(kin.GetHyperonMass(),2.); //mi_off+2.*piq-kin.GetQsquared();//W^2=(p_i+q)^2
   NuclStructure strfunction(proton,kin.GetQsquared(),xoffshell,W_sq,name);
   double F1,F2;
-  if(!(strfunction.getName().compare("SLAC"))){
+  if(strfunction.isF2Fit()){
     F2=strfunction.getF2();
     double R=0.18;
     F1=F2*2.*xtilde/(1+R)*(pow(alphai/alphaq+1/(2.*xtilde),2.)-pt*pt/(2.*kin.GetQsquared())*R);
@@ -105,7 +105,7 @@ void DeuteronStructure::getStructureFunctions(TKinematics2to2 &kin, double &FL, 
   double W_sq=pow(kin.GetHyperonMass(),2.);//W^2=(p_i+q)^2
   NuclStructure strfunction(proton,kin.GetQsquared(),xoffshell,W_sq,name);
   double F1;
-  if(!(strfunction.getName().compare("SLAC"))){
+  if(strfunction.isF2Fit()){
     F2=strfunction.getF2();
     double R=0.18;
     F1=F2*2.*xtilde/(1+R)*(pow(alphai/alphaq+1/(2.*xtilde),2.)-pt*pt/(2.*kin.GetQsquared())*R);
@@ -140,7 +140,7 @@ void DeuteronStructure::getStructureFunctions_off (TKinematics2to2 &kin, double 
   double xtilde=kin.GetQsquared()/(2*piq);
   NuclStructure strfunction(proton,kin.GetQsquared(),Wsq,1,name);
   double F1,F2;
-  if(!(strfunction.getName().compare("SLAC"))){
+  if(strfunction.isF2Fit()){
     F2=strfunction.getF2();
     double R=0.18;
     F1=F2*2.*xtilde/(1+R)*(pow(alphai/alphaq+1/(2.*xtilde),2.)-pt*pt/(2.*kin.GetQsquared())*R);
@@ -214,7 +214,7 @@ double DeuteronStructure::getavgStructureLC(LightConeKin2to2 &kin) const{
   double x_i=kin.getQ2()/double_piq; // x'=Q^2/2pi*q
   NuclStructure strfunction(proton,kin.getQ2(),x_i,W_sq,name);
   double F1,F2;
-  if(!(strfunction.getName().compare("SLAC"))){
+  if(strfunction.isF2Fit()){
     F2=strfunction.getF2();
     double R=0.18;
     F1=F2*2.*kin.getXN()/(1+R)*(pow(kin.getAlpha_i()/alphaq+1/(2.*kin.getXN()),2.)-kin.getPs_perp().Mag2()/(2.*kin.getQ2())*R);
@@ -241,7 +241,7 @@ double DeuteronStructure::getStructureLC(LightConeKin2to2 &kin) const{
   double x_i=kin.getQ2()/double_piq; // x'=Q^2/2pi*q
   NuclStructure strfunction(proton,kin.getQ2(),x_i,W_sq,name);
   double F1,F2;
-  if(!(strfunction.getName().compare("SLAC"))){
+  if(strfunction.isF2Fit()){
     F2=strfunction.getF2();
     double R=0.18;
     F1=F2*2.*kin.getXN()/(1+R)*(pow(kin.getAlpha_i()/alphaq+1/(2.*kin.getXN()),2.)-kin.getPs_perp().Mag2()/(2.*kin.getQ2())*R);

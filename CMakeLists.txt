@@ -16,6 +16,7 @@ option(BUILD_PROGS "Build the programs in progs/ with 'make' and install them" O
 option(PARTONS_ENABLED "Build GPD_Partons and progs/GPD (needs PARTONS, see scripts/install_partons.sh)" OFF)
 option(MPI_ENABLED "Enable MPI (TMPI class and MPI programs)" OFF)
 option(STATIC_BUILD "Also build static versions of the libraries" OFF)
+option(LHAPDF_ENABLED "Use LHAPDF when it is found (\"LHAPDF:<set>\" structure functions)" ON)
 include(CTest)   # option BUILD_TESTING (default ON): test suite in tests/, needs network once (Catch2)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
@@ -78,6 +79,21 @@ target_include_directories(root_libs SYSTEM INTERFACE ${ROOT_INCLUDE_DIRS})
 target_link_libraries(root_libs INTERFACE ${ROOT_LIBRARIES})
 
 find_package(GSL REQUIRED)
+
+# LHAPDF (optional): nucleon structure functions from LHAPDF6 sets (Tools/LHAPDFStructure). Found
+# through its pkg-config file; ~/.local (where scripts/install_partons.sh installs it) is searched too.
+if(LHAPDF_ENABLED)
+  find_package(PkgConfig QUIET)
+  if(PKG_CONFIG_FOUND)
+    set(ENV{PKG_CONFIG_PATH} "$ENV{PKG_CONFIG_PATH}:$ENV{HOME}/.local/lib/pkgconfig")
+    pkg_check_modules(LHAPDF QUIET IMPORTED_TARGET lhapdf)
+  endif()
+  if(LHAPDF_FOUND)
+    message(STATUS "LHAPDF ${LHAPDF_VERSION} in ${LHAPDF_PREFIX}")
+  else()
+    message(STATUS "LHAPDF not found: building without the LHAPDF structure functions")
+  endif()
+endif()
 
 if(MPI_ENABLED)
   find_package(MPI REQUIRED COMPONENTS CXX)

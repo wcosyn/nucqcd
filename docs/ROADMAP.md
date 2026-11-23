@@ -585,32 +585,39 @@ Add LHAPDF6 sets as a parametrization in `NucleonStructure` (and so in `NuclStru
 `DeuteronStructure` and the programs that take a structure-function name), the C++ counterpart of
 `LHAPDFStructure` in `taggedpd/nucleon.py` of the poldeut repository.
 
-- [ ] **Physics** (as in poldeut): leading-order parton model, F₂ = Σ_q e_q² x(q + q̄) (nf = 5 by
-  default) from an unpolarized set and g₁ = ½ Σ_q e_q² (Δq + Δq̄) (nf = 3 by default) from a polarized set; the neutron by isospin (u <-> d); F1 = F2/(2x(1+R)) with R
-  a constant or R1998 (`getr1998`); g1+g2 from the Wandzura-Wilczek relation, tabulated at
-  construction on (x, Q^2) nodes, as for GRSV.
-- [ ] **Interface:** a name such as `"LHAPDF:CT18LO"` (and an optional polarized set and member), or a
-  constructor that takes the set names; `getF_xQ`/`getF_xQW` (x is used; W^2 only by CB and SLAC),
-  `getG1`, `getG1plusg2`. Units: Q^2 in MeV^2 in nucqcd, GeV^2 for `LHAPDF::PDF::xfxQ2`. Outside a
-  set's (x, Q^2) range LHAPDF's own extrapolation is used; say so in the docs.
-- [ ] **Build:** optional, found through `lhapdf-config` or LHAPDF's pkg-config file (LHAPDF is already
-  installed in `~/.local`, with Python bindings, for PARTONS; see `scripts/install_partons.sh`); compile
-  the LHAPDF part only when it is found (like PARTONS), and add it to the install script and CLAUDE.md.
-  PDF sets go to `~/.local/share/LHAPDF` with `lhapdf install <set>`.
-- [ ] **Tests:** as in poldeut (`tests/test_lhapdf.py`): parton-model sums and isospin against direct
-  LHAPDF calls, F1 from F2 and R, the WW table against a direct integration, with CT18LO and
-  NNPDFpol11_100; the tests skip when LHAPDF or the sets are not installed.
-- [ ] **Explicit combinations of parametrizations.** `NuclStructure` silently replaces Christy-Bosted
-  by SLAC above W^2 = 9 GeV^2 (and `getName()` then returns "SLAC", which `DeuteronStructure` relies
-  on), while `NucleonStructure` uses CB up to W^2 = 25 GeV^2 and throws above; the same name "CB" thus
-  behaves differently in the two classes (now documented). When LHAPDF sets are added, a resonance-region
-  fit at low W and a DIS parametrization or PDF set at high W will be a common need. Make that an
-  explicit, configurable combination in `NucleonStructure`, as in poldeut (`CombinedStructure`, and the
-  (W, Q^2)-domain adapters `FromNucleonStructure` of `inclusive.py`), e.g. "CB+SLAC" or
-  "CB+LHAPDF:CT18LO" with the W^2 boundary as a parameter, instead of a hidden rename in a
-  constructor; keep "CB" in `NuclStructure` as an alias of the current behaviour (CB below 9 GeV^2,
-  SLAC above) so results do not change, and let `DeuteronStructure` ask whether F1 is to be built from
-  F2 instead of comparing names.
+- [x] **Physics** (done 2026-11-22, `Tools/LHAPDFStructure`): leading-order parton model,
+  F₂ = Σ_q e_q² x(q + q̄) (nf = 5 by default) from an unpolarized set and g₁ = ½ Σ_q e_q² (Δq + Δq̄)
+  (nf = 3 by default) from a polarized set; the neutron by isospin (u <-> d). F1 = F2 (1 + 4M²x²/Q²) /
+  (2x(1+R)) with R1998 by default, as for MSTW and CTEQ in `NucleonStructure` (so that
+  `LHAPDF:MSTW2008lo68cl` and `MSTW` can be compared); a constant R and no target-mass factor
+  (poldeut's default) are options (`nucqcd::LHAPDFOptions`). g1+g2 from the Wandzura-Wilczek relation,
+  tabulated on (x, Q²) nodes the first time it is asked for (as in poldeut's `ww_grid`). 0 outside
+  0 < x < 1; outside a set's range LHAPDF's own extrapolation is used (documented).
+- [x] **Interface:** `NucleonStructure("LHAPDF:CT18LO")`, `"LHAPDF:CT18LO:NNPDFpol11_100"`,
+  `"LHAPDF::NNPDFpol11_100"` (polarized only), members as `"CT18LO/3"`; or
+  `NucleonStructure(nucqcd::LHAPDFOptions)` for the options. `getF_xQ`/`getF_xQW` (x is used) and the
+  new `getG1`/`getG1plusg2` members (they throw for parametrizations without a polarized LHAPDF set;
+  GRSV stays in the static `getG1_grsv2000`). Loading a set is slow and `DeuteronStructure` makes a
+  `NuclStructure` per kinematic point, so `LHAPDFStructure::get` keeps one object per set of options
+  for the whole program, shared by all `NucleonStructure`s.
+- [x] **Build:** optional (`LHAPDF_ENABLED`, ON by default: used when found), found through LHAPDF's
+  pkg-config file, also in `~/.local`. Without LHAPDF the library builds, `LHAPDFStructure::available()`
+  is false and the "LHAPDF:" names throw. `scripts/install_partons.sh` installs the sets CT18LO and
+  NNPDFpol11_100.
+- [x] **Tests** (`unit_lhapdf`, as poldeut's `tests/test_lhapdf.py`): parton-model sums and isospin
+  against direct LHAPDF calls, F1 from F2 and R (both options), zero outside 0 < x < 1, one set only,
+  malformed names, copies, the WW table against a direct integration (GSL QAG) within poldeut's
+  tolerance, a rough comparison with SLAC F2 and GRSV g1. Skipped without LHAPDF or the sets
+  (checked in a build with `-DLHAPDF_ENABLED=OFF`).
+- [x] **Explicit combinations of parametrizations** (done 2026-11-22). `NucleonStructure("<low>+<high>")`
+  or `"<low>+<high>@<W²>"` (W² boundary in GeV², default 9), or the constructor
+  `NucleonStructure(low, high, Wsq_switch)`: low for W² <= boundary, high above, e.g. `"CB+SLAC"` or
+  `"CB+LHAPDF:CT18LO@4"`. `NuclStructure("CB")` is now the explicit combination `"CB+SLAC@9"` instead
+  of a rename in its constructor: the values are unchanged (all regression references pass), but
+  `getName()` now returns "CB" also above 9 GeV² (until 2026-11 "SLAC"). `DeuteronStructure` asks
+  the new `isF2Fit()` (true where SLAC is used, so F1 is built from F2 with R = 0.18 and the off-shell
+  kinematics) instead of comparing names. `NucleonStructure("CB")` itself still means CB up to
+  25 GeV² and throws above.
 - [ ] Optionally, replace the bundled MSTW grid code (`mstwpdf.h/.cpp`, `share/mstw_grids`) by the
   LHAPDF set `MSTW2008lo68cl`, after checking that F2 agrees.
 

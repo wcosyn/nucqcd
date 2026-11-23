@@ -76,9 +76,11 @@ TEST_CASE("NuclStructure off-shell kinematics: W^2 independent of x", "[structur
     CHECK(off.getF1() == F1);
     CHECK(F2 != F2on);  // W^2 matters for these two
   }
-  // above W^2 = 9 GeV^2 Christy-Bosted switches to SLAC (DeuteronStructure checks the name)
-  CHECK(NuclStructure(true, 4.e06, 0.2, 0, "CB").getName() == "SLAC");
-  CHECK(NuclStructure(true, 2.e06, 0.5, 0, "CB").getName() == "CB");
+  // above W^2 = 9 GeV^2 Christy-Bosted switches to SLAC (DeuteronStructure asks isF2Fit; until 2026-11
+  // getName() returned "SLAC" there and DeuteronStructure compared names)
+  CHECK(NuclStructure(true, 4.e06, 0.2, 0, "CB").isF2Fit());
+  CHECK_FALSE(NuclStructure(true, 2.e06, 0.5, 0, "CB").isF2Fit());
+  CHECK(NuclStructure(true, 4.e06, 0.2, 0, "CB").getName() == "CB");
 }
 
 TEST_CASE("NuclStructure MSTW copy and assignment", "[structure]") {

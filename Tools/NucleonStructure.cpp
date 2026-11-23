@@ -8,6 +8,10 @@
 #include <cstdlib>
 #include <cstring>
 #include "mstwpdf.h"
+#include "LHAPDFStructure.hpp"
+#include <sstream>
+#include <stdexcept>
+#include <utility>
 
 using namespace std;
 
@@ -84,68 +88,121 @@ extern "C"{
 }
 
 
-NucleonStructure::NucleonStructure():
-name("SLAC"),dir(nucqcd::share_dir){
-  if(!name.compare("MSTW")){
-    string file= string(nucqcd::share_dir)+"/mstw_grids/mstw2008lo.00.dat";
-    mstw = new c_mstwpdf(file,false,true);
-  }
-  else mstw=NULL;
+namespace {
+const std::string lhapdf_prefix = "LHAPDF:";
 
-  
-  return;
-
+c_mstwpdf *make_mstw(const std::string &name) {
+  if (name.compare("MSTW")) return nullptr;
+  return new c_mstwpdf(string(nucqcd::share_dir) + "/mstw_grids/mstw2008lo.00.dat", false, true);
 }
 
+/* "LHAPDF:<unpolarized>[:<polarized>]" -> options */
+nucqcd::LHAPDFOptions parse_lhapdf(const std::string &name) {
+  nucqcd::LHAPDFOptions options;
+  const std::string sets = name.substr(lhapdf_prefix.size());
+  const auto colon = sets.find(':');
+  options.unpolarized = sets.substr(0, colon);
+  if (colon != std::string::npos) options.polarized = sets.substr(colon + 1);
+  if ((options.unpolarized.empty() && options.polarized.empty()) || options.polarized.find(':') != std::string::npos)
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "NucleonStructure: malformed LHAPDF name \"" << name
+                                                       << "\", use LHAPDF:<set>[:<polarized set>]");
+  return options;
+}
+
+std::string lhapdf_name(const nucqcd::LHAPDFOptions &options) {
+  return lhapdf_prefix + options.unpolarized + (options.polarized.empty() ? "" : ":" + options.polarized);
+}
+
+std::string format_GeV2(double Wsq) {  // [MeV^2] -> "<GeV^2>", shortest form that reads back the same
+  std::ostringstream s;
+  s.precision(15);
+  s << Wsq * 1.E-06;
+  return s.str();
+}
+}  // namespace
+
+NucleonStructure::NucleonStructure(): NucleonStructure(std::string("SLAC")) {}
 
 NucleonStructure::NucleonStructure(const std::string nm):
-name(nm),dir(nucqcd::share_dir){
-  if(!name.compare("MSTW")){
-    string file= string(nucqcd::share_dir)+"/mstw_grids/mstw2008lo.00.dat";
-    mstw = new c_mstwpdf(file,false,true);
+name(nm),dir(nucqcd::share_dir),mstw(nullptr){
+  const auto plus = name.find('+');
+  if(plus != std::string::npos){ // combination "<low>+<high>[@<W2 in GeV^2>]"
+    std::string highname = name.substr(plus+1);
+    double Wsq = 9.E06;
+    const auto at = highname.rfind('@');
+    if(at != std::string::npos){
+      const std::string value = highname.substr(at+1);
+      std::size_t used = 0;
+      try { Wsq = std::stod(value, &used)*1.E06; } catch(const std::exception&) { used = 0; }
+      if(used == 0 || used != value.size())
+        throw std::invalid_argument(nucqcd::ErrorMessage() << "NucleonStructure: malformed W^2 boundary in \"" << name << "\"");
+      highname = highname.substr(0, at);
+    }
+    if(plus == 0 || highname.empty())
+      throw std::invalid_argument(nucqcd::ErrorMessage() << "NucleonStructure: malformed combination \"" << name
+                                  << "\", use <low>+<high>[@<W^2 in GeV^2>]");
+    low = std::make_unique<NucleonStructure>(name.substr(0, plus));
+    high = std::make_unique<NucleonStructure>(highname);
+    Wsq_switch = Wsq;
   }
-  else mstw=NULL;
-
-  
-  return;
-
+  else if(!name.compare(0, lhapdf_prefix.size(), lhapdf_prefix)){
+    lhapdf = nucqcd::LHAPDFStructure::get(parse_lhapdf(name));
+  }
+  else mstw = make_mstw(name);
 }
+
+NucleonStructure::NucleonStructure(const nucqcd::LHAPDFOptions &options):
+name(lhapdf_name(options)),dir(nucqcd::share_dir),mstw(nullptr),lhapdf(nucqcd::LHAPDFStructure::get(options)){}
+
+NucleonStructure::NucleonStructure(const std::string &lowname, const std::string &highname, double Wsq):
+name(lowname+"+"+highname+"@"+format_GeV2(Wsq)),dir(nucqcd::share_dir),mstw(nullptr),
+low(std::make_unique<NucleonStructure>(lowname)),high(std::make_unique<NucleonStructure>(highname)),Wsq_switch(Wsq){}
 
 
 NucleonStructure::~NucleonStructure(){
-  if(mstw) delete mstw;
+  delete mstw;
 }
 
-NucleonStructure::NucleonStructure(const NucleonStructure& rhs){
-  name=rhs.name;
-  dir=rhs.dir;
-  if(!name.compare("MSTW")){
-    string file= string(nucqcd::share_dir)+"/mstw_grids/mstw2008lo.00.dat";
-    mstw = new c_mstwpdf(file,false,true);
-  }
-  else mstw=NULL;
-
-  
-  return;
-}
+NucleonStructure::NucleonStructure(const NucleonStructure& rhs):
+name(rhs.name),dir(rhs.dir),mstw(make_mstw(rhs.name)),lhapdf(rhs.lhapdf),
+low(rhs.low? std::make_unique<NucleonStructure>(*rhs.low) : nullptr),
+high(rhs.high? std::make_unique<NucleonStructure>(*rhs.high) : nullptr),Wsq_switch(rhs.Wsq_switch){}
 
 NucleonStructure& NucleonStructure::operator=(const NucleonStructure& rhs){
   if(this!=&rhs) { // avoid self-assignment
-    name=rhs.name;
-    dir=rhs.dir;
-    delete mstw; // was leaked until 2026-11
-    if(!name.compare("MSTW")){
-      string file= string(nucqcd::share_dir)+"/mstw_grids/mstw2008lo.00.dat";
-      mstw = new c_mstwpdf(file,false,true);
-    }
-    else mstw=NULL;
-    
+    NucleonStructure copy(rhs);
+    std::swap(name,copy.name);
+    std::swap(dir,copy.dir);
+    std::swap(mstw,copy.mstw); // the old one is deleted with copy (was leaked until 2026-11)
+    std::swap(lhapdf,copy.lhapdf);
+    std::swap(low,copy.low);
+    std::swap(high,copy.high);
+    std::swap(Wsq_switch,copy.Wsq_switch);
   }
   return *this;
- 
-  
 }
 
+std::string NucleonStructure::getName(double Wsq) const{
+  if(low) return (Wsq > Wsq_switch ? high : low)->getName(Wsq);
+  return name;
+}
+
+bool NucleonStructure::isF2Fit(double Wsq) const{
+  if(low) return (Wsq > Wsq_switch ? high : low)->isF2Fit(Wsq);
+  return !name.compare("SLAC");
+}
+
+double NucleonStructure::getG1(const bool proton, const double x, const double Q2) const{
+  if(!lhapdf || !lhapdf->hasPolarized())
+    throw std::logic_error(nucqcd::ErrorMessage() << "NucleonStructure::getG1: no polarized LHAPDF set in \"" << name << "\"");
+  return lhapdf->getG1(proton,x,Q2);
+}
+
+double NucleonStructure::getG1plusg2(const bool proton, const double x, const double Q2) const{
+  if(!lhapdf || !lhapdf->hasPolarized())
+    throw std::logic_error(nucqcd::ErrorMessage() << "NucleonStructure::getG1plusg2: no polarized LHAPDF set in \"" << name << "\"");
+  return lhapdf->getG1plusg2(proton,x,Q2);
+}
 
 
 void NucleonStructure::getF_Alekhin(double &F1, double &F2, const bool proton, const double x, const double Q2)const{
@@ -308,7 +365,9 @@ void NucleonStructure::getF_xQ(double &F1, double &F2,const bool proton, const d
 }
 
 void NucleonStructure::getF_xQW(double &F1, double &F2,const bool proton, const double x, const double Q2, const double Wsq) const{
-  if(!name.compare("SLAC")) getF_SLAC_W(F1,F2,proton,x,Q2,Wsq);
+  if(low) (Wsq > Wsq_switch ? high : low)->getF_xQW(F1,F2,proton,x,Q2,Wsq);
+  else if(lhapdf) lhapdf->getF(F1,F2,proton,x,Q2);
+  else if(!name.compare("SLAC")) getF_SLAC_W(F1,F2,proton,x,Q2,Wsq);
   else if(!name.compare("Alekhin")) getF_Alekhin(F1,F2,proton,x,Q2);
   else if(!name.compare("CB")) getF_CB_W(F1,F2,proton,Q2,Wsq);
   else if(!name.compare("CTEQ")) getF_CTEQ(F1,F2,proton,x,Q2);

@@ -25,6 +25,9 @@ public:
    * W^2 = 9 GeV^2 <BR>
    * "SLAC": SLAC paramtetrization from Bodek <BR>
    * "Alekhin": leading twist parametrization by Alekhin [see PRD 68,014002], also see alekhin.f file <BR>
+   * and the other names of NuclStructure ("CTEQ", "MSTW", "LHAPDF:<set>", combinations such as
+   * "CB+LHAPDF:CT18LO@4"). Where SLAC is used (NuclStructure::isF2Fit), F1 is built from F2 with
+   * R = 0.18 and the off-shell kinematics; the other parametrizations give F1 themselves.
    */
   DeuteronStructure(const bool proton, std::string name);
   
