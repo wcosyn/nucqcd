@@ -52,7 +52,7 @@ Phase 4b touches ~700 uses in the libraries.
 **After that:** step 11 part 2 (`RunLog` in the other ~69 programs, `// ` headers to `# `) together with ROOT phase 6 (programs), and ROOT phase 5
 (ROOT optional in the build).
 
-**Open choices for the author:** the PDG constants update (changes values); whether to unbundle Cuba
+**Open choices for the author:** the license (step 8, see the item there); the PDG constants update (changes values); whether to unbundle Cuba
 (step 7); the README (step 8) comes last.
 
 ---
@@ -682,6 +682,29 @@ Write this last, after the refactors, so it describes the final layout and uses 
   - a link to `docs/HISTORY.md`
 
   CLAUDE.md and `manual/manual.tex` already contain parts of this.
+
+- [ ] **License** (added 2026-11-23; the author's decision, best before the README). The repository
+  has no LICENSE file; by default copyright law then gives others no right to use, copy or modify
+  the code (this is a summary, not legal advice; the university may have rules too). Points to settle:
+  - **What the dependencies allow.** GSL, PARTONS and LHAPDF are GPL-3, and the bundled
+    `Integrator/adaptive/cubature.c` is GPL-2-or-later, so binaries that link them are covered by
+    the GPL: nucqcd's own code can carry any GPL-3-compatible license (GPL-3.0-or-later is the
+    simplest; a permissive license such as MIT or BSD-3 for nucqcd's own files also works, but the
+    combined programs are still distributed under the GPL). Cuba is LGPL-3.
+  - **Code derived from ROOT** (LGPL-2.1-or-later): `Tools/Core/Vector3`, `LorentzVector`,
+    `Rotation` (phase 4a) follow ROOT's TVector3 & co. closely, and `nucqcd::solve_3x3` in
+    `Tools/Core/MathUtil.cpp` copies `TDecompLU`'s algorithm (phase 2). LGPL-2.1+ code may be used
+    in a GPL-3 project; keep ROOT's copyright notice and license reference in those files (to add),
+    or rewrite them independently if a permissive license is chosen.
+  - **Bundled code without a stated license**: `Integrator/numint` (Klaas Vantournhout, Ghent
+    University and GSI), the QCD evolution code in `DIS/evolution`, and the Fortran
+    parametrizations in `Tools/StructureFunctions` and `Tools/WaveFunctions` (Alekhin, Christy-Bosted,
+    CTEQ, GRSV, HMRS, R1990/R1998, the He3 wave function code by Misak Sargsian). Check with the
+    authors or their published terms whether they may be redistributed, and under what conditions;
+    `docs/HISTORY.md` records where some of them came from.
+  - **Then**: add `LICENSE` (and SPDX headers if wanted), a `THIRD_PARTY.md` (or a section in the
+    README) listing the bundled code with its license and origin, and a "License" section in the
+    README (step 8).
 
 ## 9. Decouple from ROOT where possible
 
