@@ -8,7 +8,7 @@
 # Options: BUILD_PROGS, PARTONS_ENABLED, STATIC_BUILD (all OFF by default),
 # BUILD_TESTING (ON by default; tests in tests/, run with 'ctest', see tests/README.md).
 # ROOT is optional (ROOT_ENABLED, ON by default: used when found): the libraries do not use it; only the
-# fit programs (TMinuit), the diDVCS event generators and the test unit_vectors need it. It is found through
+# fit programs (TMinuit) and the test unit_vectors need it. It is found through
 # its CMake config: source thisroot.sh, or ROOT in /opt/root is used.
 cmake_minimum_required(VERSION 3.16)
 project(nucqcd LANGUAGES C CXX Fortran)
@@ -17,7 +17,7 @@ option(BUILD_PROGS "Build the programs in progs/ with 'make' and install them" O
 option(PARTONS_ENABLED "Build GPD_Partons and progs/GPD (needs PARTONS, see scripts/install_partons.sh)" OFF)
 option(STATIC_BUILD "Also build static versions of the libraries" OFF)
 option(LHAPDF_ENABLED "Use LHAPDF when it is found (\"LHAPDF:<set>\" structure functions)" ON)
-option(ROOT_ENABLED "Use ROOT when it is found (fit programs, diDVCS generators, test unit_vectors)" ON)
+option(ROOT_ENABLED "Use ROOT when it is found (fit programs, test unit_vectors)" ON)
 include(CTest)   # option BUILD_TESTING (default ON): test suite in tests/, needs network once (Catch2)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)

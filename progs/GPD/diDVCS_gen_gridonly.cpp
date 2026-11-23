@@ -1,4 +1,8 @@
 #include <string>
+#include "event_random.hpp"
+#include <Tools/Core/constants.hpp>
+#include <algorithm>
+#include <cmath>
 #include <vector>
 #include <complex>
 
@@ -10,16 +14,10 @@ using namespace std;
 #define ALPHA 0.00729735253 /*!< \def defines finestructure constant [] */
 
 
-#include <TVector3.h>
-#include <TLorentzVector.h>
-#include <TMath.h>
+#include <Tools/Core/Vector3.hpp>
+#include <Tools/Core/LorentzVector.hpp>
 #include <iostream>
 #include <fstream>
-#include <TF2.h>
-#include <TF1.h>
-#include <TFile.h>
-#include <TTree.h>
-#include <TRandom3.h>
 
 double me=511e-6;
 double Mp=0.938272;
@@ -34,39 +32,36 @@ double mrho;
 double psf;
 
 
-TLorentzVector BeamL;
-TLorentzVector BeamH;
-TLorentzVector Rho0,eplus,eminus,piplus,piminus;
-TLorentzVector QPrime;
-TLorentzVector Proton;
-TLorentzVector ScattL;
-TLorentzVector q;
-TLorentzVector cms;
-TLorentzVector S2;
+nucqcd::LorentzVector BeamL;
+nucqcd::LorentzVector BeamH;
+nucqcd::LorentzVector Rho0,eplus,eminus,piplus,piminus;
+nucqcd::LorentzVector QPrime;
+nucqcd::LorentzVector Proton;
+nucqcd::LorentzVector ScattL;
+nucqcd::LorentzVector q;
+nucqcd::LorentzVector cms;
+nucqcd::LorentzVector S2;
 
 
 double s;
 
-TF1* virt_long=new TF1("virt long","TMath::Power(TMath::Sin(x),2)",0,2*TMath::Pi());//Angular dependence for the qprime decay
-TF1* rho_long=new TF1("rho long","TMath::Power(TMath::Cos(x),2)",0,2*TMath::Pi());//Angular dependence for the rho0 decay
 
 double theta_e,Ep, t_min;
 double s2_min;
 
 double xb,q2,s2,trho,tN,qprime2,y,q2p, trho_min;
-TRandom3* rando=new TRandom3();
 
 
 double Ecm,pcm; //Energy/momentum in center-of-mass of (rho+q')
 double Ecm_pr,pcm_pr;  //Energy/momentum in center-of-mass of (p')
 double Ecm_rho,pcm_rho; //Energy/momentum in center-of-mass of (rho)
 
-TVector3 dir_pr;
-TVector3 dir_qp;
-TVector3 rot_dir;
+nucqcd::Vector3 dir_pr;
+nucqcd::Vector3 dir_qp;
+nucqcd::Vector3 rot_dir;
 
 //To generate kinematics
-double theta_max=177.9*TMath::DegToRad();
+double theta_max=177.9*nucqcd::deg_to_rad;
 double W2min=4;//(q+p)^2 in GeV^2
 double q2min=1;
 double q2max=10;
@@ -139,42 +134,42 @@ double getCross_DiDVCS_interp(const double scale, const double t_rho, const doub
 
 
 //Method to compute the lower and upper bound of the squared momentum transfer to the recoil baryon (Proton, Nucleus, Delta...). It depends on q2, xb, the mass of the recoil baryon mrecoil and the mass of the produced particle mpp 
-Double_t tmin(Double_t q, Double_t x, double mrecoil, double mpp){
- Double_t W=TMath::Sqrt(q*(1/x-1)+Mp*Mp);
- Double_t E1cm=(W*W+q+Mp*Mp)/2./W;
- Double_t P1cm=TMath::Sqrt(E1cm*E1cm-Mp*Mp);
- Double_t E3cm=(W*W-mpp*mpp+mrecoil*mrecoil)/2./W;
- Double_t P3cm=TMath::Sqrt(E3cm*E3cm-mrecoil*mrecoil);
- Double_t result=(TMath::Power(q+mpp*mpp+Mp*Mp-mrecoil*mrecoil,2)/4./W/W-TMath::Power(P1cm-P3cm,2));
+double tmin(double q, double x, double mrecoil, double mpp){
+ double W=std::sqrt(q*(1/x-1)+Mp*Mp);
+ double E1cm=(W*W+q+Mp*Mp)/2./W;
+ double P1cm=std::sqrt(E1cm*E1cm-Mp*Mp);
+ double E3cm=(W*W-mpp*mpp+mrecoil*mrecoil)/2./W;
+ double P3cm=std::sqrt(E3cm*E3cm-mrecoil*mrecoil);
+ double result=(std::pow(q+mpp*mpp+Mp*Mp-mrecoil*mrecoil,2)/4./W/W-std::pow(P1cm-P3cm,2));
  return result;
 }
 
-Double_t tmax(Double_t q, Double_t x, double mrecoil, double mpp){
- Double_t W=TMath::Sqrt(q*(1/x-1)+Mp*Mp);
- Double_t E1cm=(W*W+q+Mp*Mp)/2./W;
- Double_t P1cm=TMath::Sqrt(E1cm*E1cm-Mp*Mp);
- Double_t E3cm=(W*W-mpp*mpp+mrecoil*mrecoil)/2./W;
- Double_t P3cm=TMath::Sqrt(E3cm*E3cm-mrecoil*mrecoil);
- Double_t result=(TMath::Power(q+mpp*mpp+Mp*Mp-mrecoil*mrecoil,2)/4./W/W-TMath::Power(P1cm+P3cm,2));
+double tmax(double q, double x, double mrecoil, double mpp){
+ double W=std::sqrt(q*(1/x-1)+Mp*Mp);
+ double E1cm=(W*W+q+Mp*Mp)/2./W;
+ double P1cm=std::sqrt(E1cm*E1cm-Mp*Mp);
+ double E3cm=(W*W-mpp*mpp+mrecoil*mrecoil)/2./W;
+ double P3cm=std::sqrt(E3cm*E3cm-mrecoil*mrecoil);
+ double result=(std::pow(q+mpp*mpp+Mp*Mp-mrecoil*mrecoil,2)/4./W/W-std::pow(P1cm+P3cm,2));
  return result;
 }
 
 //y the inelasticity which is more convenient to use than xb.
 double ymax(double q2){
-  return TMath::Min(1-q2/4./BeamL.E()/BeamL.E()/TMath::Sin(theta_max/2.)/TMath::Sin(theta_max/2.),0.95);
+  return std::min(1-q2/4./BeamL.E()/BeamL.E()/std::sin(theta_max/2.)/std::sin(theta_max/2.),0.95);
 }
 
 double ymin(double q2){
-  return TMath::Max((W2min-Mp*Mp+q2)/s,0.01);
+  return std::max((W2min-Mp*Mp+q2)/s,0.01);
 }
 
 
 //THE method which computes all LorentzVector. Q2 and xb has already been set and are kept in memory. Then remains t and phi to define the entire final set
 //In truth... it must be validated on the recoil baryon
 void ComputeLeptScatt(double q2, double y){
-  theta_e=2*TMath::ATan(TMath::Sqrt(q2/(1-y)/4./BeamL.E()/BeamL.E()));
-  Ep=q2/4./BeamL.E()/TMath::Sin(theta_e/2.)/TMath::Sin(theta_e/2.);
- ScattL.SetPxPyPzE(Ep*TMath::Sin(TMath::Pi()+theta_e),0,Ep*TMath::Cos(TMath::Pi()+theta_e),Ep);
+  theta_e=2*std::atan(std::sqrt(q2/(1-y)/4./BeamL.E()/BeamL.E()));
+  Ep=q2/4./BeamL.E()/std::sin(theta_e/2.)/std::sin(theta_e/2.);
+ ScattL.SetPxPyPzE(Ep*std::sin(nucqcd::pi+theta_e),0,Ep*std::cos(nucqcd::pi+theta_e),Ep);
  
   q=BeamL-ScattL;
   cms=q+BeamH;
@@ -188,9 +183,9 @@ void ComputeLeptScatt(double q2, double y){
 }
 
 double tmin_proton(double s2, double q2prime){
-  double Es2_pr=(s2-q2prime+Mp*Mp)/2./TMath::Sqrt(s2);//Energy in cms of s2 for the proton
+  double Es2_pr=(s2-q2prime+Mp*Mp)/2./std::sqrt(s2);//Energy in cms of s2 for the proton
   BeamH.Boost(-S2.BoostVector()); //Let's check incoming proton momentum in S2 rest frame
-  double tN_min=2*Mp*Mp-2*(Es2_pr*BeamH.E()-BeamH.P()*TMath::Sqrt(Es2_pr*Es2_pr-Mp*Mp)); //t=(p-p')^2 minimal when p and p' are collinear 
+  double tN_min=2*Mp*Mp-2*(Es2_pr*BeamH.E()-BeamH.P()*std::sqrt(Es2_pr*Es2_pr-Mp*Mp)); //t=(p-p')^2 minimal when p and p' are collinear 
   BeamH.Boost(S2.BoostVector()); //Let's put Incoming proton back in gamma*N cms.
   //Tmin is obtained when incoming and recoil proton have parallel momentum.
   return tN_min;
@@ -198,16 +193,16 @@ double tmin_proton(double s2, double q2prime){
 
 
 void ComputePrQprime(double s2, double q2prime, double t_N, double phi_trento){
-  double Es2_pr=(s2-q2prime+Mp*Mp)/2./TMath::Sqrt(s2);//Energy in cms of s2 for the proton
-  double Es2_qp=(s2+q2prime-Mp*Mp)/2./TMath::Sqrt(s2);//Energy in cms of s2 for the q2'
-  double ps2=TMath::Sqrt(((s2-pow(Mp+sqrt(q2prime),2))*(s2-pow(Mp-sqrt(q2prime),2))))/2./TMath::Sqrt(s2);//momentum of both particle in particle s2
+  double Es2_pr=(s2-q2prime+Mp*Mp)/2./std::sqrt(s2);//Energy in cms of s2 for the proton
+  double Es2_qp=(s2+q2prime-Mp*Mp)/2./std::sqrt(s2);//Energy in cms of s2 for the q2'
+  double ps2=std::sqrt(((s2-pow(Mp+sqrt(q2prime),2))*(s2-pow(Mp-sqrt(q2prime),2))))/2./std::sqrt(s2);//momentum of both particle in particle s2
   
   //Let's go to S2 cms
   BeamH.Boost(-S2.BoostVector());
 
   double theta=acos(((t_N-2*Mp*Mp)/2.+BeamH.E()*Es2_pr)/BeamH.Vect().Mag()/ps2);
  
-  TVector3 unit=BeamH.Vect().Unit();
+  nucqcd::Vector3 unit=BeamH.Vect().Unit();
   unit.Rotate(theta,unit.Orthogonal());
   unit.Rotate(phi_trento,BeamH.Vect());
   Proton.SetPxPyPzE(ps2*unit.X(),ps2*unit.Y(),ps2*unit.Z(),Es2_pr);
@@ -230,19 +225,19 @@ void ComputePrQprime(double s2, double q2prime, double t_N, double phi_trento){
 
 void ComputeRho(double mpp, double mrecoil, double t_rho, double phi_trento){
   Ecm=(cms.Mag2()-mrecoil*mrecoil+mpp*mpp)/2./cms.Mag();
-  pcm=TMath::Sqrt(Ecm*Ecm-mpp*mpp);
+  pcm=std::sqrt(Ecm*Ecm-mpp*mpp);
   
   Ecm_pr=(cms.Mag2()+mrecoil*mrecoil-mpp*mpp)/2./cms.Mag();
-  pcm_pr=TMath::Sqrt(Ecm_pr*Ecm_pr-mrecoil*mrecoil);
+  pcm_pr=std::sqrt(Ecm_pr*Ecm_pr-mrecoil*mrecoil);
 
 
    //t=2q_cm q'_cm(1-cos (theta_gamma*/meson))
   
   double theta_cm=acos(1-(tmin(-q.Mag2(), xb, mrecoil, mpp)-t_rho)/2./pcm/q.Vect().Mag());
    //Phi is a rotation of all four momentum around the axis defined by the virtual photon.
-  TVector3 dir_pr=q.Vect().Unit();
-  TVector3 dir_qp=q.Vect().Unit();
-  TVector3 rot_dir=q.Vect().Orthogonal().Unit();
+  nucqcd::Vector3 dir_pr=q.Vect().Unit();
+  nucqcd::Vector3 dir_qp=q.Vect().Unit();
+  nucqcd::Vector3 rot_dir=q.Vect().Orthogonal().Unit();
    dir_pr.Rotate(theta_cm,rot_dir);
    dir_pr.Rotate(phi_trento,q.Vect().Unit());
     Rho0.SetPxPyPzE(pcm*dir_pr.X(),pcm*dir_pr.Y(),pcm*dir_pr.Z(),Ecm);
@@ -251,11 +246,11 @@ void ComputeRho(double mpp, double mrecoil, double t_rho, double phi_trento){
 }
 
 void GammaPrimeDecay(){
-  double th_gen=virt_long->GetRandom();
-  double pel=TMath::Sqrt(QPrime.Mag2()/4.-me*me);
-  TVector3 unit_dir=QPrime.Vect().Unit();
+  double th_gen=event_random::sin2_angle();
+  double pel=std::sqrt(QPrime.Mag2()/4.-me*me);
+  nucqcd::Vector3 unit_dir=QPrime.Vect().Unit();
   unit_dir.Rotate(th_gen,unit_dir.Orthogonal()); //theta angle with photon direction
-  unit_dir.Rotate(rando->Uniform(0,2*TMath::Pi()),QPrime.Vect()); //rotation around the photon direction
+  unit_dir.Rotate(event_random::uniform(0,2*nucqcd::pi),QPrime.Vect()); //rotation around the photon direction
   eminus.SetPxPyPzE(pel*unit_dir.X(),pel*unit_dir.Y(),pel*unit_dir.Z(),QPrime.Mag()/2.);
   eplus.SetPxPyPzE(-pel*unit_dir.X(),-pel*unit_dir.Y(),-pel*unit_dir.Z(),QPrime.Mag()/2.);
 
@@ -266,11 +261,11 @@ void GammaPrimeDecay(){
 }
 
 void RhoDecay(){
-  double th_gen_rho=rho_long->GetRandom();
-  double ppi=TMath::Sqrt(mrho*mrho/4.-mpi*mpi);
-  TVector3 unit_dir=Rho0.Vect().Unit();
+  double th_gen_rho=event_random::cos2_angle();
+  double ppi=std::sqrt(mrho*mrho/4.-mpi*mpi);
+  nucqcd::Vector3 unit_dir=Rho0.Vect().Unit();
   unit_dir.Rotate(th_gen_rho,unit_dir.Orthogonal()); //theta angle with rho direction
-  unit_dir.Rotate(rando->Uniform(0,2*TMath::Pi()),Rho0.Vect()); //rotation around the rho direction
+  unit_dir.Rotate(event_random::uniform(0,2*nucqcd::pi),Rho0.Vect()); //rotation around the rho direction
   piminus.SetPxPyPzE(ppi*unit_dir.X(),ppi*unit_dir.Y(),ppi*unit_dir.Z(),mrho/2.);
   piplus.SetPxPyPzE(-ppi*unit_dir.X(),-ppi*unit_dir.Y(),-ppi*unit_dir.Z(),mrho/2.);
 
@@ -287,13 +282,13 @@ void RhoDecay(){
 void GetParticles(double EneL, double EneH, double q2, double y, double q2prime, double s2, double t_N, double t_rho){
   //Set Beam particle
 //   BeamL.SetPxPyPzE(0,0,-EneL,EneL);
-//   BeamH.SetPxPyPzE(0,0,EneH,TMath::Sqrt(Mp*Mp+EneH*EneH));
+//   BeamH.SetPxPyPzE(0,0,EneH,std::sqrt(Mp*Mp+EneH*EneH));
 //   s=(BeamL+BeamH).Mag2();
   ComputeLeptScatt(q2,y);//Compute ScattL and xb... all 4 momenta are exprressed in gamma*p cms.
   
-//   while (mrho<0.4||mrho>1.2) mrho=rando->BreitWigner(MassRho,GammaRho); 
+//   while (mrho<0.4||mrho>1.2) mrho=event_random::breit_wigner(MassRho,GammaRho); 
   
-  ComputeRho(mrho,TMath::Sqrt(s2),t_rho,0); //Give rho 4-momentum and last argument is the angle around the virtual photon in gamma*p cms.
+  ComputeRho(mrho,std::sqrt(s2),t_rho,0); //Give rho 4-momentum and last argument is the angle around the virtual photon in gamma*p cms.
   
   ComputePrQprime(s2, q2prime, t_N, 3.141); //Give rho 4-momenta of p' and gamma'. last argument is the angle of p' gamma' around the incoming hadron in gamma*p cms. ALL THE 4-MOMENTA ARE NOW EXPRESSED in LAB FRAME.
 
@@ -320,36 +315,36 @@ void GetParticles(double EneL, double EneH, double q2, double y, double q2prime,
 void GenerateEvents(double EneL, double EneH, int nevents, int ndec, complex<double> ****grid){
   //Set Beam particle
   BeamL.SetPxPyPzE(0,0,-EneL,EneL);
-  BeamH.SetPxPyPzE(0,0,EneH,TMath::Sqrt(Mp*Mp+EneH*EneH));
+  BeamH.SetPxPyPzE(0,0,EneH,std::sqrt(Mp*Mp+EneH*EneH));
   s=(BeamL+BeamH).Mag2();
 
-  rando->SetSeed(0);
+  event_random::engine();  // seeds the generator (new seed every run, or NUCQCD_SEED), as SetSeed(0) did
   
   for (int ev=0;ev<nevents;ev++){
-    q2=rando->Uniform(1,10); //Generate Q^2 between 1 and 10
-    y=rando->Uniform(ymin(q2),ymax(q2)); //Generate y between ymin and ymax
+    q2=event_random::uniform(1,10); //Generate Q^2 between 1 and 10
+    y=event_random::uniform(ymin(q2),ymax(q2)); //Generate y between ymin and ymax
     ComputeLeptScatt(q2,y);//Compute ScattL and xb... all 4 momenta are exprressed in gamma*p cms.
     
     //Now that gamma* is generated, we focus on the rho (mrho,trho)
-    while (mrho<0.4||mrho>1.2) mrho=rando->BreitWigner(MassRho,GammaRho);
-    s1_min=10*TMath::Power(TMath::Sqrt(q2pmin)+Mp,2);//Here it is 10*s2_min with q2p_min=2
-    s1_max=TMath::Power(TMath::Sqrt(q2*(1/xb-1)+Mp*Mp)-Mp,2);
+    while (mrho<0.4||mrho>1.2) mrho=event_random::breit_wigner(MassRho,GammaRho);
+    s1_min=10*std::pow(std::sqrt(q2pmin)+Mp,2);//Here it is 10*s2_min with q2p_min=2
+    s1_max=std::pow(std::sqrt(q2*(1/xb-1)+Mp*Mp)-Mp,2);
     if (s1_max>s1_min){
-      s2_min=TMath::Power(TMath::Sqrt(q2pmin)+Mp,2);
-      s2=rando->Uniform(s2_min,s1_max/10.);
+      s2_min=std::pow(std::sqrt(q2pmin)+Mp,2);
+      s2=event_random::uniform(s2_min,s1_max/10.);
       trho_min=tmin(q2, xb, sqrt(s2), mrho);
-      trho=rando->Uniform(trho_min-trange,trho_min);
-      ComputeRho(mrho,TMath::Sqrt(s2),trho,0); //Give rho 4-momentum and last argument is the angle around the virtual photon in gamma*p cms.
+      trho=event_random::uniform(trho_min-trange,trho_min);
+      ComputeRho(mrho,std::sqrt(s2),trho,0); //Give rho 4-momentum and last argument is the angle around the virtual photon in gamma*p cms.
 
       //Now that we have s2, we need to generate t_N to have the final state
-      q2p=rando->Uniform(q2pmin,min(TMath::Power(TMath::Sqrt(s2)-Mp,2),20.)/*TMath::Power(TMath::Sqrt(s2)-Mp,2)*/); //Knowing the s2, q2' and MP, we can derive the momentum of the proton in the cms
-      tN=rando->Uniform(tmin_proton(s2,q2p)-trange,tmin_proton(s2,q2p));
+      q2p=event_random::uniform(q2pmin,min(std::pow(std::sqrt(s2)-Mp,2),20.)/*std::pow(std::sqrt(s2)-Mp,2)*/); //Knowing the s2, q2' and MP, we can derive the momentum of the proton in the cms
+      tN=event_random::uniform(tmin_proton(s2,q2p)-trange,tmin_proton(s2,q2p));
         ComputePrQprime(s2, q2p, tN, 3.141); //Last is phi trento
       if(tN>=-0.55){   //limit tNrange...
         for (int dec=0;dec<ndec;dec++){
             RhoDecay();
             GammaPrimeDecay();
-            psf=(q2max-q2min)*(ymax(q2)-ymin(q2))*(s1_max/10.-s2_min)*1*1*(TMath::Power(TMath::Sqrt(s2)-Mp,2)-q2pmin);//psf= deltaQ2 * delta Y * delta s2 * delta t_rho * delta t_N * delta Q'2 () => Be careful about angle around beams (ScattL), virtual photon (Rho0/S2 direction) and phi trento(angle between Pomeron*N and N' Q' plane) 
+            psf=(q2max-q2min)*(ymax(q2)-ymin(q2))*(s1_max/10.-s2_min)*1*1*(std::pow(std::sqrt(s2)-Mp,2)-q2pmin);//psf= deltaQ2 * delta Y * delta s2 * delta t_rho * delta t_N * delta Q'2 () => Be careful about angle around beams (ScattL), virtual photon (Rho0/S2 direction) and phi trento(angle between Pomeron*N and N' Q' plane) 
             // cout<<"//////////////////////"<<endl;
             // ScattL.Print();
             // Proton.Print();
