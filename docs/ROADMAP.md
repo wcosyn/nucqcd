@@ -29,7 +29,7 @@ same PR.
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
 | 9 | Decouple from ROOT where possible | 🔶 phases 1 (#44) and 2 (#45) done, 3–6 to do |
 | 10 | LHAPDF interface for the nucleon structure functions | ✅ done (#46), including MSTW through LHAPDF |
-| 11 | Run bookkeeping (provenance) for all programs | ⬜ (design first, then all programs) |
+| 11 | Run bookkeeping (provenance) for all programs | 🔶 part 1 (design, `RunLog`) done; part 2 (roll-out) to do |
 
 ---
 
@@ -675,23 +675,23 @@ argument next to a name from a string array, and the output of `git rev-parse --
   (and the PDF sets used), relevant environment variables (`NUCQCD_GRID_DIR`), number of MPI ranks,
   run time and exit status.
 
-1. [ ] **Design** (decide before the roll-out; candidate below):
-   - *Build-time information* in the binary: CMake generates a source file at build time (a custom
-     command, so it is refreshed at every build) with `git describe --always --dirty`, the commit date,
-     build type, compiler and flags, and the dependency versions. No git call at run time.
-   - *Run-time information*: e.g. `nucqcd::RunLog log(argc, argv);` as the first line of `main`, which
-     writes the full command line (quoted so it can be pasted back), date and time with time zone,
-     host, working directory, the environment variables that matter, the build information and, from
-     its destructor or `atexit`, the wall time. Every line starts with `# `, so data files stay
-     readable. Destination: stdout by default (where the data go), optionally stderr or a sidecar
-     file; with MPI only rank 0 writes.
-   - *Argument names*: optional (`RunLog log(argc, argv, {"Q2", "x", ...})`), checked against `argc`;
-     or programs move to a small argument parser with named options and a help text, which then also
-     supplies the names (larger change, could be its own item).
-   - Alternatives to weigh: a wrapper script that logs around the program (cannot know the build of
-     the binary), or a logging library such as spdlog (an extra dependency for little gain).
-   - A unit test for the formatting (comment marker, quoting) and for the build information (the
-     dirty flag appears when the tree has changes).
-2. [ ] **Roll-out**: replace `Bookkeep` by the outcome of 1 in the 8 programs, add it to all other
-   programs (not `progs/attic`), and remove `Bookkeep`. Check per program that its data output still
-   parses (commented header lines).
+1. [x] **Design and implementation** (done 2026-11-22). Decided with the author: the log goes to
+   **stdout** (where most programs write their data, so it stays in the data file), every line starts
+   with **`# `** (skipped by gnuplot, numpy.loadtxt, pandas with comment='#'; some programs' own headers
+   use `// `, to be aligned in the roll-out), and **argument names are an optional list** checked
+   against argc (an argument parser would be a separate item). Implemented as `nucqcd::RunLog`
+   (`Tools/RunLog`):
+   `nucqcd::RunLog runlog(argc, argv, {"wave function", "Q2 [GeV^2]"});` as the first statement of
+   `main` writes the quoted command line (pastable into a shell), the named arguments (extra arguments
+   as "argument i", missing ones as "(missing)"), date and time with time zone, host, working directory,
+   `NUCQCD_GRID_DIR` if set, and the build; at the end of `main` or at `exit()` (an atexit handler) the
+   end time and wall time. Only MPI rank 0 writes (rank from the launcher's environment, so no MPI
+   dependency in libMePhys). Build information (`nucqcd::build_info`): `git describe --always --dirty`
+   and the commit date, written into the build tree at every build by `cmake/BuildInfo.cmake` (the
+   file only changes with the git state, so nothing is recompiled otherwise), plus the build type,
+   compiler, flags and the ROOT, GSL and LHAPDF versions from the configuration. Tests: `unit_runlog`
+   (marker, quoting, names, end written once, at `exit()` in a child process, MPI rank, build info).
+2. [ ] **Roll-out**: replace `Bookkeep` by `RunLog` in the 8 programs, add it to all other programs
+   (not `progs/attic`), and remove `Bookkeep`. Check per program that its data output still parses
+   (commented header lines); change the programs' own `// ` header lines to `# `. Can be combined with
+   ROOT phase 6, which touches the programs too.
