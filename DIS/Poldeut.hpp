@@ -35,7 +35,7 @@ public:
     
     /*! Constructor
    * \param wfname Deuteron wave function name, see TDeuteron constructor for possibilities ["AV18", "Paris", etc.]
-   * \param strucname which structure function parametrization ["CB"=Christy-Bosted (SLAC above W^2 = 9 GeV^2), "SLAC", "Alekhin"], see NuclStructure 
+   * \param strucname which structure function parametrization ["CB"=Christy-Bosted (SLAC above W^2 = 9 GeV^2), "SLAC", "Alekhin", or any other name of NuclStructure: "CTEQ", "MSTW", "LHAPDF:<set>", combinations such as "CB+LHAPDF:CT18LO@4"], see NuclStructure 
    */
   Poldeut(std::string wfname, std::string strucname);
   ~Poldeut(); /*!< Destructor */

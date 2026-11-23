@@ -47,7 +47,7 @@ public:
     /*! Constructor
    * \param wfname Deuteron wave function name, see TDeuteron constructor for possibilities ["AV18", "Paris", etc.]
    * \param proton photon interacts with proton [1] or neutron [0]
-   * \param strucname which structure function parametrization ["CB"=Christy-Bosted (SLAC above W^2 = 9 GeV^2), "SLAC", "Alekhin"], see NuclStructure 
+   * \param strucname which structure function parametrization ["CB"=Christy-Bosted (SLAC above W^2 = 9 GeV^2), "SLAC", "Alekhin", or any other name of NuclStructure: "CTEQ", "MSTW", "LHAPDF:<set>", combinations such as "CB+LHAPDF:CT18LO@4"], see NuclStructure 
    * \param sigmain [mb] total rescattering cross section in FSI
    * \param betain [GeV^-2] slope parameter
    * \param epsilonin real part of scattering amplitude

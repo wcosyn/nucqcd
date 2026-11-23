@@ -495,7 +495,11 @@ Write this last, after the refactors, so it describes the final layout and uses 
 
 - [ ] Cover:
   - what the code computes, and the libraries and how they depend on each other
-  - dependencies and how to install them (ROOT, GSL, Cuba, and optionally PARTONS and MPI)
+  - dependencies and how to install them (ROOT, GSL, Cuba, and optionally LHAPDF with its PDF sets,
+    PARTONS and MPI; what is still needed of ROOT after step 9)
+  - the physics inputs that can be chosen by name: deuteron wave functions, nuclear mean fields, and the
+    nucleon structure functions (`NucleonStructure`: CB, SLAC, Alekhin, CTEQ, HMRS, MSTW, `LHAPDF:<set>`,
+    and combinations such as `CB+LHAPDF:CT18LO@4`, step 10)
   - how to build, test and run the main programs
   - the data in `share/`
   - which papers to cite
