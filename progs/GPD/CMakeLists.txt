@@ -5,7 +5,9 @@ nucqcd_add_programs(LINK GPD DESTINATION GPD_Partons/bin PROGRAMS
   two_vector_N
   two_vector_electro_N
   two_vector_D
-  Nucl_GPD
+  Nucl_GPD)
+# event generators using ROOT (TRandom3, TF1::GetRandom; roadmap step 9 phase 6 removes that)
+nucqcd_add_programs(LINK GPD root_libs DESTINATION GPD_Partons/bin PROGRAMS
   diDVCS
   diDVCS_Q2
   diDVCS_gen

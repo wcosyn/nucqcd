@@ -27,7 +27,7 @@ same PR.
 | 6 | Structural refactors | 🔶 done: constants macros, `NuclStructure` merge, code layout items 1–3 (`Tools` split, prefixed includes, `.hpp`), `Model`/`Cross` renamed; MPI retired; to do: namespace, Glauber grids, model selection, integrators, long files |
 | 7 | Unbundle Cuba and cubature | ⬜ (can be done any time after step 2) |
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
-| 9 | Decouple from ROOT where possible | 🔶 phases 1–4 done (#44, #45, #50, #55, 4b); the libraries include no ROOT header; 5 (build) and 6 (programs) to do |
+| 9 | Decouple from ROOT where possible | 🔶 phases 1–5 done (#44, #45, #50, #55, #56, phase 5): ROOT is optional, the libraries neither include nor link it; 6 (programs) to do |
 | 10 | LHAPDF interface for the nucleon structure functions | ✅ done (#46), including MSTW through LHAPDF |
 | 11 | Run bookkeeping (provenance) for all programs | 🔶 part 1 (design, `RunLog`) done; `Bookkeep` replaced in its 8 programs; `RunLog` in the other programs to do |
 
@@ -35,17 +35,17 @@ same PR.
 
 *Updated 2026-11-23.*
 
-**Done recently** (PRs #44–#55 and the phase 4b PR): ROOT decoupling phases 1–3; step 10 (LHAPDF);
+**Done recently** (PRs #44–#57 and the phase 5 PR): ROOT decoupling phases 1–3; step 10 (LHAPDF);
 He3 fixes; step 11 part 1 (`RunLog`); step 6 code layout: `Tools` split into Core, Kinematics,
 WaveFunctions and StructureFunctions (#52), then includes as paths from the repository root, `.hpp`
 as the only extension, and `Model`/`Cross` renamed to `EMQEHadronCurrent`/`EMQECross` (#53); MPI
 retired (`TMPI` and `rhod`/`rhottest` to `progs/attic/mpi`, #54); ROOT phase 4: own vector and
-Lorentz types, bitwise equal to ROOT (#55), and all code converted to them.
+Lorentz types, bitwise equal to ROOT (#55), and all code converted to them (#56); `RunLog` exit
+handler fix (#57); ROOT phase 5: ROOT optional in the build.
 
-**Recommended next step:** ROOT phase 5: the libraries include no ROOT header any more, so make
-ROOT optional in the build (libraries and most tests without ROOT; `unit_vectors` and the programs
-that need ROOT only when it is found), then phase 6 (programs). `namespace nucqcd` for the other
-classes (code layout item 4) can follow class by class.
+**Recommended next step:** ROOT phase 6, first part: make the `diDVCS*` event generators in
+`progs/GPD` ROOT-free (random numbers from `<random>`, the decay-angle sampling written out). The
+fits move to an external Minuit2 later.
 
 **After that:** step 11 part 2 (`RunLog` in the other ~69 programs, `// ` headers to `# `), together
 with ROOT phase 6 (programs).
@@ -821,13 +821,31 @@ standard) from everything that only computes cross sections.
      from their references on this machine on master too, at 1e-15: not from this change.) Cached
      Glauber grids stay valid (last-bit differences only). `namespace nucqcd` for the other classes
      (code layout item 4) is still to do.
-5. [ ] **Build system.** `find_package(ROOT)` becomes optional; the `root_libs` interface target is
-   linked only by programs that need it; the libraries and tests no longer link ROOT. The
-   `ROOTConfig`/`thisroot.sh` paragraph in CLAUDE.md and the README change accordingly.
-6. [ ] **Programs.** Fits: keep ROOT for them, or switch to standalone Minuit2 (available as its own
-   CMake project) if a ROOT-free build of those programs is wanted. Programs that write ROOT files or
-   histograms keep ROOT (or move to text output, or to the attic if unused). Mark in `progs/` which
-   programs need ROOT, and build them only when it is found.
+5. [x] **Build system** (done 2026-11-23). ROOT is optional: `ROOT_ENABLED` (ON by default, like
+   `LHAPDF_ENABLED`: used when found), `find_package(ROOT ... QUIET COMPONENTS Minuit)` (Minuit2 is
+   not used by anything). The libraries no longer link ROOT (`ToolsCore` linked `root_libs`, and
+   through it everything else). Programs and tests that need ROOT list `root_libs` in their `LINK`;
+   `nucqcd_add_program(s)` and `nucqcd_add_test` skip them when ROOT is not found, and the
+   configuration lists them: the 9 fit programs (`TMinuit`/`TFitter`), the 5 `diDVCS*` event
+   generators (phase 6 removes ROOT from them) and `unit_vectors`. `wftest` included ROOT's
+   `TVector.h` without using it. `RunLog` reports the ROOT version only when ROOT was found.
+   `scripts/install_partons.sh` no longer needs ROOT for its test build. Checked: a build with
+   `-DROOT_ENABLED=no`, `BUILD_PROGS` and `PARTONS_ENABLED` builds everything else, no library
+   links ROOT (`readelf`), and the tests pass there too (after the `RunLog` fix, step 4).
+6. [ ] **Programs.** What is left of ROOT (inventory 2026-11-23):
+   - the `diDVCS*` event generators in `progs/GPD` (author's decision 2026-11-23: make them
+     ROOT-free): `TRandom3::Uniform` → `std::mt19937_64` with a fixed seed (reproducible, but a
+     different event sample than before; same distributions), `TF1::GetRandom` for the sin²θ and
+     cos²θ decay angles → inverse-CDF or accept-reject sampling, `TMath` → `<cmath>`, and in
+     `diDVCS_gen_gridonly` ROOT's vector types → `nucqcd::` ones. `TFile`, `TTree` and `TF2` are
+     included but unused (the events go to `cout`); `diDVCS` and `diDVCS_Q2` use no ROOT at all.
+   - the fits (`progs/F2_largex_fit`: `F2_fit`, `F2_bootstrap`, `EMC_fit`; `progs/deepsdis`:
+     `deepsfit`, `bonusscatterfit`, `bonusfit_rig`, `bonus_F2nfit(_sys|_allangles)`): they use the
+     old `TMinuit` through `TFitter`, plus `TMatrixT` for the covariance matrix. Author's decision:
+     later, with an external standalone Minuit2 build (its own CMake project). That means porting
+     them to Minuit2's interface (`ROOT::Minuit2::FCNBase`, `MnMigrad`/`MnHesse`/`MnMinos`), not just
+     relinking; until then they stay on ROOT.
+   - `RunLog` in the other programs and their `// ` headers (step 11 part 2) touch the same files.
 
 Phases 1 and 2 are independent and small; 3 and 4 can go in either order; 5 and 6 come last.
 

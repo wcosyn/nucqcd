@@ -7,8 +7,9 @@
 #
 # Options: BUILD_PROGS, PARTONS_ENABLED, STATIC_BUILD (all OFF by default),
 # BUILD_TESTING (ON by default; tests in tests/, run with 'ctest', see tests/README.md).
-# ROOT (with Minuit2; MathMore is no longer needed) is found through its CMake config: source thisroot.sh,
-# or ROOT in /opt/root is used.
+# ROOT is optional (ROOT_ENABLED, ON by default: used when found): the libraries do not use it; only the
+# fit programs (TMinuit), the diDVCS event generators and the test unit_vectors need it. It is found through
+# its CMake config: source thisroot.sh, or ROOT in /opt/root is used.
 cmake_minimum_required(VERSION 3.16)
 project(nucqcd LANGUAGES C CXX Fortran)
 
@@ -16,6 +17,7 @@ option(BUILD_PROGS "Build the programs in progs/ with 'make' and install them" O
 option(PARTONS_ENABLED "Build GPD_Partons and progs/GPD (needs PARTONS, see scripts/install_partons.sh)" OFF)
 option(STATIC_BUILD "Also build static versions of the libraries" OFF)
 option(LHAPDF_ENABLED "Use LHAPDF when it is found (\"LHAPDF:<set>\" structure functions)" ON)
+option(ROOT_ENABLED "Use ROOT when it is found (fit programs, diDVCS generators, test unit_vectors)" ON)
 include(CTest)   # option BUILD_TESTING (default ON): test suite in tests/, needs network once (Catch2)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
@@ -63,15 +65,22 @@ endif()
 add_compile_options(-Wall -Wextra "$<$<CONFIG:Release>:${NUCQCD_RELEASE_FLAGS}>" "$<$<CONFIG:Debug>:-g>")
 
 # ---- external dependencies -------------------------------------------------------------------
-find_package(ROOT 6 CONFIG REQUIRED COMPONENTS Minuit Minuit2
-             HINTS "$ENV{ROOTSYS}/cmake" /opt/root/cmake)
-message(STATUS "ROOT ${ROOT_VERSION} in ${ROOT_DIR}")
-# ROOT's libraries are linked by path (ROOT_LIBRARIES) rather than through the ROOT:: targets,
-# because those require ROOT's own C++ standard (C++23 for ROOT 6.40) and would switch the
-# whole code base to it.
-add_library(root_libs INTERFACE)
-target_include_directories(root_libs SYSTEM INTERFACE ${ROOT_INCLUDE_DIRS})
-target_link_libraries(root_libs INTERFACE ${ROOT_LIBRARIES})
+# ROOT (optional, roadmap step 9 phase 5): programs and tests that need it list root_libs in LINK, and
+# nucqcd_add_program(s)/nucqcd_add_test skip them when ROOT is not found.
+if(ROOT_ENABLED)
+  find_package(ROOT 6 CONFIG QUIET COMPONENTS Minuit HINTS "$ENV{ROOTSYS}/cmake" /opt/root/cmake)
+endif()
+if(ROOT_FOUND)
+  message(STATUS "ROOT ${ROOT_VERSION} in ${ROOT_DIR}")
+  # ROOT's libraries are linked by path (ROOT_LIBRARIES) rather than through the ROOT:: targets,
+  # because those require ROOT's own C++ standard (C++23 for ROOT 6.40) and would switch the
+  # programs that use them to it.
+  add_library(root_libs INTERFACE)
+  target_include_directories(root_libs SYSTEM INTERFACE ${ROOT_INCLUDE_DIRS})
+  target_link_libraries(root_libs INTERFACE ${ROOT_LIBRARIES})
+else()
+  message(STATUS "ROOT not found (or ROOT_ENABLED=no): the programs and tests that need ROOT are not built")
+endif()
 
 find_package(GSL REQUIRED)
 
@@ -126,6 +135,12 @@ endif()
 add_subdirectory(progs)
 if(BUILD_TESTING)
   add_subdirectory(tests)       # Catch2 + CTest, see tests/README.md
+endif()
+
+get_property(nucqcd_skipped GLOBAL PROPERTY NUCQCD_SKIPPED_NO_ROOT)
+if(nucqcd_skipped)
+  list(JOIN nucqcd_skipped ", " nucqcd_skipped)
+  message(STATUS "Not built without ROOT: ${nucqcd_skipped}")
 endif()
 
 if(DOXYGEN_FOUND)

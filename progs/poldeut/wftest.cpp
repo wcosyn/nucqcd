@@ -7,7 +7,6 @@ Used to compute sum rule integrals for the deuteron structure functions
 #include<Tools/WaveFunctions/OldDeuteron.hpp>
 #include<Tools/WaveFunctions/TDeuteron.hpp>
 #include<Tools/WaveFunctions/TInterpolatingWavefunction.hpp>
-#include<TVector.h>
 #include<Tools/StructureFunctions/NucleonStructure.hpp>
 
 
