@@ -28,7 +28,7 @@ same PR.
 | 6 | Structural refactors | 🔶 done: constants macros (#41), `NuclStructure` merge (#42), code layout items 1–3 (`Tools` split #52, prefixed includes and `.hpp` #53), `Model`/`Cross` renamed (#53); MPI retired (#54); to do: namespace, Glauber grids, model selection, integrators, long files |
 | 7 | Unbundle Cuba and cubature | ⬜ (can be done any time after step 2) |
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
-| 9 | Decouple from ROOT where possible | 🔶 phases 1–5 done (#44, #45, #50, #55, #56, #58): ROOT is optional, the libraries neither include nor link it; 6: GPD generators ROOT-free (PHASE6PR), fits (Minuit2) to do |
+| 9 | Decouple from ROOT where possible | 🔶 phases 1–5 done (#44, #45, #50, #55, #56, #58): ROOT is optional, the libraries neither include nor link it; 6: GPD generators ROOT-free (#59), fits (Minuit2) to do |
 | 10 | LHAPDF interface for the nucleon structure functions | ✅ done (#46), including MSTW through LHAPDF |
 | 11 | Run bookkeeping (provenance) for all programs | 🔶 part 1 (design, `RunLog`) done (#49); `Bookkeep` replaced in its 8 programs (#51); `RunLog` in the other programs to do |
 
@@ -36,14 +36,14 @@ same PR.
 
 *Updated 2026-11-23.*
 
-**Done recently** (PRs #44–#58 and PHASE6PR): ROOT decoupling phases 1–3; step 10 (LHAPDF);
+**Done recently** (PRs #44–#58 and #59): ROOT decoupling phases 1–3; step 10 (LHAPDF);
 He3 fixes; step 11 part 1 (`RunLog`); step 6 code layout: `Tools` split into Core, Kinematics,
 WaveFunctions and StructureFunctions (#52), then includes as paths from the repository root, `.hpp`
 as the only extension, and `Model`/`Cross` renamed to `EMQEHadronCurrent`/`EMQECross` (#53); MPI
 retired (`TMPI` and `rhod`/`rhottest` to `progs/attic/mpi`, #54); ROOT phase 4: own vector and
 Lorentz types, bitwise equal to ROOT (#55), and all code converted to them (#56); `RunLog` exit
 handler fix (#57); ROOT phase 5: ROOT optional in the build (#58); phase 6: the `diDVCS*` generators ROOT-free
-(PHASE6PR).
+(#59).
 
 **Recommended next step:** ROOT is now only needed for the fits (to move to an external Minuit2,
 phase 6) and `unit_vectors`. Next: step 11 part 2 (`RunLog` in the other programs) or `namespace
@@ -844,7 +844,7 @@ standard) from everything that only computes cross sections.
    `-DROOT_ENABLED=no`, `BUILD_PROGS` and `PARTONS_ENABLED` builds everything else, no library
    links ROOT (`readelf`), and the tests pass there too (after the `RunLog` fix, step 4).
 6. [ ] **Programs.** What is left of ROOT (inventory 2026-11-23):
-   - [x] the `diDVCS*` event generators in `progs/GPD` (done 2026-11-23, PHASE6PR; author's
+   - [x] the `diDVCS*` event generators in `progs/GPD` (done 2026-11-23, #59; author's
      decision): no ROOT left. `progs/GPD/event_random.hpp` replaces `TRandom3` and
      `TF1::GetRandom`: one `std::mt19937_64`, seeded differently for every run as ROOT's
      `SetSeed(0)` did (from `std::random_device`), or from the environment variable `NUCQCD_SEED`
