@@ -552,7 +552,16 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   its own F1 and is unchanged. Also fixed: `NucleonStructure::operator=` leaked its MSTW object. About
   500 duplicated lines removed. Tested in `reg_nucleon_structure` (F1 now compared for all
   parametrizations, and a new off-shell case).
-- [ ] **Very long files and functions:** break them up, for example `Tools/TKinematics2to3.cpp`
+- [ ] **Retire MPI (`TMPI`)** (added 2026-11-23, author's decision). `TMPI` (from strangecalc) only
+  distributes independent kinematic points over ranks (rank-strided loop plus `GatherResults`); it
+  does not parallelize integrals. Its use in the libraries was removed in 2014 (commit `24fffe1`: "I
+  don't use it anyway"); only `progs/RhoTransparency/rhod` and `rhottest` still use it, and neither
+  was used for actual calculations. Move `Tools/Core/TMPI.*`, `rhod.cpp` and `rhottest.cpp` to
+  `progs/attic`, remove the `MPI_ENABLED` option (and the Intel `-parallel` flags that depend on it)
+  from CMake, and update CLAUDE.md. The commented-out `TMPI.h` includes in
+  `TKinematics2to3*.cpp` go too. Parallelism over integrand evaluations already comes from Cuba
+  (fork-based processes on one node, `CUBACORES`), where Cuba is used.
+- [ ] **Very long files and functions:** break them up, for example `Tools/Kinematics/TKinematics2to3.cpp`
   (6.8k lines, one function of about 1.3k lines) and `Glauber/NucleonEMOperator.cpp` (4.2k lines).
 
 ## 7. Unbundle Cuba
