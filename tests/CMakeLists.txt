@@ -67,6 +67,11 @@ nucqcd_add_test(unit_lorentz_gamma   DIR unit LABEL unit LINK ToolsCore cuba)
 nucqcd_add_test(unit_deuteron_wf     DIR unit LABEL unit LINK ToolsWaveFunctions cuba)
 nucqcd_add_test(unit_kinematics      DIR unit LABEL unit LINK ToolsKinematics cuba)
 nucqcd_add_test(unit_mathutil        DIR unit LABEL unit LINK ToolsCore cuba)
+nucqcd_add_test(unit_vectors         DIR unit LABEL unit LINK ToolsCore cuba)  # compares with ROOT (needs ROOT)
+# Without fused multiply-adds, so that the inline functions (of ROOT's headers and of ours) are compared
+# by their formulas: with -march=native the compiler chooses FMAs per call site, which can differ in
+# the last bits between two identical inline functions.
+set_source_files_properties(unit/unit_vectors.cpp PROPERTIES COMPILE_OPTIONS -ffp-contract=off)
 nucqcd_add_test(unit_lhapdf          DIR unit LABEL unit LINK ToolsStructureFunctions cuba)
 nucqcd_add_test(unit_he3wf           DIR unit LABEL unit LINK DIS cuba)
 nucqcd_add_test(unit_runlog          DIR unit LABEL unit LINK ToolsCore cuba)

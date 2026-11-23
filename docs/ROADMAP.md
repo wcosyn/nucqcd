@@ -27,7 +27,7 @@ same PR.
 | 6 | Structural refactors | 🔶 done: constants macros, `NuclStructure` merge, code layout items 1–3 (`Tools` split, prefixed includes, `.hpp`), `Model`/`Cross` renamed; MPI retired; to do: namespace, Glauber grids, model selection, integrators, long files |
 | 7 | Unbundle Cuba and cubature | ⬜ (can be done any time after step 2) |
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
-| 9 | Decouple from ROOT where possible | 🔶 phases 1 (#44), 2 (#45) and 3 done, 4–6 to do |
+| 9 | Decouple from ROOT where possible | 🔶 phases 1 (#44), 2 (#45), 3 and 4a (vector types) done; 4b (conversion), 5, 6 to do |
 | 10 | LHAPDF interface for the nucleon structure functions | ✅ done (#46), including MSTW through LHAPDF |
 | 11 | Run bookkeeping (provenance) for all programs | 🔶 part 1 (design, `RunLog`) done; `Bookkeep` replaced in its 8 programs; `RunLog` in the other programs to do |
 
@@ -35,21 +35,24 @@ same PR.
 
 *Updated 2026-11-23.*
 
-**Done recently** (PRs #44–#53 and the MPI PR): ROOT decoupling phases 1–3; step 10 (LHAPDF);
+**Done recently** (PRs #44–#54 and the phase 4a PR): ROOT decoupling phases 1–3; step 10 (LHAPDF);
 He3 fixes; step 11 part 1 (`RunLog`); step 6 code layout: `Tools` split into Core, Kinematics,
 WaveFunctions and StructureFunctions (#52), then includes as paths from the repository root, `.hpp`
 as the only extension, and `Model`/`Cross` renamed to `EMQEHadronCurrent`/`EMQECross` (#53); MPI
-retired (`TMPI` and `rhod`/`rhottest` to `progs/attic/mpi`).
+retired (`TMPI` and `rhod`/`rhottest` to `progs/attic/mpi`, #54); ROOT phase 4a: own vector and
+Lorentz types, bitwise equal to ROOT.
 
-**Recommended next step:** ROOT phase 4 (own vector and Lorentz types) together with
-`namespace nucqcd` (code layout item 4), class by class. ("Retire MPI" is done.)
+**Recommended next step:** ROOT phase 4b: convert the code to the new `nucqcd::Vector3`,
+`LorentzVector`, `Rotation` and `LorentzRotation` (phase 4a added them, bitwise equal to ROOT),
+library by library, starting with the Tools kinematics and spinors; add `namespace nucqcd` to the
+classes touched where that stays small.
 
-ROOT phase 4 touches ~700 uses; test every method against ROOT first.
+Phase 4b touches ~700 uses in the libraries.
 
 **After that:** step 11 part 2 (`RunLog` in the other ~69 programs, `// ` headers to `# `) together with ROOT phase 6 (programs), and ROOT phase 5
 (ROOT optional in the build).
 
-**Open choices for the author:** the PDG constants update (changes values); whether to unbundle Cuba
+**Open choices for the author:** the license (step 8, see the item there); the PDG constants update (changes values); whether to unbundle Cuba
 (step 7); the README (step 8) comes last.
 
 ---
@@ -680,6 +683,29 @@ Write this last, after the refactors, so it describes the final layout and uses 
 
   CLAUDE.md and `manual/manual.tex` already contain parts of this.
 
+- [ ] **License** (added 2026-11-23; the author's decision, best before the README). The repository
+  has no LICENSE file; by default copyright law then gives others no right to use, copy or modify
+  the code (this is a summary, not legal advice; the university may have rules too). Points to settle:
+  - **What the dependencies allow.** GSL, PARTONS and LHAPDF are GPL-3, and the bundled
+    `Integrator/adaptive/cubature.c` is GPL-2-or-later, so binaries that link them are covered by
+    the GPL: nucqcd's own code can carry any GPL-3-compatible license (GPL-3.0-or-later is the
+    simplest; a permissive license such as MIT or BSD-3 for nucqcd's own files also works, but the
+    combined programs are still distributed under the GPL). Cuba is LGPL-3.
+  - **Code derived from ROOT** (LGPL-2.1-or-later): `Tools/Core/Vector3`, `LorentzVector`,
+    `Rotation` (phase 4a) follow ROOT's TVector3 & co. closely, and `nucqcd::solve_3x3` in
+    `Tools/Core/MathUtil.cpp` copies `TDecompLU`'s algorithm (phase 2). LGPL-2.1+ code may be used
+    in a GPL-3 project; keep ROOT's copyright notice and license reference in those files (to add),
+    or rewrite them independently if a permissive license is chosen.
+  - **Bundled code without a stated license**: `Integrator/numint` (Klaas Vantournhout, Ghent
+    University and GSI), the QCD evolution code in `DIS/evolution`, and the Fortran
+    parametrizations in `Tools/StructureFunctions` and `Tools/WaveFunctions` (Alekhin, Christy-Bosted,
+    CTEQ, GRSV, HMRS, R1990/R1998, the He3 wave function code by Misak Sargsian). Check with the
+    authors or their published terms whether they may be redistributed, and under what conditions;
+    `docs/HISTORY.md` records where some of them came from.
+  - **Then**: add `LICENSE` (and SPDX headers if wanted), a `THIRD_PARTY.md` (or a section in the
+    README) listing the bundled code with its license and origin, and a "License" section in the
+    README (step 8).
+
 ## 9. Decouple from ROOT where possible
 
 Goal: the libraries (Tools/MePhys, Glauber, Knockout, DIS) build and run without ROOT; ROOT remains
@@ -742,18 +768,36 @@ standard) from everything that only computes cross sections.
    (overflow for tokens longer than 10 characters), and the token lists leaked when a format string
    was rejected. The dead, commented-out `HashName` functions are removed. Tests: `unit_stringutil`,
    and mixed-case and empty-token format strings in `unit_kinematics`.
-4. [ ] **Three- and four-vectors and Lorentz transformations.** Introduce small value types in Tools,
-   e.g. `nucqcd::Vector3`, `nucqcd::LorentzVector`, `nucqcd::Rotation`, `nucqcd::LorentzRotation`, with
-   the subset of the ROOT API that is used (component access, `Mag`, `Mag2`, `Perp`, `Perp2`,
-   `Theta`, `CosTheta`, `Phi`, `Angle`, `Unit`, `Dot`, `Cross`, `RotateX/Y/Z`, `Rotate`, `Boost`,
-   `BoostVector`, `Transform`, `Inverse`, `M`, `M2`, `E`, `P`, `SetXYZM`, `SetPxPyPzE`, `XYvector`,
-   arithmetic), so that the switch is mostly a rename. Before switching, add unit tests that compare
-   every method with ROOT on random inputs (angle ranges: `Phi` in (-pi, pi]; `TLorentzRotation`
-   semantics: active transformations, `a.Transform(b)` = b*a, boost composition order), and keep them
-   while ROOT is still available. `FourVector<double>` already exists for the Dirac algebra; the new
-   `LorentzVector` should convert to and from it. Then convert library by library (Tools kinematics
-   and spinors, then Glauber, Knockout, DIS), with the regression references as the check (they
-   should stay bitwise, or within 1e-14 where the operation order changes). The largest phase.
+4. [ ] **Three- and four-vectors and Lorentz transformations.** In two parts:
+   - [x] **4a: the types and their tests** (done 2026-11-23). `Tools/Core` has `nucqcd::Vector2`,
+     `Vector3` (`Vector3.hpp`), `LorentzVector` (`LorentzVector.hpp`), `Rotation` and
+     `LorentzRotation` (`Rotation.hpp`), with the subset of ROOT's interface that nucqcd uses (an
+     inventory of the method calls in libraries and programs) under the same names, so that the
+     switch is a rename. The formulas and their order of operations are ROOT 6.40's
+     (`math/physics`, checked against the installed headers), and so are the details that matter
+     for the results: `TMath::ATan2` (0 or ±π/2 for x = 0, where `std::atan2` can give ±π),
+     `TVector2::Phi` in [0, 2π) versus `TVector3::Phi` in [-π, π], the implicit conversions
+     `TRotation` → `TLorentzRotation` and `TVector3` → `TLorentzRotation` (a boost), active
+     transformations with `a.Transform(b)` = b·a. What ROOT has inline in its headers is inline here
+     too; what ROOT compiles into `libPhysics` is in `Vector3.cpp`, `LorentzVector.cpp` and
+     `Rotation.cpp`, compiled with `-ffp-contract=off`, because ROOT's `libPhysics` contains no fused
+     multiply-adds (checked with `objdump`). Differences: no `TObject` base, a bad index throws
+     `std::out_of_range`, no warnings printed for zero axes or vectors (the behaviour is ROOT's), and
+     `SetBoost` is private as in ROOT. `tests/unit/unit_vectors.cpp` compares every method with ROOT
+     on 20000 random cases per class (zeros of both signs, ±1, magnitudes 1e-12 to 1e12, angles
+     including multiples of π/2 and up to ±100, velocities up to and beyond 1, random chains of
+     rotations and boosts) and requires bitwise equality (several million comparisons, all equal; a
+     deliberately wrong `atan2` is caught). The test file is compiled with `-ffp-contract=off`:
+     with `-march=native` the compiler chooses fused multiply-adds per call site, so two identical
+     inline functions can differ in the last bits (1–4 ulp were seen for `VectorMultiplication`).
+     That also means the converted code cannot be guaranteed bitwise equal at every call site; the
+     regression references are the check there (expected bitwise or within ~1e-14). The test needs
+     ROOT and stays as long as ROOT is available.
+   - [ ] **4b: convert the code**, library by library (Tools kinematics and spinors, then Glauber,
+     Knockout, DIS, GPD_Partons; then the programs in phase 6), with the regression and slow tests
+     after each. `FourVector.hpp`'s `ToFourVector`/`ToLorentzVector` switch to `nucqcd::LorentzVector`
+     with the Tools conversion. Add `namespace nucqcd` to the classes touched (code layout item 4)
+     where it does not double the size of the change.
 5. [ ] **Build system.** `find_package(ROOT)` becomes optional; the `root_libs` interface target is
    linked only by programs that need it; the libraries and tests no longer link ROOT. The
    `ROOTConfig`/`thisroot.sh` paragraph in CLAUDE.md and the README change accordingly.
