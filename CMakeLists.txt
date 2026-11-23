@@ -5,7 +5,7 @@
 #   make install -j4        # libraries -> <repo>/lib, programs -> <repo>/bin
 #   make doc                # Doxygen documentation
 #
-# Options: BUILD_PROGS, PARTONS_ENABLED, MPI_ENABLED, STATIC_BUILD (all OFF by default),
+# Options: BUILD_PROGS, PARTONS_ENABLED, STATIC_BUILD (all OFF by default),
 # BUILD_TESTING (ON by default; tests in tests/, run with 'ctest', see tests/README.md).
 # ROOT (with Minuit2; MathMore is no longer needed) is found through its CMake config: source thisroot.sh,
 # or ROOT in /opt/root is used.
@@ -14,7 +14,6 @@ project(nucqcd LANGUAGES C CXX Fortran)
 
 option(BUILD_PROGS "Build the programs in progs/ with 'make' and install them" OFF)
 option(PARTONS_ENABLED "Build GPD_Partons and progs/GPD (needs PARTONS, see scripts/install_partons.sh)" OFF)
-option(MPI_ENABLED "Enable MPI (TMPI class and MPI programs)" OFF)
 option(STATIC_BUILD "Also build static versions of the libraries" OFF)
 option(LHAPDF_ENABLED "Use LHAPDF when it is found (\"LHAPDF:<set>\" structure functions)" ON)
 include(CTest)   # option BUILD_TESTING (default ON): test suite in tests/, needs network once (Catch2)
@@ -55,10 +54,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   # (find_package(OpenMP), OpenMP::OpenMP_Fortran).
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")     # classic icpc
   set(NUCQCD_RELEASE_FLAGS -O3 -shared-intel -fp-model source -unroll -pthread -ipo -xavx)
-  if(MPI_ENABLED)
-    list(APPEND NUCQCD_RELEASE_FLAGS -parallel)
-    add_link_options(-parallel)
-  endif()
   find_program(XIAR xiar)                          # archiver needed for -ipo static libraries
   if(XIAR)
     set(CMAKE_AR "${XIAR}")
@@ -96,10 +91,6 @@ if(LHAPDF_ENABLED)
 endif()
 if(PARTONS_ENABLED AND NOT LHAPDF_FOUND)
   message(FATAL_ERROR "PARTONS_ENABLED needs LHAPDF (libGPD takes the MSTW PDFs from it); do not set LHAPDF_ENABLED=no")
-endif()
-
-if(MPI_ENABLED)
-  find_package(MPI REQUIRED COMPONENTS CXX)
 endif()
 
 if(PARTONS_ENABLED)

@@ -22,9 +22,9 @@ same PR.
 | 1 | Test suite | ✅ done (PR #2) |
 | 2 | Repo hygiene, including branches | ✅ done (PR #4) |
 | 3 | Rename the repository | ✅ done (PR #7, tagged-poldeut PRs #1 and #2) |
-| 4 | Bug fixes | ✅ done: listed bugs (PRs #8, #9, #12); found later: stale FSI+CT grid (#18), kinematics (#19, #20, #33), DoubleNModel/Pair (#21, then moved to the attic in #22), π⁻ Glauber parameters (#28), TDeuteron errors (#31), He3 spin sum (#47) and factor A in `He3Cross` (#48). New bugs found later are added here |
+| 4 | Bug fixes | ✅ done: listed bugs (PRs #8, #9, #12); found later: stale FSI+CT grid (#18), kinematics (#19, #20, #33), DoubleNModel/Pair (#21, then moved to the attic in #22), π⁻ Glauber parameters (#28), TDeuteron errors (#31), He3 spin sum (#47) and factor A in `He3Cross` (#48), `TMPI` not compiling with MPI-3 (fixed in the attic with step 6, "Retire MPI"). New bugs found later are added here |
 | 5 | Low-risk modernization | ✅ done: `-fopenmp`, Fortran interop (#11), constants (#13, #14), grid cache (#15–#17), ownership (#23), exceptions (#24), Doxygen (#10, #25–#30, #32, #34–#39: no warnings left) |
-| 6 | Structural refactors | 🔶 done: constants macros, `NuclStructure` merge, code layout items 1–3 (`Tools` split, prefixed includes, `.hpp`), `Model`/`Cross` renamed; to do: namespace, Glauber grids, model selection, MPI, integrators, long files |
+| 6 | Structural refactors | 🔶 done: constants macros, `NuclStructure` merge, code layout items 1–3 (`Tools` split, prefixed includes, `.hpp`), `Model`/`Cross` renamed; MPI retired; to do: namespace, Glauber grids, model selection, integrators, long files |
 | 7 | Unbundle Cuba and cubature | ⬜ (can be done any time after step 2) |
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
 | 9 | Decouple from ROOT where possible | 🔶 phases 1 (#44), 2 (#45) and 3 done, 4–6 to do |
@@ -35,13 +35,14 @@ same PR.
 
 *Updated 2026-11-23.*
 
-**Done recently** (PRs #44–#52 and the include PR): ROOT decoupling phases 1–3; step 10 (LHAPDF);
+**Done recently** (PRs #44–#53 and the MPI PR): ROOT decoupling phases 1–3; step 10 (LHAPDF);
 He3 fixes; step 11 part 1 (`RunLog`); step 6 code layout: `Tools` split into Core, Kinematics,
 WaveFunctions and StructureFunctions (#52), then includes as paths from the repository root, `.hpp`
-as the only extension, and `Model`/`Cross` renamed to `EMQEHadronCurrent`/`EMQECross`.
+as the only extension, and `Model`/`Cross` renamed to `EMQEHadronCurrent`/`EMQECross` (#53); MPI
+retired (`TMPI` and `rhod`/`rhottest` to `progs/attic/mpi`).
 
-**Recommended next step:** a quick one first, "Retire MPI (`TMPI`)" (step 6); then ROOT phase 4 (own
-vector and Lorentz types) together with `namespace nucqcd` (code layout item 4), class by class.
+**Recommended next step:** ROOT phase 4 (own vector and Lorentz types) together with
+`namespace nucqcd` (code layout item 4), class by class. ("Retire MPI" is done.)
 
 ROOT phase 4 touches ~700 uses; test every method against ROOT first.
 
@@ -286,6 +287,32 @@ one commit per bug; no `[known-bug]` tests remain.
 - [x] **`progs/deepsdis/b1_calc.cpp` Azz angular factor:** the longitudinal tensor term used
   `1/4 + 3/4 cos θq` instead of d²₀₀(θq) = `1/4 + 3/4 cos 2θq` (the integrand `res[10]` already used
   `cos 2θq`). Fixed in PR #5. Found while reviewing the archived `Alan` branch, which had the same fix.
+
+### Open leads (to investigate)
+
+- [ ] **Rho transparency: t- and z-integrated results disagree (added 2026-11-23, from the author's
+  memory of ~2012; details may be off).** The rho programs offer two ways to do the integrals, which
+  should agree but gave results differing by orders of magnitude, while the Glauber/plane-wave ratios
+  (the transparencies) were similar; the cause was never found. What the code and history show:
+  - The two options are the `torz` flag of `progs/RhoTransparency/rhoset.cpp` (argument 1; `rhoset`
+    is the program used for the actual calculations), which integrates either
+    `RhoTCross::getCrosst` over ν and t (t from -0.4 to -0.1 GeV²) or `RhoTCross::getCrossz` over ν
+    and z (0.9 to 1). `rhoset` can also do the integral with `rombergerN` (nested) or the 2D
+    adaptive `numint` integrator, and `RhoDeuteron` (`rhodint`) has the same t/z pair.
+  - The history (Sept.–Nov. 2012) records the problem: `374b867` "wrong mass I used in the fixed z
+    integrations"; `58fd5ea` "finally figured out jacobians in RhoDeuteron, but still difference
+    between z and t integrations, but goes like A....very puzzling"; `5fe7fae` "deuteron ... z and t
+    integrations giving similar results and similar to the t integrations on large nuclei. still
+    problem in the RhoTCross z integration, absolutely no idea now"; `67ae550` "corrected small error
+    in t integrated jacobian". No later commit says the RhoTCross z problem was solved.
+  - Lead (hypothesis, not checked): a difference that scales with A and cancels in the
+    Glauber/plane-wave ratio points at a factor common to both, such as the Jacobian dt/dz or a
+    flux/phase-space factor using the mass of the nucleus instead of the nucleon (or the reverse),
+    rather than at the FSI.
+  - Plan: run `rhoset` (and `rhodint` for the deuteron) with both options for one nucleus at a few
+    kinematics, compare plane-wave cross sections first, check the t↔z Jacobian in `RhoTCross`
+    analytically (and against `RhoDeuteron`, which was fixed), and check against a plane-wave case
+    that can be integrated independently. Any fix changes values and needs the author's OK.
 
 ## 5. Low-risk modernization
 
@@ -585,15 +612,23 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   its own F1 and is unchanged. Also fixed: `NucleonStructure::operator=` leaked its MSTW object. About
   500 duplicated lines removed. Tested in `reg_nucleon_structure` (F1 now compared for all
   parametrizations, and a new off-shell case).
-- [ ] **Retire MPI (`TMPI`)** (added 2026-11-23, author's decision). `TMPI` (from strangecalc) only
-  distributes independent kinematic points over ranks (rank-strided loop plus `GatherResults`); it
-  does not parallelize integrals. Its use in the libraries was removed in 2014 (commit `24fffe1`: "I
-  don't use it anyway"); only `progs/RhoTransparency/rhod` and `rhottest` still use it, and neither
-  was used for actual calculations. Move `Tools/Core/TMPI.*`, `rhod.cpp` and `rhottest.cpp` to
-  `progs/attic`, remove the `MPI_ENABLED` option (and the Intel `-parallel` flags that depend on it)
-  from CMake, and update CLAUDE.md. The commented-out `TMPI.h` includes in
-  `TKinematics2to3*.cpp` go too. Parallelism over integrand evaluations already comes from Cuba
-  (fork-based processes on one node, `CUBACORES`), where Cuba is used.
+- [x] **Retire MPI (`TMPI`)** (done 2026-11-23, author's decision). `TMPI` (from strangecalc) only
+  distributed independent kinematic points over ranks (rank-strided loop plus `GatherResults`); it
+  did not parallelize integrals. Its use in the libraries was removed in 2014 (commit `24fffe1`: "I
+  don't use it anyway"); only `rhod` and `rhottest` (progs/RhoTransparency) still used it, and
+  neither was used for actual calculations. `TMPI` and those two programs moved to
+  `progs/attic/mpi`, which is built only when CMake finds MPI (no option); the `MPI_ENABLED` option,
+  the MPI links of `ToolsCore` and `Integrator`, and the Intel `-parallel` flag (automatic
+  parallelization, oddly tied to `MPI_ENABLED`) were removed, as were the commented-out `TMPI`
+  includes in `TKinematics2to3*.cpp`. The single-process programs `rhoset` (used for the actual
+  calculations), `rhosingle` and `rhodint` do not use MPI; they are not one-to-one replacements
+  (`rhod` scans an 11×101 grid in ν and t or z including coherent pieces, `rhodint` integrates over
+  them; `rhottest` scans 32 points with `RhoTCross`), but the code is kept in the attic. **Bug found
+  on the way:** `TMPI` no longer compiled with a current MPI, so `MPI_ENABLED=yes` was broken: it
+  used `MPI_Type_struct` (removed in MPI-3.0, 2012) and called `dup`/`dup2`/`close` without
+  `<unistd.h>`. Fixed in the attic copy (`MPI_Type_create_struct`, same arguments); it now compiles
+  and links with Open MPI 5.0 (not run). `RunLog` keeps its rank detection from the launcher's
+  environment (also covers `srun` without MPI).
 - [ ] **Very long files and functions:** break them up, for example `Tools/Kinematics/TKinematics2to3.cpp`
   (6.8k lines, one function of about 1.3k lines) and `Glauber/NucleonEMOperator.cpp` (4.2k lines).
 

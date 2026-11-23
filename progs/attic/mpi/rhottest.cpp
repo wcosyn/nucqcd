@@ -6,7 +6,7 @@
 using namespace std;
 
 #include <Knockout/RhoTCross.hpp>
-#include <Tools/Core/TMPI.hpp>
+#include "TMPI.hpp"
 #include <stdio.h>
 
 int main(int argc, char *argv[])

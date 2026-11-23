@@ -10,10 +10,11 @@
 #ifdef STRANGEDEUTERON_MPI
 #include <mpi.h>
 #endif
-#include <Tools/Core/TMPI.hpp>
+#include "TMPI.hpp"
 #include <cstdlib>
 #include <cstdio>
 #include <iostream>
+#include <unistd.h>  // dup, dup2, close
 
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
@@ -88,7 +89,7 @@ TMPI::TMPI(int* argc, char*** argv)
   int lengths[2] = {NROFRES,1};
   MPI_Aint offsets[2] = {0,NROFRES*sizeof(double)};
   MPI_Datatype types[2] = {MPI_DOUBLE, MPI_INT};
-  MPI_Type_struct(count, lengths, offsets, types, &datatype);
+  MPI_Type_create_struct(count, lengths, offsets, types, &datatype);  // MPI_Type_struct was removed in MPI-3.0
   MPI_Type_commit(&datatype);
   //std::cout << datatype << std::endl;
 #endif
