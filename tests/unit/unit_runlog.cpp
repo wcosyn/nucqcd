@@ -42,7 +42,8 @@ TEST_CASE("RunLog: comment lines, quoted command line, named arguments, end with
   CHECK(contains(s, "# started: "));
   CHECK(contains(s, "# host: "));
   CHECK(contains(s, "# nucqcd: git " + nucqcd::build_info::git_describe()));
-  CHECK(contains(s, "# libraries: ROOT "));
+  CHECK(contains(s, "# libraries: "));
+  CHECK(contains(s, "GSL "));  // ROOT is listed only when it was found (it is optional)
   CHECK(contains(s, ", wall time "));
   CHECK(s.find("# finished") == s.rfind("# finished"));  // written once
 }
