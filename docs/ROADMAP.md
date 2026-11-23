@@ -28,7 +28,7 @@ same PR.
 | 7 | Unbundle Cuba | ⬜ (can be done any time after step 2) |
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
 | 9 | Decouple from ROOT where possible | 🔶 phases 1 (#44) and 2 (#45) done, 3–6 to do |
-| 10 | LHAPDF interface for the nucleon structure functions | ✅ done (#46); optional: MSTW through LHAPDF |
+| 10 | LHAPDF interface for the nucleon structure functions | ✅ done (#46), including MSTW through LHAPDF |
 | 11 | Run bookkeeping (provenance) for all programs | ⬜ (design first, then all programs) |
 
 ---
@@ -299,7 +299,7 @@ one commit per bug; no `[known-bug]` tests remain.
   them with stream syntax. An uncaught exception still ends the program with the message (now via
   `std::terminate`, so the exit status is that of an abort rather than 1). Exceptions cannot pass
   through the C and Fortran integrators (Cuba, cubature, GSL), so inside integrands called from there
-  they still end the program. Left as they were: third-party code (Cuba, cubature, MSTW), `TMPI`, and
+  they still end the program. Left as they were: third-party code (Cuba, cubature, MSTW (removed in step 10)), `TMPI`, and
   the `STOP`s in the Fortran code. Tested in `unit_errors`. Converted with a script and reviewed per
   message (CRLF line endings of `WeakQEHadronCurrent.cpp` kept).
 - [x] **Grid cache:**
@@ -623,8 +623,18 @@ Add LHAPDF6 sets as a parametrization in `NucleonStructure` (and so in `NuclStru
   the new `isF2Fit()` (true where SLAC is used, so F1 is built from F2 with R = 0.18 and the off-shell
   kinematics) instead of comparing names. `NucleonStructure("CB")` itself still means CB up to
   25 GeV² and throws above.
-- [ ] Optionally, replace the bundled MSTW grid code (`mstwpdf.h/.cpp`, `share/mstw_grids`) by the
-  LHAPDF set `MSTW2008lo68cl`, after checking that F2 agrees.
+- [x] **MSTW through LHAPDF** (done 2026-11-22). The bundled MSTW grid code (`Tools/mstwpdf.h/.cpp`)
+  and grids (`share/mstw_grids`, LO, NLO and NNLO; only LO was used) are removed. `"MSTW"` in
+  `NucleonStructure` (and so `NuclStructure`, `DeuteronStructure`) is now an alias of
+  `"LHAPDF:MSTW2008lo68cl"` (central member), with the same F1 convention; `GPD_T_Nucl_grid` (the
+  forward limit of the transversity GPDs, GK model) takes u, d, ū, d̄ from the same set, and also
+  accepts `"LHAPDF:<set>"`. F2 compared on 14 x values in [1e-4, 0.95] and 9 Q² values in
+  [1, 1e4] GeV²: equal at the grid nodes (1e-16), up to 1.5e-3 relative between them (largest at
+  x = 1e-4, Q² = 2 GeV², just above the charm threshold), ~0.1% below Q² = 1 GeV²
+  (extrapolation): both interpolate the same grid, differently. The MSTW references in
+  `reg_nucleon_structure` were re-baselined (changes up to 1.2e-4 at Q² = 2 GeV², ~1e-9 at 5 GeV²);
+  `unit_lhapdf` checks two old values at a grid node. "MSTW" and `PARTONS_ENABLED` now need LHAPDF
+  (CMake stops for PARTONS without it); the install script installs the set.
 
 ## 11. Run bookkeeping (provenance) for all programs
 

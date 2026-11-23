@@ -44,7 +44,6 @@ nucqcd_add_library(MePhys
     TKinematics2to3.cpp
     TKinematics2to3WithLabAngles.cpp
     TLeptonKinematics.cpp
-    mstwpdf.cpp
     OldDeuteron.cpp
     ${mpi_sources}
     # Fortran

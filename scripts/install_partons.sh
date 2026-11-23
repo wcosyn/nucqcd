@@ -9,7 +9,7 @@
 #      sf::Thread / sf::Mutex / sf::Lock that PARTONS uses
 #   3. builds LHAPDF with its Python bindings (module `lhapdf`, installed in the user site-packages of
 #      python3), patching lhapdf-config so it accepts --incdir, which PARTONS' FindLHAPDF calls, and
-#      installs the PDF sets CT18LO and NNPDFpol11_100 (used by nucqcd's LHAPDF tests); nucqcd itself
+#      installs the PDF sets CT18LO, NNPDFpol11_100 and MSTW2008lo68cl (nucqcd's "MSTW" and its tests); nucqcd itself
 #      uses LHAPDF when it is found, also without PARTONS ("LHAPDF:<set>" structure functions)
 #   4. builds APFEL++
 #   5. clones/updates and builds elementary-utils, numa and partons (in that order)
@@ -97,8 +97,8 @@ python3 -c 'import lhapdf; print("lhapdf python module", lhapdf.__version__, "in
 # lhapdf-config advertises --incdir but only accepts --includedir; PARTONS calls --incdir
 sed -i 's/^\(\s*\)--includedir)\(\s*\)show_incdir=1 ;;/\1--includedir|--incdir)\2show_incdir=1 ;;/' "$PREFIX/bin/lhapdf-config"
 "$PREFIX/bin/lhapdf-config" --incdir > /dev/null || { echo "lhapdf-config --incdir patch failed"; exit 1; }
-# PDF sets for nucqcd's tests (tests/unit/unit_lhapdf.cpp), into $PREFIX/share/LHAPDF
-for set in CT18LO NNPDFpol11_100; do
+# PDF sets for nucqcd ("MSTW" = MSTW2008lo68cl) and its tests, into $PREFIX/share/LHAPDF
+for set in CT18LO NNPDFpol11_100 MSTW2008lo68cl; do
   [ -d "$PREFIX/share/LHAPDF/$set" ] || "$PREFIX/bin/lhapdf" install "$set" \
     || { echo "lhapdf install $set failed"; exit 1; }
 done

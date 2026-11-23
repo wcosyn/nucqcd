@@ -107,6 +107,12 @@ public:
    * \param proton proton (true) or neutron (false: u <-> d) \param x Bjorken x \param Q2 [GeV^2] Q^2
    * \param nf number of flavours \return the sum (0 outside 0 < x < 1) */
   double partonSum(bool polarized, bool proton, double x, double Q2, int nf) const;
+  /*! x f(x, Q) of one flavour, straight from LHAPDF
+   * \param polarized the polarized set (x Delta f) or the unpolarized one
+   * \param id PDG flavour id (1 = d, 2 = u, 3 = s, ..., negative for antiquarks, 21 = gluon)
+   * \param x momentum fraction \param Q [GeV] scale (not squared)
+   * \return x f(x, Q) */
+  double xfxQ(bool polarized, int id, double x, double Q) const;
 
 private:
   void buildWWTable() const; ///< fills the Wandzura-Wilczek table (once, thread safe)

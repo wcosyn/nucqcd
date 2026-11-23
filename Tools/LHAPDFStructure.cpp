@@ -109,6 +109,14 @@ double LHAPDFStructure::partonSum(bool polarized, bool proton, double x, double 
   return sum;
 }
 
+double LHAPDFStructure::xfxQ(bool polarized, int id, double x, double Q) const {
+  const LHAPDF::PDF *pdf = polarized ? pol.get() : unpol.get();
+  if (!pdf)
+    throw std::logic_error(ErrorMessage() << "LHAPDFStructure: no " << (polarized ? "polarized" : "unpolarized")
+                                          << " LHAPDF set given");
+  return pdf->xfxQ(id, x, Q);
+}
+
 #else  // built without LHAPDF
 
 bool LHAPDFStructure::available() { return false; }
@@ -119,6 +127,10 @@ LHAPDFStructure::LHAPDFStructure(const LHAPDFOptions &options) : opts(options) {
 }
 
 double LHAPDFStructure::partonSum(bool, bool, double, double, int) const {
+  throw std::runtime_error(ErrorMessage() << "LHAPDFStructure: nucqcd was built without LHAPDF");
+}
+
+double LHAPDFStructure::xfxQ(bool, int, double, double) const {
   throw std::runtime_error(ErrorMessage() << "LHAPDFStructure: nucqcd was built without LHAPDF");
 }
 

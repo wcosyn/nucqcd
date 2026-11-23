@@ -12,7 +12,6 @@
 #include <string>
 #include <cmath>
 #include <memory>
-class c_mstwpdf; //forward declaration
 namespace nucqcd { class LHAPDFStructure; struct LHAPDFOptions; }
 
 /*! \brief A class for a variety of nucleon structure parametrizations: Christy & Bosted, SLAC (Bodek),
@@ -32,7 +31,10 @@ public:
    * "Alekhin": leading twist parametrization by Alekhin [see PRD 68,014002], also see alekhin.f file <BR>
    * "CTEQ": F2 based on the pdf's from CTEQ (code from Misak, see cteq.f file) <BR>
    * "HMRS": F2 from pdfs from unknown source (Shunzo Kumano is the source, not enough info in his code file, see hmrs-b.f) <BR>
-   * "MSTW": F2 from LO (or nlo etc) from MSTW pdfs (see mstwpdf.h & mstw.cpp) WARNING: for some reason class instances can only be made as pointers, dynamic memory)<BR>
+   * "MSTW": F2 from the MSTW 2008 LO PDFs, an alias of "LHAPDF:MSTW2008lo68cl" (central member; needs
+   * nucqcd built with LHAPDF and the set installed). Until 2026-11 nucqcd had its own copy of the MSTW
+   * grid code and grid (share/mstw_grids); LHAPDF interpolates the same grid differently: the same at
+   * the grid nodes, up to ~1e-3 relative between them, ~0.1% below Q^2 = 1 GeV^2 (extrapolation).<BR>
    * "LHAPDF:\<set\>" or "LHAPDF:\<set\>:\<polarized set\>": leading-order parton model from LHAPDF6 sets,
    * see nucqcd::LHAPDFStructure (default options: F1 with R1998 and the target-mass factor, as for MSTW);
    * a set name may end in "/\<member\>" (default member 0), the unpolarized set may be empty
@@ -177,7 +179,6 @@ private:
   void getF_CB_W(double &F1, double &F2, const bool proton, const double Q2, const double Wsq) const;
   std::string name; /*!< name of the paramtetrization */
   std::string dir; /*!< share dir to read input files */
-  c_mstwpdf *mstw; ///< MSTW PDF interpolation object
   std::shared_ptr<const nucqcd::LHAPDFStructure> lhapdf; ///< LHAPDF sets (shared, see LHAPDFStructure::get), or null
   std::unique_ptr<NucleonStructure> low;  ///< combination: parametrization for W^2 <= Wsq_switch, or null
   std::unique_ptr<NucleonStructure> high; ///< combination: parametrization for W^2 > Wsq_switch, or null
@@ -286,14 +287,7 @@ double getF2_CTEQ(const bool proton, const double x, const double Q2) const;/*!<
    */
   void getF_HMRS(double &F1, double &F2, const bool proton, const double x, const double Q2) const;
   
- /*! returns F1 and F2 in the MSTW parametrization
-   * \param[out] F1 F1 structure function, dermined through Callan-Gross relation incl scaling violations
-   * \param[out] F2 F2 structure function
-   * \param proton 0 neutron, 1 proton
-   * \param x Bjorken x
-   * \param Q2 [MeV^2] fourmomentum sq
-   */
-  void getF_MSTW(double &F1, double &F2, const bool proton, const double x, const double Q2) const;
+
   
 };
 /*! @} */

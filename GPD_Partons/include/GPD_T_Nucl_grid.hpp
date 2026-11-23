@@ -10,7 +10,8 @@
 #include <numint/numint.hpp>
 #include "TransGPD_set.hpp"
 
-class c_mstwpdf; //forward declaration
+#include <memory>
+namespace nucqcd { class LHAPDFStructure; }
 
 
 /**
@@ -23,7 +24,9 @@ public:
 /**
  * @brief Construct a new gpd_T nucl grid object
  * 
- * @param pdf_name pdf parametrization name used for the forward limit ("MSTW" is the only valid one for now)
+ * @param pdf_name pdf used for the forward limit: "MSTW" (MSTW 2008 LO, the LHAPDF set MSTW2008lo68cl,
+ * as in the GK model) or "LHAPDF:<set>" for another LHAPDF set. Until 2026-11 "MSTW" used nucqcd's own
+ * copy of the MSTW grid code, which interpolated the same grid differently (up to ~1e-3 between nodes).
  */
 GPD_T_Nucl_grid(const std::string &pdf_name);
 
@@ -89,7 +92,7 @@ struct Ftor_doubledistr {
 static void DD_int_rho(numint::vector_d & res, double rho, double x, double xi, double t, double scale, GPD_T_Nucl_grid &gpdobject);
 
 
-c_mstwpdf *mstw; ///< object that stores MSTW pdf grids
+std::shared_ptr<const nucqcd::LHAPDFStructure> pdf; ///< PDFs for the forward limit (LHAPDF)
 /**
  * @brief compute forward limit frontfactors for H_T in double distribution of GK model (Eq.24 in EPJA 47:112
  * 

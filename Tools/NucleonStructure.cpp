@@ -7,7 +7,6 @@
 #include <cstdarg>
 #include <cstdlib>
 #include <cstring>
-#include "mstwpdf.h"
 #include "LHAPDFStructure.hpp"
 #include <sstream>
 #include <stdexcept>
@@ -91,11 +90,6 @@ extern "C"{
 namespace {
 const std::string lhapdf_prefix = "LHAPDF:";
 
-c_mstwpdf *make_mstw(const std::string &name) {
-  if (name.compare("MSTW")) return nullptr;
-  return new c_mstwpdf(string(nucqcd::share_dir) + "/mstw_grids/mstw2008lo.00.dat", false, true);
-}
-
 /* "LHAPDF:<unpolarized>[:<polarized>]" -> options */
 nucqcd::LHAPDFOptions parse_lhapdf(const std::string &name) {
   nucqcd::LHAPDFOptions options;
@@ -124,7 +118,7 @@ std::string format_GeV2(double Wsq) {  // [MeV^2] -> "<GeV^2>", shortest form th
 NucleonStructure::NucleonStructure(): NucleonStructure(std::string("SLAC")) {}
 
 NucleonStructure::NucleonStructure(const std::string nm):
-name(nm),dir(nucqcd::share_dir),mstw(nullptr){
+name(nm),dir(nucqcd::share_dir){
   const auto plus = name.find('+');
   if(plus != std::string::npos){ // combination "<low>+<high>[@<W2 in GeV^2>]"
     std::string highname = name.substr(plus+1);
@@ -148,23 +142,25 @@ name(nm),dir(nucqcd::share_dir),mstw(nullptr){
   else if(!name.compare(0, lhapdf_prefix.size(), lhapdf_prefix)){
     lhapdf = nucqcd::LHAPDFStructure::get(parse_lhapdf(name));
   }
-  else mstw = make_mstw(name);
+  else if(!name.compare("MSTW")){ // MSTW 2008 LO through LHAPDF (same F1 convention as before)
+    nucqcd::LHAPDFOptions options;
+    options.unpolarized = "MSTW2008lo68cl";
+    lhapdf = nucqcd::LHAPDFStructure::get(options);
+  }
 }
 
 NucleonStructure::NucleonStructure(const nucqcd::LHAPDFOptions &options):
-name(lhapdf_name(options)),dir(nucqcd::share_dir),mstw(nullptr),lhapdf(nucqcd::LHAPDFStructure::get(options)){}
+name(lhapdf_name(options)),dir(nucqcd::share_dir),lhapdf(nucqcd::LHAPDFStructure::get(options)){}
 
 NucleonStructure::NucleonStructure(const std::string &lowname, const std::string &highname, double Wsq):
-name(lowname+"+"+highname+"@"+format_GeV2(Wsq)),dir(nucqcd::share_dir),mstw(nullptr),
+name(lowname+"+"+highname+"@"+format_GeV2(Wsq)),dir(nucqcd::share_dir),
 low(std::make_unique<NucleonStructure>(lowname)),high(std::make_unique<NucleonStructure>(highname)),Wsq_switch(Wsq){}
 
 
-NucleonStructure::~NucleonStructure(){
-  delete mstw;
-}
+NucleonStructure::~NucleonStructure() = default;
 
 NucleonStructure::NucleonStructure(const NucleonStructure& rhs):
-name(rhs.name),dir(rhs.dir),mstw(make_mstw(rhs.name)),lhapdf(rhs.lhapdf),
+name(rhs.name),dir(rhs.dir),lhapdf(rhs.lhapdf),
 low(rhs.low? std::make_unique<NucleonStructure>(*rhs.low) : nullptr),
 high(rhs.high? std::make_unique<NucleonStructure>(*rhs.high) : nullptr),Wsq_switch(rhs.Wsq_switch){}
 
@@ -173,7 +169,6 @@ NucleonStructure& NucleonStructure::operator=(const NucleonStructure& rhs){
     NucleonStructure copy(rhs);
     std::swap(name,copy.name);
     std::swap(dir,copy.dir);
-    std::swap(mstw,copy.mstw); // the old one is deleted with copy (was leaked until 2026-11)
     std::swap(lhapdf,copy.lhapdf);
     std::swap(low,copy.low);
     std::swap(high,copy.high);
@@ -331,34 +326,6 @@ void NucleonStructure::getF_HMRS(double &F1,double &F2, const bool proton, const
 }
 
 
-void NucleonStructure::getF_MSTW(double &F1,double &F2,const bool proton, const double x, const double Q2) const{
-  double u,d,s,c,b,ubar,dbar,sbar,cbar,bbar;
-  double qgev=sqrt(Q2*1.E-06);
-  mstw->update(x,qgev);
-
-  d=mstw->parton(1,x,qgev);
-  u=mstw->parton(2,x,qgev);
-  s=mstw->parton(3,x,qgev);
-  c=mstw->parton(4,x,qgev);
-  b=mstw->parton(5,x,qgev);
-  dbar=mstw->parton(-1,x,qgev);
-  ubar=mstw->parton(-2,x,qgev);
-  sbar=mstw->parton(-3,x,qgev);
-  cbar=mstw->parton(-4,x,qgev);
-  bbar=mstw->parton(-5,x,qgev);
-  if(proton){ 
-    F2=1./9.*(4.*(u+ubar)+(d+dbar)+(s+sbar)+4*(c+cbar)+(b+bbar));
-    F1=1./(2.*x)/(1.+getr1998(x,Q2))*(1.+4.*nucqcd::mass_p*nucqcd::mass_p*x*x/Q2)*F2;
-  }
-  else{
-    F2=1./9.*((u+ubar)+4.*(d+dbar)+(s+sbar)+4*(c+cbar)+(b+bbar));
-    F1=1./(2.*x)/(1.+getr1998(x,Q2))*(1.+4.*nucqcd::mass_n*nucqcd::mass_n*x*x/Q2)*F2;
-  }
-//   cout << x << " " << q2gev << " " << F1 << " " << F2 << endl;
-}
-
-
-
 void NucleonStructure::getF_xQ(double &F1, double &F2,const bool proton, const double x, const double Q2) const{
   double mass=proton? nucqcd::mass_p:nucqcd::mass_n;
   getF_xQW(F1,F2,proton,x,Q2,Q2*(1./x-1.)+mass*mass);
@@ -372,7 +339,6 @@ void NucleonStructure::getF_xQW(double &F1, double &F2,const bool proton, const 
   else if(!name.compare("CB")) getF_CB_W(F1,F2,proton,Q2,Wsq);
   else if(!name.compare("CTEQ")) getF_CTEQ(F1,F2,proton,x,Q2);
   else if(!name.compare("HMRS")) getF_HMRS(F1,F2,proton,x,Q2);
-  else if(!name.compare("MSTW")) getF_MSTW(F1,F2,proton,x,Q2);
   else { throw std::invalid_argument(nucqcd::ErrorMessage() << "invalid name for structure function" );}
   return;
 }

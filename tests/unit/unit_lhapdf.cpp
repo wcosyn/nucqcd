@@ -142,6 +142,25 @@ TEST_CASE("LHAPDF: close to SLAC F2 and GRSV2000 g1 of the proton", "[lhapdf]") 
   }
 }
 
+TEST_CASE("LHAPDF: \"MSTW\" is the set MSTW2008lo68cl", "[lhapdf]") {
+  if (!nucqcd::LHAPDFStructure::available() || !nucqcd::LHAPDFStructure::installedSet("MSTW2008lo68cl"))
+    SKIP("needs LHAPDF and the set MSTW2008lo68cl");
+  NucleonStructure mstw("MSTW"), lh("LHAPDF:MSTW2008lo68cl");
+  CHECK(mstw.getName() == "MSTW");
+  for (bool proton : {true, false})
+    for (double x : X) {
+      double F1, F2, F1l, F2l;
+      mstw.getF_xQ(F1, F2, proton, x, Q2);
+      lh.getF_xQ(F1l, F2l, proton, x, Q2);
+      CHECK(F1 == F1l);
+      CHECK(F2 == F2l);
+    }
+  // values of the former bundled MSTW code (share/mstw_grids/mstw2008lo.00.dat) at a grid node
+  // (Q^2 = 100 GeV^2), where both interpolations give the grid value: p, x = 0.3 and 0.6
+  CHECK_THAT(mstw.getF2_xQ(true, 0.3, 100.E06), WithinRel(0.2326534444444445, 1e-12));
+  CHECK_THAT(mstw.getF2_xQ(true, 0.6, 100.E06), WithinRel(0.044726789422222225, 1e-12));
+}
+
 TEST_CASE("Combinations: CB+SLAC is CB up to the W^2 boundary and SLAC above", "[structure]") {
   NucleonStructure cb("CB"), slac("SLAC"), comb("CB+SLAC"), comb4("CB+SLAC@4"), explicit4("CB", "SLAC", 4.E06);
   CHECK(comb.getName() == "CB+SLAC");

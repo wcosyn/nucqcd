@@ -4,6 +4,7 @@
 // DeuteronStructure (DeuteronCross, InclusiveCross, He3Cross), so the two are checked against each other.
 #include <test_support.hpp>
 
+#include <LHAPDFStructure.hpp>
 #include <NuclStructure.hpp>
 #include <NucleonStructure.hpp>
 #include <constants.hpp>
@@ -14,6 +15,13 @@
 
 namespace {
 nucqcd_test::RefStore refs("reg_nucleon_structure");
+
+// "MSTW" is the LHAPDF set MSTW2008lo68cl since 2026-11 (re-baselined then: LHAPDF interpolates the
+// MSTW grid differently from the former bundled MSTW code, up to ~1e-4 relative at these points)
+void require_mstw() {
+  if (!nucqcd::LHAPDFStructure::available() || !nucqcd::LHAPDFStructure::installedSet("MSTW2008lo68cl"))
+    SKIP("MSTW needs nucqcd built with LHAPDF and the set MSTW2008lo68cl");
+}
 
 // default grid of (x, Q^2[MeV^2]) points; Christy-Bosted only covers W < ~3 GeV (and throws std::out_of_range
 // outside its range), so it gets its own grid
@@ -58,7 +66,10 @@ TEST_CASE("NuclStructure and NucleonStructure agree: SLAC", "[structure]") { che
 TEST_CASE("NuclStructure and NucleonStructure agree: Christy-Bosted", "[structure]") { check_same("CB", xs_CB, Q2s_CB); }
 TEST_CASE("NuclStructure and NucleonStructure agree: Alekhin", "[structure]") { check_same("Alekhin"); }
 TEST_CASE("NuclStructure and NucleonStructure agree: CTEQ", "[structure]") { check_same("CTEQ"); }
-TEST_CASE("NuclStructure and NucleonStructure agree: MSTW", "[structure]") { check_same("MSTW"); }
+TEST_CASE("NuclStructure and NucleonStructure agree: MSTW", "[structure]") {
+  require_mstw();
+  check_same("MSTW");
+}
 
 TEST_CASE("NuclStructure off-shell kinematics: W^2 independent of x", "[structure]") {
   // DeuteronStructure passes an off-shell W^2; Christy-Bosted and SLAC (Bodek) use it, the others x.
@@ -84,6 +95,7 @@ TEST_CASE("NuclStructure off-shell kinematics: W^2 independent of x", "[structur
 }
 
 TEST_CASE("NuclStructure MSTW copy and assignment", "[structure]") {
+  require_mstw();
   NuclStructure a(true, 5.e06, 0.3, 0, "MSTW");
   const double F2 = a.getF2();
   NuclStructure b(a);
@@ -97,7 +109,10 @@ TEST_CASE("NucleonStructure SLAC", "[structure]") { check_param("SLAC"); }
 TEST_CASE("NucleonStructure Christy-Bosted", "[structure]") { check_param("CB", xs_CB, Q2s_CB); }
 TEST_CASE("NucleonStructure Alekhin", "[structure]") { check_param("Alekhin"); }
 TEST_CASE("NucleonStructure CTEQ", "[structure]") { check_param("CTEQ"); }
-TEST_CASE("NucleonStructure MSTW", "[structure]") { check_param("MSTW"); }
+TEST_CASE("NucleonStructure MSTW", "[structure]") {
+  require_mstw();
+  check_param("MSTW");
+}
 
 TEST_CASE("Polarized structure functions g1, g1+g2 (GRSV2000)", "[structure]") {
   for (int proton = 0; proton <= 1; proton++)
