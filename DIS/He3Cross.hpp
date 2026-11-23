@@ -32,7 +32,10 @@ public:
   
   /*! Calculate He3 momentum distribution for a certain kinematics of the spectators
    * \param[in] kin LightconeKin2to3 object that has all the kinematics
-   * \return [MeV-4] momentum distribution S(ps1,ps2) times E_sp1_lab*E_sp2_lab, normed so that \f$ \int d3p1 d3p2 S(ps1,ps2) = 1 \f$. 
+   * \return [MeV-4] momentum distribution S(ps1,ps2) times E_sp1_lab*E_sp2_lab, with S summed over all
+   * spins and the spectator isospins for a struck proton (neutron): \f$ \int d^3p_1 d^3p_2\, S = 2/3 \f$
+   * (1/3), the probability that nucleon 3 is a proton (neutron) (the He3 wave function is normalized
+   * to 1, see He3wf). Until 2026-11 this said 1, and S missed part of the D and P waves (see He3wf). 
    */  
   double getDensity(LightConeKin2to3 &kin);
     /*! get the average cross section

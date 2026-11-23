@@ -22,7 +22,7 @@ same PR.
 | 1 | Test suite | ✅ done (PR #2) |
 | 2 | Repo hygiene, including branches | ✅ done (PR #4) |
 | 3 | Rename the repository | ✅ done (PR #7, tagged-poldeut PRs #1 and #2) |
-| 4 | Bug fixes | 🔶 listed bugs fixed (PRs #8, #9, #12); found later and fixed: stale FSI+CT grid (#18), kinematics (#19, #20, #33), DoubleNModel/Pair (#21, then moved to the attic in #22), π⁻ Glauber parameters (#28), TDeuteron errors (#31); He3 normalization still to check |
+| 4 | Bug fixes | 🔶 listed bugs fixed (PRs #8, #9, #12); found later and fixed: stale FSI+CT grid (#18), kinematics (#19, #20, #33), DoubleNModel/Pair (#21, then moved to the attic in #22), π⁻ Glauber parameters (#28), TDeuteron errors (#31), He3 spin sum (He3 normalization); open: He3Cross struck-nucleon counting |
 | 5 | Low-risk modernization | ✅ done: `-fopenmp`, Fortran interop (#11), constants (#13, #14), grid cache (#15–#17), ownership (#23), exceptions (#24), Doxygen (#10, #25–#30, #32, #34–#39: no warnings left) |
 | 6 | Structural refactors | ⬜ |
 | 7 | Unbundle Cuba | ⬜ (can be done any time after step 2) |
@@ -129,11 +129,25 @@ one commit per bug; no `[known-bug]` tests remain.
   `(fNVars<2) && (fNVars>4)` was always false, and its error branch used `assert`, which does nothing
   in release builds. Found during step 5. It now uses `||` and throws `std::invalid_argument`
   (tested in `unit_kinematics`). `TKinematics2to3` has its own parser and is not affected.
-- [ ] **He3 normalization (lead).** A 6D Vegas integral of Σ|ψ|² d³p₁d³p₂ of `He3wf("AV18")` gave
-  0.918 ± 0.007 (Vegas did not reach its target precision), not 1. Check this with a better integral
-  (Jacobi coordinates p₁₂, p₃, as used inside `getwavemod_tm.f`) before trusting He3 results. The
-  normalization of the momentum grid in the `.form` files, the `INVHBARC³` conversion in `He3wf::getWF`
-  and the sum of the three cyclic Faddeev components are the places to look.
+- [x] **He3 normalization** (done 2026-11-22). The norm of `He3wf` was 0.967–0.975 for the five
+  parametrizations (the 2026-11 Vegas estimate 0.918 was not converged; a Gauss-Legendre integral in
+  Jacobi coordinates p₁₂ = (p₁−p₂)/2, p₃ converges to 1e-5). The cause was nucqcd's wrapper, not the
+  external Fortran code or data: `He3wf::getWF` took no ms3 and set ms3 = mA − ms1 − ms2 (0 when that
+  was not ±1), but in the D and P waves the nucleon spins need not add up to mA. With ms3 summed over
+  independently the norm is 0.9998–0.9999 for all five, the spin-summed density is rotation invariant
+  (1e-7; before up to 30% off), and the Faddeev identity ⟨Ψ|Ψ⟩ = 3⟨ψ₃|Ψ⟩ holds (1e-4). The
+  charge-dependent (T = 3/2) parts, left out by `He3wf`, change the norm by 1e-5. `getWF` now takes
+  ms3 (the old 7-argument calls no longer compile), `He3Cross::getDensity` sums over it, and the
+  Fortran m_A state is shared by all `He3wf` objects (the TVector3 version reset it on every call).
+  **Impact:** `He3Cross` density and cross section +5.1% (n) and +6.2% (p) at the regression point
+  (spectators at 200 MeV), re-baselined; momentum-dependent elsewhere (larger at high momenta, where
+  the D wave dominates). Not used for published results (the author). New test `unit_he3wf` (norm,
+  proton/neutron split, rotation invariance, antisymmetry).
+- [ ] **He3Cross: counting of the struck nucleon (open question, found with the above).** With the
+  struck nucleon fixed as nucleon 3, `getDensity` integrates to 2/3 (proton) and 1/3 (neutron), not 1 as
+  its documentation said (now corrected). For a cross section on any of the identical nucleons this
+  would need a factor 3 (giving Z = 2 and N = 1); whether `getCross` (or the program using it) includes
+  that is to be checked against the formulas in the he3 note before He3 results are used.
 - [x] **Stale FSI+CT grid after `updateGrids()` (found during step 5).** `AbstractFsiGrid::fillGrids`
   sets `filledallgrid` when it computes the grids, but does not clear it when it reads the FSI grid
   from the cache. If a grid object first computes a grid and then, in `updateGrids()` for new
