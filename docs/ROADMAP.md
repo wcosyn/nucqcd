@@ -22,7 +22,7 @@ same PR.
 | 1 | Test suite | ✅ done (PR #2) |
 | 2 | Repo hygiene, including branches | ✅ done (PR #4) |
 | 3 | Rename the repository | ✅ done (PR #7, tagged-poldeut PRs #1 and #2) |
-| 4 | Bug fixes | ✅ done: listed bugs (PRs #8, #9, #12); found later: stale FSI+CT grid (#18), kinematics (#19, #20, #33), DoubleNModel/Pair (#21, then moved to the attic in #22), π⁻ Glauber parameters (#28), TDeuteron errors (#31), He3 spin sum (#47) and factor A in `He3Cross` (#48), `TMPI` not compiling with MPI-3 (fixed in the attic with step 6, "Retire MPI"). New bugs found later are added here |
+| 4 | Bug fixes | ✅ done: listed bugs (PRs #8, #9, #12); found later: stale FSI+CT grid (#18), kinematics (#19, #20, #33), DoubleNModel/Pair (#21, then moved to the attic in #22), π⁻ Glauber parameters (#28), TDeuteron errors (#31), He3 spin sum (#47) and factor A in `He3Cross` (#48), `TMPI` not compiling with MPI-3 (fixed in the attic with step 6, "Retire MPI"), `RunLog` reading freed memory at `exit()`. New bugs found later are added here |
 | 5 | Low-risk modernization | ✅ done: `-fopenmp`, Fortran interop (#11), constants (#13, #14), grid cache (#15–#17), ownership (#23), exceptions (#24), Doxygen (#10, #25–#30, #32, #34–#39: no warnings left) |
 | 6 | Structural refactors | 🔶 done: constants macros, `NuclStructure` merge, code layout items 1–3 (`Tools` split, prefixed includes, `.hpp`), `Model`/`Cross` renamed; MPI retired; to do: namespace, Glauber grids, model selection, integrators, long files |
 | 7 | Unbundle Cuba and cubature | ⬜ (can be done any time after step 2) |
@@ -288,6 +288,15 @@ one commit per bug; no `[known-bug]` tests remain.
 - [x] **`progs/deepsdis/b1_calc.cpp` Azz angular factor:** the longitudinal tensor term used
   `1/4 + 3/4 cos θq` instead of d²₀₀(θq) = `1/4 + 3/4 cos 2θq` (the integrand `res[10]` already used
   `cos 2θq`). Fixed in PR #5. Found while reviewing the archived `Alan` branch, which had the same fix.
+
+- [x] **`RunLog`: invalid memory access at `exit()`** (found 2026-11-23 while making ROOT optional,
+  step 9 phase 5). The `atexit` handler that writes the end of a `RunLog` when a program calls
+  `exit()` iterated a function-local static `std::set` that was already destroyed: the handler was
+  registered before the set was first constructed, so the set's destructor ran first. Undefined
+  behaviour in every program that calls `exit()` with a live `RunLog` (valgrind: invalid reads in
+  `finish_at_exit`); with ROOT linked it happened to work, without ROOT `unit_runlog` crashed with
+  SIGSEGV. Fixed: the registry and its mutex are a never-destroyed object. No values affected (only
+  the "# finished" line of the run log).
 
 ### Open leads (to investigate)
 
