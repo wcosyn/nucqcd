@@ -1,4 +1,4 @@
-// MePhys: run bookkeeping (Tools/RunLog, roadmap step 11): comment marker, quoting, argument names, end
+// MePhys: run bookkeeping (Tools/Core/RunLog, roadmap step 11): comment marker, quoting, argument names, end
 // of the log (also at exit()), MPI rank, build information.
 #include <test_support.hpp>
 

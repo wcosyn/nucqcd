@@ -24,8 +24,8 @@ same PR.
 | 3 | Rename the repository | ✅ done (PR #7, tagged-poldeut PRs #1 and #2) |
 | 4 | Bug fixes | ✅ done: listed bugs (PRs #8, #9, #12); found later: stale FSI+CT grid (#18), kinematics (#19, #20, #33), DoubleNModel/Pair (#21, then moved to the attic in #22), π⁻ Glauber parameters (#28), TDeuteron errors (#31), He3 spin sum (#47) and factor A in `He3Cross` (#48). New bugs found later are added here |
 | 5 | Low-risk modernization | ✅ done: `-fopenmp`, Fortran interop (#11), constants (#13, #14), grid cache (#15–#17), ownership (#23), exceptions (#24), Doxygen (#10, #25–#30, #32, #34–#39: no warnings left) |
-| 6 | Structural refactors | ⬜ |
-| 7 | Unbundle Cuba | ⬜ (can be done any time after step 2) |
+| 6 | Structural refactors | 🔶 constants macros and `NuclStructure` merge done; code layout: `Tools` split done, prefixed includes and `.hpp` next |
+| 7 | Unbundle Cuba and cubature | ⬜ (can be done any time after step 2) |
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
 | 9 | Decouple from ROOT where possible | 🔶 phases 1 (#44), 2 (#45) and 3 done, 4–6 to do |
 | 10 | LHAPDF interface for the nucleon structure functions | ✅ done (#46), including MSTW through LHAPDF |
@@ -33,19 +33,20 @@ same PR.
 
 ## Where we are / next up
 
-*Updated 2026-11-22 (end of session; the next session continues on another computer).*
+*Updated 2026-11-23.*
 
-**Done recently** (PRs #44–#51): ROOT decoupling phases 1–3 (dictionaries, small math, `TString`);
-step 10 (LHAPDF structure functions, explicit combinations such as `"CB+SLAC@9"`, MSTW through
-LHAPDF, bundled MSTW code removed); He3 fixed (spin sum in `He3wf`, factor A in `He3Cross`; values
-changed with the author's OK); step 11 part 1 (`nucqcd::RunLog`) and the replacement of `Bookkeep` by
-`RunLog` in the 8 programs that used it.
+**Done recently** (PRs #44–#51 and the `Tools` split): ROOT decoupling phases 1–3 (dictionaries, small
+math, `TString`); step 10 (LHAPDF structure functions, explicit combinations such as `"CB+SLAC@9"`,
+MSTW through LHAPDF, bundled MSTW code removed); He3 fixed (spin sum in `He3wf`, factor A in
+`He3Cross`; values changed with the author's OK); step 11 part 1 (`nucqcd::RunLog`) and the
+replacement of `Bookkeep` by `RunLog` in the 8 programs that used it; step 6 code layout item 1:
+`Tools` split into Core, Kinematics, WaveFunctions and StructureFunctions (`MePhys` kept as an
+INTERFACE target).
 
-**Recommended next step: step 6, the code layout** (see "Code layout" under step 6): first split
-`Tools` into Core, Kinematics, WaveFunctions and StructureFunctions (with `MePhys` kept as an
-INTERFACE target, so programs do not change), then in one PR prefixed includes from the repository
-root plus `.hpp` as the only extension. Doing this before ROOT phase 4 means phase 4 converts code
-that is already in its final libraries.
+**Recommended next step: step 6, code layout items 2 and 3, in one PR (with the rename of `Model`/`Cross` to `EMQEHadronCurrent`/`EMQECross`):** prefixed includes with the
+repository root as include root (`#include <Tools/WaveFunctions/TDeuteron.hpp>`), and `.hpp` as the
+only header extension (`git mv` of the 19 `.h` files in Tools and the one in GPD_Partons). Scripted
+rewrite of the ~1250 `#include` lines.
 
 **After that:** ROOT phase 4 (own vector and Lorentz types, ~700 uses; test every method against
 ROOT first), together with `namespace nucqcd` class by class; then step 11 part 2 (`RunLog` in the
@@ -488,21 +489,32 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   stays (no general `include/`/`src/` split: that pays off for libraries installed for outside
   projects, which nucqcd's are not, and moving every file would cost the `git blame` history). What
   does not follow good practice, in this order:
-  1. **Split `Tools` (library `MePhys`)**, a grab-bag of 36 headers plus Fortran, into libraries with a
-     clear dependency order (proposal, to be checked against the actual includes):
-     - `Core`: `constants`, `ErrorMessage`, `FortranString`, `StringUtil`, `MathUtil`, `Utilfunctions`,
-       `AuxFunction`, `GridCache`, `RunLog`, the Dirac/Lorentz algebra (`FourVector`, `Matrix`,
-       `GammaStructure`, `TLorentzQuaternion`, `TSpinor`), `recmosh`, and `TMPI` (with MPI);
-     - `Kinematics`: `TKinematics`, `TKinematics2to2`, `TKinematics2to3(WithLabAngles)`,
-       `TElectronKinematics`, `TLeptonKinematics`, `LightConeKin2to2/2to3`;
-     - `WaveFunctions`: `TDeuteron` and its implementations (`TWavefunctionImplementation`,
-       `TYukawaPWF`, `TGrossPWF`, `TCstPWF`, `TInterpolatingWavefunction`), `OldDeuteron`, `He3wf`
-       (with the Fortran `getwavemod_tm.f`, `clebsch.f`, `spline.f`);
-     - `StructureFunctions`: `NucleonStructure`, `NuclStructure`, `LHAPDFStructure`,
-       `DeuteronStructure`, and the Fortran parametrizations (Alekhin, Christy-Bosted, CTEQ, GRSV,
-       HMRS, R1990/R1998).
-     Glauber, Knockout and DIS then link only what they use. `MePhys` can stay as an INTERFACE target
-     that links all four, so programs need no change.
+  1. ✅ **Split `Tools` (library `MePhys`)** (done 2026-11-23): the 36 headers plus Fortran are now
+     four libraries, one per subdirectory (moved with `git mv`), each linking the ones before it:
+     - `Tools/Core` (`libToolsCore`): `constants`, `ErrorMessage`, `FortranString`, `StringUtil`,
+       `MathUtil`, `Utilfunctions`, `AuxFunction`, `GridCache`, `RunLog`, the Dirac/Lorentz algebra
+       (`FourVector`, `Matrix`, `GammaStructure`, `TLorentzQuaternion`, `TSpinor`), `recmosh`, and
+       `TMPI` (with MPI);
+     - `Tools/Kinematics` (`libToolsKinematics`): `TKinematics`, `TKinematics2to2`,
+       `TKinematics2to3(WithLabAngles)`, `TElectronKinematics`, `TLeptonKinematics`,
+       `LightConeKin2to2/2to3`;
+     - `Tools/WaveFunctions` (`libToolsWaveFunctions`, links Kinematics because `TDeuteron.h` uses
+       `TKinematics2to3`): `TDeuteron` and its implementations, `OldDeuteron`, `He3wf` with the
+       Fortran `getwavemod_tm.f`, `clebsch.f`, `spline.f` (only used by `getwavemod_tm.f`);
+     - `Tools/StructureFunctions` (`libToolsStructureFunctions`, links Kinematics for
+       `DeuteronStructure`, but not WaveFunctions): `NucleonStructure`, `NuclStructure`,
+       `LHAPDFStructure`, `DeuteronStructure`, and the Fortran parametrizations.
+
+     The libraries have a `Tools` prefix because `libCore.so` would clash with ROOT's `libCore.so`
+     (the RPATH of the programs contains both `lib/` directories). `MePhys` is an INTERFACE target
+     that links all four (`MePhysST` with `STATIC_BUILD`), so programs are unchanged. Glauber and
+     Knockout link `ToolsWaveFunctions` (Glauber only for `TDeuteron::Wavefunction::ClebschGordan` in
+     `TMFSpinor`; moving that function to Core would let Glauber link Core only), DIS and GPD_Partons
+     link `ToolsStructureFunctions`, and each test links the smallest library it needs.
+     `nucqcd_add_library` now links with `--no-undefined` (Linux), so a missing dependency in a `LINK`
+     list is a link error; the whole tree (programs and PARTONS included) builds with it. The include
+     lines are unchanged (every library directory is still a public include directory); they change
+     in item 2. Not tested: `MPI_ENABLED` (no MPI on the development machine).
   2. **Prefixed includes, with the repository root as the include root.** Every library directory is
      now a public include directory, so code writes `#include <Matrix.h>`, `<constants.hpp>`,
      `<Utilfunctions.hpp>`: generic names that can collide with headers of ROOT, PARTONS or LHAPDF on
@@ -523,6 +535,40 @@ Do these one at a time, running the full test suite (including `slow`) after eac
      programs compiling in between.
 - [ ] **Glauber grid hierarchy:** deduplicate it. `GlauberGridThick` and `GlauberDecayGridThick` are
   largely copy-pasted, as are the {plain, Thick} × {CT, Decay} abstract classes.
+- [ ] **Speed of the Glauber grids (to investigate, added 2026-11-23).** From the author's experience,
+  grids for particles that do not all move along the z axis are slow to compute (cached afterwards,
+  but still). The `numint` integrators used there (`cube_adaptive`, `cube_romb`) are serial; only the
+  explicit `numint::cuhre/vegas/...` wrappers use Cuba, which forks workers on one node
+  (`CUBACORES`). First measure where the time goes, then compare: (a) filling the grid points in
+  parallel threads (each point is an independent integral, but the integrand reads the point from
+  members such as `r_hit`, so it has to be passed in explicitly first); (b) the vectorized
+  `hcubature_v` (see the cubature item under step 7), which hands over batches of points that can be
+  evaluated in threads; (c) Cuhre with `CUBACORES`. Best done together with the deduplication above.
+  (b) and (c) change values within the precision, so they need the author's OK.
+- [ ] **Remove the integrators `rombergerN` and `cube_romb`?** (added 2026-11-23). The author
+  remembers the adaptive integrators doing better, especially for multidimensional integrands with
+  non-trivial boundaries or cuts inside the integrand. **Benchmark this first; remove only if it
+  holds.** Compare `rombergerN`, `cube_romb`, `cube_adaptive` (and Cuhre) on accuracy versus number of
+  evaluations and time: (1) test integrands with known values in 2 and 3 dimensions: smooth ones, ones
+  with a step or cut inside the domain, a non-rectangular domain mapped onto a box (as with the
+  impact-parameter and z integrations in the Glauber phases), and a peaked one; (2) real integrands:
+  a Glauber grid point for a particle along z and one off-axis, an A(e,e'p) amplitude from `Model`,
+  and an `InclusiveCrossRes` integral, each against a high-precision reference. Record the results
+  here (or in `docs/`), then decide. If they are removed: most uses are selected by the `integrator` flag of the grid
+  and cross-section classes (0: `rombergerN` from `Tools/Core/Utilfunctions.hpp`, 1:
+  `numint::cube_romb`, 2: adaptive `cube_adaptive`; the tests use 2). Those branches can go once the
+  programs are checked for passing 0 or 1. Hard-coded uses have to be replaced, which changes values
+  (author's OK per class): `rombergerN` in `InclusiveCrossRes` (6), `RhoDeuteron` (8), `RhoTCross`
+  (4), `OneGlauberGrid` (4), `DistMomDistrGrid` (1) and the programs `rhodint`, `rhoset`;
+  `cube_romb` in `Model.cpp:744` and `progs/momdistr/momdistr.cpp`. Then remove
+  `Integrator/numint/cube_romb.cpp` (and `cube_tr`/`fubini`/`vfubini` if unused) and its tests in
+  `unit_numint`, and simplify the `integrator` flag (an enum, see "Model selection" below).
+- [ ] **Better names for `Model` and `Cross`** (Knockout, the A(e,e'N) amplitude and cross section;
+  author's request 2026-11-23). The names are too generic (also a collision risk without a
+  namespace). Agreed with the author (2026-11-23): `EMQEHadronCurrent`/`EMQECross`, following
+  `WeakQEHadronCurrent`/`WeakQECross` and `NucleonEMOperator`/`NucleonWeakOperator`. About 19
+  files outside the classes use them. Best done in the PR with the prefixed includes (code layout
+  items 2 and 3), when every include changes anyway.
 - [ ] **Model selection:** use enums or factory registries instead of model-name strings (about 700
   string comparisons). A typo should fail at compile time, not with `exit()` at runtime.
 - [x] **Merge `NuclStructure` into `NucleonStructure`.** The parametrizations are now implemented
@@ -540,10 +586,19 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   its own F1 and is unchanged. Also fixed: `NucleonStructure::operator=` leaked its MSTW object. About
   500 duplicated lines removed. Tested in `reg_nucleon_structure` (F1 now compared for all
   parametrizations, and a new off-shell case).
-- [ ] **Very long files and functions:** break them up, for example `Tools/TKinematics2to3.cpp`
+- [ ] **Retire MPI (`TMPI`)** (added 2026-11-23, author's decision). `TMPI` (from strangecalc) only
+  distributes independent kinematic points over ranks (rank-strided loop plus `GatherResults`); it
+  does not parallelize integrals. Its use in the libraries was removed in 2014 (commit `24fffe1`: "I
+  don't use it anyway"); only `progs/RhoTransparency/rhod` and `rhottest` still use it, and neither
+  was used for actual calculations. Move `Tools/Core/TMPI.*`, `rhod.cpp` and `rhottest.cpp` to
+  `progs/attic`, remove the `MPI_ENABLED` option (and the Intel `-parallel` flags that depend on it)
+  from CMake, and update CLAUDE.md. The commented-out `TMPI.h` includes in
+  `TKinematics2to3*.cpp` go too. Parallelism over integrand evaluations already comes from Cuba
+  (fork-based processes on one node, `CUBACORES`), where Cuba is used.
+- [ ] **Very long files and functions:** break them up, for example `Tools/Kinematics/TKinematics2to3.cpp`
   (6.8k lines, one function of about 1.3k lines) and `Glauber/NucleonEMOperator.cpp` (4.2k lines).
 
-## 7. Unbundle Cuba
+## 7. Unbundle Cuba (and cubature)
 
 This is a build-system change only, and the `unit_cuba` tests verify it.
 
@@ -559,6 +614,19 @@ This is a build-system change only, and the `unit_cuba` tests verify it.
 - [ ] Keep the `cuba` INTERFACE target name, so nothing that links against it changes. Pin Cuba 4.2.x,
   because the `numint` wrappers rely on the 4.2 API.
 - [ ] Optionally, install it into `~/.local` from `scripts/`, the way `scripts/install_partons.sh` does for PARTONS.
+
+- [ ] **cubature (`Integrator/adaptive`, added 2026-11-23).** The bundled `cubature.c` is Steven G.
+  Johnson's pre-1.0 `adapt_integrate` from October 2010, with a `minEval` argument that upstream does
+  not have (probably added locally before the import; no convergence before `minEval` evaluations; the code passes 1e2 to 1e4). Upstream
+  (github.com/stevengj/cubature) is now at 1.0.4: `adapt_integrate` became `hcubature`, plus
+  `pcubature` (p-adaptive Clenshaw-Curtis), a choice of error norm for vector integrands, `size_t`
+  limits, and a fix for a hang in `hcubature` for some integrands (1.0.4). Ubuntu packages it
+  (`libcubature-dev` 1.0.4), but without `minEval`. Plan: fetch the pinned 1.0.4 release as for Cuba
+  (CMake `FetchContent`/`ExternalProject`, SHA256) and keep the `minEval` change as a small patch
+  file; port `numint2adapt.hpp` (`cube_adaptive`) to `hcubature` with `ERROR_INDIVIDUAL`, which
+  should match the old convergence test. Run the regression and slow tests; any change in values
+  needs to be understood and OK'd by the author. Also consider `pcubature` for smooth integrands,
+  and `hcubature_v` for parallel evaluation (see "Speed of the Glauber grids", step 6).
 
 ## 8. Repository README
 

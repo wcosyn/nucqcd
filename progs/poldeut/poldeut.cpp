@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
 std::string wf = argv[1];
 const std::vector<std::string> arg_names={"wf name"};
-nucqcd::RunLog runlog(argc, argv, arg_names);  // run bookkeeping as "# " lines (Tools/RunLog.hpp)
+nucqcd::RunLog runlog(argc, argv, arg_names);  // run bookkeeping as "# " lines (Tools/Core/RunLog.hpp)
 std::cout << "# compiled from file: " << __FILE__ << std::endl;
 
 

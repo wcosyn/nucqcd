@@ -23,4 +23,4 @@ nucqcd_add_library(Glauber
     ROMEAGrid.cpp
     ClassGridThick_SCX.cpp
     global2009.f          # Fortran
-  LINK MePhys Integrator)
+  LINK ToolsWaveFunctions Integrator)

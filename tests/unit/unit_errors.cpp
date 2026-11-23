@@ -1,4 +1,4 @@
-// Errors in the libraries are exceptions (Tools/ErrorMessage.hpp); until 2026-11 they printed a
+// Errors in the libraries are exceptions (Tools/Core/ErrorMessage.hpp); until 2026-11 they printed a
 // message and called exit(1), which ended the program and could not be tested. One or two cases of
 // each kind: std::invalid_argument, std::out_of_range, std::logic_error, std::runtime_error.
 #include <test_support.hpp>

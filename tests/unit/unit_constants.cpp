@@ -1,4 +1,4 @@
-// Tools/constants.hpp(.in): physical constants.
+// Tools/Core/constants.hpp(.in): physical constants.
 #include <test_support.hpp>
 
 #include <constants.hpp>

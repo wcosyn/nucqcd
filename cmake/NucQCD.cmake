@@ -2,7 +2,8 @@
 #
 #   nucqcd_add_library(<name> SOURCES <src>... [LINK <lib>...])
 #       Shared library lib<name>.so (version 1.0.0), its directory as public include
-#       directory, installed into <prefix>/lib. LINK libraries are public dependencies.
+#       directory, installed into <prefix>/lib. LINK libraries are public dependencies, and
+#       must resolve every symbol the library uses (linked with --no-undefined on Linux).
 #       With STATIC_BUILD also a static lib<name>.a (target <name>ST).
 #
 #   nucqcd_add_program(<name> [SOURCES <src>...] [LINK <lib>...] [DESTINATION <dir>])
@@ -20,6 +21,11 @@ function(nucqcd_add_library name)
   add_library(${name} SHARED ${ARG_SOURCES})
   target_include_directories(${name} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
   target_link_libraries(${name} PUBLIC ${ARG_LINK})
+  # Every symbol must be resolved by the library itself or by the libraries it links: this keeps the
+  # LINK lists (and so the layering of the libraries) complete. macOS does this by default.
+  if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    target_link_options(${name} PRIVATE "LINKER:--no-undefined")
+  endif()
   # In the build tree a library must find its dependencies in build/lib, not the installed copies
   # in <prefix>/lib (otherwise the tests load stale libraries until 'make install'); 'make install'
   # replaces this RPATH with CMAKE_INSTALL_RPATH.

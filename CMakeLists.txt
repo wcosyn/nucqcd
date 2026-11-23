@@ -80,7 +80,7 @@ target_link_libraries(root_libs INTERFACE ${ROOT_LIBRARIES})
 
 find_package(GSL REQUIRED)
 
-# LHAPDF (optional): nucleon structure functions from LHAPDF6 sets (Tools/LHAPDFStructure). Found
+# LHAPDF (optional): nucleon structure functions from LHAPDF6 sets (Tools/StructureFunctions/LHAPDFStructure). Found
 # through its pkg-config file; ~/.local (where scripts/install_partons.sh installs it) is searched too.
 if(LHAPDF_ENABLED)
   find_package(PkgConfig QUIET)

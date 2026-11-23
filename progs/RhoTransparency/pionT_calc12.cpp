@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
         cout << "Usage: " << argv[0] << " <nucleus name> <beam energy [GeV]> <scattered energy [GeV]> <scattered angle [deg]>" << endl;
         return 1;
     }
-    nucqcd::RunLog runlog(argc, argv, arg_names);  // run bookkeeping as "# " lines (Tools/RunLog.hpp)
+    nucqcd::RunLog runlog(argc, argv, arg_names);  // run bookkeeping as "# " lines (Tools/Core/RunLog.hpp)
     std::cout << "# compiled from file: " << __FILE__ << std::endl;
 
 

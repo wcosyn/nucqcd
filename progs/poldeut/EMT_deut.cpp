@@ -18,7 +18,7 @@ using namespace std;
 int main(int argc, char** argv) {
 
     const std::vector<std::string> arg_names={};
-    nucqcd::RunLog runlog(argc, argv, arg_names);  // run bookkeeping as "# " lines (Tools/RunLog.hpp)
+    nucqcd::RunLog runlog(argc, argv, arg_names);  // run bookkeeping as "# " lines (Tools/Core/RunLog.hpp)
     std::cout << "# compiled from file: " << __FILE__ << std::endl;
 
     Deut_Conv_EMTLF test("AV18");

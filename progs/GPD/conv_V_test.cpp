@@ -54,7 +54,7 @@ int main(int argc, char *argv[]){
 
  const std::vector<std::string> arg_names={"deuteron wave function name [AV18, CD-Bonn, Paris, WJC1, WJC2]", "xi []", "-t [GeV^2]", "deuteron S-wave included [0/1]", "deuteron D-wave included [0/1]", "nucleon GPD H/Htilde included [0/1]", "nucleon GPD E/Etilde included [0/1]", "GPD model name [GPDMMS13, GPDVGG99, GPDGK16, GPDGK16Numerical]"};
 
-  nucqcd::RunLog runlog(argc, argv, arg_names);  // run bookkeeping as "# " lines (Tools/RunLog.hpp)
+  nucqcd::RunLog runlog(argc, argv, arg_names);  // run bookkeeping as "# " lines (Tools/Core/RunLog.hpp)
   std::cout << "# compiled from file: " << __FILE__ << std::endl;
 
     //QCoreApplication a(argc, argv);

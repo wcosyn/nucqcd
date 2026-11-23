@@ -8,6 +8,6 @@ nucqcd_add_library(DIS
     He3Cross.cpp
     Poldeut.cpp
     Deut_Conv_EMTLF.cpp
-  LINK Knockout MePhys Integrator cuba)
+  LINK Knockout ToolsStructureFunctions Integrator cuba)
 
 add_subdirectory(evolution)

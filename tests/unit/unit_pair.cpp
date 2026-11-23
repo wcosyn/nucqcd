@@ -1,4 +1,4 @@
-// MePhys: Pair (Tools/pair.h), the wave function of a nucleon pair in the harmonic-oscillator shell
+// MePhys: Pair (progs/attic/twonucl/pair.h), the wave function of a nucleon pair in the harmonic-oscillator shell
 // model, optionally with central and tensor correlations in the relative wave function. Unfinished
 // code (used only by DoubleNModel); these tests cover the bugs fixed in 2026-11.
 #include <test_support.hpp>

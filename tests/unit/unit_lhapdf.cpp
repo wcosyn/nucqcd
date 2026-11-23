@@ -1,4 +1,4 @@
-// MePhys: LHAPDF structure functions (Tools/LHAPDFStructure, NucleonStructure "LHAPDF:<set>") and the
+// MePhys: LHAPDF structure functions (Tools/StructureFunctions/LHAPDFStructure, NucleonStructure "LHAPDF:<set>") and the
 // combinations of parametrizations in NucleonStructure ("<low>+<high>@<W2>"), roadmap step 10.
 // The LHAPDF tests follow tests/test_lhapdf.py of the poldeut repository; they need nucqcd built with
 // LHAPDF and the sets CT18LO and NNPDFpol11_100 (lhapdf install CT18LO NNPDFpol11_100), and are skipped
