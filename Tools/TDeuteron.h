@@ -12,7 +12,7 @@
 #include <string>
 #include "TWavefunctionImplementation.h"
 //#include "TKinematics2to3.h"
-#include <TString.h>
+#include <string>
 #include "FourVector.h"
 #include <complex>
 #include "TSpinor.h"
@@ -83,7 +83,7 @@ class TDeuteron
     void SetTitle(const char *title) { fTitle = title; }    ///< sets the title
 
   private:
-    Wavefunction(const TString& name="", const TString& title=""); ///< private: use the named constructors
+    Wavefunction(const std::string& name="", const std::string& title=""); ///< private: use the named constructors
   public:
     Wavefunction(const Wavefunction&); ///< copy constructor (clones the implementation)
     Wavefunction& operator=(const Wavefunction&); ///< assignment (clones the implementation)
@@ -103,7 +103,7 @@ class TDeuteron
     static Wavefunction *CreateTestWavefunction(); ///< test wave function (interpolated tables); the caller owns it
     /*! creates the wave function with the given name (see the class description); the caller owns it
      * \return the wave function \throw std::invalid_argument for an unknown name */
-    static Wavefunction *CreateWavefunction(const TString& name);
+    static Wavefunction *CreateWavefunction(const std::string& name);
   
     double GetUr(double r) const { return fImplementation->GetUr(r); } ///< [fm^-1/2] reduced S wave u(r) \param r [fm]
     double GetWr(double r) const { return fImplementation->GetWr(r); } ///< [fm^-1/2] reduced D wave w(r), same sign as u(r) at large r \param r [fm]
@@ -225,7 +225,6 @@ class TDeuteron
 
     bool operator==(const Polarization&); ///< same angles (within nucqcd::strange_underflow) and state
     operator int() const; ///< the state times two (2m)
-    //TString HashName() const;
 
     void SetTheta(double theta); ///< sets the polar angle of the quantization axis \param theta [rad] in [0,pi]
     void SetPhi(double phi); ///< sets the phase angle \param phi [rad]

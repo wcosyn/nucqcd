@@ -156,7 +156,7 @@ void TKinematics2to3WithLabAngles::ReadFormatString(const char *format)
 }
 
 //_____________________________________________________________________
-double* TKinematics2to3WithLabAngles::GetVarArray(const TString& varName) const
+double* TKinematics2to3WithLabAngles::GetVarArray(const std::string& varName) const
 {
   // Return an array of the variable of type 'variable'. The variable can effectively
   // by any one for which their exists a getter. It need not be listed in the info
@@ -171,7 +171,7 @@ double* TKinematics2to3WithLabAngles::GetVarArray(const TString& varName) const
 }
 
 //_____________________________________________________________________
-double* TKinematics2to3WithLabAngles::GetPhysicalVarArray(const TString& varName) const
+double* TKinematics2to3WithLabAngles::GetPhysicalVarArray(const std::string& varName) const
 {
   // Return an array of the variable of type 'variable'. The variable can effectively
   // by any one for which their exists a getter. It need not be listed in the info

@@ -33,8 +33,8 @@ class TKinematics2to3WithLabAngles : public TKinematics2to3
   int GetNumberOfSolutions() const { return fNrOfSolutions; } ///< number of solutions (0, 1 or 2) for the current point
   const TKinematics2to3& GetSolution(int) const; ///< solution 0 or 1
   virtual int     GetNumberOfPhysicalSteps() const; ///< number of physical points in the grid
-  virtual double *GetVarArray(const TString& varName) const; ///< values of a variable at all grid points; the caller owns the array
-  virtual double *GetPhysicalVarArray(const TString& varName) const; ///< values of a variable at the physical grid points; the caller owns the array
+  virtual double *GetVarArray(const std::string& varName) const; ///< values of a variable at all grid points; the caller owns the array
+  virtual double *GetPhysicalVarArray(const std::string& varName) const; ///< values of a variable at the physical grid points; the caller owns the array
  
  protected:
   virtual void ReadFormatString(const char*); ///< processes the format string

@@ -106,9 +106,9 @@
 #include <cstdlib>
 #include <iostream>
 #include <cstring>
-#include <TObjArray.h>
-#include <TObjString.h>
-#include <TString.h>
+#include "StringUtil.hpp"
+#include <algorithm>
+#include <optional>
 #include <vector>
 #include <TLorentzRotation.h>
 #include <TVector2.h>
@@ -653,16 +653,15 @@ void TKinematics2to3::ReadFormatString(const char *format)
   // Set all pointers to independent variables to NULL                 
   fE1Var = fE2Var = fEVar = fTh1Var = fTh2Var = fPhi2Var = 0;
 
-  // Put format string in member and in temporary TString.
+  // Put format string in member and in a temporary string.
   std::strcpy(fFormat,format);
-  TString formatString = format;
+  const std::string formatString = format;
 
-  // Tokenize format string
-  TObjArray *tokens = formatString.Tokenize(":");
-  char token[11];
+  // Tokenize format string (empty tokens are left out, as with ROOT's Tokenize before 2026-11)
+  std::vector<std::string> tokens = nucqcd::split(formatString, ':');
 
   // Check the number of tokens
-  int nrOfTokens = tokens->GetEntries();
+  int nrOfTokens = tokens.size();
   if( nrOfTokens != 6 ) {
     throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	 << "Format string should provide 6 independent variables: "
@@ -670,50 +669,52 @@ void TKinematics2to3::ReadFormatString(const char *format)
   }
 
   // Transform tokens to lower case
-  for(int i=0; i<nrOfTokens; ++i)
-    ((TObjString*)tokens->At(i))->String().ToLower();
+  for(std::string &tok : tokens)
+    tok = nucqcd::to_lower(tok);
 
   // Check that Q^2 is present
-  if( !formatString.Contains("qsquared",TString::kIgnoreCase) ) {
+  if( !nucqcd::icontains(formatString,"qsquared") ) {
     throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	 << "Q^2 needs to be one of 6 independent kinematic variables.");
   }
 
   // Check whether all tokens are mandelstam variables. We do this by
   // counting the s's and t's
-  TString *mandel = 0;
-  if( formatString.CountChar('s')+formatString.CountChar('S')-1
-      +formatString.CountChar('t')+formatString.CountChar('T')-2 ==5 
-      && formatString.Contains("stot",TString::kIgnoreCase) ) {
+  // mandel: the subscenarios a-g still possible ('-' for excluded ones), only in the mandelstam case
+  std::optional<std::string> mandel;
+  auto count = [&formatString](char c) { return (int)std::count(formatString.begin(), formatString.end(), c); };
+  if( count('s')+count('S')-1
+      +count('t')+count('T')-2 ==5 
+      && nucqcd::icontains(formatString,"stot") ) {
 
     fKinSolution[0] = '3';
 
-    mandel = new TString("abcdefg"); // list all subscenarios
+    mandel = std::string("abcdefg"); // list all subscenarios
     
     // find out name of '2nd particle'
     if( fAC == kK ) {
-      if( formatString.Contains("sky",TString::kIgnoreCase) ||
-	  formatString.Contains("syk",TString::kIgnoreCase) ||
-	  formatString.Contains("tgy",TString::kIgnoreCase) ||
-	  formatString.Contains("tyg",TString::kIgnoreCase) )
+      if( nucqcd::icontains(formatString,"sky") ||
+	  nucqcd::icontains(formatString,"syk") ||
+	  nucqcd::icontains(formatString,"tgy") ||
+	  nucqcd::icontains(formatString,"tyg") )
 	fKinSolution[1] = 'Y';
       else
 	fKinSolution[1] = 'N';
     } // fAC == kK
     else if( fAC == kY ) {
-      if( formatString.Contains("sky",TString::kIgnoreCase) ||
-	  formatString.Contains("syk",TString::kIgnoreCase) ||
-	  formatString.Contains("tgk",TString::kIgnoreCase) ||
-	  formatString.Contains("tkg",TString::kIgnoreCase) )
+      if( nucqcd::icontains(formatString,"sky") ||
+	  nucqcd::icontains(formatString,"syk") ||
+	  nucqcd::icontains(formatString,"tgk") ||
+	  nucqcd::icontains(formatString,"tkg") )
 	fKinSolution[1] = 'K';
       else
 	fKinSolution[1] = 'N';
     } // fAC == kY
     else if( fAC == kN ) {
-      if( formatString.Contains("sny",TString::kIgnoreCase) ||
-	  formatString.Contains("syn",TString::kIgnoreCase) ||
-	  formatString.Contains("tgy",TString::kIgnoreCase) ||
-	  formatString.Contains("tyg",TString::kIgnoreCase) )
+      if( nucqcd::icontains(formatString,"sny") ||
+	  nucqcd::icontains(formatString,"syn") ||
+	  nucqcd::icontains(formatString,"tgy") ||
+	  nucqcd::icontains(formatString,"tyg") )
 	fKinSolution[1] = 'Y';
       else
 	fKinSolution[1] = 'K';
@@ -723,14 +724,14 @@ void TKinematics2to3::ReadFormatString(const char *format)
   // Determine independent kinematic variables
   for(int i=0; i<nrOfTokens; ++i) 
     {
-      std::strcpy(token,((TObjString*)tokens->At(i))->String());
+      const std::string &token = tokens[i];  // (was copied into char[11]: overflow for long tokens)
 
       //__________________________________
-      if( !strcmp(token,"qsquared") ) {
+      if( (token=="qsquared") ) {
 	fVar[i] = &fQsquared;
       }
       //__________________________________
-      else if( !strcmp(token,"wlab") ) {
+      else if( (token=="wlab") ) {
 	if(fEVar || fKinSolution[0] == '2') {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
@@ -739,7 +740,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	fKinSolution[0] = '1';
       }
       //__________________________________
-      else if( !strcmp(token,"klab") ) {
+      else if( (token=="klab") ) {
 	if(fEVar || fKinSolution[0] == '2') {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
@@ -748,7 +749,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	fKinSolution[0] = '1';
       }
       //__________________________________
-      else if( !strcmp(token,"ek") ) {
+      else if( (token=="ek") ) {
 	if( fAC == kK ) {
 	  if(fE1Var) {
 	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
@@ -768,7 +769,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"ey") ) {
+      else if( (token=="ey") ) {
 	if( fAC == kY ) {
 	  if(fE1Var) {
 	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
@@ -788,7 +789,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}	
       }
       //__________________________________
-      else if( !strcmp(token,"en") ) {
+      else if( (token=="en") ) {
 	if( fAC == kN ) {
 	  if(fE1Var) {
 	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
@@ -808,7 +809,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}	
       }
       //__________________________________
-      else if( !strcmp(token,"pk") ) {
+      else if( (token=="pk") ) {
 	if( fAC == kK ) {
 	  if(fE1Var) {
 	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
@@ -828,7 +829,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"py") ) {
+      else if( (token=="py") ) {
 	if( fAC == kY ) {
 	  if(fE1Var) {
 	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
@@ -848,7 +849,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}	
       }
       //__________________________________
-      else if( !strcmp(token,"pn") ) {
+      else if( (token=="pn") ) {
 	if( fAC == kN ) {
 	  if(fE1Var) {
 	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
@@ -868,7 +869,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}	
       }
       //__________________________________
-      else if( !strcmp(token,"thk") ) {
+      else if( (token=="thk") ) {
 	if( fAC == kK ) {
 	  if(fTh1Var) {
 	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
@@ -888,7 +889,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"thy") ) {
+      else if( (token=="thy") ) {
 	if( fAC == kY ) {
 	  if(fTh1Var) {
 	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
@@ -908,7 +909,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"thn") ) {
+      else if( (token=="thn") ) {
 	if( fAC == kN ) {
 	  if(fTh1Var) {
 	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
@@ -928,7 +929,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"costhk") ) {
+      else if( (token=="costhk") ) {
 	if( fAC == kK ) {
 	  if(fTh1Var) {
 	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
@@ -948,7 +949,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"costhy") ) {
+      else if( (token=="costhy") ) {
 	if( fAC == kY ) {
 	  if(fTh1Var) {
 	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
@@ -968,7 +969,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"costhn") ) {
+      else if( (token=="costhn") ) {
 	if( fAC == kN ) {
 	  if(fTh1Var) {
 	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
@@ -988,7 +989,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"phik") ) {
+      else if( (token=="phik") ) {
 	if( fAC == kK ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane! Because of the axis convention "
@@ -1006,7 +1007,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"phiy") ) {
+      else if( (token=="phiy") ) {
 	if( fAC == kY ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane! Because of the axis convention "
@@ -1024,7 +1025,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"phin") ) {
+      else if( (token=="phin") ) {
 	if( fAC == kN ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane! Because of the axis convention "
@@ -1042,7 +1043,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"wtot") ) {
+      else if( (token=="wtot") ) {
 	if(fEVar || fKinSolution[0] == '2') {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
@@ -1051,7 +1052,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	fKinSolution[0] = '1';
       }
       //__________________________________
-      else if( !strcmp(token,"wky") || !strcmp(token,"wyk") ) {
+      else if( (token=="wky") || (token=="wyk") ) {
 	if( fAC != kN ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
@@ -1066,7 +1067,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"wkn") || !strcmp(token,"wnk") ) {
+      else if( (token=="wkn") || (token=="wnk") ) {
 	if( fAC != kY ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
@@ -1081,7 +1082,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"wyn") || !strcmp(token,"wny") ) {
+      else if( (token=="wyn") || (token=="wny") ) {
 	if( fAC != kK ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
@@ -1096,7 +1097,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"stot") ) {
+      else if( (token=="stot") ) {
 	if(fEVar || fKinSolution[0] == '2') {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
@@ -1110,14 +1111,14 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"sky") || !strcmp(token,"syk") ) {
+      else if( (token=="sky") || (token=="syk") ) {
 	if(fKinSolution[0] == '3') {
 	  if( (fAC==kK && fKinSolution[1]=='Y') ||
 	      (fAC==kY && fKinSolution[1]=='K') ) {
-	    mandel->ReplaceAll("g","-");
+	    std::replace(mandel->begin(),mandel->end(),'g','-');
 	  }
 	  else if( fAC==kN ) {
-	    mandel->ReplaceAll("d","-");
+	    std::replace(mandel->begin(),mandel->end(),'d','-');
 	  }
 	  else {
 	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
@@ -1141,14 +1142,14 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"skn") || !strcmp(token,"snk") ) {
+      else if( (token=="skn") || (token=="snk") ) {
 	if(fKinSolution[0] == '3') {
 	  if( (fAC==kK && fKinSolution[1]=='N') ||
 	      (fAC==kN && fKinSolution[1]=='K') ) {
-	    mandel->ReplaceAll("g","-");
+	    std::replace(mandel->begin(),mandel->end(),'g','-');
 	  }
 	  else if( fAC==kY ) {
-	    mandel->ReplaceAll("d","-");
+	    std::replace(mandel->begin(),mandel->end(),'d','-');
 	  }
 	  else {
 	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
@@ -1172,14 +1173,14 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"syn") || !strcmp(token,"sny") ) {
+      else if( (token=="syn") || (token=="sny") ) {
 	if(fKinSolution[0] == '3') {
 	  if( (fAC==kY && fKinSolution[1]=='N') ||
 	      (fAC==kN && fKinSolution[1]=='Y') ) {
-	    mandel->ReplaceAll("g","-");
+	    std::replace(mandel->begin(),mandel->end(),'g','-');
 	  }
 	  else if( fAC==kK ) {
-	    mandel->ReplaceAll("d","-");
+	    std::replace(mandel->begin(),mandel->end(),'d','-');
 	  }
 	  else {
 	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
@@ -1203,17 +1204,17 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"tgk") || !strcmp(token,"tkg") ) {
+      else if( (token=="tgk") || (token=="tkg") ) {
 	if(fKinSolution[0] == '3') {
 	  if( (fAC==kY || fAC==kN ) && fKinSolution[1]=='K' ) {
-	    mandel->ReplaceAll("a","-");
-	    mandel->ReplaceAll("b","-");
-	    mandel->ReplaceAll("c","-");
-	    mandel->ReplaceAll("d","-");
+	    std::replace(mandel->begin(),mandel->end(),'a','-');
+	    std::replace(mandel->begin(),mandel->end(),'b','-');
+	    std::replace(mandel->begin(),mandel->end(),'c','-');
+	    std::replace(mandel->begin(),mandel->end(),'d','-');
 	  }
 	  else if( fAC==kK ) {
-	    mandel->ReplaceAll("c","-");
-	    mandel->ReplaceAll("f","-");
+	    std::replace(mandel->begin(),mandel->end(),'c','-');
+	    std::replace(mandel->begin(),mandel->end(),'f','-');
 	  }
 	  else {
 	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
@@ -1247,17 +1248,17 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"tgy") || !strcmp(token,"tyg") ) {
+      else if( (token=="tgy") || (token=="tyg") ) {
 	if(fKinSolution[0] == '3') {
 	  if( (fAC==kK || fAC==kN ) && fKinSolution[1]=='Y' ) {
-	    mandel->ReplaceAll("a","-");
-	    mandel->ReplaceAll("b","-");
-	    mandel->ReplaceAll("c","-");
-	    mandel->ReplaceAll("d","-");
+	    std::replace(mandel->begin(),mandel->end(),'a','-');
+	    std::replace(mandel->begin(),mandel->end(),'b','-');
+	    std::replace(mandel->begin(),mandel->end(),'c','-');
+	    std::replace(mandel->begin(),mandel->end(),'d','-');
 	  }
 	  else if( fAC==kY ) {
-	    mandel->ReplaceAll("c","-");
-	    mandel->ReplaceAll("f","-");
+	    std::replace(mandel->begin(),mandel->end(),'c','-');
+	    std::replace(mandel->begin(),mandel->end(),'f','-');
 	  }
 	  else {
 	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
@@ -1291,17 +1292,17 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"tgn") || !strcmp(token,"tng") ) {
+      else if( (token=="tgn") || (token=="tng") ) {
 	if(fKinSolution[0] == '3') {
 	  if( (fAC==kK || fAC==kY ) && fKinSolution[1]=='N' ) {
-	    mandel->ReplaceAll("a","-");
-	    mandel->ReplaceAll("b","-");
-	    mandel->ReplaceAll("c","-");
-	    mandel->ReplaceAll("d","-");
+	    std::replace(mandel->begin(),mandel->end(),'a','-');
+	    std::replace(mandel->begin(),mandel->end(),'b','-');
+	    std::replace(mandel->begin(),mandel->end(),'c','-');
+	    std::replace(mandel->begin(),mandel->end(),'d','-');
 	  }
 	  else if( fAC==kN ) {
-	    mandel->ReplaceAll("c","-");
-	    mandel->ReplaceAll("f","-");
+	    std::replace(mandel->begin(),mandel->end(),'c','-');
+	    std::replace(mandel->begin(),mandel->end(),'f','-');
 	  }
 	  else {
 	    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
@@ -1335,61 +1336,61 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"tdk") || !strcmp(token,"tkd") ) {
+      else if( (token=="tdk") || (token=="tkd") ) {
 	if( fKinSolution[0] != '3' || fAC==kK ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
 	}
 	else if( fKinSolution[1] == 'K' ) {
-	  mandel->ReplaceAll("a","-");
-	  mandel->ReplaceAll("e","-");
-	  mandel->ReplaceAll("f","-");
-	  mandel->ReplaceAll("g","-");
+	  std::replace(mandel->begin(),mandel->end(),'a','-');
+	  std::replace(mandel->begin(),mandel->end(),'e','-');
+	  std::replace(mandel->begin(),mandel->end(),'f','-');
+	  std::replace(mandel->begin(),mandel->end(),'g','-');
 	}
 	else {
-	  mandel->ReplaceAll("b","-");
-	  mandel->ReplaceAll("e","-");
+	  std::replace(mandel->begin(),mandel->end(),'b','-');
+	  std::replace(mandel->begin(),mandel->end(),'e','-');
 	}
 	fVar[i] = &fTdk;
       }
       //__________________________________
-      else if( !strcmp(token,"tdy") || !strcmp(token,"tyd") ) {
+      else if( (token=="tdy") || (token=="tyd") ) {
 	if( fKinSolution[0] != '3' || fAC==kY ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
 	}
 	else if( fKinSolution[1] == 'Y' ) {
-	  mandel->ReplaceAll("a","-");
-	  mandel->ReplaceAll("e","-");
-	  mandel->ReplaceAll("f","-");
-	  mandel->ReplaceAll("g","-");
+	  std::replace(mandel->begin(),mandel->end(),'a','-');
+	  std::replace(mandel->begin(),mandel->end(),'e','-');
+	  std::replace(mandel->begin(),mandel->end(),'f','-');
+	  std::replace(mandel->begin(),mandel->end(),'g','-');
 	}
 	else {
-	  mandel->ReplaceAll("b","-");
-	  mandel->ReplaceAll("e","-");
+	  std::replace(mandel->begin(),mandel->end(),'b','-');
+	  std::replace(mandel->begin(),mandel->end(),'e','-');
 	}
 	fVar[i] = &fTdy;
       }
       //__________________________________
-      else if( !strcmp(token,"tdn") || !strcmp(token,"tnd") ) {
+      else if( (token=="tdn") || (token=="tnd") ) {
 	if( fKinSolution[0] != '3' || fAC==kN ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
 	}
 	else if( fKinSolution[1] == 'N' ) {
-	  mandel->ReplaceAll("a","-");
-	  mandel->ReplaceAll("e","-");
-	  mandel->ReplaceAll("f","-");
-	  mandel->ReplaceAll("g","-");
+	  std::replace(mandel->begin(),mandel->end(),'a','-');
+	  std::replace(mandel->begin(),mandel->end(),'e','-');
+	  std::replace(mandel->begin(),mandel->end(),'f','-');
+	  std::replace(mandel->begin(),mandel->end(),'g','-');
 	}
 	else {
-	  mandel->ReplaceAll("b","-");
-	  mandel->ReplaceAll("e","-");
+	  std::replace(mandel->begin(),mandel->end(),'b','-');
+	  std::replace(mandel->begin(),mandel->end(),'e','-');
 	}
 	fVar[i] = &fTdn;
       }
       //__________________________________
-      else if( !strcmp(token,"kythkcm") || !strcmp(token,"ykthkcm") ) {
+      else if( (token=="kythkcm") || (token=="ykthkcm") ) {
 	if( fAC != kN ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
@@ -1407,7 +1408,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"kythycm") || !strcmp(token,"ykthycm") ) {
+      else if( (token=="kythycm") || (token=="ykthycm") ) {
 	if( fAC != kN ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
@@ -1425,7 +1426,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"knthkcm") || !strcmp(token,"nkthkcm") ) {
+      else if( (token=="knthkcm") || (token=="nkthkcm") ) {
 	if( fAC != kY ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
@@ -1443,7 +1444,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"knthncm") || !strcmp(token,"nkthncm") ) {
+      else if( (token=="knthncm") || (token=="nkthncm") ) {
 	if( fAC != kY ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
@@ -1461,7 +1462,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"ynthycm") || !strcmp(token,"nythycm") ) {
+      else if( (token=="ynthycm") || (token=="nythycm") ) {
 	if( fAC != kK ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
@@ -1479,7 +1480,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"ynthncm") || !strcmp(token,"nythncm") ) {
+      else if( (token=="ynthncm") || (token=="nythncm") ) {
 	if( fAC != kK ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
@@ -1497,7 +1498,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"kycosthkcm") || !strcmp(token,"ykcosthkcm") ) {
+      else if( (token=="kycosthkcm") || (token=="ykcosthkcm") ) {
 	if( fAC != kN ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
@@ -1515,7 +1516,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"kycosthycm") || !strcmp(token,"ykcosthycm") ) {
+      else if( (token=="kycosthycm") || (token=="ykcosthycm") ) {
 	if( fAC != kN ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
@@ -1533,7 +1534,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"kncosthkcm") || !strcmp(token,"nkcosthkcm") ) {
+      else if( (token=="kncosthkcm") || (token=="nkcosthkcm") ) {
 	if( fAC != kY ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
@@ -1551,7 +1552,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"kncosthncm") || !strcmp(token,"nkcosthncm") ) {
+      else if( (token=="kncosthncm") || (token=="nkcosthncm") ) {
 	if( fAC != kY ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
@@ -1569,7 +1570,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"yncosthycm") || !strcmp(token,"nycosthycm") ) {
+      else if( (token=="yncosthycm") || (token=="nycosthycm") ) {
 	if( fAC != kK ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
@@ -1587,7 +1588,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"yncosthncm") || !strcmp(token,"nycosthncm") ) {
+      else if( (token=="yncosthncm") || (token=="nycosthncm") ) {
 	if( fAC != kK ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
@@ -1605,7 +1606,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"kyphikcm") || !strcmp(token,"ykphikcm") ) {
+      else if( (token=="kyphikcm") || (token=="ykphikcm") ) {
 	if( fAC != kN ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
@@ -1623,7 +1624,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"kyphiycm") || !strcmp(token,"ykphiycm") ) {
+      else if( (token=="kyphiycm") || (token=="ykphiycm") ) {
 	if( fAC != kN ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
@@ -1641,7 +1642,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"knphikcm") || !strcmp(token,"nkphikcm") ) {
+      else if( (token=="knphikcm") || (token=="nkphikcm") ) {
 	if( fAC != kY ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
@@ -1659,7 +1660,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"knphincm") || !strcmp(token,"nkphincm") ) {
+      else if( (token=="knphincm") || (token=="nkphincm") ) {
 	if( fAC != kY ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
@@ -1677,7 +1678,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"ynphiycm") || !strcmp(token,"nyphiycm") ) {
+      else if( (token=="ynphiycm") || (token=="nyphiycm") ) {
 	if( fAC != kK ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
@@ -1695,7 +1696,7 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	}
       }
       //__________________________________
-      else if( !strcmp(token,"ynphincm") || !strcmp(token,"nyphincm") ) {
+      else if( (token=="ynphincm") || (token=="nyphincm") ) {
 	if( fAC != kK ) {
 	  throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	       << "Format string is not sane!");
@@ -1724,11 +1725,11 @@ void TKinematics2to3::ReadFormatString(const char *format)
   // Check whether the user provided a meaningful format string
   // in the mandelstam case
   if(mandel) {
-    if(mandel->CountChar('-') != 6) {
+    if(std::count(mandel->begin(),mandel->end(),'-') != 6) {
       throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	   << "Format string is not sane!");
     }
-    fKinSolution[2] = mandel->Strip(TString::kBoth,'-')[0];
+    fKinSolution[2] = (*mandel)[mandel->find_first_not_of('-')];  // the one subscenario left
   }
 
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -1751,8 +1752,6 @@ void TKinematics2to3::ReadFormatString(const char *format)
 	 << "CAVEAT: risk of running into multiple solutions.\n"
 	 << "Perhaps TKinematics2to3WithLabAngles is something up your alley.\n";
 
-  // delete dynamics memory
-  delete tokens; delete mandel;
 }
 
 //_____________________________________________________________________
@@ -3049,7 +3048,7 @@ double TKinematics2to3::GetVar(int varNumber) const
 }
 
 //_____________________________________________________________________
-double TKinematics2to3::GetVar(const TString& variable) const
+double TKinematics2to3::GetVar(const std::string& variable) const
 {
   // Returns the value of the variable given by name. The variable can effectively
   // by any one for which their exists a getter. It need not be listed in the info
@@ -3057,342 +3056,341 @@ double TKinematics2to3::GetVar(const TString& variable) const
 
   double(TKinematics2to3::*ptrToVarGetter)() const; // pointer to TKinematics getters
   
-  TString varName = variable;
-  varName.ToLower();
+  const std::string varName = nucqcd::to_lower(variable);
   
   // Assign the correct Getter
-  if( !strcmp(varName,"pk") ) {
+  if( (varName=="pk") ) {
     ptrToVarGetter = &TKinematics2to3::GetPk;
   }
-  else if( !strcmp(varName,"py") ) {
+  else if( (varName=="py") ) {
     ptrToVarGetter = &TKinematics2to3::GetPy;
   }
-  else if( !strcmp(varName,"pn") ) {
+  else if( (varName=="pn") ) {
     ptrToVarGetter = &TKinematics2to3::GetPn;
   }
-  else if( !strcmp(varName,"klab") ) {
+  else if( (varName=="klab") ) {
     ptrToVarGetter = &TKinematics2to3::GetKlab;
   }
-  else if( !strcmp(varName,"ek") ) {
+  else if( (varName=="ek") ) {
     ptrToVarGetter = &TKinematics2to3::GetEk;
   }
-  else if( !strcmp(varName,"ey") ) {
+  else if( (varName=="ey") ) {
     ptrToVarGetter = &TKinematics2to3::GetEy;
   }
-  else if( !strcmp(varName,"en") ) {
+  else if( (varName=="en") ) {
     ptrToVarGetter = &TKinematics2to3::GetEn;
   }
-  else if( !strcmp(varName,"wlab") ) {
+  else if( (varName=="wlab") ) {
     ptrToVarGetter = &TKinematics2to3::GetWlab;
   }
-  else if( !strcmp(varName,"thk_deg") ) {
+  else if( (varName=="thk_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetThk_deg;
   }
-  else if( !strcmp(varName,"thy_deg") ) {
+  else if( (varName=="thy_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetThy_deg;
   }
-  else if( !strcmp(varName,"thn_deg") ) {
+  else if( (varName=="thn_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetThn_deg;
   }
-  else if( !strcmp(varName,"thk") ) {
+  else if( (varName=="thk") ) {
     ptrToVarGetter = &TKinematics2to3::GetThk;
   }
-  else if( !strcmp(varName,"thy") ) {
+  else if( (varName=="thy") ) {
     ptrToVarGetter = &TKinematics2to3::GetThy;
   }
-  else if( !strcmp(varName,"thn") ) {
+  else if( (varName=="thn") ) {
     ptrToVarGetter = &TKinematics2to3::GetThn;
   }
-  else if( !strcmp(varName,"costhk") ) {
+  else if( (varName=="costhk") ) {
     ptrToVarGetter = &TKinematics2to3::GetCosthk;
   }
-  else if( !strcmp(varName,"costhy") ) {
+  else if( (varName=="costhy") ) {
     ptrToVarGetter = &TKinematics2to3::GetCosthy;
   }
-  else if( !strcmp(varName,"costhn") ) {
+  else if( (varName=="costhn") ) {
     ptrToVarGetter = &TKinematics2to3::GetCosthn;
   }
-  else if( !strcmp(varName,"phik_deg") ) {
+  else if( (varName=="phik_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetPhik_deg_kS;
   }
-  else if( !strcmp(varName,"phiy_deg") ) {
+  else if( (varName=="phiy_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetPhiy_deg_kS;
   }
-  else if( !strcmp(varName,"phin_deg") ) {
+  else if( (varName=="phin_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetPhin_deg_kS;
   }
-  else if( !strcmp(varName,"phik") ) {
+  else if( (varName=="phik") ) {
     ptrToVarGetter = &TKinematics2to3::GetPhik_kS;
   }
-  else if( !strcmp(varName,"phiy") ) {
+  else if( (varName=="phiy") ) {
     ptrToVarGetter = &TKinematics2to3::GetPhiy_kS;
   }
-  else if( !strcmp(varName,"phin") ) {
+  else if( (varName=="phin") ) {
     ptrToVarGetter = &TKinematics2to3::GetPhin_kS;
   }
-  else if( !strcmp(varName,"thky_deg") ||
-	   !strcmp(varName,"thyk_deg") ) {
+  else if( (varName=="thky_deg") ||
+	   (varName=="thyk_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetThky_deg;
   }
-  else if( !strcmp(varName,"thkn_deg") ||
-	   !strcmp(varName,"thnk_deg" ) ) {
+  else if( (varName=="thkn_deg") ||
+	   (varName=="thnk_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetThkn_deg;
   }
-  else if( !strcmp(varName,"thyn_deg") ||
-	   !strcmp(varName,"thny_deg" ) ) {
+  else if( (varName=="thyn_deg") ||
+	   (varName=="thny_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetThyn_deg;
   }
-  else if( !strcmp(varName,"thky") ||
-	   !strcmp(varName,"thyk" )) {
+  else if( (varName=="thky") ||
+	   (varName=="thyk")) {
     ptrToVarGetter = &TKinematics2to3::GetThky;
   }
-  else if( !strcmp(varName,"thkn") ||
-	   !strcmp(varName,"thnk") ) {
+  else if( (varName=="thkn") ||
+	   (varName=="thnk") ) {
     ptrToVarGetter = &TKinematics2to3::GetThkn;
   }
-  else if( !strcmp(varName,"thyn") ||
-	   !strcmp(varName,"thny") ) {
+  else if( (varName=="thyn") ||
+	   (varName=="thny") ) {
     ptrToVarGetter = &TKinematics2to3::GetThyn;
   }
-  else if( !strcmp(varName,"costhky") ||
-	   !strcmp(varName,"costhyk") ) {
+  else if( (varName=="costhky") ||
+	   (varName=="costhyk") ) {
     ptrToVarGetter = &TKinematics2to3::GetCosthky;
   }
-  else if( !strcmp(varName,"costhkn") ||
-	   !strcmp(varName,"costhnk") ) {
+  else if( (varName=="costhkn") ||
+	   (varName=="costhnk") ) {
     ptrToVarGetter = &TKinematics2to3::GetCosthkn;
   }
-  else if( !strcmp(varName,"costhyn") ||
-	   !strcmp(varName,"costhny") ) {
+  else if( (varName=="costhyn") ||
+	   (varName=="costhny") ) {
     ptrToVarGetter = &TKinematics2to3::GetCosthyn;
   }
-  else if( !strcmp(varName,"qsquared") ) {
+  else if( (varName=="qsquared") ) {
     ptrToVarGetter = &TKinematics2to3::GetQsquared;
   }
-  else if( !strcmp(varName,"wtot") ) {
+  else if( (varName=="wtot") ) {
     ptrToVarGetter = &TKinematics2to3::GetWtot;
   }
-  else if( !strcmp(varName,"wky") ||
-	   !strcmp(varName,"wyk") ) {
+  else if( (varName=="wky") ||
+	   (varName=="wyk") ) {
     ptrToVarGetter = &TKinematics2to3::GetWky;
   }
-  else if( !strcmp(varName,"wkn") ||
-	   !strcmp(varName,"wnk") ) {
+  else if( (varName=="wkn") ||
+	   (varName=="wnk") ) {
     ptrToVarGetter = &TKinematics2to3::GetWkn;
   }
-  else if( !strcmp(varName,"wyn") ||
-	   !strcmp(varName,"wny") ) {
+  else if( (varName=="wyn") ||
+	   (varName=="wny") ) {
     ptrToVarGetter = &TKinematics2to3::GetWyn;
   }
-  else if( !strcmp(varName,"stot") ) {
+  else if( (varName=="stot") ) {
     ptrToVarGetter = &TKinematics2to3::GetStot;
   }
-  else if( !strcmp(varName,"sky") ||
-	   !strcmp(varName,"syk") ) {
+  else if( (varName=="sky") ||
+	   (varName=="syk") ) {
     ptrToVarGetter = &TKinematics2to3::GetSky;
   }
-  else if( !strcmp(varName,"skn") ||
-	   !strcmp(varName,"snk" )) {
+  else if( (varName=="skn") ||
+	   (varName=="snk")) {
     ptrToVarGetter = &TKinematics2to3::GetSkn;
   }
-  else if( !strcmp(varName,"syn") ||
-	   !strcmp(varName,"sny" )) {
+  else if( (varName=="syn") ||
+	   (varName=="sny")) {
     ptrToVarGetter = &TKinematics2to3::GetSyn;
   }
-  else if( !strcmp(varName,"tkg") ||
-	   !strcmp(varName,"tgk" )) {
+  else if( (varName=="tkg") ||
+	   (varName=="tgk")) {
     ptrToVarGetter = &TKinematics2to3::GetTkg;
   }
-  else if( !strcmp(varName,"tyg") ||
-	   !strcmp(varName,"tgy" )) {
+  else if( (varName=="tyg") ||
+	   (varName=="tgy")) {
     ptrToVarGetter = &TKinematics2to3::GetTyg;
   }
-  else if( !strcmp(varName,"tng") ||
-	   !strcmp(varName,"tgn" )) {
+  else if( (varName=="tng") ||
+	   (varName=="tgn")) {
     ptrToVarGetter = &TKinematics2to3::GetTng;
   }
-  else if( !strcmp(varName,"tkd") ||
-	   !strcmp(varName,"tdk" )) {
+  else if( (varName=="tkd") ||
+	   (varName=="tdk")) {
     ptrToVarGetter = &TKinematics2to3::GetTkd;
   }
-  else if( !strcmp(varName,"tyd") ||
-	   !strcmp(varName,"tdy" )) {
+  else if( (varName=="tyd") ||
+	   (varName=="tdy")) {
     ptrToVarGetter = &TKinematics2to3::GetTyd;
   }
-  else if( !strcmp(varName,"tnd") ||
-	   !strcmp(varName,"tdn" )) {
+  else if( (varName=="tnd") ||
+	   (varName=="tdn")) {
     ptrToVarGetter = &TKinematics2to3::GetTnd;
   }
-  else if( !strcmp(varName,"kypk") ||
-	   !strcmp(varName,"ykpk" )) {
+  else if( (varName=="kypk") ||
+	   (varName=="ykpk")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_Pk;
   }
-  else if( !strcmp(varName,"kypy") ||
-	   !strcmp(varName,"ykpy" )) {
+  else if( (varName=="kypy") ||
+	   (varName=="ykpy")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_Py;
   }
-  else if( !strcmp(varName,"kyek") ||
-	   !strcmp(varName,"ykek" )) {
+  else if( (varName=="kyek") ||
+	   (varName=="ykek")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_Ek;
   }
-  else if( !strcmp(varName,"kyey") ||
-	   !strcmp(varName,"ykey" )) {
+  else if( (varName=="kyey") ||
+	   (varName=="ykey")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_Ey;
   }
-  else if( !strcmp(varName,"kys") ||
-	   !strcmp(varName,"yks" )) {
+  else if( (varName=="kys") ||
+	   (varName=="yks")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_S;
   }
-  else if( !strcmp(varName,"kyw") ||
-	   !strcmp(varName,"ykw" )) {
+  else if( (varName=="kyw") ||
+	   (varName=="ykw")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_W;
   }
-  else if( !strcmp(varName,"kycosthkcm") ||
-	   !strcmp(varName,"ykcosthkcm" )) {
+  else if( (varName=="kycosthkcm") ||
+	   (varName=="ykcosthkcm")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_costhkcm;
   }
-  else if( !strcmp(varName,"kycosthycm") ||
-	   !strcmp(varName,"ykcosthycm" )) {
+  else if( (varName=="kycosthycm") ||
+	   (varName=="ykcosthycm")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_costhycm;
   }
-  else if( !strcmp(varName,"kythkcm") ||
-	   !strcmp(varName,"ykthkcm" )) {
+  else if( (varName=="kythkcm") ||
+	   (varName=="ykthkcm")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_thkcm;
   }
-  else if( !strcmp(varName,"kythycm") ||
-	   !strcmp(varName,"ykthycm" )) {
+  else if( (varName=="kythycm") ||
+	   (varName=="ykthycm")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_thycm;
   }
-  else if( !strcmp(varName,"kyphikcm") ||
-	   !strcmp(varName,"ykphikcm" )) {
+  else if( (varName=="kyphikcm") ||
+	   (varName=="ykphikcm")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_phikcm_kS;
   }
-  else if( !strcmp(varName,"kyphiycm") ||
-	   !strcmp(varName,"ykphiycm" )) {
+  else if( (varName=="kyphiycm") ||
+	   (varName=="ykphiycm")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_phiycm_kS;
   }
-  else if( !strcmp(varName,"kyhpikcm_deg") ||
-	   !strcmp(varName,"ykphikcm_deg" ) ) {
+  else if( (varName=="kyhpikcm_deg") ||
+	   (varName=="ykphikcm_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_phikcm_deg_kS;
   }
-  else if( !strcmp(varName,"kyphiycm_deg") ||
-	   !strcmp(varName,"ykphiycm_deg" ) ) {
+  else if( (varName=="kyphiycm_deg") ||
+	   (varName=="ykphiycm_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_phiycm_deg_kS;
   }
-  else if( !strcmp(varName,"knpk") ||
-	   !strcmp(varName,"nkpk" ) ) {
+  else if( (varName=="knpk") ||
+	   (varName=="nkpk") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_Pk;
   }
-  else if( !strcmp(varName,"knpn") ||
-	   !strcmp(varName,"nkpn" ) ) {
+  else if( (varName=="knpn") ||
+	   (varName=="nkpn") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_Pn;
   }
-  else if( !strcmp(varName,"knek") ||
-	   !strcmp(varName,"nkek" ) ) {
+  else if( (varName=="knek") ||
+	   (varName=="nkek") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_Ek;
   }
-  else if( !strcmp(varName,"knen") ||
-	   !strcmp(varName,"nken" ) ) {
+  else if( (varName=="knen") ||
+	   (varName=="nken") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_En;
   }
-  else if( !strcmp(varName,"kns") ||
-	   !strcmp(varName,"nks" ) ) {
+  else if( (varName=="kns") ||
+	   (varName=="nks") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_S;
   }
-  else if( !strcmp(varName,"knw") ||
-	   !strcmp(varName,"nkw" ) ) {
+  else if( (varName=="knw") ||
+	   (varName=="nkw") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_W;
   }
-  else if( !strcmp(varName,"kncosthkcm") ||
-	   !strcmp(varName,"nkcosthkcm" ) ) {
+  else if( (varName=="kncosthkcm") ||
+	   (varName=="nkcosthkcm") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_costhkcm;
   }
-  else if( !strcmp(varName,"kncosthncm") ||
-	   !strcmp(varName,"nkcosthncm" ) ) {
+  else if( (varName=="kncosthncm") ||
+	   (varName=="nkcosthncm") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_costhncm;
   }
-  else if( !strcmp(varName,"knthkcm") ||
-	   !strcmp(varName,"nkthkcm" ) ) {
+  else if( (varName=="knthkcm") ||
+	   (varName=="nkthkcm") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_thkcm;
   }
-  else if( !strcmp(varName,"knthncm") ||
-	   !strcmp(varName,"nkthncm" ) ) {
+  else if( (varName=="knthncm") ||
+	   (varName=="nkthncm") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_thncm;
   }
-  else if( !strcmp(varName,"knphikcm") ||
-	   !strcmp(varName,"nkphikcm" ) ) {
+  else if( (varName=="knphikcm") ||
+	   (varName=="nkphikcm") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_phikcm_kS;
   }
-  else if( !strcmp(varName,"knphincm") ||
-	   !strcmp(varName,"nkphincm" ) ) {
+  else if( (varName=="knphincm") ||
+	   (varName=="nkphincm") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_phincm_kS;
   }
-  else if( !strcmp(varName,"knphikcm_deg") ||
-	   !strcmp(varName,"nkphikcm_deg" ) ) {
+  else if( (varName=="knphikcm_deg") ||
+	   (varName=="nkphikcm_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_phikcm_deg_kS;
   }
-  else if( !strcmp(varName,"knphincm_deg") ||
-	   !strcmp(varName,"nkphincm_deg" ) ) {
+  else if( (varName=="knphincm_deg") ||
+	   (varName=="nkphincm_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_phincm_deg_kS;
   }
-  else if( !strcmp(varName,"ynpy") ||
-	   !strcmp(varName,"nypy" ) ) {
+  else if( (varName=="ynpy") ||
+	   (varName=="nypy") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_Py;
   }
-  else if( !strcmp(varName,"ynpn") ||
-	   !strcmp(varName,"nypn" ) ) {
+  else if( (varName=="ynpn") ||
+	   (varName=="nypn") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_Pn;
   }
-  else if( !strcmp(varName,"yney") ||
-	   !strcmp(varName,"nyey" ) ) {
+  else if( (varName=="yney") ||
+	   (varName=="nyey") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_Ey;
   }
-  else if( !strcmp(varName,"ynen") ||
-	   !strcmp(varName,"nyen" ) ) {
+  else if( (varName=="ynen") ||
+	   (varName=="nyen") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_En;
   }
-  else if( !strcmp(varName,"yns") ||
-	   !strcmp(varName,"nys" ) ) {
+  else if( (varName=="yns") ||
+	   (varName=="nys") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_S;
   }
-  else if( !strcmp(varName,"ynw") ||
-	   !strcmp(varName,"nyw" ) ) {
+  else if( (varName=="ynw") ||
+	   (varName=="nyw") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_W;
   }
-  else if( !strcmp(varName,"yncosthycm") ||
-	   !strcmp(varName,"nycosthycm" ) ) {
+  else if( (varName=="yncosthycm") ||
+	   (varName=="nycosthycm") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_costhycm;
   }
-  else if( !strcmp(varName,"yncosthncm") ||
-	   !strcmp(varName,"nycosthncm" ) ) {
+  else if( (varName=="yncosthncm") ||
+	   (varName=="nycosthncm") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_costhncm;
   }
-  else if( !strcmp(varName,"ynthycm") ||
-	   !strcmp(varName,"nythycm" ) ) {
+  else if( (varName=="ynthycm") ||
+	   (varName=="nythycm") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_thycm;
   }
-  else if( !strcmp(varName,"ynthncm") ||
-	   !strcmp(varName,"nythncm" ) ) {
+  else if( (varName=="ynthncm") ||
+	   (varName=="nythncm") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_thncm;
   }
-  else if( !strcmp(varName,"ynphiycm") ||
-	   !strcmp(varName,"nyphiycm" ) ) {
+  else if( (varName=="ynphiycm") ||
+	   (varName=="nyphiycm") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_phiycm_kS;
   }
-  else if( !strcmp(varName,"ynphincm") ||
-	   !strcmp(varName,"nyphincm" ) ) {
+  else if( (varName=="ynphincm") ||
+	   (varName=="nyphincm") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_phincm_kS;
   }
-  else if( !strcmp(varName,"ynphiycm_deg") ||
-	   !strcmp(varName,"nyphiycm_deg" ) ) {
+  else if( (varName=="ynphiycm_deg") ||
+	   (varName=="nyphiycm_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_phiycm_deg_kS;
   }
-  else if( !strcmp(varName,"ynphincm_deg") ||
-	   !strcmp(varName,"nyphincm_deg" ) ) {
+  else if( (varName=="ynphincm_deg") ||
+	   (varName=="nyphincm_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_phincm_deg_kS;
   }
   else {
-    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics2to3::GetVar(const TString&): "
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics2to3::GetVar(const std::string&): "
 	      << "Kinematic variable \"" << variable << "\" unknown!");
   }
 
@@ -3400,7 +3398,7 @@ double TKinematics2to3::GetVar(const TString& variable) const
 }
 
 //_____________________________________________________________________
-double* TKinematics2to3::GetVarArray(const TString& variable) const
+double* TKinematics2to3::GetVarArray(const std::string& variable) const
 {
   // Return an array of the variable of type 'variable'. The variable can effectively
   // by any one for which their exists a getter. It need not be listed in the info
@@ -3411,342 +3409,341 @@ double* TKinematics2to3::GetVarArray(const TString& variable) const
   TKinematics2to3 tk(*this); // temporary copy
   double(TKinematics2to3::*ptrToVarGetter)() const; // pointer to TKinematics getters
   
-  TString varName = variable;
-  varName.ToLower();
+  const std::string varName = nucqcd::to_lower(variable);
   
   // Assign the correct Getter
-  if( !strcmp(varName,"pk") ) {
+  if( (varName=="pk") ) {
     ptrToVarGetter = &TKinematics2to3::GetPk;
   }
-  else if( !strcmp(varName,"py") ) {
+  else if( (varName=="py") ) {
     ptrToVarGetter = &TKinematics2to3::GetPy;
   }
-  else if( !strcmp(varName,"pn") ) {
+  else if( (varName=="pn") ) {
     ptrToVarGetter = &TKinematics2to3::GetPn;
   }
-  else if( !strcmp(varName,"klab") ) {
+  else if( (varName=="klab") ) {
     ptrToVarGetter = &TKinematics2to3::GetKlab;
   }
-  else if( !strcmp(varName,"ek") ) {
+  else if( (varName=="ek") ) {
     ptrToVarGetter = &TKinematics2to3::GetEk;
   }
-  else if( !strcmp(varName,"ey") ) {
+  else if( (varName=="ey") ) {
     ptrToVarGetter = &TKinematics2to3::GetEy;
   }
-  else if( !strcmp(varName,"en") ) {
+  else if( (varName=="en") ) {
     ptrToVarGetter = &TKinematics2to3::GetEn;
   }
-  else if( !strcmp(varName,"wlab") ) {
+  else if( (varName=="wlab") ) {
     ptrToVarGetter = &TKinematics2to3::GetWlab;
   }
-  else if( !strcmp(varName,"thk_deg") ) {
+  else if( (varName=="thk_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetThk_deg;
   }
-  else if( !strcmp(varName,"thy_deg") ) {
+  else if( (varName=="thy_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetThy_deg;
   }
-  else if( !strcmp(varName,"thn_deg") ) {
+  else if( (varName=="thn_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetThn_deg;
   }
-  else if( !strcmp(varName,"thk") ) {
+  else if( (varName=="thk") ) {
     ptrToVarGetter = &TKinematics2to3::GetThk;
   }
-  else if( !strcmp(varName,"thy") ) {
+  else if( (varName=="thy") ) {
     ptrToVarGetter = &TKinematics2to3::GetThy;
   }
-  else if( !strcmp(varName,"thn") ) {
+  else if( (varName=="thn") ) {
     ptrToVarGetter = &TKinematics2to3::GetThn;
   }
-  else if( !strcmp(varName,"costhk") ) {
+  else if( (varName=="costhk") ) {
     ptrToVarGetter = &TKinematics2to3::GetCosthk;
   }
-  else if( !strcmp(varName,"costhy") ) {
+  else if( (varName=="costhy") ) {
     ptrToVarGetter = &TKinematics2to3::GetCosthy;
   }
-  else if( !strcmp(varName,"costhn") ) {
+  else if( (varName=="costhn") ) {
     ptrToVarGetter = &TKinematics2to3::GetCosthn;
   }
-  else if( !strcmp(varName,"phik_deg") ) {
+  else if( (varName=="phik_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetPhik_deg_kS;
   }
-  else if( !strcmp(varName,"phiy_deg") ) {
+  else if( (varName=="phiy_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetPhiy_deg_kS;
   }
-  else if( !strcmp(varName,"phin_deg") ) {
+  else if( (varName=="phin_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetPhin_deg_kS;
   }
-  else if( !strcmp(varName,"phik") ) {
+  else if( (varName=="phik") ) {
     ptrToVarGetter = &TKinematics2to3::GetPhik_kS;
   }
-  else if( !strcmp(varName,"phiy") ) {
+  else if( (varName=="phiy") ) {
     ptrToVarGetter = &TKinematics2to3::GetPhiy_kS;
   }
-  else if( !strcmp(varName,"phin") ) {
+  else if( (varName=="phin") ) {
     ptrToVarGetter = &TKinematics2to3::GetPhin_kS;
   }
-  else if( !strcmp(varName,"thky_deg") ||
-	   !strcmp(varName,"thyk_deg") ) {
+  else if( (varName=="thky_deg") ||
+	   (varName=="thyk_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetThky_deg;
   }
-  else if( !strcmp(varName,"thkn_deg") ||
-	   !strcmp(varName,"thnk_deg" ) ) {
+  else if( (varName=="thkn_deg") ||
+	   (varName=="thnk_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetThkn_deg;
   }
-  else if( !strcmp(varName,"thyn_deg") ||
-	   !strcmp(varName,"thny_deg" ) ) {
+  else if( (varName=="thyn_deg") ||
+	   (varName=="thny_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetThyn_deg;
   }
-  else if( !strcmp(varName,"thky") ||
-	   !strcmp(varName,"thyk" )) {
+  else if( (varName=="thky") ||
+	   (varName=="thyk")) {
     ptrToVarGetter = &TKinematics2to3::GetThky;
   }
-  else if( !strcmp(varName,"thkn") ||
-	   !strcmp(varName,"thnk") ) {
+  else if( (varName=="thkn") ||
+	   (varName=="thnk") ) {
     ptrToVarGetter = &TKinematics2to3::GetThkn;
   }
-  else if( !strcmp(varName,"thyn") ||
-	   !strcmp(varName,"thny") ) {
+  else if( (varName=="thyn") ||
+	   (varName=="thny") ) {
     ptrToVarGetter = &TKinematics2to3::GetThyn;
   }
-  else if( !strcmp(varName,"costhky") ||
-	   !strcmp(varName,"costhyk") ) {
+  else if( (varName=="costhky") ||
+	   (varName=="costhyk") ) {
     ptrToVarGetter = &TKinematics2to3::GetCosthky;
   }
-  else if( !strcmp(varName,"costhkn") ||
-	   !strcmp(varName,"costhnk") ) {
+  else if( (varName=="costhkn") ||
+	   (varName=="costhnk") ) {
     ptrToVarGetter = &TKinematics2to3::GetCosthkn;
   }
-  else if( !strcmp(varName,"costhyn") ||
-	   !strcmp(varName,"costhny") ) {
+  else if( (varName=="costhyn") ||
+	   (varName=="costhny") ) {
     ptrToVarGetter = &TKinematics2to3::GetCosthyn;
   }
-  else if( !strcmp(varName,"qsquared") ) {
+  else if( (varName=="qsquared") ) {
     ptrToVarGetter = &TKinematics2to3::GetQsquared;
   }
-  else if( !strcmp(varName,"wtot") ) {
+  else if( (varName=="wtot") ) {
     ptrToVarGetter = &TKinematics2to3::GetWtot;
   }
-  else if( !strcmp(varName,"wky") ||
-	   !strcmp(varName,"wyk") ) {
+  else if( (varName=="wky") ||
+	   (varName=="wyk") ) {
     ptrToVarGetter = &TKinematics2to3::GetWky;
   }
-  else if( !strcmp(varName,"wkn") ||
-	   !strcmp(varName,"wnk") ) {
+  else if( (varName=="wkn") ||
+	   (varName=="wnk") ) {
     ptrToVarGetter = &TKinematics2to3::GetWkn;
   }
-  else if( !strcmp(varName,"wyn") ||
-	   !strcmp(varName,"wny") ) {
+  else if( (varName=="wyn") ||
+	   (varName=="wny") ) {
     ptrToVarGetter = &TKinematics2to3::GetWyn;
   }
-  else if( !strcmp(varName,"stot") ) {
+  else if( (varName=="stot") ) {
     ptrToVarGetter = &TKinematics2to3::GetStot;
   }
-  else if( !strcmp(varName,"sky") ||
-	   !strcmp(varName,"syk") ) {
+  else if( (varName=="sky") ||
+	   (varName=="syk") ) {
     ptrToVarGetter = &TKinematics2to3::GetSky;
   }
-  else if( !strcmp(varName,"skn") ||
-	   !strcmp(varName,"snk" )) {
+  else if( (varName=="skn") ||
+	   (varName=="snk")) {
     ptrToVarGetter = &TKinematics2to3::GetSkn;
   }
-  else if( !strcmp(varName,"syn") ||
-	   !strcmp(varName,"sny" )) {
+  else if( (varName=="syn") ||
+	   (varName=="sny")) {
     ptrToVarGetter = &TKinematics2to3::GetSyn;
   }
-  else if( !strcmp(varName,"tkg") ||
-	   !strcmp(varName,"tgk" )) {
+  else if( (varName=="tkg") ||
+	   (varName=="tgk")) {
     ptrToVarGetter = &TKinematics2to3::GetTkg;
   }
-  else if( !strcmp(varName,"tyg") ||
-	   !strcmp(varName,"tgy" )) {
+  else if( (varName=="tyg") ||
+	   (varName=="tgy")) {
     ptrToVarGetter = &TKinematics2to3::GetTyg;
   }
-  else if( !strcmp(varName,"tng") ||
-	   !strcmp(varName,"tgn" )) {
+  else if( (varName=="tng") ||
+	   (varName=="tgn")) {
     ptrToVarGetter = &TKinematics2to3::GetTng;
   }
-  else if( !strcmp(varName,"tkd") ||
-	   !strcmp(varName,"tdk" )) {
+  else if( (varName=="tkd") ||
+	   (varName=="tdk")) {
     ptrToVarGetter = &TKinematics2to3::GetTkd;
   }
-  else if( !strcmp(varName,"tyd") ||
-	   !strcmp(varName,"tdy" )) {
+  else if( (varName=="tyd") ||
+	   (varName=="tdy")) {
     ptrToVarGetter = &TKinematics2to3::GetTyd;
   }
-  else if( !strcmp(varName,"tnd") ||
-	   !strcmp(varName,"tdn" )) {
+  else if( (varName=="tnd") ||
+	   (varName=="tdn")) {
     ptrToVarGetter = &TKinematics2to3::GetTnd;
   }
-  else if( !strcmp(varName,"kypk") ||
-	   !strcmp(varName,"ykpk" )) {
+  else if( (varName=="kypk") ||
+	   (varName=="ykpk")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_Pk;
   }
-  else if( !strcmp(varName,"kypy") ||
-	   !strcmp(varName,"ykpy" )) {
+  else if( (varName=="kypy") ||
+	   (varName=="ykpy")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_Py;
   }
-  else if( !strcmp(varName,"kyek") ||
-	   !strcmp(varName,"ykek" )) {
+  else if( (varName=="kyek") ||
+	   (varName=="ykek")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_Ek;
   }
-  else if( !strcmp(varName,"kyey") ||
-	   !strcmp(varName,"ykey" )) {
+  else if( (varName=="kyey") ||
+	   (varName=="ykey")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_Ey;
   }
-  else if( !strcmp(varName,"kys") ||
-	   !strcmp(varName,"yks" )) {
+  else if( (varName=="kys") ||
+	   (varName=="yks")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_S;
   }
-  else if( !strcmp(varName,"kyw") ||
-	   !strcmp(varName,"ykw" )) {
+  else if( (varName=="kyw") ||
+	   (varName=="ykw")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_W;
   }
-  else if( !strcmp(varName,"kycosthkcm") ||
-	   !strcmp(varName,"ykcosthkcm" )) {
+  else if( (varName=="kycosthkcm") ||
+	   (varName=="ykcosthkcm")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_costhkcm;
   }
-  else if( !strcmp(varName,"kycosthycm") ||
-	   !strcmp(varName,"ykcosthycm" )) {
+  else if( (varName=="kycosthycm") ||
+	   (varName=="ykcosthycm")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_costhycm;
   }
-  else if( !strcmp(varName,"kythkcm") ||
-	   !strcmp(varName,"ykthkcm" )) {
+  else if( (varName=="kythkcm") ||
+	   (varName=="ykthkcm")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_thkcm;
   }
-  else if( !strcmp(varName,"kythycm") ||
-	   !strcmp(varName,"ykthycm" )) {
+  else if( (varName=="kythycm") ||
+	   (varName=="ykthycm")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_thycm;
   }
-  else if( !strcmp(varName,"kyphikcm") ||
-	   !strcmp(varName,"ykphikcm" )) {
+  else if( (varName=="kyphikcm") ||
+	   (varName=="ykphikcm")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_phikcm_kS;
   }
-  else if( !strcmp(varName,"kyphiycm") ||
-	   !strcmp(varName,"ykphiycm" )) {
+  else if( (varName=="kyphiycm") ||
+	   (varName=="ykphiycm")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_phiycm_kS;
   }
-  else if( !strcmp(varName,"kyhpikcm_deg") ||
-	   !strcmp(varName,"ykphikcm_deg" ) ) {
+  else if( (varName=="kyhpikcm_deg") ||
+	   (varName=="ykphikcm_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_phikcm_deg_kS;
   }
-  else if( !strcmp(varName,"kyphiycm_deg") ||
-	   !strcmp(varName,"ykphiycm_deg" ) ) {
+  else if( (varName=="kyphiycm_deg") ||
+	   (varName=="ykphiycm_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_phiycm_deg_kS;
   }
-  else if( !strcmp(varName,"knpk") ||
-	   !strcmp(varName,"nkpk" ) ) {
+  else if( (varName=="knpk") ||
+	   (varName=="nkpk") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_Pk;
   }
-  else if( !strcmp(varName,"knpn") ||
-	   !strcmp(varName,"nkpn" ) ) {
+  else if( (varName=="knpn") ||
+	   (varName=="nkpn") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_Pn;
   }
-  else if( !strcmp(varName,"knek") ||
-	   !strcmp(varName,"nkek" ) ) {
+  else if( (varName=="knek") ||
+	   (varName=="nkek") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_Ek;
   }
-  else if( !strcmp(varName,"knen") ||
-	   !strcmp(varName,"nken" ) ) {
+  else if( (varName=="knen") ||
+	   (varName=="nken") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_En;
   }
-  else if( !strcmp(varName,"kns") ||
-	   !strcmp(varName,"nks" ) ) {
+  else if( (varName=="kns") ||
+	   (varName=="nks") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_S;
   }
-  else if( !strcmp(varName,"knw") ||
-	   !strcmp(varName,"nkw" ) ) {
+  else if( (varName=="knw") ||
+	   (varName=="nkw") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_W;
   }
-  else if( !strcmp(varName,"kncosthkcm") ||
-	   !strcmp(varName,"nkcosthkcm" ) ) {
+  else if( (varName=="kncosthkcm") ||
+	   (varName=="nkcosthkcm") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_costhkcm;
   }
-  else if( !strcmp(varName,"kncosthncm") ||
-	   !strcmp(varName,"nkcosthncm" ) ) {
+  else if( (varName=="kncosthncm") ||
+	   (varName=="nkcosthncm") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_costhncm;
   }
-  else if( !strcmp(varName,"knthkcm") ||
-	   !strcmp(varName,"nkthkcm" ) ) {
+  else if( (varName=="knthkcm") ||
+	   (varName=="nkthkcm") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_thkcm;
   }
-  else if( !strcmp(varName,"knthncm") ||
-	   !strcmp(varName,"nkthncm" ) ) {
+  else if( (varName=="knthncm") ||
+	   (varName=="nkthncm") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_thncm;
   }
-  else if( !strcmp(varName,"knphikcm") ||
-	   !strcmp(varName,"nkphikcm" ) ) {
+  else if( (varName=="knphikcm") ||
+	   (varName=="nkphikcm") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_phikcm_kS;
   }
-  else if( !strcmp(varName,"knphincm") ||
-	   !strcmp(varName,"nkphincm" ) ) {
+  else if( (varName=="knphincm") ||
+	   (varName=="nkphincm") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_phincm_kS;
   }
-  else if( !strcmp(varName,"knphikcm_deg") ||
-	   !strcmp(varName,"nkphikcm_deg" ) ) {
+  else if( (varName=="knphikcm_deg") ||
+	   (varName=="nkphikcm_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_phikcm_deg_kS;
   }
-  else if( !strcmp(varName,"knphincm_deg") ||
-	   !strcmp(varName,"nkphincm_deg" ) ) {
+  else if( (varName=="knphincm_deg") ||
+	   (varName=="nkphincm_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_phincm_deg_kS;
   }
-  else if( !strcmp(varName,"ynpy") ||
-	   !strcmp(varName,"nypy" ) ) {
+  else if( (varName=="ynpy") ||
+	   (varName=="nypy") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_Py;
   }
-  else if( !strcmp(varName,"ynpn") ||
-	   !strcmp(varName,"nypn" ) ) {
+  else if( (varName=="ynpn") ||
+	   (varName=="nypn") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_Pn;
   }
-  else if( !strcmp(varName,"yney") ||
-	   !strcmp(varName,"nyey" ) ) {
+  else if( (varName=="yney") ||
+	   (varName=="nyey") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_Ey;
   }
-  else if( !strcmp(varName,"ynen") ||
-	   !strcmp(varName,"nyen" ) ) {
+  else if( (varName=="ynen") ||
+	   (varName=="nyen") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_En;
   }
-  else if( !strcmp(varName,"yns") ||
-	   !strcmp(varName,"nys" ) ) {
+  else if( (varName=="yns") ||
+	   (varName=="nys") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_S;
   }
-  else if( !strcmp(varName,"ynw") ||
-	   !strcmp(varName,"nyw" ) ) {
+  else if( (varName=="ynw") ||
+	   (varName=="nyw") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_W;
   }
-  else if( !strcmp(varName,"yncosthycm") ||
-	   !strcmp(varName,"nycosthycm" ) ) {
+  else if( (varName=="yncosthycm") ||
+	   (varName=="nycosthycm") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_costhycm;
   }
-  else if( !strcmp(varName,"yncosthncm") ||
-	   !strcmp(varName,"nycosthncm" ) ) {
+  else if( (varName=="yncosthncm") ||
+	   (varName=="nycosthncm") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_costhncm;
   }
-  else if( !strcmp(varName,"ynthycm") ||
-	   !strcmp(varName,"nythycm" ) ) {
+  else if( (varName=="ynthycm") ||
+	   (varName=="nythycm") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_thycm;
   }
-  else if( !strcmp(varName,"ynthncm") ||
-	   !strcmp(varName,"nythncm" ) ) {
+  else if( (varName=="ynthncm") ||
+	   (varName=="nythncm") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_thncm;
   }
-  else if( !strcmp(varName,"ynphiycm") ||
-	   !strcmp(varName,"nyphiycm" ) ) {
+  else if( (varName=="ynphiycm") ||
+	   (varName=="nyphiycm") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_phiycm_kS;
   }
-  else if( !strcmp(varName,"ynphincm") ||
-	   !strcmp(varName,"nyphincm" ) ) {
+  else if( (varName=="ynphincm") ||
+	   (varName=="nyphincm") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_phincm_kS;
   }
-  else if( !strcmp(varName,"ynphiycm_deg") ||
-	   !strcmp(varName,"nyphiycm_deg" ) ) {
+  else if( (varName=="ynphiycm_deg") ||
+	   (varName=="nyphiycm_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_phiycm_deg_kS;
   }
-  else if( !strcmp(varName,"ynphincm_deg") ||
-	   !strcmp(varName,"nyphincm_deg" ) ) {
+  else if( (varName=="ynphincm_deg") ||
+	   (varName=="nyphincm_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_phincm_deg_kS;
   }
   else {
-    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics2to3::GetVarArray(TString): "
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics2to3::GetVarArray(std::string): "
 	      << "Kinematic variable \"" << variable << "\" unknown!");
   }
 
@@ -3762,7 +3759,7 @@ double* TKinematics2to3::GetVarArray(const TString& variable) const
 }
 
 //_____________________________________________________________________
-double* TKinematics2to3::GetPhysicalVarArray(const TString& variable) const
+double* TKinematics2to3::GetPhysicalVarArray(const std::string& variable) const
 {
   // Return an array of the variable of type 'variable'. The variable can effectively
   // by any one for which their exists a getter. It need not be listed in the info
@@ -3773,342 +3770,341 @@ double* TKinematics2to3::GetPhysicalVarArray(const TString& variable) const
   TKinematics2to3 tk(*this); // temporary copy
   double(TKinematics2to3::*ptrToVarGetter)() const; // pointer to TKinematics getters
 
-  TString varName = variable;
-  varName.ToLower();
+  const std::string varName = nucqcd::to_lower(variable);
 
   // Assign the correct Getter
-  if( !strcmp(varName,"pk") ) {
+  if( (varName=="pk") ) {
     ptrToVarGetter = &TKinematics2to3::GetPk;
   }
-  else if( !strcmp(varName,"py") ) {
+  else if( (varName=="py") ) {
     ptrToVarGetter = &TKinematics2to3::GetPy;
   }
-  else if( !strcmp(varName,"pn") ) {
+  else if( (varName=="pn") ) {
     ptrToVarGetter = &TKinematics2to3::GetPn;
   }
-  else if( !strcmp(varName,"klab") ) {
+  else if( (varName=="klab") ) {
     ptrToVarGetter = &TKinematics2to3::GetKlab;
   }
-  else if( !strcmp(varName,"ek") ) {
+  else if( (varName=="ek") ) {
     ptrToVarGetter = &TKinematics2to3::GetEk;
   }
-  else if( !strcmp(varName,"ey") ) {
+  else if( (varName=="ey") ) {
     ptrToVarGetter = &TKinematics2to3::GetEy;
   }
-  else if( !strcmp(varName,"en") ) {
+  else if( (varName=="en") ) {
     ptrToVarGetter = &TKinematics2to3::GetEn;
   }
-  else if( !strcmp(varName,"wlab") ) {
+  else if( (varName=="wlab") ) {
     ptrToVarGetter = &TKinematics2to3::GetWlab;
   }
-  else if( !strcmp(varName,"thk_deg") ) {
+  else if( (varName=="thk_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetThk_deg;
   }
-  else if( !strcmp(varName,"thy_deg") ) {
+  else if( (varName=="thy_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetThy_deg;
   }
-  else if( !strcmp(varName,"thn_deg") ) {
+  else if( (varName=="thn_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetThn_deg;
   }
-  else if( !strcmp(varName,"thk") ) {
+  else if( (varName=="thk") ) {
     ptrToVarGetter = &TKinematics2to3::GetThk;
   }
-  else if( !strcmp(varName,"thy") ) {
+  else if( (varName=="thy") ) {
     ptrToVarGetter = &TKinematics2to3::GetThy;
   }
-  else if( !strcmp(varName,"thn") ) {
+  else if( (varName=="thn") ) {
     ptrToVarGetter = &TKinematics2to3::GetThn;
   }
-  else if( !strcmp(varName,"costhk") ) {
+  else if( (varName=="costhk") ) {
     ptrToVarGetter = &TKinematics2to3::GetCosthk;
   }
-  else if( !strcmp(varName,"costhy") ) {
+  else if( (varName=="costhy") ) {
     ptrToVarGetter = &TKinematics2to3::GetCosthy;
   }
-  else if( !strcmp(varName,"costhn") ) {
+  else if( (varName=="costhn") ) {
     ptrToVarGetter = &TKinematics2to3::GetCosthn;
   }
-  else if( !strcmp(varName,"phik_deg") ) {
+  else if( (varName=="phik_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetPhik_deg_kS;
   }
-  else if( !strcmp(varName,"phiy_deg") ) {
+  else if( (varName=="phiy_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetPhiy_deg_kS;
   }
-  else if( !strcmp(varName,"phin_deg") ) {
+  else if( (varName=="phin_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetPhin_deg_kS;
   }
-  else if( !strcmp(varName,"phik") ) {
+  else if( (varName=="phik") ) {
     ptrToVarGetter = &TKinematics2to3::GetPhik_kS;
   }
-  else if( !strcmp(varName,"phiy") ) {
+  else if( (varName=="phiy") ) {
     ptrToVarGetter = &TKinematics2to3::GetPhiy_kS;
   }
-  else if( !strcmp(varName,"phin") ) {
+  else if( (varName=="phin") ) {
     ptrToVarGetter = &TKinematics2to3::GetPhin_kS;
   }
-  else if( !strcmp(varName,"thky_deg") ||
-	   !strcmp(varName,"thyk_deg") ) {
+  else if( (varName=="thky_deg") ||
+	   (varName=="thyk_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetThky_deg;
   }
-  else if( !strcmp(varName,"thkn_deg") ||
-	   !strcmp(varName,"thnk_deg" ) ) {
+  else if( (varName=="thkn_deg") ||
+	   (varName=="thnk_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetThkn_deg;
   }
-  else if( !strcmp(varName,"thyn_deg") ||
-	   !strcmp(varName,"thny_deg" ) ) {
+  else if( (varName=="thyn_deg") ||
+	   (varName=="thny_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetThyn_deg;
   }
-  else if( !strcmp(varName,"thky") ||
-	   !strcmp(varName,"thyk" )) {
+  else if( (varName=="thky") ||
+	   (varName=="thyk")) {
     ptrToVarGetter = &TKinematics2to3::GetThky;
   }
-  else if( !strcmp(varName,"thkn") ||
-	   !strcmp(varName,"thnk") ) {
+  else if( (varName=="thkn") ||
+	   (varName=="thnk") ) {
     ptrToVarGetter = &TKinematics2to3::GetThkn;
   }
-  else if( !strcmp(varName,"thyn") ||
-	   !strcmp(varName,"thny") ) {
+  else if( (varName=="thyn") ||
+	   (varName=="thny") ) {
     ptrToVarGetter = &TKinematics2to3::GetThyn;
   }
-  else if( !strcmp(varName,"costhky") ||
-	   !strcmp(varName,"costhyk") ) {
+  else if( (varName=="costhky") ||
+	   (varName=="costhyk") ) {
     ptrToVarGetter = &TKinematics2to3::GetCosthky;
   }
-  else if( !strcmp(varName,"costhkn") ||
-	   !strcmp(varName,"costhnk") ) {
+  else if( (varName=="costhkn") ||
+	   (varName=="costhnk") ) {
     ptrToVarGetter = &TKinematics2to3::GetCosthkn;
   }
-  else if( !strcmp(varName,"costhyn") ||
-	   !strcmp(varName,"costhny") ) {
+  else if( (varName=="costhyn") ||
+	   (varName=="costhny") ) {
     ptrToVarGetter = &TKinematics2to3::GetCosthyn;
   }
-  else if( !strcmp(varName,"qsquared") ) {
+  else if( (varName=="qsquared") ) {
     ptrToVarGetter = &TKinematics2to3::GetQsquared;
   }
-  else if( !strcmp(varName,"wtot") ) {
+  else if( (varName=="wtot") ) {
     ptrToVarGetter = &TKinematics2to3::GetWtot;
   }
-  else if( !strcmp(varName,"wky") ||
-	   !strcmp(varName,"wyk") ) {
+  else if( (varName=="wky") ||
+	   (varName=="wyk") ) {
     ptrToVarGetter = &TKinematics2to3::GetWky;
   }
-  else if( !strcmp(varName,"wkn") ||
-	   !strcmp(varName,"wnk") ) {
+  else if( (varName=="wkn") ||
+	   (varName=="wnk") ) {
     ptrToVarGetter = &TKinematics2to3::GetWkn;
   }
-  else if( !strcmp(varName,"wyn") ||
-	   !strcmp(varName,"wny") ) {
+  else if( (varName=="wyn") ||
+	   (varName=="wny") ) {
     ptrToVarGetter = &TKinematics2to3::GetWyn;
   }
-  else if( !strcmp(varName,"stot") ) {
+  else if( (varName=="stot") ) {
     ptrToVarGetter = &TKinematics2to3::GetStot;
   }
-  else if( !strcmp(varName,"sky") ||
-	   !strcmp(varName,"syk") ) {
+  else if( (varName=="sky") ||
+	   (varName=="syk") ) {
     ptrToVarGetter = &TKinematics2to3::GetSky;
   }
-  else if( !strcmp(varName,"skn") ||
-	   !strcmp(varName,"snk" )) {
+  else if( (varName=="skn") ||
+	   (varName=="snk")) {
     ptrToVarGetter = &TKinematics2to3::GetSkn;
   }
-  else if( !strcmp(varName,"syn") ||
-	   !strcmp(varName,"sny" )) {
+  else if( (varName=="syn") ||
+	   (varName=="sny")) {
     ptrToVarGetter = &TKinematics2to3::GetSyn;
   }
-  else if( !strcmp(varName,"tkg") ||
-	   !strcmp(varName,"tgk" )) {
+  else if( (varName=="tkg") ||
+	   (varName=="tgk")) {
     ptrToVarGetter = &TKinematics2to3::GetTkg;
   }
-  else if( !strcmp(varName,"tyg") ||
-	   !strcmp(varName,"tgy" )) {
+  else if( (varName=="tyg") ||
+	   (varName=="tgy")) {
     ptrToVarGetter = &TKinematics2to3::GetTyg;
   }
-  else if( !strcmp(varName,"tng") ||
-	   !strcmp(varName,"tgn" )) {
+  else if( (varName=="tng") ||
+	   (varName=="tgn")) {
     ptrToVarGetter = &TKinematics2to3::GetTng;
   }
-  else if( !strcmp(varName,"tkd") ||
-	   !strcmp(varName,"tdk" )) {
+  else if( (varName=="tkd") ||
+	   (varName=="tdk")) {
     ptrToVarGetter = &TKinematics2to3::GetTkd;
   }
-  else if( !strcmp(varName,"tyd") ||
-	   !strcmp(varName,"tdy" )) {
+  else if( (varName=="tyd") ||
+	   (varName=="tdy")) {
     ptrToVarGetter = &TKinematics2to3::GetTyd;
   }
-  else if( !strcmp(varName,"tnd") ||
-	   !strcmp(varName,"tdn" )) {
+  else if( (varName=="tnd") ||
+	   (varName=="tdn")) {
     ptrToVarGetter = &TKinematics2to3::GetTnd;
   }
-  else if( !strcmp(varName,"kypk") ||
-	   !strcmp(varName,"ykpk" )) {
+  else if( (varName=="kypk") ||
+	   (varName=="ykpk")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_Pk;
   }
-  else if( !strcmp(varName,"kypy") ||
-	   !strcmp(varName,"ykpy" )) {
+  else if( (varName=="kypy") ||
+	   (varName=="ykpy")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_Py;
   }
-  else if( !strcmp(varName,"kyek") ||
-	   !strcmp(varName,"ykek" )) {
+  else if( (varName=="kyek") ||
+	   (varName=="ykek")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_Ek;
   }
-  else if( !strcmp(varName,"kyey") ||
-	   !strcmp(varName,"ykey" )) {
+  else if( (varName=="kyey") ||
+	   (varName=="ykey")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_Ey;
   }
-  else if( !strcmp(varName,"kys") ||
-	   !strcmp(varName,"yks" )) {
+  else if( (varName=="kys") ||
+	   (varName=="yks")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_S;
   }
-  else if( !strcmp(varName,"kyw") ||
-	   !strcmp(varName,"ykw" )) {
+  else if( (varName=="kyw") ||
+	   (varName=="ykw")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_W;
   }
-  else if( !strcmp(varName,"kycosthkcm") ||
-	   !strcmp(varName,"ykcosthkcm" )) {
+  else if( (varName=="kycosthkcm") ||
+	   (varName=="ykcosthkcm")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_costhkcm;
   }
-  else if( !strcmp(varName,"kycosthycm") ||
-	   !strcmp(varName,"ykcosthycm" )) {
+  else if( (varName=="kycosthycm") ||
+	   (varName=="ykcosthycm")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_costhycm;
   }
-  else if( !strcmp(varName,"kythkcm") ||
-	   !strcmp(varName,"ykthkcm" )) {
+  else if( (varName=="kythkcm") ||
+	   (varName=="ykthkcm")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_thkcm;
   }
-  else if( !strcmp(varName,"kythycm") ||
-	   !strcmp(varName,"ykthycm" )) {
+  else if( (varName=="kythycm") ||
+	   (varName=="ykthycm")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_thycm;
   }
-  else if( !strcmp(varName,"kyphikcm") ||
-	   !strcmp(varName,"ykphikcm" )) {
+  else if( (varName=="kyphikcm") ||
+	   (varName=="ykphikcm")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_phikcm_kS;
   }
-  else if( !strcmp(varName,"kyphiycm") ||
-	   !strcmp(varName,"ykphiycm" )) {
+  else if( (varName=="kyphiycm") ||
+	   (varName=="ykphiycm")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_phiycm_kS;
   }
-  else if( !strcmp(varName,"kyhpikcm_deg") ||
-	   !strcmp(varName,"ykphikcm_deg" ) ) {
+  else if( (varName=="kyhpikcm_deg") ||
+	   (varName=="ykphikcm_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_phikcm_deg_kS;
   }
-  else if( !strcmp(varName,"kyphiycm_deg") ||
-	   !strcmp(varName,"ykphiycm_deg" ) ) {
+  else if( (varName=="kyphiycm_deg") ||
+	   (varName=="ykphiycm_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_phiycm_deg_kS;
   }
-  else if( !strcmp(varName,"knpk") ||
-	   !strcmp(varName,"nkpk" ) ) {
+  else if( (varName=="knpk") ||
+	   (varName=="nkpk") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_Pk;
   }
-  else if( !strcmp(varName,"knpn") ||
-	   !strcmp(varName,"nkpn" ) ) {
+  else if( (varName=="knpn") ||
+	   (varName=="nkpn") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_Pn;
   }
-  else if( !strcmp(varName,"knek") ||
-	   !strcmp(varName,"nkek" ) ) {
+  else if( (varName=="knek") ||
+	   (varName=="nkek") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_Ek;
   }
-  else if( !strcmp(varName,"knen") ||
-	   !strcmp(varName,"nken" ) ) {
+  else if( (varName=="knen") ||
+	   (varName=="nken") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_En;
   }
-  else if( !strcmp(varName,"kns") ||
-	   !strcmp(varName,"nks" ) ) {
+  else if( (varName=="kns") ||
+	   (varName=="nks") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_S;
   }
-  else if( !strcmp(varName,"knw") ||
-	   !strcmp(varName,"nkw" ) ) {
+  else if( (varName=="knw") ||
+	   (varName=="nkw") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_W;
   }
-  else if( !strcmp(varName,"kncosthkcm") ||
-	   !strcmp(varName,"nkcosthkcm" ) ) {
+  else if( (varName=="kncosthkcm") ||
+	   (varName=="nkcosthkcm") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_costhkcm;
   }
-  else if( !strcmp(varName,"kncosthncm") ||
-	   !strcmp(varName,"nkcosthncm" ) ) {
+  else if( (varName=="kncosthncm") ||
+	   (varName=="nkcosthncm") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_costhncm;
   }
-  else if( !strcmp(varName,"knthkcm") ||
-	   !strcmp(varName,"nkthkcm" ) ) {
+  else if( (varName=="knthkcm") ||
+	   (varName=="nkthkcm") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_thkcm;
   }
-  else if( !strcmp(varName,"knthncm") ||
-	   !strcmp(varName,"nkthncm" ) ) {
+  else if( (varName=="knthncm") ||
+	   (varName=="nkthncm") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_thncm;
   }
-  else if( !strcmp(varName,"knphikcm") ||
-	   !strcmp(varName,"nkphikcm" ) ) {
+  else if( (varName=="knphikcm") ||
+	   (varName=="nkphikcm") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_phikcm_kS;
   }
-  else if( !strcmp(varName,"knphincm") ||
-	   !strcmp(varName,"nkphincm" ) ) {
+  else if( (varName=="knphincm") ||
+	   (varName=="nkphincm") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_phincm_kS;
   }
-  else if( !strcmp(varName,"knphikcm_deg") ||
-	   !strcmp(varName,"nkphikcm_deg" ) ) {
+  else if( (varName=="knphikcm_deg") ||
+	   (varName=="nkphikcm_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_phikcm_deg_kS;
   }
-  else if( !strcmp(varName,"knphincm_deg") ||
-	   !strcmp(varName,"nkphincm_deg" ) ) {
+  else if( (varName=="knphincm_deg") ||
+	   (varName=="nkphincm_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_phincm_deg_kS;
   }
-  else if( !strcmp(varName,"ynpy") ||
-	   !strcmp(varName,"nypy" ) ) {
+  else if( (varName=="ynpy") ||
+	   (varName=="nypy") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_Py;
   }
-  else if( !strcmp(varName,"ynpn") ||
-	   !strcmp(varName,"nypn" ) ) {
+  else if( (varName=="ynpn") ||
+	   (varName=="nypn") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_Pn;
   }
-  else if( !strcmp(varName,"yney") ||
-	   !strcmp(varName,"nyey" ) ) {
+  else if( (varName=="yney") ||
+	   (varName=="nyey") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_Ey;
   }
-  else if( !strcmp(varName,"ynen") ||
-	   !strcmp(varName,"nyen" ) ) {
+  else if( (varName=="ynen") ||
+	   (varName=="nyen") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_En;
   }
-  else if( !strcmp(varName,"yns") ||
-	   !strcmp(varName,"nys" ) ) {
+  else if( (varName=="yns") ||
+	   (varName=="nys") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_S;
   }
-  else if( !strcmp(varName,"ynw") ||
-	   !strcmp(varName,"nyw" ) ) {
+  else if( (varName=="ynw") ||
+	   (varName=="nyw") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_W;
   }
-  else if( !strcmp(varName,"yncosthycm") ||
-	   !strcmp(varName,"nycosthycm" ) ) {
+  else if( (varName=="yncosthycm") ||
+	   (varName=="nycosthycm") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_costhycm;
   }
-  else if( !strcmp(varName,"yncosthncm") ||
-	   !strcmp(varName,"nycosthncm" ) ) {
+  else if( (varName=="yncosthncm") ||
+	   (varName=="nycosthncm") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_costhncm;
   }
-  else if( !strcmp(varName,"ynthycm") ||
-	   !strcmp(varName,"nythycm" ) ) {
+  else if( (varName=="ynthycm") ||
+	   (varName=="nythycm") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_thycm;
   }
-  else if( !strcmp(varName,"ynthncm") ||
-	   !strcmp(varName,"nythncm" ) ) {
+  else if( (varName=="ynthncm") ||
+	   (varName=="nythncm") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_thncm;
   }
-  else if( !strcmp(varName,"ynphiycm") ||
-	   !strcmp(varName,"nyphiycm" ) ) {
+  else if( (varName=="ynphiycm") ||
+	   (varName=="nyphiycm") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_phiycm_kS;
   }
-  else if( !strcmp(varName,"ynphincm") ||
-	   !strcmp(varName,"nyphincm" ) ) {
+  else if( (varName=="ynphincm") ||
+	   (varName=="nyphincm") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_phincm_kS;
   }
-  else if( !strcmp(varName,"ynphiycm_deg") ||
-	   !strcmp(varName,"nyphiycm_deg" ) ) {
+  else if( (varName=="ynphiycm_deg") ||
+	   (varName=="nyphiycm_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_phiycm_deg_kS;
   }
-  else if( !strcmp(varName,"ynphincm_deg") ||
-	   !strcmp(varName,"nyphincm_deg" ) ) {
+  else if( (varName=="ynphincm_deg") ||
+	   (varName=="nyphincm_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_phincm_deg_kS;
   }
   else {
-    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics2to3::GetVarArray(TString): "
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics2to3::GetVarArray(std::string): "
 	      << "Kinematic variable \"" << variable << "\" unknown!");
   }
 
@@ -4125,23 +4121,23 @@ double* TKinematics2to3::GetPhysicalVarArray(const TString& variable) const
 }
 
 //_____________________________________________________________________
-TString TKinematics2to3::GetVarName(int varNumber) const
+std::string TKinematics2to3::GetVarName(int varNumber) const
 {
 
   // First we do some checks
   if( varNumber<1 || varNumber>6 ) {
     std::cerr << "ERROR in TKinematics2to3::GetVarName(int):\n"
 	      << "Index out-of-bounds!\n";
-    return TString();
+    return std::string();
   }
 
   if( !fVar ) {
     std::cerr << "ERROR in TKinematics2to3::GetVarName(int):\n"
 	      << "Independent kinematic variables have not been initialized!\n";
-    return TString();
+    return std::string();
   }
 
-  TString varName;
+  std::string varName;
   
   // Lookup name
   if( fVar[varNumber-1] == &fQsquared )
@@ -5003,7 +4999,7 @@ bool TKinematics2to3::operator==(const TKinematics2to3& rhs) const
 }
 
 //_____________________________________________________________________
-double TKinematics2to3::GetVarByGetter(const TString& variable) const
+double TKinematics2to3::GetVarByGetter(const std::string& variable) const
 {
   // Return the value of the variable of type 'variable'. The variable can effectively
   // by any one for which their exists a getter. It need not be listed in the info
@@ -5013,342 +5009,341 @@ double TKinematics2to3::GetVarByGetter(const TString& variable) const
 
   double(TKinematics2to3::*ptrToVarGetter)() const; // pointer to TKinematics getters
   
-  TString varName = variable;
-  varName.ToLower();
+  const std::string varName = nucqcd::to_lower(variable);
   
   // Assign the correct Getter
-  if( !strcmp(varName,"pk") ) {
+  if( (varName=="pk") ) {
     ptrToVarGetter = &TKinematics2to3::GetPk;
   }
-  else if( !strcmp(varName,"py") ) {
+  else if( (varName=="py") ) {
     ptrToVarGetter = &TKinematics2to3::GetPy;
   }
-  else if( !strcmp(varName,"pn") ) {
+  else if( (varName=="pn") ) {
     ptrToVarGetter = &TKinematics2to3::GetPn;
   }
-  else if( !strcmp(varName,"klab") ) {
+  else if( (varName=="klab") ) {
     ptrToVarGetter = &TKinematics2to3::GetKlab;
   }
-  else if( !strcmp(varName,"ek") ) {
+  else if( (varName=="ek") ) {
     ptrToVarGetter = &TKinematics2to3::GetEk;
   }
-  else if( !strcmp(varName,"ey") ) {
+  else if( (varName=="ey") ) {
     ptrToVarGetter = &TKinematics2to3::GetEy;
   }
-  else if( !strcmp(varName,"en") ) {
+  else if( (varName=="en") ) {
     ptrToVarGetter = &TKinematics2to3::GetEn;
   }
-  else if( !strcmp(varName,"wlab") ) {
+  else if( (varName=="wlab") ) {
     ptrToVarGetter = &TKinematics2to3::GetWlab;
   }
-  else if( !strcmp(varName,"thk_deg") ) {
+  else if( (varName=="thk_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetThk_deg;
   }
-  else if( !strcmp(varName,"thy_deg") ) {
+  else if( (varName=="thy_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetThy_deg;
   }
-  else if( !strcmp(varName,"thn_deg") ) {
+  else if( (varName=="thn_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetThn_deg;
   }
-  else if( !strcmp(varName,"thk") ) {
+  else if( (varName=="thk") ) {
     ptrToVarGetter = &TKinematics2to3::GetThk;
   }
-  else if( !strcmp(varName,"thy") ) {
+  else if( (varName=="thy") ) {
     ptrToVarGetter = &TKinematics2to3::GetThy;
   }
-  else if( !strcmp(varName,"thn") ) {
+  else if( (varName=="thn") ) {
     ptrToVarGetter = &TKinematics2to3::GetThn;
   }
-  else if( !strcmp(varName,"costhk") ) {
+  else if( (varName=="costhk") ) {
     ptrToVarGetter = &TKinematics2to3::GetCosthk;
   }
-  else if( !strcmp(varName,"costhy") ) {
+  else if( (varName=="costhy") ) {
     ptrToVarGetter = &TKinematics2to3::GetCosthy;
   }
-  else if( !strcmp(varName,"costhn") ) {
+  else if( (varName=="costhn") ) {
     ptrToVarGetter = &TKinematics2to3::GetCosthn;
   }
-  else if( !strcmp(varName,"phik_deg") ) {
+  else if( (varName=="phik_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetPhik_deg_kS;
   }
-  else if( !strcmp(varName,"phiy_deg") ) {
+  else if( (varName=="phiy_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetPhiy_deg_kS;
   }
-  else if( !strcmp(varName,"phin_deg") ) {
+  else if( (varName=="phin_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetPhin_deg_kS;
   }
-  else if( !strcmp(varName,"phik") ) {
+  else if( (varName=="phik") ) {
     ptrToVarGetter = &TKinematics2to3::GetPhik_kS;
   }
-  else if( !strcmp(varName,"phiy") ) {
+  else if( (varName=="phiy") ) {
     ptrToVarGetter = &TKinematics2to3::GetPhiy_kS;
   }
-  else if( !strcmp(varName,"phin") ) {
+  else if( (varName=="phin") ) {
     ptrToVarGetter = &TKinematics2to3::GetPhin_kS;
   }
-  else if( !strcmp(varName,"thky_deg") ||
-	   !strcmp(varName,"thyk_deg") ) {
+  else if( (varName=="thky_deg") ||
+	   (varName=="thyk_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetThky_deg;
   }
-  else if( !strcmp(varName,"thkn_deg") ||
-	   !strcmp(varName,"thnk_deg" ) ) {
+  else if( (varName=="thkn_deg") ||
+	   (varName=="thnk_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetThkn_deg;
   }
-  else if( !strcmp(varName,"thyn_deg") ||
-	   !strcmp(varName,"thny_deg" ) ) {
+  else if( (varName=="thyn_deg") ||
+	   (varName=="thny_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetThyn_deg;
   }
-  else if( !strcmp(varName,"thky") ||
-	   !strcmp(varName,"thyk" )) {
+  else if( (varName=="thky") ||
+	   (varName=="thyk")) {
     ptrToVarGetter = &TKinematics2to3::GetThky;
   }
-  else if( !strcmp(varName,"thkn") ||
-	   !strcmp(varName,"thnk") ) {
+  else if( (varName=="thkn") ||
+	   (varName=="thnk") ) {
     ptrToVarGetter = &TKinematics2to3::GetThkn;
   }
-  else if( !strcmp(varName,"thyn") ||
-	   !strcmp(varName,"thny") ) {
+  else if( (varName=="thyn") ||
+	   (varName=="thny") ) {
     ptrToVarGetter = &TKinematics2to3::GetThyn;
   }
-  else if( !strcmp(varName,"costhky") ||
-	   !strcmp(varName,"costhyk") ) {
+  else if( (varName=="costhky") ||
+	   (varName=="costhyk") ) {
     ptrToVarGetter = &TKinematics2to3::GetCosthky;
   }
-  else if( !strcmp(varName,"costhkn") ||
-	   !strcmp(varName,"costhnk") ) {
+  else if( (varName=="costhkn") ||
+	   (varName=="costhnk") ) {
     ptrToVarGetter = &TKinematics2to3::GetCosthkn;
   }
-  else if( !strcmp(varName,"costhyn") ||
-	   !strcmp(varName,"costhny") ) {
+  else if( (varName=="costhyn") ||
+	   (varName=="costhny") ) {
     ptrToVarGetter = &TKinematics2to3::GetCosthyn;
   }
-  else if( !strcmp(varName,"qsquared") ) {
+  else if( (varName=="qsquared") ) {
     ptrToVarGetter = &TKinematics2to3::GetQsquared;
   }
-  else if( !strcmp(varName,"wtot") ) {
+  else if( (varName=="wtot") ) {
     ptrToVarGetter = &TKinematics2to3::GetWtot;
   }
-  else if( !strcmp(varName,"wky") ||
-	   !strcmp(varName,"wyk") ) {
+  else if( (varName=="wky") ||
+	   (varName=="wyk") ) {
     ptrToVarGetter = &TKinematics2to3::GetWky;
   }
-  else if( !strcmp(varName,"wkn") ||
-	   !strcmp(varName,"wnk") ) {
+  else if( (varName=="wkn") ||
+	   (varName=="wnk") ) {
     ptrToVarGetter = &TKinematics2to3::GetWkn;
   }
-  else if( !strcmp(varName,"wyn") ||
-	   !strcmp(varName,"wny") ) {
+  else if( (varName=="wyn") ||
+	   (varName=="wny") ) {
     ptrToVarGetter = &TKinematics2to3::GetWyn;
   }
-  else if( !strcmp(varName,"stot") ) {
+  else if( (varName=="stot") ) {
     ptrToVarGetter = &TKinematics2to3::GetStot;
   }
-  else if( !strcmp(varName,"sky") ||
-	   !strcmp(varName,"syk") ) {
+  else if( (varName=="sky") ||
+	   (varName=="syk") ) {
     ptrToVarGetter = &TKinematics2to3::GetSky;
   }
-  else if( !strcmp(varName,"skn") ||
-	   !strcmp(varName,"snk" )) {
+  else if( (varName=="skn") ||
+	   (varName=="snk")) {
     ptrToVarGetter = &TKinematics2to3::GetSkn;
   }
-  else if( !strcmp(varName,"syn") ||
-	   !strcmp(varName,"sny" )) {
+  else if( (varName=="syn") ||
+	   (varName=="sny")) {
     ptrToVarGetter = &TKinematics2to3::GetSyn;
   }
-  else if( !strcmp(varName,"tkg") ||
-	   !strcmp(varName,"tgk" )) {
+  else if( (varName=="tkg") ||
+	   (varName=="tgk")) {
     ptrToVarGetter = &TKinematics2to3::GetTkg;
   }
-  else if( !strcmp(varName,"tyg") ||
-	   !strcmp(varName,"tgy" )) {
+  else if( (varName=="tyg") ||
+	   (varName=="tgy")) {
     ptrToVarGetter = &TKinematics2to3::GetTyg;
   }
-  else if( !strcmp(varName,"tng") ||
-	   !strcmp(varName,"tgn" )) {
+  else if( (varName=="tng") ||
+	   (varName=="tgn")) {
     ptrToVarGetter = &TKinematics2to3::GetTng;
   }
-  else if( !strcmp(varName,"tkd") ||
-	   !strcmp(varName,"tdk" )) {
+  else if( (varName=="tkd") ||
+	   (varName=="tdk")) {
     ptrToVarGetter = &TKinematics2to3::GetTkd;
   }
-  else if( !strcmp(varName,"tyd") ||
-	   !strcmp(varName,"tdy" )) {
+  else if( (varName=="tyd") ||
+	   (varName=="tdy")) {
     ptrToVarGetter = &TKinematics2to3::GetTyd;
   }
-  else if( !strcmp(varName,"tnd") ||
-	   !strcmp(varName,"tdn" )) {
+  else if( (varName=="tnd") ||
+	   (varName=="tdn")) {
     ptrToVarGetter = &TKinematics2to3::GetTnd;
   }
-  else if( !strcmp(varName,"kypk") ||
-	   !strcmp(varName,"ykpk" )) {
+  else if( (varName=="kypk") ||
+	   (varName=="ykpk")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_Pk;
   }
-  else if( !strcmp(varName,"kypy") ||
-	   !strcmp(varName,"ykpy" )) {
+  else if( (varName=="kypy") ||
+	   (varName=="ykpy")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_Py;
   }
-  else if( !strcmp(varName,"kyek") ||
-	   !strcmp(varName,"ykek" )) {
+  else if( (varName=="kyek") ||
+	   (varName=="ykek")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_Ek;
   }
-  else if( !strcmp(varName,"kyey") ||
-	   !strcmp(varName,"ykey" )) {
+  else if( (varName=="kyey") ||
+	   (varName=="ykey")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_Ey;
   }
-  else if( !strcmp(varName,"kys") ||
-	   !strcmp(varName,"yks" )) {
+  else if( (varName=="kys") ||
+	   (varName=="yks")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_S;
   }
-  else if( !strcmp(varName,"kyw") ||
-	   !strcmp(varName,"ykw" )) {
+  else if( (varName=="kyw") ||
+	   (varName=="ykw")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_W;
   }
-  else if( !strcmp(varName,"kycosthkcm") ||
-	   !strcmp(varName,"ykcosthkcm" )) {
+  else if( (varName=="kycosthkcm") ||
+	   (varName=="ykcosthkcm")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_costhkcm;
   }
-  else if( !strcmp(varName,"kycosthycm") ||
-	   !strcmp(varName,"ykcosthycm" )) {
+  else if( (varName=="kycosthycm") ||
+	   (varName=="ykcosthycm")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_costhycm;
   }
-  else if( !strcmp(varName,"kythkcm") ||
-	   !strcmp(varName,"ykthkcm" )) {
+  else if( (varName=="kythkcm") ||
+	   (varName=="ykthkcm")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_thkcm;
   }
-  else if( !strcmp(varName,"kythycm") ||
-	   !strcmp(varName,"ykthycm" )) {
+  else if( (varName=="kythycm") ||
+	   (varName=="ykthycm")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_thycm;
   }
-  else if( !strcmp(varName,"kyphikcm") ||
-	   !strcmp(varName,"ykphikcm" )) {
+  else if( (varName=="kyphikcm") ||
+	   (varName=="ykphikcm")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_phikcm_kS;
   }
-  else if( !strcmp(varName,"kyphiycm") ||
-	   !strcmp(varName,"ykphiycm" )) {
+  else if( (varName=="kyphiycm") ||
+	   (varName=="ykphiycm")) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_phiycm_kS;
   }
-  else if( !strcmp(varName,"kyhpikcm_deg") ||
-	   !strcmp(varName,"ykphikcm_deg" ) ) {
+  else if( (varName=="kyhpikcm_deg") ||
+	   (varName=="ykphikcm_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_phikcm_deg_kS;
   }
-  else if( !strcmp(varName,"kyphiycm_deg") ||
-	   !strcmp(varName,"ykphiycm_deg" ) ) {
+  else if( (varName=="kyphiycm_deg") ||
+	   (varName=="ykphiycm_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetKYsystem_phiycm_deg_kS;
   }
-  else if( !strcmp(varName,"knpk") ||
-	   !strcmp(varName,"nkpk" ) ) {
+  else if( (varName=="knpk") ||
+	   (varName=="nkpk") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_Pk;
   }
-  else if( !strcmp(varName,"knpn") ||
-	   !strcmp(varName,"nkpn" ) ) {
+  else if( (varName=="knpn") ||
+	   (varName=="nkpn") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_Pn;
   }
-  else if( !strcmp(varName,"knek") ||
-	   !strcmp(varName,"nkek" ) ) {
+  else if( (varName=="knek") ||
+	   (varName=="nkek") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_Ek;
   }
-  else if( !strcmp(varName,"knen") ||
-	   !strcmp(varName,"nken" ) ) {
+  else if( (varName=="knen") ||
+	   (varName=="nken") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_En;
   }
-  else if( !strcmp(varName,"kns") ||
-	   !strcmp(varName,"nks" ) ) {
+  else if( (varName=="kns") ||
+	   (varName=="nks") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_S;
   }
-  else if( !strcmp(varName,"knw") ||
-	   !strcmp(varName,"nkw" ) ) {
+  else if( (varName=="knw") ||
+	   (varName=="nkw") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_W;
   }
-  else if( !strcmp(varName,"kncosthkcm") ||
-	   !strcmp(varName,"nkcosthkcm" ) ) {
+  else if( (varName=="kncosthkcm") ||
+	   (varName=="nkcosthkcm") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_costhkcm;
   }
-  else if( !strcmp(varName,"kncosthncm") ||
-	   !strcmp(varName,"nkcosthncm" ) ) {
+  else if( (varName=="kncosthncm") ||
+	   (varName=="nkcosthncm") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_costhncm;
   }
-  else if( !strcmp(varName,"knthkcm") ||
-	   !strcmp(varName,"nkthkcm" ) ) {
+  else if( (varName=="knthkcm") ||
+	   (varName=="nkthkcm") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_thkcm;
   }
-  else if( !strcmp(varName,"knthncm") ||
-	   !strcmp(varName,"nkthncm" ) ) {
+  else if( (varName=="knthncm") ||
+	   (varName=="nkthncm") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_thncm;
   }
-  else if( !strcmp(varName,"knphikcm") ||
-	   !strcmp(varName,"nkphikcm" ) ) {
+  else if( (varName=="knphikcm") ||
+	   (varName=="nkphikcm") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_phikcm_kS;
   }
-  else if( !strcmp(varName,"knphincm") ||
-	   !strcmp(varName,"nkphincm" ) ) {
+  else if( (varName=="knphincm") ||
+	   (varName=="nkphincm") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_phincm_kS;
   }
-  else if( !strcmp(varName,"knphikcm_deg") ||
-	   !strcmp(varName,"nkphikcm_deg" ) ) {
+  else if( (varName=="knphikcm_deg") ||
+	   (varName=="nkphikcm_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_phikcm_deg_kS;
   }
-  else if( !strcmp(varName,"knphincm_deg") ||
-	   !strcmp(varName,"nkphincm_deg" ) ) {
+  else if( (varName=="knphincm_deg") ||
+	   (varName=="nkphincm_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetKNsystem_phincm_deg_kS;
   }
-  else if( !strcmp(varName,"ynpy") ||
-	   !strcmp(varName,"nypy" ) ) {
+  else if( (varName=="ynpy") ||
+	   (varName=="nypy") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_Py;
   }
-  else if( !strcmp(varName,"ynpn") ||
-	   !strcmp(varName,"nypn" ) ) {
+  else if( (varName=="ynpn") ||
+	   (varName=="nypn") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_Pn;
   }
-  else if( !strcmp(varName,"yney") ||
-	   !strcmp(varName,"nyey" ) ) {
+  else if( (varName=="yney") ||
+	   (varName=="nyey") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_Ey;
   }
-  else if( !strcmp(varName,"ynen") ||
-	   !strcmp(varName,"nyen" ) ) {
+  else if( (varName=="ynen") ||
+	   (varName=="nyen") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_En;
   }
-  else if( !strcmp(varName,"yns") ||
-	   !strcmp(varName,"nys" ) ) {
+  else if( (varName=="yns") ||
+	   (varName=="nys") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_S;
   }
-  else if( !strcmp(varName,"ynw") ||
-	   !strcmp(varName,"nyw" ) ) {
+  else if( (varName=="ynw") ||
+	   (varName=="nyw") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_W;
   }
-  else if( !strcmp(varName,"yncosthycm") ||
-	   !strcmp(varName,"nycosthycm" ) ) {
+  else if( (varName=="yncosthycm") ||
+	   (varName=="nycosthycm") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_costhycm;
   }
-  else if( !strcmp(varName,"yncosthncm") ||
-	   !strcmp(varName,"nycosthncm" ) ) {
+  else if( (varName=="yncosthncm") ||
+	   (varName=="nycosthncm") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_costhncm;
   }
-  else if( !strcmp(varName,"ynthycm") ||
-	   !strcmp(varName,"nythycm" ) ) {
+  else if( (varName=="ynthycm") ||
+	   (varName=="nythycm") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_thycm;
   }
-  else if( !strcmp(varName,"ynthncm") ||
-	   !strcmp(varName,"nythncm" ) ) {
+  else if( (varName=="ynthncm") ||
+	   (varName=="nythncm") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_thncm;
   }
-  else if( !strcmp(varName,"ynphiycm") ||
-	   !strcmp(varName,"nyphiycm" ) ) {
+  else if( (varName=="ynphiycm") ||
+	   (varName=="nyphiycm") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_phiycm_kS;
   }
-  else if( !strcmp(varName,"ynphincm") ||
-	   !strcmp(varName,"nyphincm" ) ) {
+  else if( (varName=="ynphincm") ||
+	   (varName=="nyphincm") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_phincm_kS;
   }
-  else if( !strcmp(varName,"ynphiycm_deg") ||
-	   !strcmp(varName,"nyphiycm_deg" ) ) {
+  else if( (varName=="ynphiycm_deg") ||
+	   (varName=="nyphiycm_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_phiycm_deg_kS;
   }
-  else if( !strcmp(varName,"ynphincm_deg") ||
-	   !strcmp(varName,"nyphincm_deg" ) ) {
+  else if( (varName=="ynphincm_deg") ||
+	   (varName=="nyphincm_deg") ) {
     ptrToVarGetter = &TKinematics2to3::GetYNsystem_phincm_deg_kS;
   }
   else {
-    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics2to3::GetVarByGetter(TString): "
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics2to3::GetVarByGetter(std::string): "
 	      << "Kinematic variable \"" << variable << "\" unknown!");
   }
 
@@ -6311,26 +6306,6 @@ double TKinematics2to3::GetMaximumScatterAngleParticle1() const
 
   return std::acos(costh1Min) - kUflow;
 }
-
-//_____________________________________________________________________
-// TString TKinematics2to3::HashName() const
-// {
-//   // Returns a unique string that specifies the current state of 
-//   // the kinematics object.
-// 
-//   //Each kinematic point is fixed by the isospin channel, 
-//   //the Mandelstam variables s_tot, s_kn, s_ny, t_gk, tdy and Q^2
-//   double key1[7] = {GetIsospin(), GetQsquared(), 
-// 		    GetWlab(), GetEk(),
-// 		    GetCosthk(), GetYNsystem_costhycm(),
-// 		    GetYNsystem_phiycm(kK)};
-//   
-//   // We create a hash key using the function in the cachetools folder
-//   char hash1[sizeof(double)*7*2 + 1];
-//   doublestochar(7, key1, hash1);
-// 
-//   return hash1;
-// }
 
 //_____________________________________________________________________
 TLorentzRotation TKinematics2to3::RotateToKac(EAxisConvention axisConvention) const

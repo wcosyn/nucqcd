@@ -1,7 +1,6 @@
 #include "TMFSpinor.hpp"
 #include <constants.hpp>
 //#include <numtoa.h>
-// #include <TString.h>
 #include <FourVector.h>
 #include <cassert>
 #include <cmath>

@@ -19,7 +19,6 @@
 #include <TLorentzRotation.h>
 
 // Forward declarations
-class TString;
 class TVector3;
 class TLorentzQuaternion;
 
@@ -103,7 +102,6 @@ class TKinematics2to3
   int            VariableInfo() const; ///< Print information on the type of independent variables and their status.
   static void    Help(); ///< prints help on the format strings and variables
   bool           operator==(const TKinematics2to3&) const; ///< same masses, format and values of the independent variables
-//   TString        HashName() const;
 
   void           SetIsospin(int isospin); ///< changes the isospin channel and updates the kinematics \param isospin channel, see the constructor
   void           SetFormat(const char *format); ///< sets the format string (the six independent variables), see ReadFormatString \param format format string
@@ -270,10 +268,10 @@ class TKinematics2to3
   TSpinor RotateToYac(const TSpinor&, EAxisConvention =kS) const; ///< Rotate the Dirac spinor 'spinor' defined in the LAB frame from the axis convention ac to the 'kY' axis convention.; the argument is the axis convention (default kS: the standard one, fAC)
   TSpinor RotateToNac(const TSpinor&, EAxisConvention =kS) const; ///< Rotate the Dirac spinor 'spinor' defined in the LAB frame from the axis convention ac to the 'kN' axis convention.; the argument is the axis convention (default kS: the standard one, fAC)
   double         GetVar(int) const; ///< Returns the value of the independent variable number 'varNumber' as specified in the format string.
-  double         GetVar(const TString& varName) const; ///< Returns the value of the variable given by name. The variable can effectively by any one for which their exists a getter. It need not be listed in the info for SetFormat(const char*), eg. kyphikcm_deg.
-  virtual double *GetVarArray(const TString& varName) const; ///< Return an array of the variable of type 'variable'. The variable can effectively by any one for which their exists a getter. It need not be listed in the info for SetFormat(const char*), eg. kyphikcm_deg.
-  virtual double *GetPhysicalVarArray(const TString& varName) const; ///< Return an array of the variable of type 'variable'. The variable can effectively by any one for which their exists a getter. It need not be listed in the info for SetFormat(const char*), eg. kyphikcm_deg.
-  TString        GetVarName(int varNum) const; ///< name of independent variable varNum (1-6) \param varNum variable number
+  double         GetVar(const std::string& varName) const; ///< Returns the value of the variable given by name. The variable can effectively by any one for which their exists a getter. It need not be listed in the info for SetFormat(const char*), eg. kyphikcm_deg.
+  virtual double *GetVarArray(const std::string& varName) const; ///< Return an array of the variable of type 'variable'. The variable can effectively by any one for which their exists a getter. It need not be listed in the info for SetFormat(const char*), eg. kyphikcm_deg.
+  virtual double *GetPhysicalVarArray(const std::string& varName) const; ///< Return an array of the variable of type 'variable'. The variable can effectively by any one for which their exists a getter. It need not be listed in the info for SetFormat(const char*), eg. kyphikcm_deg.
+  std::string    GetVarName(int varNum) const; ///< name of independent variable varNum (1-6) \param varNum variable number
   int            GetNumberOfSteps(int varNum) const; ///< number of steps of independent variable varNum
   int            GetNumberOfSteps() const; ///< number of steps of independent variable varNum
   virtual int    GetNumberOfPhysicalSteps() const; ///< number of steps in the grid where the kinematics are physical
@@ -303,7 +301,7 @@ class TKinematics2to3
   void           InitializeSubsystems(); ///< Create and set the KY-, KN- and YN-subsystems.
   void           UpdateSubsystems(); ///< Recalculate the KY-, KN- and YN-subsystems.
   void           UpdateVariables(); ///< After UpdateKinematics() not all data member are up-to-date. This function makes sure they all are.
-  double         GetVarByGetter(const TString& variable) const; ///< Return the value of the variable of type 'variable'. The variable can effectively by any one for which their exists a getter. It need not be listed in the info for SetFormat(const char*), eg. kyphikcm_deg.
+  double         GetVarByGetter(const std::string& variable) const; ///< Return the value of the variable of type 'variable'. The variable can effectively by any one for which their exists a getter. It need not be listed in the info for SetFormat(const char*), eg. kyphikcm_deg.
   void           SetAxisConvention(EAxisConvention); ///< Change the axis convention. Be sure you know what you're doing before you call this function. This function doesn't check whether what you are doing makes sense.; the argument is the axis convention (default kS: the standard one, fAC)
   const char    *GetSolutionType() const { return fKinSolution; } ///< how the kinematics are solved, set by ReadFormatString
 

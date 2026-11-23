@@ -30,7 +30,6 @@ class TLorentzRotation;
 // Forward declarations
 class TLorentzVector;
 class TRotation;
-class TString;
 
 /*! \brief Dirac spinor u(p,s) of a positive-energy spin-1/2 particle
  *
@@ -108,7 +107,6 @@ class TSpinor
     bool operator!=(State polarizationState) { return !((*this)==polarizationState); } ///< different state
     operator int() const; ///< twice the spin projection (+1 or -1)
     operator State() const; ///< the state
-    //TString HashName() const;
 
     void SetTheta(double theta); ///< sets the polar angle of the quantization axis [rad]
     void SetPhi(double phi); ///< sets the azimuthal angle of the quantization axis [rad]
