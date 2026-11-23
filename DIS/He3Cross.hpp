@@ -22,7 +22,7 @@ public:
     /*! Constructor
    * \param wfname He3 wave function name, see He3wf class constructor for possibilities ["AV18", etc.]
    * \param inputdir share dir [full path please, else fortran code breaks for some reason]
-   * \param strucname which structure function parametrization ["CB"=Christy-Bosted (SLAC above W^2 = 9 GeV^2), "SLAC", "Alekhin"], see NuclStructure
+   * \param strucname which structure function parametrization ["CB"=Christy-Bosted (SLAC above W^2 = 9 GeV^2), "SLAC", "Alekhin", or any other name of NuclStructure: "CTEQ", "MSTW", "LHAPDF:<set>", combinations such as "CB+LHAPDF:CT18LO@4"], see NuclStructure
    * \param proton photon interacts with proton [1] or neutron [0]
    */
   He3Cross(std::string wfname, std::string inputdir, std::string strucname, bool proton);

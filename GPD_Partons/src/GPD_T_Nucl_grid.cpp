@@ -3,7 +3,7 @@
 #include "TransGPD_set.hpp"
 
 #include <constants.hpp>
-#include <mstwpdf.h>
+#include <LHAPDFStructure.hpp>
 #include <cassert>
 #include <numint/numint.hpp>
 
@@ -11,23 +11,19 @@
 using namespace std;
 
 GPD_T_Nucl_grid::GPD_T_Nucl_grid(const std::string &pdf_name){
-   if(!pdf_name.compare("MSTW")){
-        string file= string(nucqcd::share_dir)+"/mstw_grids/mstw2008lo.00.dat";
-        mstw = new c_mstwpdf(file,false,true);
-    }
-    else {
-        mstw=NULL;
-        throw std::invalid_argument(nucqcd::ErrorMessage() << "you have not chosen a valid pdf set in Deut_Conv_GPD_T::GPD()" );
-    }
+    nucqcd::LHAPDFOptions options;
+    if(!pdf_name.compare("MSTW")) options.unpolarized = "MSTW2008lo68cl";
+    else if(!pdf_name.compare(0, 7, "LHAPDF:") && pdf_name.size() > 7) options.unpolarized = pdf_name.substr(7);
+    else throw std::invalid_argument(nucqcd::ErrorMessage() << "GPD_T_Nucl_grid: invalid pdf set \"" << pdf_name
+                                     << "\", use \"MSTW\" or \"LHAPDF:<set>\"" );
+    pdf = nucqcd::LHAPDFStructure::get(options);
     grid_set=false;
     t_grid=0.;
     ERBL_set=false;
 
 }
 
-GPD_T_Nucl_grid::~GPD_T_Nucl_grid(){
-    if(mstw) delete mstw;
-}
+GPD_T_Nucl_grid::~GPD_T_Nucl_grid() = default;
 
 TransGPD_set GPD_T_Nucl_grid::getTransGPDSet(const double x, const double xi, const double t, const double scale){
     if(xi<0) return getTransGPDSet(x,-xi,t,scale);  //Etilde is always zero in the models so we have only even GPDs in xi
@@ -125,13 +121,10 @@ void GPD_T_Nucl_grid::DD_int_rho(numint::vector_d & res, double rho, double x, d
 }
 
 void GPD_T_Nucl_grid::getHTfront(const double x, double &HTdfront, double &HTufront, const double scale) const{
-    mstw->update(x,2.);
-
-
-    double d=mstw->parton(1,x,scale)/x;
-    double dbar=mstw->parton(-1,x,scale)/x;
-    double u=mstw->parton(2,x,scale)/x;
-    double ubar=mstw->parton(-2,x,scale)/x;
+    double d=pdf->xfxQ(false,1,x,scale)/x;
+    double dbar=pdf->xfxQ(false,-1,x,scale)/x;
+    double u=pdf->xfxQ(false,2,x,scale)/x;
+    double ubar=pdf->xfxQ(false,-2,x,scale)/x;
 
     double Dd=-0.7*sqrt(x)*d;
     double Ddbar=-0.3*pow(x,0.4)*dbar;

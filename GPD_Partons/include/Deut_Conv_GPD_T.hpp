@@ -14,7 +14,6 @@
 #include "GPD_T_Nucl_grid.hpp"
 #include "Deut_GPD_T_set.hpp"
 
-class c_mstwpdf; //forward declaration
 class TransGPD_set;
 /**
  * @brief Class implements transversity GPDs for the nucleon and deuteron (using convolution formalism) for now
@@ -27,7 +26,7 @@ public:
 /**
  * @brief constructor
  * 
- * @param pdf_name pdf parametrization name used for the forward limit ("MSTW" is the only valid one for now)
+ * @param pdf_name pdf parametrization name used for the forward limit ("MSTW" or "LHAPDF:<set>", see GPD_T_Nucl_grid)
  * @param wfname deuteron wave function parametrization name, see TDeuteron for possibilities
  */
 Deut_Conv_GPD_T(const std::string &pdf_name, const std::string &wfname);

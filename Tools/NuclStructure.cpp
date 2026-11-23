@@ -19,9 +19,9 @@ Kinematics on_shell(bool proton, double var1, double var2, int switchvar) {
   }
 }
 
-/* Christy-Bosted is used up to W^2 = 9 GeV^2, SLAC above */
-std::string parametrization(const std::string &name, double Wsq) {
-  return (!name.compare("CB") && Wsq > 9.E06) ? std::string("SLAC") : name;
+/* "CB" here stands for Christy-Bosted up to W^2 = 9 GeV^2 and SLAC above */
+std::string parametrization(const std::string &name) {
+  return !name.compare("CB") ? std::string("CB+SLAC@9") : name;
 }
 }  // namespace
 
@@ -30,8 +30,8 @@ NuclStructure::NuclStructure(bool pr, double var1, double var2, int switchvar, s
                   on_shell(pr, var1, var2, switchvar).Wsq, nm) {}
 
 NuclStructure::NuclStructure(bool pr, double Q2in, double xin, double Wsqin, std::string nm)
-  : name(parametrization(nm, Wsqin)), proton(pr), mass(nucleon_mass(pr)), x(xin), Q2(Q2in), Wsq(Wsqin),
-    structure(name) {}
+  : name(nm), proton(pr), mass(nucleon_mass(pr)), x(xin), Q2(Q2in), Wsq(Wsqin),
+    structure(parametrization(nm)) {}
 
 void NuclStructure::getF(double &F1, double &F2){
   structure.getF_xQW(F1,F2,proton,x,Q2,Wsq);

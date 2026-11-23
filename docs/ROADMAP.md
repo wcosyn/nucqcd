@@ -26,9 +26,10 @@ same PR.
 | 5 | Low-risk modernization | ✅ done: `-fopenmp`, Fortran interop (#11), constants (#13, #14), grid cache (#15–#17), ownership (#23), exceptions (#24), Doxygen (#10, #25–#30, #32, #34–#39: no warnings left) |
 | 6 | Structural refactors | ⬜ |
 | 7 | Unbundle Cuba | ⬜ (can be done any time after step 2) |
-| 8 | Repository README | ⬜ (last, after 9 and 10) |
-| 9 | Decouple from ROOT where possible | ⬜ (planned, phases below) |
-| 10 | LHAPDF interface for the nucleon structure functions | ⬜ |
+| 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
+| 9 | Decouple from ROOT where possible | 🔶 phases 1 (#44) and 2 (#45) done, 3–6 to do |
+| 10 | LHAPDF interface for the nucleon structure functions | ✅ done (#46), including MSTW through LHAPDF |
+| 11 | Run bookkeeping (provenance) for all programs | ⬜ (design first, then all programs) |
 
 ---
 
@@ -298,7 +299,7 @@ one commit per bug; no `[known-bug]` tests remain.
   them with stream syntax. An uncaught exception still ends the program with the message (now via
   `std::terminate`, so the exit status is that of an abort rather than 1). Exceptions cannot pass
   through the C and Fortran integrators (Cuba, cubature, GSL), so inside integrands called from there
-  they still end the program. Left as they were: third-party code (Cuba, cubature, MSTW), `TMPI`, and
+  they still end the program. Left as they were: third-party code (Cuba, cubature, MSTW (removed in step 10)), `TMPI`, and
   the `STOP`s in the Fortran code. Tested in `unit_errors`. Converted with a script and reviewed per
   message (CRLF line endings of `WeakQEHadronCurrent.cpp` kept).
 - [x] **Grid cache:**
@@ -494,7 +495,11 @@ Write this last, after the refactors, so it describes the final layout and uses 
 
 - [ ] Cover:
   - what the code computes, and the libraries and how they depend on each other
-  - dependencies and how to install them (ROOT, GSL, Cuba, and optionally PARTONS and MPI)
+  - dependencies and how to install them (ROOT, GSL, Cuba, and optionally LHAPDF with its PDF sets,
+    PARTONS and MPI; what is still needed of ROOT after step 9)
+  - the physics inputs that can be chosen by name: deuteron wave functions, nuclear mean fields, and the
+    nucleon structure functions (`NucleonStructure`: CB, SLAC, Alekhin, CTEQ, HMRS, MSTW, `LHAPDF:<set>`,
+    and combinations such as `CB+LHAPDF:CT18LO@4`, step 10)
   - how to build, test and run the main programs
   - the data in `share/`
   - which papers to cite
@@ -585,32 +590,89 @@ Add LHAPDF6 sets as a parametrization in `NucleonStructure` (and so in `NuclStru
 `DeuteronStructure` and the programs that take a structure-function name), the C++ counterpart of
 `LHAPDFStructure` in `taggedpd/nucleon.py` of the poldeut repository.
 
-- [ ] **Physics** (as in poldeut): leading-order parton model, F₂ = Σ_q e_q² x(q + q̄) (nf = 5 by
-  default) from an unpolarized set and g₁ = ½ Σ_q e_q² (Δq + Δq̄) (nf = 3 by default) from a polarized set; the neutron by isospin (u <-> d); F1 = F2/(2x(1+R)) with R
-  a constant or R1998 (`getr1998`); g1+g2 from the Wandzura-Wilczek relation, tabulated at
-  construction on (x, Q^2) nodes, as for GRSV.
-- [ ] **Interface:** a name such as `"LHAPDF:CT18LO"` (and an optional polarized set and member), or a
-  constructor that takes the set names; `getF_xQ`/`getF_xQW` (x is used; W^2 only by CB and SLAC),
-  `getG1`, `getG1plusg2`. Units: Q^2 in MeV^2 in nucqcd, GeV^2 for `LHAPDF::PDF::xfxQ2`. Outside a
-  set's (x, Q^2) range LHAPDF's own extrapolation is used; say so in the docs.
-- [ ] **Build:** optional, found through `lhapdf-config` or LHAPDF's pkg-config file (LHAPDF is already
-  installed in `~/.local`, with Python bindings, for PARTONS; see `scripts/install_partons.sh`); compile
-  the LHAPDF part only when it is found (like PARTONS), and add it to the install script and CLAUDE.md.
-  PDF sets go to `~/.local/share/LHAPDF` with `lhapdf install <set>`.
-- [ ] **Tests:** as in poldeut (`tests/test_lhapdf.py`): parton-model sums and isospin against direct
-  LHAPDF calls, F1 from F2 and R, the WW table against a direct integration, with CT18LO and
-  NNPDFpol11_100; the tests skip when LHAPDF or the sets are not installed.
-- [ ] **Explicit combinations of parametrizations.** `NuclStructure` silently replaces Christy-Bosted
-  by SLAC above W^2 = 9 GeV^2 (and `getName()` then returns "SLAC", which `DeuteronStructure` relies
-  on), while `NucleonStructure` uses CB up to W^2 = 25 GeV^2 and throws above; the same name "CB" thus
-  behaves differently in the two classes (now documented). When LHAPDF sets are added, a resonance-region
-  fit at low W and a DIS parametrization or PDF set at high W will be a common need. Make that an
-  explicit, configurable combination in `NucleonStructure`, as in poldeut (`CombinedStructure`, and the
-  (W, Q^2)-domain adapters `FromNucleonStructure` of `inclusive.py`), e.g. "CB+SLAC" or
-  "CB+LHAPDF:CT18LO" with the W^2 boundary as a parameter, instead of a hidden rename in a
-  constructor; keep "CB" in `NuclStructure` as an alias of the current behaviour (CB below 9 GeV^2,
-  SLAC above) so results do not change, and let `DeuteronStructure` ask whether F1 is to be built from
-  F2 instead of comparing names.
-- [ ] Optionally, replace the bundled MSTW grid code (`mstwpdf.h/.cpp`, `share/mstw_grids`) by the
-  LHAPDF set `MSTW2008lo68cl`, after checking that F2 agrees.
+- [x] **Physics** (done 2026-11-22, `Tools/LHAPDFStructure`): leading-order parton model,
+  F₂ = Σ_q e_q² x(q + q̄) (nf = 5 by default) from an unpolarized set and g₁ = ½ Σ_q e_q² (Δq + Δq̄)
+  (nf = 3 by default) from a polarized set; the neutron by isospin (u <-> d). F1 = F2 (1 + 4M²x²/Q²) /
+  (2x(1+R)) with R1998 by default, as for MSTW and CTEQ in `NucleonStructure` (so that
+  `LHAPDF:MSTW2008lo68cl` and `MSTW` can be compared); a constant R and no target-mass factor
+  (poldeut's default) are options (`nucqcd::LHAPDFOptions`). g1+g2 from the Wandzura-Wilczek relation,
+  tabulated on (x, Q²) nodes the first time it is asked for (as in poldeut's `ww_grid`). 0 outside
+  0 < x < 1; outside a set's range LHAPDF's own extrapolation is used (documented).
+- [x] **Interface:** `NucleonStructure("LHAPDF:CT18LO")`, `"LHAPDF:CT18LO:NNPDFpol11_100"`,
+  `"LHAPDF::NNPDFpol11_100"` (polarized only), members as `"CT18LO/3"`; or
+  `NucleonStructure(nucqcd::LHAPDFOptions)` for the options. `getF_xQ`/`getF_xQW` (x is used) and the
+  new `getG1`/`getG1plusg2` members (they throw for parametrizations without a polarized LHAPDF set;
+  GRSV stays in the static `getG1_grsv2000`). Loading a set is slow and `DeuteronStructure` makes a
+  `NuclStructure` per kinematic point, so `LHAPDFStructure::get` keeps one object per set of options
+  for the whole program, shared by all `NucleonStructure`s.
+- [x] **Build:** optional (`LHAPDF_ENABLED`, ON by default: used when found), found through LHAPDF's
+  pkg-config file, also in `~/.local`. Without LHAPDF the library builds, `LHAPDFStructure::available()`
+  is false and the "LHAPDF:" names throw. `scripts/install_partons.sh` installs the sets CT18LO and
+  NNPDFpol11_100.
+- [x] **Tests** (`unit_lhapdf`, as poldeut's `tests/test_lhapdf.py`): parton-model sums and isospin
+  against direct LHAPDF calls, F1 from F2 and R (both options), zero outside 0 < x < 1, one set only,
+  malformed names, copies, the WW table against a direct integration (GSL QAG) within poldeut's
+  tolerance, a rough comparison with SLAC F2 and GRSV g1. Skipped without LHAPDF or the sets
+  (checked in a build with `-DLHAPDF_ENABLED=OFF`).
+- [x] **Explicit combinations of parametrizations** (done 2026-11-22). `NucleonStructure("<low>+<high>")`
+  or `"<low>+<high>@<W²>"` (W² boundary in GeV², default 9), or the constructor
+  `NucleonStructure(low, high, Wsq_switch)`: low for W² <= boundary, high above, e.g. `"CB+SLAC"` or
+  `"CB+LHAPDF:CT18LO@4"`. `NuclStructure("CB")` is now the explicit combination `"CB+SLAC@9"` instead
+  of a rename in its constructor: the values are unchanged (all regression references pass), but
+  `getName()` now returns "CB" also above 9 GeV² (until 2026-11 "SLAC"). `DeuteronStructure` asks
+  the new `isF2Fit()` (true where SLAC is used, so F1 is built from F2 with R = 0.18 and the off-shell
+  kinematics) instead of comparing names. `NucleonStructure("CB")` itself still means CB up to
+  25 GeV² and throws above.
+- [x] **MSTW through LHAPDF** (done 2026-11-22). The bundled MSTW grid code (`Tools/mstwpdf.h/.cpp`)
+  and grids (`share/mstw_grids`, LO, NLO and NNLO; only LO was used) are removed. `"MSTW"` in
+  `NucleonStructure` (and so `NuclStructure`, `DeuteronStructure`) is now an alias of
+  `"LHAPDF:MSTW2008lo68cl"` (central member), with the same F1 convention; `GPD_T_Nucl_grid` (the
+  forward limit of the transversity GPDs, GK model) takes u, d, ū, d̄ from the same set, and also
+  accepts `"LHAPDF:<set>"`. F2 compared on 14 x values in [1e-4, 0.95] and 9 Q² values in
+  [1, 1e4] GeV²: equal at the grid nodes (1e-16), up to 1.5e-3 relative between them (largest at
+  x = 1e-4, Q² = 2 GeV², just above the charm threshold), ~0.1% below Q² = 1 GeV²
+  (extrapolation): both interpolate the same grid, differently. The MSTW references in
+  `reg_nucleon_structure` were re-baselined (changes up to 1.2e-4 at Q² = 2 GeV², ~1e-9 at 5 GeV²);
+  `unit_lhapdf` checks two old values at a grid node. "MSTW" and `PARTONS_ENABLED` now need LHAPDF
+  (CMake stops for PARTONS without it); the install script installs the set.
 
+## 11. Run bookkeeping (provenance) for all programs
+
+Some programs call `Bookkeep(argc, argv, arg_names)` (`Tools/Utilfunctions`) first thing in `main`, to
+record how a result was produced. Make this better, then use it in every program.
+
+**Current state** (2026-11-22): 8 of the 77 programs outside `progs/attic` call it (`poldeut`,
+`b1_calc`, `pionT_calc12`, `Ca_dens`, `PxPz_exp_sample`, ...). It prints the date and time, each
+argument next to a name from a string array, and the output of `git rev-parse --short HEAD`, run with
+`popen` in `nucqcd::share_dir` at run time. Shortcomings:
+- The git hash is that of the checkout when the program runs, not of the build. A binary built from
+  an older commit, or with uncommitted changes, reports the wrong code; "dirty" is never recorded; it
+  fails silently without git or when the share directory is not a checkout.
+- `arg_names` must have `argc` entries: with fewer (a program called with extra arguments) it reads
+  past the array (undefined behaviour).
+- The lines go to stdout without a comment marker, mixed with the data that most programs print to
+  stdout, so readers (gnuplot, numpy) have to skip them by hand.
+- Not recorded: host, working directory, build type and compiler flags, versions of ROOT, GSL, LHAPDF
+  (and the PDF sets used), relevant environment variables (`NUCQCD_GRID_DIR`), number of MPI ranks,
+  run time and exit status.
+
+1. [ ] **Design** (decide before the roll-out; candidate below):
+   - *Build-time information* in the binary: CMake generates a source file at build time (a custom
+     command, so it is refreshed at every build) with `git describe --always --dirty`, the commit date,
+     build type, compiler and flags, and the dependency versions. No git call at run time.
+   - *Run-time information*: e.g. `nucqcd::RunLog log(argc, argv);` as the first line of `main`, which
+     writes the full command line (quoted so it can be pasted back), date and time with time zone,
+     host, working directory, the environment variables that matter, the build information and, from
+     its destructor or `atexit`, the wall time. Every line starts with `# `, so data files stay
+     readable. Destination: stdout by default (where the data go), optionally stderr or a sidecar
+     file; with MPI only rank 0 writes.
+   - *Argument names*: optional (`RunLog log(argc, argv, {"Q2", "x", ...})`), checked against `argc`;
+     or programs move to a small argument parser with named options and a help text, which then also
+     supplies the names (larger change, could be its own item).
+   - Alternatives to weigh: a wrapper script that logs around the program (cannot know the build of
+     the binary), or a logging library such as spdlog (an extra dependency for little gain).
+   - A unit test for the formatting (comment marker, quoting) and for the build information (the
+     dirty flag appears when the tree has changes).
+2. [ ] **Roll-out**: replace `Bookkeep` by the outcome of 1 in the 8 programs, add it to all other
+   programs (not `progs/attic`), and remove `Bookkeep`. Check per program that its data output still
+   parses (commented header lines).

@@ -18,6 +18,7 @@ nucqcd_add_library(MePhys
   SOURCES
     NuclStructure.cpp
     NucleonStructure.cpp
+    LHAPDFStructure.cpp
     DeuteronStructure.cpp
     Utilfunctions.cpp
     MathUtil.cpp
@@ -43,7 +44,6 @@ nucqcd_add_library(MePhys
     TKinematics2to3.cpp
     TKinematics2to3WithLabAngles.cpp
     TLeptonKinematics.cpp
-    mstwpdf.cpp
     OldDeuteron.cpp
     ${mpi_sources}
     # Fortran
@@ -59,4 +59,12 @@ nucqcd_add_library(MePhys
   LINK root_libs GSL::gsl GSL::gslcblas)
 if(MPI_ENABLED)
   target_link_libraries(MePhys PUBLIC MPI::MPI_CXX)
+endif()
+if(TARGET PkgConfig::LHAPDF)
+  # LHAPDFStructure.cpp uses LHAPDF only when NUCQCD_HAVE_LHAPDF is defined (it throws otherwise)
+  set_property(SOURCE LHAPDFStructure.cpp APPEND PROPERTY COMPILE_DEFINITIONS NUCQCD_HAVE_LHAPDF)
+  target_link_libraries(MePhys PUBLIC PkgConfig::LHAPDF)
+  if(STATIC_BUILD)
+    target_link_libraries(MePhysST PUBLIC PkgConfig::LHAPDF)
+  endif()
 endif()

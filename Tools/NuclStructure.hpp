@@ -101,12 +101,14 @@
  * x and W^2 can be independent (off-shell nucleons in DeuteronStructure): Christy-Bosted and SLAC
  * use W^2, the others x.
  *
- * \note Christy-Bosted ("CB") is only used up to W^2 = 9 GeV^2 (W = 3 GeV): above it the constructor
- * replaces it by "SLAC" (Bodek), and getName() then returns "SLAC". DeuteronStructure relies on that
- * name: for SLAC it builds F1 from F2 itself. NucleonStructure does not switch (there CB is used up to
- * W^2 = 25 GeV^2 and throws std::out_of_range above), so "CB" through this class and through
- * NucleonStructure differ above W^2 = 9 GeV^2. Until 2026-11 this class had its own copy of the parametrizations; F1 for
- * SLAC and CTEQ was then infinite, it is now the value of NucleonStructure (from F2 with R1998).
+ * \note "CB" here means Christy-Bosted up to W^2 = 9 GeV^2 (W = 3 GeV) and SLAC (Bodek) above: the
+ * NucleonStructure combination "CB+SLAC@9". NucleonStructure's own "CB" does not switch (it is used up
+ * to W^2 = 25 GeV^2 and throws std::out_of_range above), so "CB" through this class and through
+ * NucleonStructure differ above W^2 = 9 GeV^2. Until 2026-11 the switch was a rename in the constructor
+ * (getName() then returned "SLAC", and DeuteronStructure compared names); getName() now returns the name
+ * that was given, and isF2Fit() tells whether SLAC is used. Until 2026-11 this class also had its own
+ * copy of the parametrizations; F1 for SLAC and CTEQ was then infinite, it is now the value of
+ * NucleonStructure (from F2 with R1998).
  */
 class NuclStructure{
   
@@ -121,7 +123,8 @@ public:
    * [2]: var1 is Bjorken x [] and var2 is W^2 [MeV^2] <BR>
    * (the third variable follows from the on-shell relation W^2 = Q^2(1/x-1) + M^2)
    * \param name Name of the parametrization, see NucleonStructure: "CB" (Christy & Bosted; above
-   * W^2 = 9 GeV^2 it switches to "SLAC", also in getName), "SLAC", "Alekhin", "CTEQ", "HMRS", "MSTW"
+   * W^2 = 9 GeV^2 SLAC, see the class description), "SLAC", "Alekhin", "CTEQ", "HMRS", "MSTW",
+   * "LHAPDF:<set>", or a combination such as "CB+LHAPDF:CT18LO@4"
    */
   NuclStructure(const bool proton, double var1, double var2, int switchvar, std::string name);
   /*! Constructor with independent kinematics (off-shell)
@@ -137,7 +140,10 @@ public:
   void getF(double &F1, double &F2);
   double getF1(); /*!< returns the F1 structure function */
   double getF2(); /*!< returns the F2 structure function */
-  const std::string getName() const{return name;} /*!< returns the name of the chosen parametrization */
+  const std::string getName() const{return name;} /*!< returns the name of the chosen parametrization, as given */
+  /*! whether the parametrization used at these kinematics is a fit of F2 only (SLAC), see
+   * NucleonStructure::isF2Fit; DeuteronStructure then builds F1 from F2 itself */
+  bool isF2Fit() const{return structure.isF2Fit(Wsq);}
   double getW(){return sqrt(Wsq);} /*!< [MeV] returns the invariant mass of X*/
   bool getProton() const{return proton;} ///< structure functions of the proton (true) or the neutron (false)
   

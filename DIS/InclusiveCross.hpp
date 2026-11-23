@@ -26,7 +26,7 @@ public:
    * \param [in] elec Electron kinematics, see TElectronKinematics
    * \param proton photon interacting with proton [1] or neutron [0]
    * \param wavename Deuteron wave function name, see TDeuteron
-   * \param strucname which structure function parametrization ["CB"=Christy-Bosted (SLAC above W^2 = 9 GeV^2, see NuclStructure), "SLAC", "Alekhin"]
+   * \param strucname which structure function parametrization ["CB"=Christy-Bosted (SLAC above W^2 = 9 GeV^2, see NuclStructure), "SLAC", "Alekhin", or any other name of NuclStructure: "CTEQ", "MSTW", "LHAPDF:<set>", combinations such as "CB+LHAPDF:CT18LO@4"], see NuclStructure
    * \param [in] res [MeV] vector that contains resonance masses used in FSI
    * \param offshell which offshell parametrization do you want to use? <BR>
    * - 0: based on off-shell mass suppression (See M. Sargsian PRC82, 014612)
