@@ -34,14 +34,8 @@ using namespace std;
 
 #include <Tools/Core/Vector3.hpp>
 #include <Tools/Core/LorentzVector.hpp>
-#include <TMath.h>
 #include <iostream>
 #include <fstream>
-#include <TF2.h>
-#include <TF1.h>
-#include <TFile.h>
-#include <TTree.h>
-#include <TRandom3.h>
 
    /**
      * @brief list of possible GPD models
