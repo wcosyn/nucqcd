@@ -1,6 +1,6 @@
-#include "ClassGridThick_SCX.hpp"
-#include "FastParticle.hpp"
-#include "MeanFieldNucleusThick.hpp"
+#include <Glauber/ClassGridThick_SCX.hpp>
+#include <Glauber/FastParticle.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
 
 
 

@@ -2,13 +2,13 @@
 using std::cout;
 using std::endl;
 
-#include <TMFSpinor.hpp>
-#include <TSpinor.h>
-#include <FourVector.h>
-#include <constants.hpp>
-#include <MeanFieldNucleusThick.hpp>
-#include <FastParticle.hpp>
-#include <GlauberGridThick.hpp>
+#include <Glauber/TMFSpinor.hpp>
+#include <Tools/Core/TSpinor.hpp>
+#include <Tools/Core/FourVector.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Glauber/FastParticle.hpp>
+#include <Glauber/GlauberGridThick.hpp>
 
 #include <string>
 using std::string;
@@ -18,7 +18,7 @@ using std::endl;
 using std::cerr;
 #include <fstream>
 using std::ofstream;
-#include <numint/numint.hpp>
+#include <Integrator/numint/numint.hpp>
 #include <complex>
 using std::complex;
 #include <iomanip>

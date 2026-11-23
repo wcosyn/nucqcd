@@ -1,5 +1,5 @@
-#include "ClassGridThick_SCX.hpp"
-#include <GridCache.hpp>
+#include <Glauber/ClassGridThick_SCX.hpp>
+#include <Tools/Core/GridCache.hpp>
 
 /**
  * ClassGridThick_SCX constructor

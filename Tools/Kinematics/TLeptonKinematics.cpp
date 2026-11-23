@@ -7,17 +7,17 @@
  *
  */
 
-#include "TLeptonKinematics.h"
-#include "TKinematics2to2.h"
-#include "TKinematics2to3.h"
+#include <Tools/Kinematics/TLeptonKinematics.hpp>
+#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/Kinematics/TKinematics2to3.hpp>
 // #include <Structures.h>
-#include "constants.hpp"
+#include <Tools/Core/constants.hpp>
 #include <iostream>
 #include <cassert>
 #include <cmath>
 #include <gsl/gsl_poly.h>
 #include <vector>
-#include "Utilfunctions.hpp"
+#include <Tools/Core/Utilfunctions.hpp>
 
 using namespace std;
 using std::cerr;

@@ -4,8 +4,8 @@
 // hard scale, 0.01 in lc_mod and nkt_mod.
 #include <test_support.hpp>
 
-#include <FastParticle.hpp>
-#include <constants.hpp>
+#include <Glauber/FastParticle.hpp>
+#include <Tools/Core/constants.hpp>
 
 #include <cmath>
 #include <string>

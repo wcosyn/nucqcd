@@ -1,8 +1,9 @@
 # Helper functions shared by all CMakeLists.txt of nucqcd.
 #
 #   nucqcd_add_library(<name> SOURCES <src>... [LINK <lib>...])
-#       Shared library lib<name>.so (version 1.0.0), its directory as public include
-#       directory, installed into <prefix>/lib. LINK libraries are public dependencies, and
+#       Shared library lib<name>.so (version 1.0.0), installed into <prefix>/lib. The public
+#       include directory is the repository root, so headers are included by their path from
+#       there (#include <Tools/Core/FourVector.hpp>, <Glauber/FastParticle.hpp>, ...). LINK libraries are public dependencies, and
 #       must resolve every symbol the library uses (linked with --no-undefined on Linux).
 #       With STATIC_BUILD also a static lib<name>.a (target <name>ST).
 #
@@ -19,7 +20,7 @@ include_guard(GLOBAL)
 function(nucqcd_add_library name)
   cmake_parse_arguments(ARG "" "" "SOURCES;LINK" ${ARGN})
   add_library(${name} SHARED ${ARG_SOURCES})
-  target_include_directories(${name} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+  target_include_directories(${name} PUBLIC "${PROJECT_SOURCE_DIR}")
   target_link_libraries(${name} PUBLIC ${ARG_LINK})
   # Every symbol must be resolved by the library itself or by the libraries it links: this keeps the
   # LINK lists (and so the layering of the libraries) complete. macOS does this by default.
@@ -35,7 +36,7 @@ function(nucqcd_add_library name)
   if(STATIC_BUILD)
     get_target_property(all_sources ${name} SOURCES)
     add_library(${name}ST STATIC ${all_sources})
-    target_include_directories(${name}ST PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+    target_include_directories(${name}ST PUBLIC "${PROJECT_SOURCE_DIR}")
     target_link_libraries(${name}ST PUBLIC ${ARG_LINK})
     set_target_properties(${name}ST PROPERTIES OUTPUT_NAME ${name})
     install(TARGETS ${name}ST ARCHIVE DESTINATION lib)

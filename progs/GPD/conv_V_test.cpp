@@ -7,15 +7,15 @@ using namespace std;
 
 #include <iostream>
 #include <cmath>
-#include "constants.hpp"
-#include <Utilfunctions.hpp>
-#include <RunLog.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
+#include <Tools/Core/RunLog.hpp>
 #include <vector>
 
-#include <Deut_Conv_GPD_V.hpp>
-#include <GPD_V_Nucl_grid.hpp>
+#include <GPD_Partons/Deut_Conv_GPD_V.hpp>
+#include <GPD_Partons/GPD_V_Nucl_grid.hpp>
 
-#include <NucleonEMOperator.hpp>
+#include <Glauber/NucleonEMOperator.hpp>
 
 #include <ElementaryUtils/logger/CustomException.h>
 #include <ElementaryUtils/logger/LoggerManager.h>

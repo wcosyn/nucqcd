@@ -1,9 +1,9 @@
 #include "event.hpp"
 #include "parser.hpp"
 #include "2bodymom.hpp"
-#include <numint/numint.hpp>
+#include <Integrator/numint/numint.hpp>
 #include "ClassGridThickNucleus_SCX.hpp"
-#include <FastParticle.hpp>
+#include <Glauber/FastParticle.hpp>
 #include <vector>
 #include <complex>
 

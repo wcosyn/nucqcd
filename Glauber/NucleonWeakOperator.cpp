@@ -1,5 +1,5 @@
-#include "NucleonWeakOperator.hpp"
-#include <ErrorMessage.hpp>
+#include <Glauber/NucleonWeakOperator.hpp>
+#include <Tools/Core/ErrorMessage.hpp>
 
 using namespace std;
 

@@ -1,11 +1,11 @@
-#include "DQEinclusive.hpp"
-#include <Utilfunctions.hpp>
-#include <AuxFunction.hpp>
+#include <Knockout/DQEinclusive.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
+#include <Tools/Core/AuxFunction.hpp>
 #include <gsl/gsl_poly.h>
-#include <TSpinor.h>
-#include <FourVector.h>
+#include <Tools/Core/TSpinor.hpp>
+#include <Tools/Core/FourVector.hpp>
 #include <TVector3.h>
-#include <FastParticle.hpp>
+#include <Glauber/FastParticle.hpp>
 #include <cassert>
 #include <gsl/gsl_integration.h>
 

@@ -7,12 +7,12 @@
 
 using namespace std;
 
-#include <constants.hpp>
-#include <NuclStructure.hpp>
-#include <NucleonStructure.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Tools/StructureFunctions/NuclStructure.hpp>
+#include <Tools/StructureFunctions/NucleonStructure.hpp>
 
-#include <TDeuteron.h>
-#include <numint/numint.hpp>
+#include <Tools/WaveFunctions/TDeuteron.hpp>
+#include <Integrator/numint/numint.hpp>
 
 
 int main(int argc, char *argv[])

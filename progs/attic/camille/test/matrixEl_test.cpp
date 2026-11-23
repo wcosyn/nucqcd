@@ -1,12 +1,12 @@
 #include <iostream>
-#include "Model.hpp"
-#include <TKinematics2to2.h>
-#include <MeanFieldNucleus.hpp>
+#include <Knockout/EMQEHadronCurrent.hpp>
+#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Glauber/MeanFieldNucleus.hpp>
 #include <string>
 using std::string;
 using std::cout;
 using std::endl;
-#include <constants.hpp>
+#include <Tools/Core/constants.hpp>
 
 int main()
 {
@@ -22,7 +22,7 @@ int main()
 	int integrator = 2; // 1 = cube_romb, can converge very slowly
 	int max_Eval = 10000; // max evaluations of function to compute integral
 	bool user_sigma = false; // true to override default sigma
-	Model mod = Model(&Carbon,prec,integrator,homedir,max_Eval,user_sigma);
+	EMQEHadronCurrent mod = EMQEHadronCurrent(&Carbon,prec,integrator,homedir,max_Eval,user_sigma);
 	Matrix<2,3> res;
 	int shellindex=3;
 	int m = 1; // m_j times 2!

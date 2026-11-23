@@ -5,11 +5,11 @@
 
 using namespace std;
 
-#include <MeanFieldNucleusThick.hpp>
-#include <Utilfunctions.hpp>
-#include <constants.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
+#include <Tools/Core/constants.hpp>
 #include <vector>
-#include <numint/numint.hpp>
+#include <Integrator/numint/numint.hpp>
 #include <gsl/gsl_sf_bessel.h>
 
 

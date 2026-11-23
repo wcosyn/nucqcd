@@ -1,11 +1,11 @@
-#include "DeuteronMomDistr.hpp"
+#include <Knockout/DeuteronMomDistr.hpp>
 
 #define MASS_N (nucqcd::mass_p+nucqcd::mass_n)*0.5
 
 #include <cassert>
 #include <cmath>
-#include <Utilfunctions.hpp>
-#include <AuxFunction.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
+#include <Tools/Core/AuxFunction.hpp>
 using namespace std;
 
 // Settings of the 2D FSI integrals (cube_adaptive). With nucqcd::integration_prec (1e-4) and at most 2000 evaluations

@@ -1,7 +1,7 @@
-#include "PionTCross.hpp"
-#include <AuxFunction.hpp>
+#include <Knockout/PionTCross.hpp>
+#include <Tools/Core/AuxFunction.hpp>
 #include <TRotation.h>
-#include <Utilfunctions.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
 
 using namespace std;
 

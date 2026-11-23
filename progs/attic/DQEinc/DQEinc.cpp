@@ -8,9 +8,9 @@
 
 using namespace std;
 
-#include <constants.hpp>
-#include <TElectronKinematics.h>
-#include <DQEinclusive.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Knockout/DQEinclusive.hpp>
 
 // run ../bin/DQEinc Q2[GeV] wf ffparam x Ebeam[MeV] nopt
 

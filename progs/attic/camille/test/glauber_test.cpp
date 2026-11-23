@@ -6,12 +6,12 @@
  */
 
 
-#include <FourVector.h>
-#include "MeanFieldNucleus.hpp"
-#include "MeanFieldNucleusThick.hpp"
+#include <Tools/Core/FourVector.hpp>
+#include <Glauber/MeanFieldNucleus.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
 #include <iostream>
-#include <FastParticle.hpp>
-#include <GlauberGridThick.hpp>
+#include <Glauber/FastParticle.hpp>
+#include <Glauber/GlauberGridThick.hpp>
 
 using std::string;
 using std::cout;

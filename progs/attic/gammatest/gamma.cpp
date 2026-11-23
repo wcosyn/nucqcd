@@ -9,13 +9,13 @@ using namespace std;
 
 #include <iostream>
 #include <cmath>
-#include "constants.hpp"
-#include "FourVector.h"
-#include "GammaStructure.h"
-#include "NuclStructure.hpp"
-#include "WeakQECross.hpp"
-#include "TLeptonKinematics.h"
-#include <MeanFieldNucleusThick.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Tools/Core/FourVector.hpp>
+#include <Tools/Core/GammaStructure.hpp>
+#include <Tools/StructureFunctions/NuclStructure.hpp>
+#include <Knockout/WeakQECross.hpp>
+#include <Tools/Kinematics/TLeptonKinematics.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
 
 
 int main(int argc, char *argv[]){

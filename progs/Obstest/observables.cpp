@@ -6,18 +6,18 @@
 
 using namespace std;
 
-#include <MeanFieldNucleusThick.hpp>
-#include <FsiCorrelator.hpp>
-#include <FastParticle.hpp>
-#include <constants.hpp>
-#include <GlauberGrid.hpp>
-#include <OneGlauberGrid.hpp>
-#include <GlauberGridThick.hpp>
-#include <TKinematics2to2.h>
-#include <TElectronKinematics.h>
-#include <Cross.hpp>
-#include <Utilfunctions.hpp>
-#include <NucleonEMOperator.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Glauber/FsiCorrelator.hpp>
+#include <Glauber/FastParticle.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Glauber/GlauberGrid.hpp>
+#include <Glauber/OneGlauberGrid.hpp>
+#include <Glauber/GlauberGridThick.hpp>
+#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Knockout/EMQECross.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
+#include <Glauber/NucleonEMOperator.hpp>
 
 //run ./observables [Q2 [MeV^2]] [omega] [missing momentum]
 int main(int argc, char *argv[])
@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 //   MeanFieldNucleusThick Carbon(nucleus,homedir);
 //   TKinematics2to2 kin("","",Carbon.getMassA(),Carbon.getMassA_min_proton(),nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
 //   TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ein);
-//   Cross obs(*elec,&Carbon,prec,integrator,homedir,screening,scr);
+//   EMQECross obs(*elec,&Carbon,prec,integrator,homedir,screening,scr);
 //   double free=obs.getElCross(kin,2,PI)*nucqcd::hbarc*nucqcd::hbarc;
 //   vector<double> cross;
 // 
@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
     TKinematics2to2 kin("","",Carbon.getMassA(),Carbon.getMassA_min_proton()+Carbon.getExcitation()[shell]
 		,nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
     if(kin.IsPhysical()&&kin.GetPYlab()<801.6&&kin.GetPYlab()>534.4){
-        Cross obs(*elec,&Carbon,prec,integrator,homedir,screening,scr);
+        EMQECross obs(*elec,&Carbon,prec,integrator,homedir,screening,scr);
       double free0=obs.getElCross(kin,2,0.,maxEval)*nucqcd::hbarc*nucqcd::hbarc;
 //       obs.printDensity_profile(kin,shell,thick,maxEval);
       

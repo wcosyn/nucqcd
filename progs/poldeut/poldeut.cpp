@@ -7,12 +7,12 @@
 
 using namespace std;
 
-#include <constants.hpp>
-#include <Poldeut.hpp>
-#include <Utilfunctions.hpp>
-#include <RunLog.hpp>
+#include <Tools/Core/constants.hpp>
+#include <DIS/Poldeut.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
+#include <Tools/Core/RunLog.hpp>
 #include <vector>
-#include <NuclStructure.hpp>
+#include <Tools/StructureFunctions/NuclStructure.hpp>
 
 int main(int argc, char *argv[])
 {

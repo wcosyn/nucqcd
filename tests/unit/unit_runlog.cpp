@@ -2,7 +2,7 @@
 // of the log (also at exit()), MPI rank, build information.
 #include <test_support.hpp>
 
-#include <RunLog.hpp>
+#include <Tools/Core/RunLog.hpp>
 
 #include <sys/wait.h>
 #include <unistd.h>

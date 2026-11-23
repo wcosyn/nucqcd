@@ -1,14 +1,14 @@
 #include <iostream>
-#include <ErrorMessage.hpp>
+#include <Tools/Core/ErrorMessage.hpp>
 #include <cstdlib>
 #include <fstream>
 #include <cmath>
 #include <gsl/gsl_sf_legendre.h>
 
-#include "MeanFieldNucleus.hpp"
+#include <Glauber/MeanFieldNucleus.hpp>
 // #include "MeanFieldNucleusWrapper.hpp"
-#include <Utilfunctions.hpp>
-#include <TDeuteron.h>
+#include <Tools/Core/Utilfunctions.hpp>
+#include <Tools/WaveFunctions/TDeuteron.hpp>
 
 using namespace std;
 

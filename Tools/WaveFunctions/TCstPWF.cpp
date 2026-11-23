@@ -65,11 +65,11 @@
 //                                                                    //
 ////////////////////////////////////////////////////////////////////////
 
-#include "TCstPWF.h"
-#include "ErrorMessage.hpp"
+#include <Tools/WaveFunctions/TCstPWF.hpp>
+#include <Tools/Core/ErrorMessage.hpp>
 #include <iostream>
 #include <gsl/gsl_sf_bessel.h>
-#include "constants.hpp"
+#include <Tools/Core/constants.hpp>
 #include <cassert>
 #include <cmath>
 using namespace std;

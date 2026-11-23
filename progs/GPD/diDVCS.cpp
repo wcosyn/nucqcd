@@ -23,9 +23,9 @@
 #include <partons/modules/gpd/GPDGK16Numerical.h>
 
 
-#include <DiDVCS.hpp>
-#include <TwoVector_Nucl.hpp>
-#include <constants.hpp>
+#include <GPD_Partons/DiDVCS.hpp>
+#include <GPD_Partons/TwoVector_Nucl.hpp>
+#include <Tools/Core/constants.hpp>
 
 
 using namespace std;

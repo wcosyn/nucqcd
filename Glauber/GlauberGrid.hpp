@@ -10,8 +10,8 @@
 
 #include <cstdarg>
 
-#include "AbstractFsiCTGrid.hpp"
-#include <numint/numint.hpp>
+#include <Glauber/AbstractFsiCTGrid.hpp>
+#include <Integrator/numint/numint.hpp>
 
 /*! \brief A class for a RMSGA ISI/FSI grid, implementing the abstract AbstractFsiCTGrid class
  *

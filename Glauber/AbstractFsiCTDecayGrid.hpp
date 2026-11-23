@@ -13,8 +13,8 @@
 #include <complex>
 #include <vector>
 
-#include "MeanFieldNucleus.hpp"
-#include "AbstractFsiCTGrid.hpp"
+#include <Glauber/MeanFieldNucleus.hpp>
+#include <Glauber/AbstractFsiCTGrid.hpp>
 
 /*! \brief An abstract class for a ISI/FSI with also a grid for CT ISI/FSI and/or Decay properties
  * 

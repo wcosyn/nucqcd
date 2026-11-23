@@ -11,8 +11,8 @@
 
 #include <cstdarg>
 
-#include "AbstractFsiCTDecayGridThick.hpp"
-#include <numint/numint.hpp>
+#include <Glauber/AbstractFsiCTDecayGridThick.hpp>
+#include <Integrator/numint/numint.hpp>
 
 /*! \brief A class for a Glauber ISI/FSI grid using thickness approximation and including decay of fast particles,implements AbstractFsiCTDecayGridThick
  * 

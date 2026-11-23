@@ -1,5 +1,5 @@
 #include <cstdlib>
-#include <ErrorMessage.hpp>
+#include <Tools/Core/ErrorMessage.hpp>
 #include <iostream>
 #include <fstream>
 #include <complex>
@@ -7,9 +7,9 @@
 
 using namespace std;
 
-#include "ROMEAGrid.hpp"
-#include <Utilfunctions.hpp>
-#include <AuxFunction.hpp>
+#include <Glauber/ROMEAGrid.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
+#include <Tools/Core/AuxFunction.hpp>
 
 //optical potentials from most recent Cooper, Hama parametrizations (Phys.Rev. C80 (2009) 034605)
 extern"C"{

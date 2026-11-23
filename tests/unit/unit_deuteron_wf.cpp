@@ -2,10 +2,10 @@
 // quadrupole moment, spin structure; logic from progs/poldeut/wftest.cpp.
 #include <test_support.hpp>
 
-#include <OldDeuteron.hpp>
-#include <TDeuteron.h>
-#include <TInterpolatingWavefunction.h>
-#include <constants.hpp>
+#include <Tools/WaveFunctions/OldDeuteron.hpp>
+#include <Tools/WaveFunctions/TDeuteron.hpp>
+#include <Tools/WaveFunctions/TInterpolatingWavefunction.hpp>
+#include <Tools/Core/constants.hpp>
 
 #include <TVector3.h>
 

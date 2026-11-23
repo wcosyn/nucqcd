@@ -16,16 +16,16 @@
 
 using namespace std;
 
-#include <MeanFieldNucleusThick.hpp>
-#include <constants.hpp>
-#include <TKinematics2to3.h>
-#include <TElectronKinematics.h>
-#include <Utilfunctions.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Tools/Kinematics/TKinematics2to3.hpp>
+#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
 #include <vector>
-#include <numint/numint.hpp>
-#include <OneGlauberGrid.hpp>
-#include <TMFSpinor.hpp>
-#include <AuxFunction.hpp>
+#include <Integrator/numint/numint.hpp>
+#include <Glauber/OneGlauberGrid.hpp>
+#include <Glauber/TMFSpinor.hpp>
+#include <Tools/Core/AuxFunction.hpp>
 
 void getBound(double &high, double &low, MeanFieldNucleusThick &nucleus, double Q2, double omega, int shell);
 void adap_intpiCM(numint::vector_d &, double costhetapiCM, double phipiCM, MeanFieldNucleusThick *pNucleus, TElectronKinematics *elec,

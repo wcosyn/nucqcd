@@ -11,8 +11,8 @@
 
 #include <string>
 #include <TVector3.h>
-#include <FourVector.h>
-#include <LightConeKin2to2.hpp>
+#include <Tools/Core/FourVector.hpp>
+#include <Tools/Kinematics/LightConeKin2to2.hpp>
 
 /*! \brief A class that initializes all lightcone variables for a two body scattering process, 
  *written with DIS on he3 with two spectators in mind!

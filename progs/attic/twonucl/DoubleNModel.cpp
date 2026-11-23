@@ -1,7 +1,7 @@
 #include "DoubleNModel.hpp"
-#include <TSpinor.h>
-#include <TMFSpinor.hpp>
-#include <Utilfunctions.hpp>
+#include <Tools/Core/TSpinor.hpp>
+#include <Glauber/TMFSpinor.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
 
 #include <stdlib.h>
 #include <gsl/gsl_math.h>

@@ -49,8 +49,8 @@
 #include <vector>
 #include <TVector3.h>
 
-#include "FastParticle.hpp"
-#include "MeanFieldNucleus.hpp"
+#include <Glauber/FastParticle.hpp>
+#include <Glauber/MeanFieldNucleus.hpp>
 
 /*! \brief An abstract class for a ISI/FSI grid
  * 

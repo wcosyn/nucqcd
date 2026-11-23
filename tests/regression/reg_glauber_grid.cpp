@@ -1,16 +1,16 @@
 // Regression [slow]: the full Glauber grid machinery (Glauber/AbstractFsiGrid*, GlauberGridThick):
 // filling a grid for an off-axis proton, interpolation, writing the grid cache file and reading it
-// back, and RMSGA A(e,e'p) through Knockout/Cross with its default 120x36x5 grids. Grids are
+// back, and RMSGA A(e,e'p) through Knockout/EMQECross with its default 120x36x5 grids. Grids are
 // computed from scratch in the sandbox share dir (its grids/ is emptied before every ctest run).
 #include <test_support.hpp>
 
-#include <Cross.hpp>
-#include <FastParticle.hpp>
-#include <GlauberGridThick.hpp>
-#include <MeanFieldNucleusThick.hpp>
-#include <TElectronKinematics.h>
-#include <TKinematics2to2.h>
-#include <constants.hpp>
+#include <Knockout/EMQECross.hpp>
+#include <Glauber/FastParticle.hpp>
+#include <Glauber/GlauberGridThick.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/Core/constants.hpp>
 
 #include <cmath>
 #include <complex>
@@ -69,7 +69,7 @@ TEST_CASE("RMSGA A(e,e'p) cross section for carbon (default 120x36x5 grids)", "[
   const std::string dir = nucqcd_test::share_dir();
   MeanFieldNucleusThick carbon(MeanFieldNucleus::C, dir);
   std::unique_ptr<TElectronKinematics> elec(TElectronKinematics::CreateWithBeamEnergy(3245.));
-  Cross obs(*elec, &carbon, 1.E-03, 2, dir, false, 1.);
+  EMQECross obs(*elec, &carbon, 1.E-03, 2, dir, false, 1.);
   TKinematics2to2 kin("", "", carbon.getMassA(), carbon.getMassA_min_proton(), nucqcd::mass_p, "qsquared:wlab:pklab", 1.8E06,
                       1000., 150.);
   for (int shell = 0; shell < carbon.getPLevels(); shell++) {

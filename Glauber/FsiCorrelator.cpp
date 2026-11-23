@@ -1,14 +1,14 @@
 #include <fstream>
-#include <ErrorMessage.hpp>
+#include <Tools/Core/ErrorMessage.hpp>
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
 #include <cassert>
 
-#include "FsiCorrelator.hpp"
-#include <Utilfunctions.hpp>
-#include <GridCache.hpp>
-#include <AuxFunction.hpp>
+#include <Glauber/FsiCorrelator.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
+#include <Tools/Core/GridCache.hpp>
+#include <Tools/Core/AuxFunction.hpp>
 using namespace std;
 
 #define TOTALGRIDPNTS (getCorr_rgrid())*(getCorr_cthgrid())

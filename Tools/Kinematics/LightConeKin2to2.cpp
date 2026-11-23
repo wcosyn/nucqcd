@@ -1,7 +1,7 @@
-#include "LightConeKin2to2.hpp"
+#include <Tools/Kinematics/LightConeKin2to2.hpp>
 
 #include <cassert>
-#include <constants.hpp>
+#include <Tools/Core/constants.hpp>
 
 using namespace std;
 

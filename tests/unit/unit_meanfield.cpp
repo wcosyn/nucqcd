@@ -2,8 +2,8 @@
 // Shell wave functions and densities must be normalized, shell occupations must match Z and N.
 #include <test_support.hpp>
 
-#include <MeanFieldNucleusThick.hpp>
-#include <constants.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Tools/Core/constants.hpp>
 
 #include <gsl/gsl_sf_bessel.h>
 

@@ -27,9 +27,9 @@
 //                                                                    //
 ////////////////////////////////////////////////////////////////////////
 
-#include "TInterpolatingWavefunction.h"
+#include <Tools/WaveFunctions/TInterpolatingWavefunction.hpp>
 #include <iostream>
-#include <TDeuteron.h>
+#include <Tools/WaveFunctions/TDeuteron.hpp>
 
 using std::cout; using std::cerr; using std::endl;
 using std::map; using std::pair;

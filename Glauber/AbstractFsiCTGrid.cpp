@@ -5,10 +5,10 @@
 
 using namespace std;
 
-#include "AbstractFsiCTGrid.hpp"
-#include "constants.hpp"
-#include <Utilfunctions.hpp>
-#include <GridCache.hpp>
+#include <Glauber/AbstractFsiCTGrid.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
+#include <Tools/Core/GridCache.hpp>
 
 AbstractFsiCTGrid::AbstractFsiCTGrid(int r_grid, int cth_grid, int phi_grid, MeanFieldNucleus *pnucl, 
 				     double prec, int integrator, string homedir):

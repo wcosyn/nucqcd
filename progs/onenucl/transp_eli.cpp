@@ -1,11 +1,11 @@
 //program used to calculate some lead transparencies
 
 
-#include <MeanFieldNucleusThick.hpp>
-#include <TKinematics2to2.h>
-#include <TElectronKinematics.h>
-#include <Cross.hpp>
-#include <FastParticle.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Knockout/EMQECross.hpp>
+#include <Glauber/FastParticle.hpp>
 #include <cstdlib>
 #include <string>
 #include <sstream>
@@ -33,7 +33,7 @@ double diffcross(MeanFieldNucleusThick& nuc,int level,double pm, double Q2, doub
     
     TKinematics2to2 kin("kinematics_name","kinematics_title",nuc.getMassA(),nuc.getMassA_min_proton(),nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
     TElectronKinematics* elec = TElectronKinematics::CreateWithBeamEnergy(Ebeam);
-    Cross cross(*elec,&nuc,abserr,2,getShareDir(),user_sigma,screening);
+    EMQECross cross(*elec,&nuc,abserr,2,getShareDir(),user_sigma,screening);
     
     delete elec;
     return cross.getDiffCross(kin,current,thick,src,ct,pw,level,0.,25000,true, true,1.,1.); // kinematics2to2,current [1,2,3], src, CT, pw, shellindex, phi,maxEval,lab

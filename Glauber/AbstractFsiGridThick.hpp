@@ -11,9 +11,9 @@
 
 #include <string>
 
-#include "AbstractFsiGrid.hpp"
-#include "MeanFieldNucleusThick.hpp"
-#include "FsiCorrelator.hpp"
+#include <Glauber/AbstractFsiGrid.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Glauber/FsiCorrelator.hpp>
 
 /*! \brief An abstract class for a ISI/FSI grid using thickness approximation
  * 

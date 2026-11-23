@@ -4,9 +4,9 @@
 
 using namespace std;
 
-#include "AbstractFsiCTGridThick.hpp"
-#include <constants.hpp>
-#include <Utilfunctions.hpp>
+#include <Glauber/AbstractFsiCTGridThick.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
 
 AbstractFsiCTGridThick::AbstractFsiCTGridThick(int r_grid, int cth_grid, int phi_grid, MeanFieldNucleusThick *pnucl, 
 					      double prec, int integrator, string homedir):

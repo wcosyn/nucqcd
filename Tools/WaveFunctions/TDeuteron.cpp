@@ -9,14 +9,14 @@
 
 
 
-#include "TDeuteron.h"
-#include "ErrorMessage.hpp"
-#include "TYukawaPWF.h"
-#include "TGrossPWF.h"
-#include "TCstPWF.h"
-#include "TInterpolatingWavefunction.h"
+#include <Tools/WaveFunctions/TDeuteron.hpp>
+#include <Tools/Core/ErrorMessage.hpp>
+#include <Tools/WaveFunctions/TYukawaPWF.hpp>
+#include <Tools/WaveFunctions/TGrossPWF.hpp>
+#include <Tools/WaveFunctions/TCstPWF.hpp>
+#include <Tools/WaveFunctions/TInterpolatingWavefunction.hpp>
 // #include "TStrangePolarization.h"
-//#include "TKinematics2to3.h"
+//#include <Tools/Kinematics/TKinematics2to3.hpp>
 //#include <numtoa.h>
 #include <cstring>
 #include <iostream>
@@ -24,8 +24,8 @@
 #include <TVector3.h>
 #include <TLorentzVector.h>
 #include <TLorentzRotation.h>
-#include "constants.hpp"
-#include "StringUtil.hpp"
+#include <Tools/Core/constants.hpp>
+#include <Tools/Core/StringUtil.hpp>
 #include <gsl/gsl_sf_coupling.h>
 #include <gsl/gsl_sf_legendre.h>
 #include <cmath>

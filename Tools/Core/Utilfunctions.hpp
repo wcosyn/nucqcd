@@ -11,7 +11,7 @@
 #define SIGN(x) ((x>0)-(x<0)) /*!< sign of x: -1, 0 or 1 */
 
 #include <cstdarg>
-#include "ErrorMessage.hpp"
+#include <Tools/Core/ErrorMessage.hpp>
 #include <sstream>
 #include <complex>
 

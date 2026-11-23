@@ -2,7 +2,7 @@
 // recursively. They form an orthogonal transformation within each oscillator shell E and total L.
 #include <test_support.hpp>
 
-#include <recmosh.h>
+#include <Tools/Core/recmosh.hpp>
 
 #include <array>
 #include <cmath>

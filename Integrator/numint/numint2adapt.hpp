@@ -19,11 +19,11 @@
 #include <config.h>
 #endif
 
-#include <numint/macros.hpp>
-#include <numint/typedef.hpp>
-#include <numint/numint_tools.hpp>
+#include <Integrator/numint/macros.hpp>
+#include <Integrator/numint/typedef.hpp>
+#include <Integrator/numint/numint_tools.hpp>
 
-#include <adaptive/cubature.h>
+#include <Integrator/adaptive/cubature.h>
 
 
 OPEN_NUMINT_NAMESPACE

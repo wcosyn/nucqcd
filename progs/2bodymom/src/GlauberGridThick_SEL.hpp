@@ -1,10 +1,10 @@
 #ifndef GLAUBERGRIDTHICK_SEL_HPP
 #define GLAUBERGRIDTHICK_SEL_HPP
 
-#include "numint/numint.hpp"
+#include <Integrator/numint/numint.hpp>
 #include <cmath>
-#include "FastParticle.hpp"
-#include "MeanFieldNucleusThick.hpp"
+#include <Glauber/FastParticle.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
 #include <complex>
 using std::complex;
 #include <iostream>

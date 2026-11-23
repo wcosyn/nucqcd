@@ -1,9 +1,9 @@
 #include "2bodymom.hpp"
 #include "GlauberGridThick_SCX.hpp"
 #include "GlauberGridThick_SEL.hpp"
-#include "MeanFieldNucleusThick.hpp"
+#include <Glauber/MeanFieldNucleusThick.hpp>
 #include "ClassGridThickNucleus_SCX.hpp"
-#include "FastParticle.hpp"
+#include <Glauber/FastParticle.hpp>
 #include "event.hpp"
 #ifndef SHAREDIR
 #define SHAREDIR "/home/ccolle/Code/share"

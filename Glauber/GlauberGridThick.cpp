@@ -1,16 +1,16 @@
 #include <cstdlib>
-#include <ErrorMessage.hpp>
+#include <Tools/Core/ErrorMessage.hpp>
 #include <iostream>
 #include <fstream>
 #include <complex>
-#include <adaptive/cubature.h>
+#include <Integrator/adaptive/cubature.h>
 #include <cassert>
 
 using namespace std;
 
-#include "GlauberGridThick.hpp"
-#include <Utilfunctions.hpp>
-#include <AuxFunction.hpp>
+#include <Glauber/GlauberGridThick.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
+#include <Tools/Core/AuxFunction.hpp>
 
 //constructor, calls abstractfsigrid's constructor
 GlauberGridThick::GlauberGridThick(const int r_grid, const int cth_grid, const int phi_grid, MeanFieldNucleusThick * pnucl,

@@ -8,8 +8,8 @@
   */
 
 #include <iostream>
-#include <numint/numint.hpp>
-#include <numint/typedef.hpp>
+#include <Integrator/numint/numint.hpp>
+#include <Integrator/numint/typedef.hpp>
 #include <cstdlib>
 using std::cout;
 using std::endl;

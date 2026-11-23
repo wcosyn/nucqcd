@@ -2,11 +2,11 @@
 // kinematics from progs/attic/LDRD_test/LDRD_test.cpp.
 #include <test_support.hpp>
 
-#include <DeuteronCross.hpp>
-#include <He3Cross.hpp>
-#include <LightConeKin2to2.hpp>
-#include <LightConeKin2to3.hpp>
-#include <constants.hpp>
+#include <DIS/DeuteronCross.hpp>
+#include <DIS/He3Cross.hpp>
+#include <Tools/Kinematics/LightConeKin2to2.hpp>
+#include <Tools/Kinematics/LightConeKin2to3.hpp>
+#include <Tools/Core/constants.hpp>
 
 #include <cmath>
 #include <string>

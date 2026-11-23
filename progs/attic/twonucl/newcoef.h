@@ -8,7 +8,7 @@ using std::pow;
 using std::sqrt;
 using std::fabs;
 
-#include "recmosh.h"
+#include <Tools/Core/recmosh.hpp>
 
 #include <gsl/gsl_sf_coupling.h>
 

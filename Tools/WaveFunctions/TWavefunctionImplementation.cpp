@@ -33,7 +33,7 @@
 //                                                                    //
 ////////////////////////////////////////////////////////////////////////
 
-#include "TWavefunctionImplementation.h"
+#include <Tools/WaveFunctions/TWavefunctionImplementation.hpp>
 #include <iostream>
 
 using std::cout; using std::cerr; using std::endl;

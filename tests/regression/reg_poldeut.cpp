@@ -1,7 +1,7 @@
 // Regression: polarized deuteron light-front spectator tagging (DIS/Poldeut).
 #include <test_support.hpp>
 
-#include <Poldeut.hpp>
+#include <DIS/Poldeut.hpp>
 
 #include <sstream>
 #include <string>

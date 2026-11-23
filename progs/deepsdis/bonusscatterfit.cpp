@@ -22,8 +22,8 @@
 #include <iomanip>
 using namespace std;
 
-#include <constants.hpp>
-#include <DeuteronCross.hpp>
+#include <Tools/Core/constants.hpp>
+#include <DIS/DeuteronCross.hpp>
 #include "bonusdata.h"
 #include "bonusfits.h"
 

@@ -5,16 +5,16 @@
 
 using namespace std;
 
-#include <MeanFieldNucleusThick.hpp>
-#include <FsiCorrelator.hpp>
-#include <FastParticle.hpp>
-#include <constants.hpp>
-#include <GlauberGrid.hpp>
-#include <OneGlauberGrid.hpp>
-#include <GlauberGridThick.hpp>
-#include <TKinematics2to2.h>
-#include <TElectronKinematics.h>
-#include <Cross.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Glauber/FsiCorrelator.hpp>
+#include <Glauber/FastParticle.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Glauber/GlauberGrid.hpp>
+#include <Glauber/OneGlauberGrid.hpp>
+#include <Glauber/GlauberGridThick.hpp>
+#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Knockout/EMQECross.hpp>
 
 int main(int argc, char *argv[])
 {
@@ -42,10 +42,10 @@ int main(int argc, char *argv[])
 
   TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ebeam);
   cout << Ebeam << " " << Q2 << " " << omega << " " << pm << " " << phi << " ";
-  vector<Cross> obs;
-  obs.push_back(Cross(*elec,&Fe54,prec,integrator,sharedir,screening,scr));
-  obs.push_back(Cross(*elec,&Ca40,prec,integrator,sharedir,screening,scr));
-  obs.push_back(Cross(*elec,&Ca48,prec,integrator,sharedir,screening,scr));
+  vector<EMQECross> obs;
+  obs.push_back(EMQECross(*elec,&Fe54,prec,integrator,sharedir,screening,scr));
+  obs.push_back(EMQECross(*elec,&Ca40,prec,integrator,sharedir,screening,scr));
+  obs.push_back(EMQECross(*elec,&Ca48,prec,integrator,sharedir,screening,scr));
   cout << endl;
   for(unsigned int i=0;i<obs.size();i++){
     double cross=0.;

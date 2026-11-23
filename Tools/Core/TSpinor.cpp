@@ -7,15 +7,15 @@
  *
  */
 
-#include "TSpinor.h"
-#include "ErrorMessage.hpp"
-#include "TLorentzQuaternion.h"
-#include "constants.hpp"
+#include <Tools/Core/TSpinor.hpp>
+#include <Tools/Core/ErrorMessage.hpp>
+#include <Tools/Core/TLorentzQuaternion.hpp>
+#include <Tools/Core/constants.hpp>
 //#include <numtoa.h>
 #include <TLorentzVector.h>
 #include <TLorentzRotation.h>
 #include <TRotation.h>
-#include "FourVector.h"
+#include <Tools/Core/FourVector.hpp>
 #include <cassert>
 #include <cmath>
 #include <cstdlib>

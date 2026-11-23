@@ -1,15 +1,15 @@
 #include <cstdlib>
-#include <ErrorMessage.hpp>
+#include <Tools/Core/ErrorMessage.hpp>
 #include <iostream>
 #include <fstream>
 #include <cmath>
 
 using namespace std;
 
-#include "AbstractFsiGrid.hpp"
-#include <constants.hpp>
-#include <Utilfunctions.hpp>
-#include <GridCache.hpp>
+#include <Glauber/AbstractFsiGrid.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
+#include <Tools/Core/GridCache.hpp>
 
 AbstractFsiGrid::AbstractFsiGrid(int r_grid, int cth_grid, int phi_grid, 
 				 MeanFieldNucleus *pnucl, double precision, int integr, std::string homedir):

@@ -4,9 +4,9 @@
 // The full grid machinery (fill, interpolation, cache file round trip) is in reg_glauber_grid [slow].
 #include <test_support.hpp>
 
-#include <FastParticle.hpp>
-#include <GlauberGridThick.hpp>
-#include <MeanFieldNucleusThick.hpp>
+#include <Glauber/FastParticle.hpp>
+#include <Glauber/GlauberGridThick.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
 
 #include <cmath>
 #include <complex>

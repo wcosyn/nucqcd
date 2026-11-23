@@ -2,11 +2,11 @@
 using std::cout;
 using std::endl;
 
-#include <TMFSpinor.hpp>
-#include <TSpinor.h>
-#include <FourVector.h>
-#include <constants.hpp>
-#include <MeanFieldNucleus.hpp>
+#include <Glauber/TMFSpinor.hpp>
+#include <Tools/Core/TSpinor.hpp>
+#include <Tools/Core/FourVector.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Glauber/MeanFieldNucleus.hpp>
 #include <string>
 using std::string;
 #include <iostream>
@@ -15,7 +15,7 @@ using std::endl;
 using std::cerr;
 #include <fstream>
 using std::ofstream;
-#include <numint/numint.hpp>
+#include <Integrator/numint/numint.hpp>
 #include <complex>
 using std::complex;
 #include <iomanip>

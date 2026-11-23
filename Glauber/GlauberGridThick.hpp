@@ -9,12 +9,12 @@
 #ifndef GLAUBERGRIDTHICK_H
 #define GLAUBERGRIDTHICK_H
 
-#include <numint/numint.hpp>
+#include <Integrator/numint/numint.hpp>
 
 
 #include <cstdarg>
 
-#include "AbstractFsiCTGridThick.hpp"
+#include <Glauber/AbstractFsiCTGridThick.hpp>
 
 /*! \brief An class for a Glauber ISI/FSI grid using thickness approximation,implements AbstractFsiCTGridThick
  * 

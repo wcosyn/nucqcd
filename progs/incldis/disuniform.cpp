@@ -8,11 +8,11 @@
 
 using namespace std;
 
-#include <constants.hpp>
-#include <TKinematics2to2.h>
-#include <TElectronKinematics.h>
-#include <NuclStructure.hpp>
-#include "InclusiveCross.hpp"
+#include <Tools/Core/constants.hpp>
+#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/StructureFunctions/NuclStructure.hpp>
+#include <DIS/InclusiveCross.hpp>
 
 //continuum contribution with uniform shape
 //make uniform

@@ -12,8 +12,8 @@
 #include <string>
 #include <complex>
 #include <TVector3.h>
-#include <Matrix.h>
-#include <numint/numint.hpp>
+#include <Tools/Core/Matrix.hpp>
+#include <Integrator/numint/numint.hpp>
 
 //forward declaration
 class AbstractFsiCTGrid;

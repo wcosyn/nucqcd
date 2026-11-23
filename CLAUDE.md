@@ -37,7 +37,7 @@ These rules were agreed in earlier sessions; they are kept here because Claude's
 - **Bugs found along the way** become ROADMAP items (also when nothing was affected: record that) and get their own PR unless the author says otherwise.
 - **Before a PR:** build everything (`make install -j8` with `BUILD_PROGS`, and `PARTONS_ENABLED` if installed), `ctest -LE slow`, and `ctest -L slow` for changes that can affect the Glauber code or constants; `make doc` must give no new warnings. PR descriptions must be accurate (test counts, what was and was not checked).
 - **Documentation:** Doxygen per class, with paper references where possible (marked for the author to confirm), and every inferred unit or convention flagged in the PR description; the code mixes MeV and GeV and rarely states conventions, and wrong inferred docs are worse than none.
-- **Files with CRLF line endings** (`Knockout/WeakQECross.cpp`, `Knockout/WeakQEHadronCurrent.cpp`, `progs/neutrinoQE/sdiff_Q2*.cpp`): keep them CRLF when editing with scripts (read and write in binary/newline-preserving mode).
+- **Files with CRLF line endings** (`Knockout/WeakQECross.cpp`, `Knockout/WeakQEHadronCurrent.cpp`, `progs/neutrinoQE/sdiff_Q2.cpp`, `progs/neutrinoQE/sdiff_Q2QE.cpp`): keep them CRLF when editing with scripts (read and write in binary/newline-preserving mode).
 - **A new computer** needs ROOT, GSL and a Fortran compiler; for LHAPDF/PARTONS run `scripts/install_partons.sh`, which also installs the LHAPDF sets CT18LO, NNPDFpol11_100 and MSTW2008lo68cl (without them the LHAPDF and MSTW tests are skipped, and `"MSTW"` does not work).
 
 ## Tests
@@ -67,17 +67,19 @@ Libraries build in this order, and each links against the ones before it:
    - `Tools/WaveFunctions` (`libToolsWaveFunctions`, needs Kinematics): deuteron wavefunctions (`TDeuteron` plus the `T*PWF` parametrizations, `OldDeuteron`) and `He3wf` (Fortran).
    - `Tools/StructureFunctions` (`libToolsStructureFunctions`, needs Kinematics, not WaveFunctions): nucleon/nuclear structure functions and PDFs (CTEQ, Alekhin, GRSV, mostly Fortran; MSTW and any other set through LHAPDF), `DeuteronStructure`.
 3. **Glauber** (`libGlauber`): mean-field nuclei (`MeanFieldNucleus[Thick]`), nucleon EM and weak current operators, `FastParticle` (the ejected particle and its scattering parameters), and the FSI grid hierarchy described below.
-4. **Knockout** (`libKnockout`): quasi-elastic A(e,e'p), rho/pion transparency, and neutrino QE cross sections. These are built on Glauber grids. `Model`/`Cross` form the main A(e,e'p) pair.
+4. **Knockout** (`libKnockout`): quasi-elastic A(e,e'p), rho/pion transparency, and neutrino QE cross sections. These are built on Glauber grids. `EMQEHadronCurrent`/`EMQECross` (until 2026-11 `Model`/`Cross`) form the main A(e,e'p) pair, the electromagnetic counterpart of `WeakQEHadronCurrent`/`WeakQECross`.
 5. **DIS** (`libDIS`): inclusive and tagged DIS on the deuteron and He3, the polarized deuteron (`Poldeut`), resonances, and the EMT light-front convolution. `DIS/evolution/` is a separate Fortran library, `libEvolution`, for QCD evolution.
 6. **GPD_Partons** (`libGPD`, optional): deuteron vector and transversity GPD convolutions that use PARTONS.
 
 All CMakeLists use the helpers in `cmake/NucQCD.cmake`:
 
-- `nucqcd_add_library(<name> SOURCES ... LINK ...)`: shared library (version 1.0.0) with its directory as public include dir, installed into `lib/`; with `STATIC_BUILD` also `<name>ST`. Dependencies in `LINK` are public, so programs only need to name the highest library they use. Libraries are linked with `--no-undefined` (Linux), so `LINK` must list every library whose symbols are used; a missing one is a link error, not a runtime one.
+- `nucqcd_add_library(<name> SOURCES ... LINK ...)`: shared library (version 1.0.0) with the repository root as public include dir, installed into `lib/`; with `STATIC_BUILD` also `<name>ST`. Dependencies in `LINK` are public, so programs only need to name the highest library they use. Libraries are linked with `--no-undefined` (Linux), so `LINK` must list every library whose symbols are used; a missing one is a link error, not a runtime one.
 - `nucqcd_add_program(<name> [SOURCES ...] LINK ... [DESTINATION dir])` and `nucqcd_add_programs(LINK ... PROGRAMS a b c ...)`: executables (default source `<name>.cpp`), built by `make` and installed only with `BUILD_PROGS`.
 - Interface targets for external dependencies: `root_libs`, `GSL::gsl`, `cuba`, `MPI::MPI_CXX`, `partons_libs`.
 
 Programs start `main` with `nucqcd::RunLog runlog(argc, argv, {"name of argv[1]", ...});` (`Tools/Core/RunLog.hpp`): it writes the command line, date, host and build (git describe, flags, library versions) as `# ` comment lines to stdout, and the wall time at the end. The git state is generated into the build tree at every build (`cmake/BuildInfo.cmake`).
+
+**Includes** are written as the path from the repository root, with angle brackets: `#include <Tools/WaveFunctions/TDeuteron.hpp>`, `<Glauber/FastParticle.hpp>`, `<Integrator/numint/numint.hpp>` (Cuba stays `<Cuba/cuba.h>`, from the `cuba` target, which `Integrator` links). Headers have the extension `.hpp`. Only headers that belong to one program and sit next to it are included with quotes and without a path.
 
 To add a source file, list it explicitly in that library's `CMakeLists.txt`; there is no globbing. To add a program, add a `nucqcd_add_program(s)` line to the `CMakeLists.txt` of its `progs/` subdirectory (new directories are registered in `progs/CMakeLists.txt`).
 

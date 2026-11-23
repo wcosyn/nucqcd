@@ -2,7 +2,7 @@
 // writes of cache files (temporary file + rename, so no truncated cache file is ever left behind).
 #include <test_support.hpp>
 
-#include <GridCache.hpp>
+#include <Tools/Core/GridCache.hpp>
 
 #include <cstdlib>
 #include <filesystem>

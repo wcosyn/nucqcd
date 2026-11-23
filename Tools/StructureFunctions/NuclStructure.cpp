@@ -1,6 +1,6 @@
-#include "NuclStructure.hpp"
-#include "ErrorMessage.hpp"
-#include "constants.hpp"
+#include <Tools/StructureFunctions/NuclStructure.hpp>
+#include <Tools/Core/ErrorMessage.hpp>
+#include <Tools/Core/constants.hpp>
 
 #include <stdexcept>
 

@@ -4,11 +4,11 @@ Used to compute sum rule integrals for the deuteron structure functions
 */
 
 
-#include<OldDeuteron.hpp>
-#include<TDeuteron.h>
-#include<TInterpolatingWavefunction.h>
+#include<Tools/WaveFunctions/OldDeuteron.hpp>
+#include<Tools/WaveFunctions/TDeuteron.hpp>
+#include<Tools/WaveFunctions/TInterpolatingWavefunction.hpp>
 #include<TVector.h>
-#include<NucleonStructure.hpp>
+#include<Tools/StructureFunctions/NucleonStructure.hpp>
 
 
 #include <iostream>
@@ -20,9 +20,9 @@ using namespace std;
 
 #include <iostream>
 #include <cmath>
-#include "constants.hpp"
-#include <numint/numint.hpp>
-#include <numint/numint2Cuba.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Integrator/numint/numint.hpp>
+#include <Integrator/numint/numint2Cuba.hpp>
 
 //void int_3d(numint::vector_z &, double p, double costheta, double phi, TInterpolatingWavefunction &wf, TVector3 &pvec);
 void int_3d(numint::vector_z &, double p, double costheta, double phi, TDeuteron::Wavefunction &wf, TVector3 &pvec);

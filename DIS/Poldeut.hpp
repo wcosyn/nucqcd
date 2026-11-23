@@ -11,8 +11,8 @@
 #ifndef POLDEUT_HPP
 #define POLDEUT_HPP
 
-#include <TDeuteron.h>
-#include <TInterpolatingWavefunction.h>
+#include <Tools/WaveFunctions/TDeuteron.hpp>
+#include <Tools/WaveFunctions/TInterpolatingWavefunction.hpp>
 
 #include <string>
 

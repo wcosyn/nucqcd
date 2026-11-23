@@ -32,11 +32,11 @@
 #ifndef DEUTERONCROSS_HPP
 #define DEUTERONCROSS_HPP
 
-#include <DeuteronMomDistr.hpp>
-#include <TKinematics2to2.h>
-#include <DeuteronStructure.hpp>
-#include <TElectronKinematics.h>
-#include <LightConeKin2to2.hpp>
+#include <Knockout/DeuteronMomDistr.hpp>
+#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/StructureFunctions/DeuteronStructure.hpp>
+#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/Kinematics/LightConeKin2to2.hpp>
 
 #include <string>
 

@@ -13,11 +13,11 @@
 #define WEAKQECROSS_HPP
 
 #include <vector>
-#include <TLeptonKinematics.h>
-#include <TElectronKinematics.h>
-#include <MeanFieldNucleusThick.hpp>
-#include <TKinematics2to2.h>
-#include "WeakQEHadronCurrent.hpp"
+#include <Tools/Kinematics/TLeptonKinematics.hpp>
+#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Knockout/WeakQEHadronCurrent.hpp>
 
 class AbstractFsiGrid;
 

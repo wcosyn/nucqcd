@@ -1,10 +1,10 @@
 #include <iostream>
-#include <ErrorMessage.hpp>
+#include <Tools/Core/ErrorMessage.hpp>
 #include <cstdlib>
 
 
-#include "MeanFieldNucleusThick.hpp"
-#include <Utilfunctions.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
 
 using namespace std;
 

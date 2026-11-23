@@ -11,9 +11,9 @@
 
 #include <string>
 #include <memory>
-#include <TElectronKinematics.h>
-#include <DeuteronStructure.hpp>
-#include <TDeuteron.h>
+#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/StructureFunctions/DeuteronStructure.hpp>
+#include <Tools/WaveFunctions/TDeuteron.hpp>
 
 
 //forward declaration

@@ -6,14 +6,14 @@
 
 using namespace std;
 
-#include <MeanFieldNucleusThick.hpp>
-#include <FsiCorrelator.hpp>
-#include <FastParticle.hpp>
-#include <constants.hpp>
-#include <GlauberGrid.hpp>
-#include <GlauberGridThick.hpp>
-#include <TKinematics2to3.h>
-#include <TElectronKinematics.h>
+#include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Glauber/FsiCorrelator.hpp>
+#include <Glauber/FastParticle.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Glauber/GlauberGrid.hpp>
+#include <Glauber/GlauberGridThick.hpp>
+#include <Tools/Kinematics/TKinematics2to3.hpp>
+#include <Tools/Kinematics/TElectronKinematics.hpp>
 #include "DoubleNCross.hpp"
 
 

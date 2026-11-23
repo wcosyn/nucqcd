@@ -4,7 +4,7 @@
 
 #include <catch2/generators/catch_generators.hpp>
 
-#include <numint/numint.hpp>
+#include <Integrator/numint/numint.hpp>
 
 #include <cmath>
 

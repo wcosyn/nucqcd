@@ -58,7 +58,7 @@
   * -check in constructor to delete fM when necessary<BR>
   * -modified Mass(int i) for this case<BR>
   * <BR>
-  *-added AV18 and Av18b Deuteron wf to TDeuteron.h & TDeuteron.cpp <BR>
+  *-added AV18 and Av18b Deuteron wf to TDeuteron.hpp & TDeuteron.cpp <BR>
   *<BR>
   *-added coordinate state wavefunction functions to TDeuteron<BR>
   *-some more vector types to DeuteronRState and DeuteronPState<BR>
@@ -95,7 +95,7 @@
 #ifndef NUCLSTRUCTURE_HPP
 #define NUCLSTRUCTURE_HPP
 
-#include "NucleonStructure.hpp"
+#include <Tools/StructureFunctions/NucleonStructure.hpp>
 
 #include <cmath>
 #include <string>

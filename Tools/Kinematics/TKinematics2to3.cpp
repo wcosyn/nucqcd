@@ -95,18 +95,18 @@
    End_Html */
 ///////////////////////////////////////////////////////////////////////////
 
-// #include "TMPI.h"
-#include "TKinematics2to3.h"
-#include "ErrorMessage.hpp"
-#include "TLorentzQuaternion.h"
-#include "constants.hpp"
-#include "MathUtil.hpp"
+// #include <Tools/Core/TMPI.hpp>
+#include <Tools/Kinematics/TKinematics2to3.hpp>
+#include <Tools/Core/ErrorMessage.hpp>
+#include <Tools/Core/TLorentzQuaternion.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Tools/Core/MathUtil.hpp>
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
 #include <cstring>
-#include "StringUtil.hpp"
+#include <Tools/Core/StringUtil.hpp>
 #include <algorithm>
 #include <optional>
 #include <vector>

@@ -10,8 +10,8 @@
 
 #include <cstdarg>
 
-#include "GlauberGrid.hpp"
-#include <numint/numint.hpp>
+#include <Glauber/GlauberGrid.hpp>
+#include <Integrator/numint/numint.hpp>
 
 /*! \brief A class for a RMSGA ISI/FSI grid with one particle, exploiting the symmetry
  * 

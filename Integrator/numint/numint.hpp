@@ -27,10 +27,10 @@
 #include <config.h>
 #endif
 
-#include <numint/macros.hpp>
-#include <numint/typedef.hpp>
-#include <numint/numint2adapt.hpp>
-#include <numint/numint2Cuba.hpp>
+#include <Integrator/numint/macros.hpp>
+#include <Integrator/numint/typedef.hpp>
+#include <Integrator/numint/numint2adapt.hpp>
+#include <Integrator/numint/numint2Cuba.hpp>
 
 OPEN_NUMINT_NAMESPACE
 

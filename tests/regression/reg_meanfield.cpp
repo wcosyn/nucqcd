@@ -1,7 +1,7 @@
 // Regression: relativistic mean-field nuclei, wave functions and densities (Glauber/MeanFieldNucleus*).
 #include <test_support.hpp>
 
-#include <MeanFieldNucleusThick.hpp>
+#include <Glauber/MeanFieldNucleusThick.hpp>
 
 #include <sstream>
 #include <string>

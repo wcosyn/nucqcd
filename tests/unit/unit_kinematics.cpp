@@ -2,10 +2,10 @@
 // energy-momentum conservation.
 #include <test_support.hpp>
 
-#include <TElectronKinematics.h>
-#include <TKinematics2to2.h>
-#include <TKinematics2to3WithLabAngles.h>
-#include <constants.hpp>
+#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/Kinematics/TKinematics2to3WithLabAngles.hpp>
+#include <Tools/Core/constants.hpp>
 
 #include <cmath>
 #include <memory>

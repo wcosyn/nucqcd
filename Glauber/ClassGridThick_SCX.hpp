@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <cmath>
-#include "FastParticle.hpp"
+#include <Glauber/FastParticle.hpp>
 #include <iostream>
 #include <cstdio>
 #include <cassert>

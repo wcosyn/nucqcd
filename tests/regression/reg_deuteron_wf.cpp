@@ -2,8 +2,8 @@
 // parametrizations; also pins the sign convention of the D wave.
 #include <test_support.hpp>
 
-#include <OldDeuteron.hpp>
-#include <TDeuteron.h>
+#include <Tools/WaveFunctions/OldDeuteron.hpp>
+#include <Tools/WaveFunctions/TDeuteron.hpp>
 
 #include <memory>
 #include <sstream>

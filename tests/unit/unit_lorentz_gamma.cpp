@@ -1,9 +1,9 @@
 // MePhys: FourVector algebra and Dirac (gamma-matrix) algebra; logic from progs/attic/gammatest/gamma.cpp.
 #include <test_support.hpp>
 
-#include <FourVector.h>
-#include <GammaStructure.h>
-#include <Matrix.h>
+#include <Tools/Core/FourVector.hpp>
+#include <Tools/Core/GammaStructure.hpp>
+#include <Tools/Core/Matrix.hpp>
 
 #include <TLorentzRotation.h>
 #include <TLorentzVector.h>

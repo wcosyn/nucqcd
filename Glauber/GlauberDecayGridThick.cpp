@@ -1,5 +1,5 @@
 #include <cstdlib>
-#include <ErrorMessage.hpp>
+#include <Tools/Core/ErrorMessage.hpp>
 #include <iostream>
 #include <fstream>
 #include <complex>
@@ -7,9 +7,9 @@
 
 using namespace std;
 
-#include "GlauberDecayGridThick.hpp"
-#include <Utilfunctions.hpp>
-#include <AuxFunction.hpp>
+#include <Glauber/GlauberDecayGridThick.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
+#include <Tools/Core/AuxFunction.hpp>
 
 //constructor, calls abstractfsigrid's constructor
 GlauberDecayGridThick::GlauberDecayGridThick(const int r_grid, const int cth_grid, const int phi_grid, MeanFieldNucleusThick * pnucl,

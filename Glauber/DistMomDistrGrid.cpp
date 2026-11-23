@@ -1,5 +1,5 @@
 #include <cstdlib>
-#include <ErrorMessage.hpp>
+#include <Tools/Core/ErrorMessage.hpp>
 #include <iostream>
 #include <fstream>
 #include <gsl/gsl_sf_bessel.h>
@@ -7,17 +7,17 @@
 
 using namespace std;
 
-#include "DistMomDistrGrid.hpp"
-#include "AbstractFsiCTGrid.hpp"
-#include <constants.hpp>
-#include <Utilfunctions.hpp>
-#include <GridCache.hpp>
-#include <AuxFunction.hpp>
-#include <FourVector.h>
-#include <Matrix.h>
-#include <TSpinor.h>
+#include <Glauber/DistMomDistrGrid.hpp>
+#include <Glauber/AbstractFsiCTGrid.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
+#include <Tools/Core/GridCache.hpp>
+#include <Tools/Core/AuxFunction.hpp>
+#include <Tools/Core/FourVector.hpp>
+#include <Tools/Core/Matrix.hpp>
+#include <Tools/Core/TSpinor.hpp>
 #include <TRotation.h>
-#include "TMFSpinor.hpp"
+#include <Glauber/TMFSpinor.hpp>
 
 DistMomDistrGrid::DistMomDistrGrid():
 pgrid(0),

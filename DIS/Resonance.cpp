@@ -1,5 +1,5 @@
-#include "Resonance.hpp"
-#include <constants.hpp>
+#include <DIS/Resonance.hpp>
+#include <Tools/Core/constants.hpp>
 
 using namespace std;
 

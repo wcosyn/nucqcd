@@ -14,8 +14,8 @@
 #include <cstdlib>
 #include <cmath>
 
-#include <constants.hpp>
-#include <NucleonStructure.hpp>
+#include <Tools/Core/constants.hpp>
+#include <Tools/StructureFunctions/NucleonStructure.hpp>
 
 using namespace std;
 

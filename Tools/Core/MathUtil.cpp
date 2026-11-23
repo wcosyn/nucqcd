@@ -1,6 +1,6 @@
 // Compiled with -ffp-contract=off (see Tools/Core/CMakeLists.txt and MathUtil.hpp), so that the rounding
 // is the same as that of ROOT's TDecompLU.
-#include "MathUtil.hpp"
+#include <Tools/Core/MathUtil.hpp>
 
 #include <cmath>
 #include <stdexcept>

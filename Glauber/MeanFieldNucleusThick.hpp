@@ -12,8 +12,8 @@
 #include <string>
 
 
-#include <constants.hpp>
-#include "MeanFieldNucleus.hpp"
+#include <Tools/Core/constants.hpp>
+#include <Glauber/MeanFieldNucleus.hpp>
 
 /*! \brief A Class for a nucleus with mean-field wave functions for the individual nucleons and densities. 
  * 

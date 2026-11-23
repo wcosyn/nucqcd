@@ -1,4 +1,4 @@
-#include "recmosh.h"
+#include <Tools/Core/recmosh.hpp>
 RecMosh::RecMosh(int n1, int l1, int n2, int l2, string path)
 	: n1(n1),
 	  l1(l1),

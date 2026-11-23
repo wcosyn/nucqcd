@@ -1,7 +1,7 @@
 #include "sampler.hpp"
 #include "event.hpp"
 #include <vector>
-#include "MeanFieldNucleusThick.hpp"
+#include <Glauber/MeanFieldNucleusThick.hpp>
 #include "parser.hpp"
 #include "2bodymom.hpp"
 

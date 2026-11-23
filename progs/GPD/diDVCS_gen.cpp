@@ -21,8 +21,8 @@
 #include <partons/modules/gpd/GPDGK16Numerical.h>
 
 
-#include <DiDVCS.hpp>
-#include <constants.hpp>
+#include <GPD_Partons/DiDVCS.hpp>
+#include <Tools/Core/constants.hpp>
 
 
 using namespace std;

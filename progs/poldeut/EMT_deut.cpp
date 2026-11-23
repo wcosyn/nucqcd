@@ -3,10 +3,10 @@
 #include <vector>
 #include <algorithm>
 
-#include <constants.hpp>
-#include <Deut_Conv_EMTLF.hpp>
-#include <Utilfunctions.hpp>
-#include <RunLog.hpp>
+#include <Tools/Core/constants.hpp>
+#include <DIS/Deut_Conv_EMTLF.hpp>
+#include <Tools/Core/Utilfunctions.hpp>
+#include <Tools/Core/RunLog.hpp>
 #include <vector>
 
 using namespace std;

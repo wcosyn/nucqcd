@@ -10,11 +10,11 @@
 #define DEUTERONMOMDISTR_HPP
 
 #include <TVector3.h>
-#include <TDeuteron.h>
-#include <TKinematics2to2.h>
-#include <TInterpolatingWavefunction.h>
-#include <numint/numint.hpp>
-#include <LightConeKin2to2.hpp>
+#include <Tools/WaveFunctions/TDeuteron.hpp>
+#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/WaveFunctions/TInterpolatingWavefunction.hpp>
+#include <Integrator/numint/numint.hpp>
+#include <Tools/Kinematics/LightConeKin2to2.hpp>
 
 /*! \brief Has methods to compute a ton of deuteron momentum distributions (distorted too)
  *
