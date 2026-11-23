@@ -10,7 +10,7 @@
 #define LIGHTCONEKIN2TO3_HPP
 
 #include <string>
-#include <TVector3.h>
+#include <Tools/Core/Vector3.hpp>
 #include <Tools/Core/FourVector.hpp>
 #include <Tools/Kinematics/LightConeKin2to2.hpp>
 
@@ -33,7 +33,7 @@ public:
    * \param[in] vecSpcm [MeV] momentum vector of cm of spectators
    */
   LightConeKin2to3(double massA, double Q2, double massSp1, double massSp2, 
-		   TVector3 &vecA, TVector3 &vecq, TVector3 &vecSp1, TVector3 &vecSp2, TVector3 &vecBeam, TVector3 &vecSpcm); 
+		   nucqcd::Vector3 &vecA, nucqcd::Vector3 &vecq, nucqcd::Vector3 &vecSp1, nucqcd::Vector3 &vecSp2, nucqcd::Vector3 &vecBeam, nucqcd::Vector3 &vecSpcm); 
   /*!Constructor for the collinear case, where hadron and virtual photon are on the same axis, taken to be the z-axis!!!
     *\param massA [MeV] mass of hadron target
     *\param Q2 [MeV^2] minus four-momentum squared of virtual photon (in case this is used for hadrons, put -Mass^2 here)
@@ -47,7 +47,7 @@ public:
    * \param[in] vecSpcm [MeV] momentum vector of cm of spectators
    */
   LightConeKin2to3(double massA, double Q2, double massSp1, double massSp2, 
-		   double pA, double vecq, TVector3 &vecSp1, TVector3 &vecSp2, TVector3 &vecBeam, TVector3 &vecSpcm); 
+		   double pA, double vecq, nucqcd::Vector3 &vecSp1, nucqcd::Vector3 &vecSp2, nucqcd::Vector3 &vecBeam, nucqcd::Vector3 &vecSpcm); 
   /*! Copy Constructor */
   LightConeKin2to3(LightConeKin2to3 &rhs);
   LightConeKin2to3& operator=(LightConeKin2to3 &rhs); /*!< assignment operator */

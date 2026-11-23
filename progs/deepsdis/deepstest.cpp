@@ -67,10 +67,10 @@ int main(int argc, char *argv[])
 //     test.getDeepsAzz(Q2,Wprime,Ein,pr,costhetar,proton,azz,azzfsi,pw,fsi);
 //     cout << costhetar << " " << azz << " " << azzfsi << " " << pw << " " << fsi << endl;
   }
-//   TVector3 sp1(0.,200.,0.);
-//   TVector3 sp2(100.,-100.,100.);
-//   TVector3 spcm=sp1+sp2;
-//   TVector3 beam(5000.*cos(-1.),0.,5000.*sin(-1.));
+//   nucqcd::Vector3 sp1(0.,200.,0.);
+//   nucqcd::Vector3 sp2(100.,-100.,100.);
+//   nucqcd::Vector3 spcm=sp1+sp2;
+//   nucqcd::Vector3 beam(5000.*cos(-1.),0.,5000.*sin(-1.));
 //   LightConeKin2to3 kinkin(nucqcd::mass_he3,2.E06,nucqcd::mass_p,nucqcd::mass_p,0.,4.E03,sp1,sp2,beam,spcm);
 //   string a="AV18";
 //   He3Cross test2("AV18","/home/wim/Code/share","SLAC",proton);

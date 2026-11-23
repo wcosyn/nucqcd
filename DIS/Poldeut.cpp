@@ -2,7 +2,7 @@
 #include <Tools/Core/FourVector.hpp>
 #include <Tools/StructureFunctions/NuclStructure.hpp>
 #include <Tools/StructureFunctions/NucleonStructure.hpp>
-#include <TVector3.h>
+#include <Tools/Core/Vector3.hpp>
 #include <cassert>
 #include <Tools/WaveFunctions/TDeuteron.hpp>
 #include <Tools/Core/constants.hpp>
@@ -188,7 +188,7 @@ void Poldeut::Melosh_rot(double k_perp, double k_plus, double Ek, double &rho_l_
 void Poldeut::getDensities(double knorm, double thetak, double &rhou, double &rho_l_z, double &rho_l_x, double &rho_tensor_u){
 
   
-//   TVector3 kk(200.*sin(1.)*cos(2.),200.*sin(1.)*sin(2.),200.*cos(1.));
+//   nucqcd::Vector3 kk(200.*sin(1.)*cos(2.),200.*sin(1.)*sin(2.),200.*cos(1.));
 //   double U=getU(200.);
 //   double W=getW(200.);
 //   cout << wf.DeuteronPState(2,1,1,kk)*sqrt(4.*PI) << " " << U-(3.*cos(1.)*cos(1.)-1)/sqrt(8.)*W << endl;
@@ -205,7 +205,7 @@ void Poldeut::getDensities(double knorm, double thetak, double &rhou, double &rh
   double U=getU(knorm);
   double W=getW(knorm);
   
-//   TVector3 k(knorm*sin(thetak),0,knorm*cos(thetak));
+//   nucqcd::Vector3 k(knorm*sin(thetak),0,knorm*cos(thetak));
 //   double dens0=0.,densplus=0.,densmin=0.;
 //   for(int i1=-1;i1<=1;i1+=2){
 //     for(int i2=-1;i2<=1;i2+=2){

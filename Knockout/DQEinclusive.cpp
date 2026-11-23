@@ -4,7 +4,7 @@
 #include <gsl/gsl_poly.h>
 #include <Tools/Core/TSpinor.hpp>
 #include <Tools/Core/FourVector.hpp>
-#include <TVector3.h>
+#include <Tools/Core/Vector3.hpp>
 #include <Glauber/FastParticle.hpp>
 #include <cassert>
 #include <gsl/gsl_integration.h>
@@ -219,15 +219,15 @@ void DQEinclusive::planewave_int(numint::vector_d & result, double pperp,
 		complex<double> currentoutplusprime=conj((spinr==-1?us_down:us_up)*Jplusprime*(spini_out==-1?uiprime_down:uiprime_up));
 		complex<double> currentoutminprime=conj((spinr==-1?us_down:us_up)*Jminprime*(spini_out==-1?uiprime_down:uiprime_up));
 
-		complex<double> wavemin=cross.getDeutwf()->DeuteronPState(-2, spini_in, spinr, TVector3(pperp*cosphi,pperp*sinphi,prz[it]));
-		complex<double> wavezero=cross.getDeutwf()->DeuteronPState(0, spini_in, spinr, TVector3(pperp*cosphi,pperp*sinphi,prz[it]));
-		complex<double> waveplus=cross.getDeutwf()->DeuteronPState(2, spini_in, spinr, TVector3(pperp*cosphi,pperp*sinphi,prz[it]));
-		complex<double> wavemin_out=cross.getDeutwf()->DeuteronPState(-2, spini_out, spinr, TVector3(pperp*cosphi,pperp*sinphi,prz[it]));
-		complex<double> wavezero_out=cross.getDeutwf()->DeuteronPState(0, spini_out, spinr, TVector3(pperp*cosphi,pperp*sinphi,prz[it]));
-		complex<double> waveplus_out=cross.getDeutwf()->DeuteronPState(2, spini_out, spinr, TVector3(pperp*cosphi,pperp*sinphi,prz[it]));
-		complex<double> wavemin_out_crossed=cross.getDeutwf()->DeuteronPState(-2, spini_out, spinn, TVector3(-pperp*cosphi,-pperp*sinphi,-prz[it]+qvec));
-		complex<double> wavezero_out_crossed=cross.getDeutwf()->DeuteronPState(0, spini_out, spinn, TVector3(-pperp*cosphi,-pperp*sinphi,-prz[it]+qvec));
-		complex<double> waveplus_out_crossed=cross.getDeutwf()->DeuteronPState(2, spini_out, spinn, TVector3(-pperp*cosphi,-pperp*sinphi,-prz[it]+qvec));
+		complex<double> wavemin=cross.getDeutwf()->DeuteronPState(-2, spini_in, spinr, nucqcd::Vector3(pperp*cosphi,pperp*sinphi,prz[it]));
+		complex<double> wavezero=cross.getDeutwf()->DeuteronPState(0, spini_in, spinr, nucqcd::Vector3(pperp*cosphi,pperp*sinphi,prz[it]));
+		complex<double> waveplus=cross.getDeutwf()->DeuteronPState(2, spini_in, spinr, nucqcd::Vector3(pperp*cosphi,pperp*sinphi,prz[it]));
+		complex<double> wavemin_out=cross.getDeutwf()->DeuteronPState(-2, spini_out, spinr, nucqcd::Vector3(pperp*cosphi,pperp*sinphi,prz[it]));
+		complex<double> wavezero_out=cross.getDeutwf()->DeuteronPState(0, spini_out, spinr, nucqcd::Vector3(pperp*cosphi,pperp*sinphi,prz[it]));
+		complex<double> waveplus_out=cross.getDeutwf()->DeuteronPState(2, spini_out, spinr, nucqcd::Vector3(pperp*cosphi,pperp*sinphi,prz[it]));
+		complex<double> wavemin_out_crossed=cross.getDeutwf()->DeuteronPState(-2, spini_out, spinn, nucqcd::Vector3(-pperp*cosphi,-pperp*sinphi,-prz[it]+qvec));
+		complex<double> wavezero_out_crossed=cross.getDeutwf()->DeuteronPState(0, spini_out, spinn, nucqcd::Vector3(-pperp*cosphi,-pperp*sinphi,-prz[it]+qvec));
+		complex<double> waveplus_out_crossed=cross.getDeutwf()->DeuteronPState(2, spini_out, spinn, nucqcd::Vector3(-pperp*cosphi,-pperp*sinphi,-prz[it]+qvec));
 		  
 		complex<double> dens0=wavemin*conj(wavemin_out)+waveplus*conj(waveplus_out)+wavezero*conj(wavezero_out);
 		complex<double> dens1=wavemin*conj(wavemin_out)+waveplus*conj(waveplus_out)-2.*wavezero*conj(wavezero_out);
@@ -519,29 +519,29 @@ void DQEinclusive::FSI_int(numint::vector_d & result, double pperp1, double qt,
 		      complex<double> currentoutplus_cross=conj((spinr==-1?un2_down_cross:un2_up_cross)*Jplusprime_cross*(spini_out==-1?ui2_down_cross:ui2_up_cross));
 		      complex<double> currentoutmin_cross=conj((spinr==-1?un2_down_cross:un2_up_cross)*Jminprime_cross*(spini_out==-1?ui2_down_cross:ui2_up_cross));
 
-		      complex<double> wavemin=cross.getDeutwf()->DeuteronPState(-2, spini_in, spinr, TVector3(pperp1*cosphi1,pperp1*sinphi1,prz1[it1]));
-		      complex<double> wavezero=cross.getDeutwf()->DeuteronPState(0, spini_in, spinr, TVector3(pperp1*cosphi1,pperp1*sinphi1,prz1[it1]));
-		      complex<double> waveplus=cross.getDeutwf()->DeuteronPState(2, spini_in, spinr, TVector3(pperp1*cosphi1,pperp1*sinphi1,prz1[it1]));
+		      complex<double> wavemin=cross.getDeutwf()->DeuteronPState(-2, spini_in, spinr, nucqcd::Vector3(pperp1*cosphi1,pperp1*sinphi1,prz1[it1]));
+		      complex<double> wavezero=cross.getDeutwf()->DeuteronPState(0, spini_in, spinr, nucqcd::Vector3(pperp1*cosphi1,pperp1*sinphi1,prz1[it1]));
+		      complex<double> waveplus=cross.getDeutwf()->DeuteronPState(2, spini_in, spinr, nucqcd::Vector3(pperp1*cosphi1,pperp1*sinphi1,prz1[it1]));
 		      
-		      complex<double> wavemin_out=cross.getDeutwf()->DeuteronPState(-2, spini_out, spinr, TVector3(pperp1*cosphi1+qt*cosqphi,pperp1*sinphi1+qt*sinqphi,prz2[it2]));
-		      complex<double> wavezero_out=cross.getDeutwf()->DeuteronPState(0, spini_out, spinr, TVector3(pperp1*cosphi1+qt*cosqphi,pperp1*sinphi1+qt*sinqphi,prz2[it2]));
-		      complex<double> waveplus_out=cross.getDeutwf()->DeuteronPState(2, spini_out, spinr, TVector3(pperp1*cosphi1+qt*cosqphi,pperp1*sinphi1+qt*sinqphi,prz2[it2]));
+		      complex<double> wavemin_out=cross.getDeutwf()->DeuteronPState(-2, spini_out, spinr, nucqcd::Vector3(pperp1*cosphi1+qt*cosqphi,pperp1*sinphi1+qt*sinqphi,prz2[it2]));
+		      complex<double> wavezero_out=cross.getDeutwf()->DeuteronPState(0, spini_out, spinr, nucqcd::Vector3(pperp1*cosphi1+qt*cosqphi,pperp1*sinphi1+qt*sinqphi,prz2[it2]));
+		      complex<double> waveplus_out=cross.getDeutwf()->DeuteronPState(2, spini_out, spinr, nucqcd::Vector3(pperp1*cosphi1+qt*cosqphi,pperp1*sinphi1+qt*sinqphi,prz2[it2]));
 
-		      complex<double> wavemin_out_crossed=cross.getDeutwf()->DeuteronPState(-2, spini_out, spinn, TVector3(-pperp1*cosphi1-qt*cosqphi,-pperp1*sinphi1-qt*sinqphi,-prz2[it2]+qvec));
-		      complex<double> wavezero_out_crossed=cross.getDeutwf()->DeuteronPState(0, spini_out, spinn, TVector3(-pperp1*cosphi1-qt*cosqphi,-pperp1*sinphi1-qt*sinqphi,-prz2[it2]+qvec));
-		      complex<double> waveplus_out_crossed=cross.getDeutwf()->DeuteronPState(2, spini_out, spinn, TVector3(-pperp1*cosphi1-qt*cosqphi,-pperp1*sinphi1-qt*sinqphi,-prz2[it2]+qvec));
+		      complex<double> wavemin_out_crossed=cross.getDeutwf()->DeuteronPState(-2, spini_out, spinn, nucqcd::Vector3(-pperp1*cosphi1-qt*cosqphi,-pperp1*sinphi1-qt*sinqphi,-prz2[it2]+qvec));
+		      complex<double> wavezero_out_crossed=cross.getDeutwf()->DeuteronPState(0, spini_out, spinn, nucqcd::Vector3(-pperp1*cosphi1-qt*cosqphi,-pperp1*sinphi1-qt*sinqphi,-prz2[it2]+qvec));
+		      complex<double> waveplus_out_crossed=cross.getDeutwf()->DeuteronPState(2, spini_out, spinn, nucqcd::Vector3(-pperp1*cosphi1-qt*cosqphi,-pperp1*sinphi1-qt*sinqphi,-prz2[it2]+qvec));
 
-		      complex<double> wavemin_off=cross.getDeutwf()->DeuteronPStateOff(-2, spini_in, spinr, TVector3(pperp1*cosphi1,pperp1*sinphi1,prz1[it1]));
-		      complex<double> wavezero_off=cross.getDeutwf()->DeuteronPStateOff(0, spini_in, spinr, TVector3(pperp1*cosphi1,pperp1*sinphi1,prz1[it1]));
-		      complex<double> waveplus_off=cross.getDeutwf()->DeuteronPStateOff(2, spini_in, spinr, TVector3(pperp1*cosphi1,pperp1*sinphi1,prz1[it1]));
+		      complex<double> wavemin_off=cross.getDeutwf()->DeuteronPStateOff(-2, spini_in, spinr, nucqcd::Vector3(pperp1*cosphi1,pperp1*sinphi1,prz1[it1]));
+		      complex<double> wavezero_off=cross.getDeutwf()->DeuteronPStateOff(0, spini_in, spinr, nucqcd::Vector3(pperp1*cosphi1,pperp1*sinphi1,prz1[it1]));
+		      complex<double> waveplus_off=cross.getDeutwf()->DeuteronPStateOff(2, spini_in, spinr, nucqcd::Vector3(pperp1*cosphi1,pperp1*sinphi1,prz1[it1]));
 		      
-		      complex<double> wavemin_out_off=cross.getDeutwf()->DeuteronPStateOff(-2, spini_out, spinr, TVector3(pperp1*cosphi1+qt*cosqphi,pperp1*sinphi1+qt*sinqphi,prz2[it2]));
-		      complex<double> wavezero_out_off=cross.getDeutwf()->DeuteronPStateOff(0, spini_out, spinr, TVector3(pperp1*cosphi1+qt*cosqphi,pperp1*sinphi1+qt*sinqphi,prz2[it2]));
-		      complex<double> waveplus_out_off=cross.getDeutwf()->DeuteronPStateOff(2, spini_out, spinr, TVector3(pperp1*cosphi1+qt*cosqphi,pperp1*sinphi1+qt*sinqphi,prz2[it2]));
+		      complex<double> wavemin_out_off=cross.getDeutwf()->DeuteronPStateOff(-2, spini_out, spinr, nucqcd::Vector3(pperp1*cosphi1+qt*cosqphi,pperp1*sinphi1+qt*sinqphi,prz2[it2]));
+		      complex<double> wavezero_out_off=cross.getDeutwf()->DeuteronPStateOff(0, spini_out, spinr, nucqcd::Vector3(pperp1*cosphi1+qt*cosqphi,pperp1*sinphi1+qt*sinqphi,prz2[it2]));
+		      complex<double> waveplus_out_off=cross.getDeutwf()->DeuteronPStateOff(2, spini_out, spinr, nucqcd::Vector3(pperp1*cosphi1+qt*cosqphi,pperp1*sinphi1+qt*sinqphi,prz2[it2]));
 
-		      complex<double> wavemin_out_crossed_off=cross.getDeutwf()->DeuteronPStateOff(-2, spini_out, spinn, TVector3(-pperp1*cosphi1-qt*cosqphi,-pperp1*sinphi1-qt*sinqphi,-prz2[it2]+qvec));
-		      complex<double> wavezero_out_crossed_off=cross.getDeutwf()->DeuteronPStateOff(0, spini_out, spinn, TVector3(-pperp1*cosphi1-qt*cosqphi,-pperp1*sinphi1-qt*sinqphi,-prz2[it2]+qvec));
-		      complex<double> waveplus_out_crossed_off=cross.getDeutwf()->DeuteronPStateOff(2, spini_out, spinn, TVector3(-pperp1*cosphi1-qt*cosqphi,-pperp1*sinphi1-qt*sinqphi,-prz2[it2]+qvec));
+		      complex<double> wavemin_out_crossed_off=cross.getDeutwf()->DeuteronPStateOff(-2, spini_out, spinn, nucqcd::Vector3(-pperp1*cosphi1-qt*cosqphi,-pperp1*sinphi1-qt*sinqphi,-prz2[it2]+qvec));
+		      complex<double> wavezero_out_crossed_off=cross.getDeutwf()->DeuteronPStateOff(0, spini_out, spinn, nucqcd::Vector3(-pperp1*cosphi1-qt*cosqphi,-pperp1*sinphi1-qt*sinqphi,-prz2[it2]+qvec));
+		      complex<double> waveplus_out_crossed_off=cross.getDeutwf()->DeuteronPStateOff(2, spini_out, spinn, nucqcd::Vector3(-pperp1*cosphi1-qt*cosqphi,-pperp1*sinphi1-qt*sinqphi,-prz2[it2]+qvec));
 
 		      complex<double> dens0=wavemin*conj(wavemin_out)+waveplus*conj(waveplus_out)+wavezero*conj(wavezero_out);
 		      complex<double> dens1=wavemin*conj(wavemin_out)+waveplus*conj(waveplus_out)-2.*wavezero*conj(wavezero_out);
@@ -594,18 +594,18 @@ void DQEinclusive::FSI_int(numint::vector_d & result, double pperp1, double qt,
 		      
 // 		      complex<double> ares0=0.,ares1=0.,ares2=0.,ares3=0.;		      
 // 		      for(int M=-2;M<=2;M+=2){
-// 			complex<double> wf=/*(M==0? -2.:1.)**/cross.getDeutwf()->DeuteronPState(M, spini_in, spinr, TVector3(pperp1*cosphi1,pperp1*sinphi1,prz1[it1]))
+// 			complex<double> wf=/*(M==0? -2.:1.)**/cross.getDeutwf()->DeuteronPState(M, spini_in, spinr, nucqcd::Vector3(pperp1*cosphi1,pperp1*sinphi1,prz1[it1]))
 // 					*conj(cross.getDeutwf()->DeuteronPState(M, spini_out, spinr, 
-// 						TVector3(pperp1*cosphi1+qt*cosqphi,pperp1*sinphi1+qt*sinqphi,prz2[it2])));
-// 			complex<double> wf2=/*(M==0? -2.:1.)**/cross.getDeutwf()->DeuteronPState(M, spini_in, spinr, TVector3(pperp1*cosphi1,pperp1*sinphi1,prz1[it1]))
+// 						nucqcd::Vector3(pperp1*cosphi1+qt*cosqphi,pperp1*sinphi1+qt*sinqphi,prz2[it2])));
+// 			complex<double> wf2=/*(M==0? -2.:1.)**/cross.getDeutwf()->DeuteronPState(M, spini_in, spinr, nucqcd::Vector3(pperp1*cosphi1,pperp1*sinphi1,prz1[it1]))
 // 					*conj(cross.getDeutwf()->DeuteronPState(M, spini_out, spinn, 
-// 						TVector3(-pperp1*cosphi1-qt*cosqphi,-pperp1*sinphi1-qt*sinqphi,-prz2[it2]+qvec)));
-// 			complex<double> wf_off=/*(M==0? -2.:1.)**/cross.getDeutwf()->DeuteronPStateOff(M, spini_in, spinr, TVector3(pperp1*cosphi1,pperp1*sinphi1,prz1[it1]))
+// 						nucqcd::Vector3(-pperp1*cosphi1-qt*cosqphi,-pperp1*sinphi1-qt*sinqphi,-prz2[it2]+qvec)));
+// 			complex<double> wf_off=/*(M==0? -2.:1.)**/cross.getDeutwf()->DeuteronPStateOff(M, spini_in, spinr, nucqcd::Vector3(pperp1*cosphi1,pperp1*sinphi1,prz1[it1]))
 // 					*conj(cross.getDeutwf()->DeuteronPStateOff(M, spini_out, spinr, 
-// 						TVector3(pperp1*cosphi1+qt*cosqphi,pperp1*sinphi1+qt*sinqphi,prz2[it2])));
-// 			complex<double> wf2_off=/*(M==0? -2.:1.)**/cross.getDeutwf()->DeuteronPStateOff(M, spini_in, spinr, TVector3(pperp1*cosphi1,pperp1*sinphi1,prz1[it1]))
+// 						nucqcd::Vector3(pperp1*cosphi1+qt*cosqphi,pperp1*sinphi1+qt*sinqphi,prz2[it2])));
+// 			complex<double> wf2_off=/*(M==0? -2.:1.)**/cross.getDeutwf()->DeuteronPStateOff(M, spini_in, spinr, nucqcd::Vector3(pperp1*cosphi1,pperp1*sinphi1,prz1[it1]))
 // 					*conj(cross.getDeutwf()->DeuteronPStateOff(M, spini_out, spinn, 
-// 						TVector3(-pperp1*cosphi1-qt*cosqphi,-pperp1*sinphi1-qt*sinqphi,-prz2[it2]+qvec)));
+// 						nucqcd::Vector3(-pperp1*cosphi1-qt*cosqphi,-pperp1*sinphi1-qt*sinqphi,-prz2[it2]+qvec)));
 // 			//direct onshell
 // 			ares0+=(Q2*Q2/pow(qvec,4.)*currentin0*currentout0+(Q2/(2.*qvec*qvec)+tanhalfth2)
 // 			  *(currentinmin*currentoutmin+currentinplus*currentoutplus))*wf*directrescatt;
@@ -971,12 +971,12 @@ double DQEinclusive::FSI_intPV(double pz1, double pz2, double pperp1, double ppe
 	      }
 	      complex<double> wftemp=0.;
 	      for(int M=-2;M<=2;M+=2){
-		if(!crossed) wftemp+=cross.getDeutwf()->DeuteronPState(M, spini_in, spinr, TVector3(pperp1*cosphi1,pperp1*sinphi1,pz1))
+		if(!crossed) wftemp+=cross.getDeutwf()->DeuteronPState(M, spini_in, spinr, nucqcd::Vector3(pperp1*cosphi1,pperp1*sinphi1,pz1))
 				*conj(cross.getDeutwf()->DeuteronPState(M, spini_out, spinr, 
-					TVector3(pperp1*cosphi1+qt*cosqphi,pperp1*sinphi1+qt*sinqphi,pz2)));
-		else wftemp+=cross.getDeutwf()->DeuteronPState(M, spini_in, spinr, TVector3(pperp1*cosphi1,pperp1*sinphi1,pz1))
+					nucqcd::Vector3(pperp1*cosphi1+qt*cosqphi,pperp1*sinphi1+qt*sinqphi,pz2)));
+		else wftemp+=cross.getDeutwf()->DeuteronPState(M, spini_in, spinr, nucqcd::Vector3(pperp1*cosphi1,pperp1*sinphi1,pz1))
 				*conj(cross.getDeutwf()->DeuteronPState(M, spini_out, spinn, 
-					TVector3(-pperp1*cosphi1-qt*cosqphi,-pperp1*sinphi1-qt*sinqphi,-pz2+qvec)));
+					nucqcd::Vector3(-pperp1*cosphi1-qt*cosqphi,-pperp1*sinphi1-qt*sinqphi,-pz2+qvec)));
 	      }
 	      result+=wftemp*(Q2*Q2/pow(qvec,4.)*currentin0*currentout0+(Q2/(2.*qvec*qvec)+tanhalfth2)
 		  *(currentinmin*currentoutmin+currentinplus*currentoutplus))*rescatt;
@@ -1220,12 +1220,12 @@ void DQEinclusive::FSI_PVfirst_perp(numint::vector_d & res, double pz1, double p
 	      }
 	      complex<double> wftemp=0.;
 	      for(int M=-2;M<=2;M+=2){
-		if(!crossed) wftemp+=cross.getDeutwf()->DeuteronPState(M, spini_in, spinr, TVector3(pperp1*cosphi1,pperp1*sinphi1,pz1))
+		if(!crossed) wftemp+=cross.getDeutwf()->DeuteronPState(M, spini_in, spinr, nucqcd::Vector3(pperp1*cosphi1,pperp1*sinphi1,pz1))
 				*conj(cross.getDeutwf()->DeuteronPState(M, spini_out, spinr, 
-					TVector3(pperp1*cosphi1+qt*cosqphi,pperp1*sinphi1+qt*sinqphi,pz2)));
-		else wftemp+=cross.getDeutwf()->DeuteronPState(M, spini_in, spinr, TVector3(pperp1*cosphi1,pperp1*sinphi1,pz1))
+					nucqcd::Vector3(pperp1*cosphi1+qt*cosqphi,pperp1*sinphi1+qt*sinqphi,pz2)));
+		else wftemp+=cross.getDeutwf()->DeuteronPState(M, spini_in, spinr, nucqcd::Vector3(pperp1*cosphi1,pperp1*sinphi1,pz1))
 				*conj(cross.getDeutwf()->DeuteronPState(M, spini_out, spinn, 
-					TVector3(-pperp1*cosphi1-qt*cosqphi,-pperp1*sinphi1-qt*sinqphi,-pz2+qvec)));
+					nucqcd::Vector3(-pperp1*cosphi1-qt*cosqphi,-pperp1*sinphi1-qt*sinqphi,-pz2+qvec)));
 	      }
 	      result+=wftemp*(Q2*Q2/pow(qvec,4.)*currentin0*currentout0+(Q2/(2.*qvec*qvec)+tanhalfth2)
 		*(currentinmin*currentoutmin+currentinplus*currentoutplus))*rescatt;

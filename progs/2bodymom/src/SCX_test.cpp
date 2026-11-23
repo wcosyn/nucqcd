@@ -149,8 +149,8 @@ void testIntegrand(){
 	e.type2 = 0;
 	e.mass1 = 938.5;
 	e.mass2 = 938.5;
-	e.p1    = TVector3(0.,0.,1000.);
-	e.p2    = TVector3(0.,0.,1000.);
+	e.p1    = nucqcd::Vector3(0.,0.,1000.);
+	e.p2    = nucqcd::Vector3(0.,0.,1000.);
 	
 	MeanFieldNucleusThick nuc(MeanFieldNucleus::Fe,SHAREDIR);
 	double result = 0.;

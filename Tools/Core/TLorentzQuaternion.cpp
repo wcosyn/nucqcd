@@ -9,9 +9,9 @@
 #include <Tools/Core/TLorentzQuaternion.hpp>
  #include <Tools/Core/constants.hpp>
 #include <complex>
-#include <TRotation.h>
-#include <TLorentzVector.h>
-#include <TVector3.h>
+#include <Tools/Core/Rotation.hpp>
+#include <Tools/Core/LorentzVector.hpp>
+#include <Tools/Core/Vector3.hpp>
 #include <cmath>
 #include <cassert>
 #include <iostream>
@@ -111,7 +111,7 @@ TLorentzQuaternion::TLorentzQuaternion()
 //_____________________________________________________________________
 
 //_____________________________________________________________________
-TLorentzQuaternion::TLorentzQuaternion(const double theta, const TVector3& axis)
+TLorentzQuaternion::TLorentzQuaternion(const double theta, const nucqcd::Vector3& axis)
   : fQ0(complex<double>(1.)), fQ1(complex<double>(0.)),
     fQ2(complex<double>(0.)), fQ3(complex<double>(0.))
 {
@@ -120,20 +120,20 @@ TLorentzQuaternion::TLorentzQuaternion(const double theta, const TVector3& axis)
 }
 
 //_____________________________________________________________________
-TLorentzQuaternion::TLorentzQuaternion(const TRotation& rotation)
+TLorentzQuaternion::TLorentzQuaternion(const nucqcd::Rotation& rotation)
   : fQ0(complex<double>(1.)), fQ1(complex<double>(0.)),
     fQ2(complex<double>(0.)), fQ3(complex<double>(0.))
 {
   // Initialize rotation
   double theta;
-  TVector3 axis;
+  nucqcd::Vector3 axis;
   rotation.AngleAxis(theta,axis);
 
   SetRotation(theta,axis);
 }
 
 //_____________________________________________________________________
-TLorentzQuaternion::TLorentzQuaternion(const TVector3& beta)
+TLorentzQuaternion::TLorentzQuaternion(const nucqcd::Vector3& beta)
   : fQ0(complex<double>(1.)), fQ1(complex<double>(0.)),
     fQ2(complex<double>(0.)), fQ3(complex<double>(0.))
 {
@@ -173,13 +173,13 @@ void TLorentzQuaternion::SetBoost(const double betaX,
 }
 
 //_____________________________________________________________________
-void TLorentzQuaternion::SetRotation(const double theta, const TVector3& axis)
+void TLorentzQuaternion::SetRotation(const double theta, const nucqcd::Vector3& axis)
 {
   // Create a rotation over angle 'theta' around axis defined by 'axis'
   const double norm = axis.Mag();
   if( fabs(norm)<nucqcd::strange_underflow ) {
     cerr << "ERROR in TLorentzQuaternion::SetRotation(const double, "
-	 << "const TVector3&): "
+	 << "const nucqcd::Vector3&): "
 	 << "invalid rotation axis." << endl;
     assert(1==0);
   }
@@ -313,7 +313,7 @@ TLorentzQuaternion& TLorentzQuaternion::Transform(const TLorentzQuaternion& rhs)
 }
 
 //_____________________________________________________________________
-TLorentzQuaternion& TLorentzQuaternion::Boost(const TVector3& boostVector)
+TLorentzQuaternion& TLorentzQuaternion::Boost(const nucqcd::Vector3& boostVector)
 {
   // Chain pure Lorentz boost to transformation.
   return Transform( TLorentzQuaternion(boostVector) );
@@ -330,7 +330,7 @@ TLorentzQuaternion& TLorentzQuaternion::Boost(const double betaX,
 
 //_____________________________________________________________________
 TLorentzQuaternion& TLorentzQuaternion::Rotate(const double theta,
-					       const TVector3& axis)
+					       const nucqcd::Vector3& axis)
 {
   // Chain a rotation over 'theta' around 'axis' to transformation
   return Transform( TLorentzQuaternion(theta,axis) );
@@ -338,7 +338,7 @@ TLorentzQuaternion& TLorentzQuaternion::Rotate(const double theta,
 
 //_____________________________________________________________________
 TLorentzQuaternion& TLorentzQuaternion::Rotate(const double theta,
-					       const TVector3* axis)
+					       const nucqcd::Vector3* axis)
 {
   // Chain a rotation over 'theta' around 'axis' to transformation
   return Transform( TLorentzQuaternion(theta,*axis) );
@@ -348,25 +348,25 @@ TLorentzQuaternion& TLorentzQuaternion::Rotate(const double theta,
 TLorentzQuaternion& TLorentzQuaternion::RotateX(const double theta)
 {
   // Chain a rotation over 'theta' around x-axis to transformation
-  return Transform( TLorentzQuaternion(theta,TVector3(1.,0.,0.)) );
+  return Transform( TLorentzQuaternion(theta,nucqcd::Vector3(1.,0.,0.)) );
 }
 
 //_____________________________________________________________________
 TLorentzQuaternion& TLorentzQuaternion::RotateY(const double theta)
 {
   // Chain a rotation over 'theta' around y-axis to transformation
-  return Transform( TLorentzQuaternion(theta,TVector3(0.,1.,0.)) );
+  return Transform( TLorentzQuaternion(theta,nucqcd::Vector3(0.,1.,0.)) );
 }
 
 //_____________________________________________________________________
 TLorentzQuaternion& TLorentzQuaternion::RotateZ(const double theta)
 {
   // Chain a rotation over 'theta' around z-axis to transformation
-  return Transform( TLorentzQuaternion(theta,TVector3(0.,0.,1.)) );
+  return Transform( TLorentzQuaternion(theta,nucqcd::Vector3(0.,0.,1.)) );
 }
 
 //_____________________________________________________________________
-TLorentzVector TLorentzQuaternion::operator*(const TLorentzVector& v) const
+nucqcd::LorentzVector TLorentzQuaternion::operator*(const nucqcd::LorentzVector& v) const
 {
   // Transform the 4-vector
 
@@ -380,18 +380,18 @@ TLorentzVector TLorentzQuaternion::operator*(const TLorentzVector& v) const
   TLorentzQuaternion qp = (*this) * q * Hermitian(*this);
 
   // Go back from quaternion to 4-vector
-  return TLorentzVector(qp.fQ1.imag(),
+  return nucqcd::LorentzVector(qp.fQ1.imag(),
 			qp.fQ2.imag(),
 			qp.fQ3.imag(),
 			qp.fQ0.real());
 }
 
 //_____________________________________________________________________
-TVector3 TLorentzQuaternion::operator*(const TVector3& v) const
+nucqcd::Vector3 TLorentzQuaternion::operator*(const nucqcd::Vector3& v) const
 {
   // Transform the 3-vector
-  TLorentzVector vp = (*this) * TLorentzVector(v.X(),v.Y(),v.Z(),0.);
-  return TVector3(vp.X(),vp.Y(),vp.Z());
+  nucqcd::LorentzVector vp = (*this) * nucqcd::LorentzVector(v.X(),v.Y(),v.Z(),0.);
+  return nucqcd::Vector3(vp.X(),vp.Y(),vp.Z());
 }
 
 //_____________________________________________________________________
@@ -441,8 +441,8 @@ void TLorentzQuaternion::Decompose(TLorentzQuaternion& rotation,
 }
 
 //_____________________________________________________________________
-void TLorentzQuaternion::Decompose(double& theta, TVector3& axis,
-				   TVector3& boost) const
+void TLorentzQuaternion::Decompose(double& theta, nucqcd::Vector3& axis,
+				   nucqcd::Vector3& boost) const
 {
   // Decompose the current Lorentz transformation into a rotation + boost.
   // The rotation is given as an angle 'theta' with its rotation axis.
@@ -458,11 +458,11 @@ void TLorentzQuaternion::Decompose(double& theta, TVector3& axis,
 				+r.fQ3.real()*r.fQ3.real());
   theta = 2.*atan2(sintheta2,r.fQ0.real());
   if( fabs(sintheta2)>nucqcd::strange_underflow )
-    axis = TVector3(r.fQ1.real()/sintheta2,
+    axis = nucqcd::Vector3(r.fQ1.real()/sintheta2,
 		    r.fQ2.real()/sintheta2,
 		    r.fQ3.real()/sintheta2);
   else 
-    axis = TVector3(0.,0.,1.);
+    axis = nucqcd::Vector3(0.,0.,1.);
     
   // Find the boost vector
   const double sinhksi2 = sqrt(b.fQ1.imag()*b.fQ1.imag()
@@ -470,9 +470,9 @@ void TLorentzQuaternion::Decompose(double& theta, TVector3& axis,
 			       +b.fQ3.imag()*b.fQ3.imag());
   const double beta = tanh(2.*log(b.fQ0.real()+sinhksi2));
   if( fabs(sinhksi2)>nucqcd::strange_underflow)
-    boost = TVector3(beta*b.fQ1.imag()/sinhksi2,
+    boost = nucqcd::Vector3(beta*b.fQ1.imag()/sinhksi2,
 		     beta*b.fQ2.imag()/sinhksi2,
 		     beta*b.fQ3.imag()/sinhksi2 );
   else 
-    boost = TVector3(0.,0.,0.);
+    boost = nucqcd::Vector3(0.,0.,0.);
 }

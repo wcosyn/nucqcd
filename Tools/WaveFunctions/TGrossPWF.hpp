@@ -55,8 +55,8 @@ class TGrossPWF : public TWavefunctionImplementation
   virtual double GetWp(double p) const; ///< [MeV^-3/2] D wave w (L=2) in momentum space \param p [MeV]
   virtual double GetVTp(double p) const; ///< [MeV^-3/2] spin-triplet P wave (L=1) in momentum space \param p [MeV]
   virtual double GetVSp(double p) const; ///< [MeV^-3/2] spin-singlet P wave (L=1) in momentum space \param p [MeV]
-  virtual double GetUpoff(const TVector3& p) const; ///< [MeV^-3/2] off-shell S-wave part, see TDeuteron::Wavefunction::DeuteronPStateOff \param p [MeV]
-  virtual double GetWpoff1(const TVector3& p) const; ///< [MeV^-3/2] first off-shell D-wave part \param p [MeV]
+  virtual double GetUpoff(const nucqcd::Vector3& p) const; ///< [MeV^-3/2] off-shell S-wave part, see TDeuteron::Wavefunction::DeuteronPStateOff \param p [MeV]
+  virtual double GetWpoff1(const nucqcd::Vector3& p) const; ///< [MeV^-3/2] first off-shell D-wave part \param p [MeV]
   virtual double GetWpoff2(double pperp2) const; ///< [MeV^-3/2] second off-shell D-wave part \param pperp2 [MeV^2]
 
  protected:

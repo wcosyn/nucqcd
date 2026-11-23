@@ -1,6 +1,6 @@
 #include <Knockout/PionTCross.hpp>
 #include <Tools/Core/AuxFunction.hpp>
-#include <TRotation.h>
+#include <Tools/Core/Rotation.hpp>
 #include <Tools/Core/Utilfunctions.hpp>
 
 using namespace std;
@@ -67,8 +67,8 @@ void PionTCross::getMomdistr(double *results, double ppi, double thetapi, double
     pfsigrid[shell]->clearKnockout();
   }
   //update the grid if necessary
-  TRotation rot;
-  rot.Rotate(-thetapi,TVector3(0.,1.,0.));
+  nucqcd::Rotation rot;
+  rot.Rotate(-thetapi,nucqcd::Vector3(0.,1.,0.));
   double key=double(shell)/getNucleusthick().getTotalLevels()+int(round(thetapi*10.));
   map<double,DistMomDistrGrid>::iterator it=distgridmap.find(key);
 //   cout << key << " " << thetarho << " " << shell  << endl;

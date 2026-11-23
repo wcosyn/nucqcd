@@ -22,7 +22,7 @@ AbstractFsiCTDecayGrid::~AbstractFsiCTDecayGrid(){
 }
 
 //interpolation functions
-complex<double> AbstractFsiCTDecayGrid::getFsiDecayGridFull_interpvec(const TVector3 &rvec){
+complex<double> AbstractFsiCTDecayGrid::getFsiDecayGridFull_interpvec(const nucqcd::Vector3 &rvec){
   return getFsiDecayGridFull_interp3(rvec.Mag(),rvec.CosTheta(),rvec.Phi());
 }
 
@@ -41,7 +41,7 @@ complex<double> AbstractFsiCTDecayGrid::getFsiDecayGridFull_interp1(const double
   return getFsiDecayGridFull_interp();
 }
 
-complex<double> AbstractFsiCTDecayGrid::getFsiCtDecayGridFull_interpvec(const TVector3 &rvec){
+complex<double> AbstractFsiCTDecayGrid::getFsiCtDecayGridFull_interpvec(const nucqcd::Vector3 &rvec){
   return getFsiCtDecayGridFull_interp3(rvec.Mag(),rvec.CosTheta(),rvec.Phi());
 }
 

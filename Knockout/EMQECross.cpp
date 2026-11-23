@@ -406,7 +406,7 @@ void EMQECross::getDensr(std::vector<double> &densr, const TKinematics2to2 &tk, 
 
   FourVector<double> q(tk.GetWlab(),-tk.GetKlab()*sintheta,0.,tk.GetKlab()*costheta);
   FourVector<double> pf(sqrt(tk.GetHyperonMass()*tk.GetHyperonMass()+tk.GetPYlab()*tk.GetPYlab()),0.,0.,tk.GetPYlab());
-  TVector3 pm(-q[1],0.,pf[3]-q[3]);
+  nucqcd::Vector3 pm(-q[1],0.,pf[3]-q[3]);
   Matrix<1,4> spinoroutup, spinoroutdown;
   spinoroutdown=TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kUnity));
   spinoroutup=TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity)); 
@@ -455,7 +455,7 @@ void EMQECross::getDensr(std::vector<double> &densr, const TKinematics2to2 &tk, 
 }
 
 void EMQECross::klaas_densr(numint::vector_d & results, double costheta, double phi, EMQECross & cross, int total,
-	      AbstractFsiGrid *grid, TVector3 &pm, Matrix<1,4> &spinordown, Matrix<1,4> &spinorup,
+	      AbstractFsiGrid *grid, nucqcd::Vector3 &pm, Matrix<1,4> &spinordown, Matrix<1,4> &spinorup,
 	      std::complex<double>  **phid, double r, int shellindex){
   results=numint::vector_d(total,0.);
   double sintheta=sqrt(1.-costheta*costheta);
@@ -463,7 +463,7 @@ void EMQECross::klaas_densr(numint::vector_d & results, double costheta, double 
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
   //includes phase space!
-  complex<double> exp_pr=r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(pm*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
+  complex<double> exp_pr=r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(pm*nucqcd::Vector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
   for(int m=1;m<=cross.getPnucl()->getJ_array()[shellindex];m+=2){
     TMFSpinor wave(*(cross.getPnucl()),shellindex,m,r,costheta,phi);
     grid->clearKnockout();
@@ -501,7 +501,7 @@ void EMQECross::getDensr_ctheta(std::vector<double> &densr, const TKinematics2to
 
   FourVector<double> q(tk.GetWlab(),-tk.GetKlab()*sintheta,0.,tk.GetKlab()*costheta);
   FourVector<double> pf(sqrt(tk.GetHyperonMass()*tk.GetHyperonMass()+tk.GetPYlab()*tk.GetPYlab()),0.,0.,tk.GetPYlab());
-  TVector3 pm(-q[1],0.,pf[3]-q[3]);
+  nucqcd::Vector3 pm(-q[1],0.,pf[3]-q[3]);
   Matrix<1,4> spinoroutup, spinoroutdown;
   spinoroutdown=TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kUnity));
   spinoroutup=TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity)); 
@@ -551,7 +551,7 @@ void EMQECross::getDensr_ctheta(std::vector<double> &densr, const TKinematics2to
 }
 
 void EMQECross::klaas_densr_ctheta(numint::vector_d & results, double phi, EMQECross & cross, int total,
-	      AbstractFsiGrid *grid, TVector3 &pm, Matrix<1,4> &spinordown, Matrix<1,4> &spinorup,
+	      AbstractFsiGrid *grid, nucqcd::Vector3 &pm, Matrix<1,4> &spinordown, Matrix<1,4> &spinorup,
 	      std::complex<double>  **phid, double r, double costheta, int shellindex){
   results=numint::vector_d(total,0.);
   double sintheta=sqrt(1.-costheta*costheta);
@@ -559,7 +559,7 @@ void EMQECross::klaas_densr_ctheta(numint::vector_d & results, double phi, EMQEC
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
   //includes phase space!
-  complex<double> exp_pr=r*sintheta*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(pm*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
+  complex<double> exp_pr=r*sintheta*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(pm*nucqcd::Vector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
   for(int m=1;m<=cross.getPnucl()->getJ_array()[shellindex];m+=2){
     TMFSpinor wave(*(cross.getPnucl()),shellindex,m,r,costheta,phi);
     grid->clearKnockout();
@@ -598,7 +598,7 @@ void EMQECross::getPhid(std::vector<complex<double> > &phid, const TKinematics2t
 
   FourVector<double> q(tk.GetWlab(),-tk.GetKlab()*sintheta,0.,tk.GetKlab()*costheta);
   FourVector<double> pf(sqrt(tk.GetHyperonMass()*tk.GetHyperonMass()+tk.GetPYlab()*tk.GetPYlab()),0.,0.,tk.GetPYlab());
-  TVector3 pm(-q[1],0.,pf[3]-q[3]);
+  nucqcd::Vector3 pm(-q[1],0.,pf[3]-q[3]);
   Matrix<1,4> spinorout;
   if(ms==-1) spinorout=TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kUnity));
   else spinorout=TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity)); 
@@ -634,7 +634,7 @@ void EMQECross::getPhid(std::vector<complex<double> > &phid, const TKinematics2t
 }
 
 void EMQECross::klaas_phid(numint::vector_z & results, double r, double costheta, double phi, EMQECross & cross, int total,
-	      AbstractFsiGrid *grid, TVector3 &pm, Matrix<1,4> &spinor, int shell, int m){
+	      AbstractFsiGrid *grid, nucqcd::Vector3 &pm, Matrix<1,4> &spinor, int shell, int m){
   results=numint::vector_z(total,0.);
   double sintheta=sqrt(1.-costheta*costheta);
   
@@ -642,7 +642,7 @@ void EMQECross::klaas_phid(numint::vector_z & results, double r, double costheta
   sincos(phi,&sinphi,&cosphi);
   TMFSpinor wave(*(cross.getPnucl()),shell,m,r,costheta,phi);
   //includes phase space!
-  complex<double> exp_pr=r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(pm*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
+  complex<double> exp_pr=r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(pm*nucqcd::Vector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
   results[0]= exp_pr*(spinor*wave);
   for(int i=1;i<total; ++i) results[i] = results[0];
   for(int i=0;i<(total-1);++i) results[i]*=grid->getFsiGridN_interp3(i,r,costheta,phi);

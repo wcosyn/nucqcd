@@ -27,7 +27,7 @@ same PR.
 | 6 | Structural refactors | 🔶 done: constants macros, `NuclStructure` merge, code layout items 1–3 (`Tools` split, prefixed includes, `.hpp`), `Model`/`Cross` renamed; MPI retired; to do: namespace, Glauber grids, model selection, integrators, long files |
 | 7 | Unbundle Cuba and cubature | ⬜ (can be done any time after step 2) |
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
-| 9 | Decouple from ROOT where possible | 🔶 phases 1 (#44), 2 (#45), 3 and 4a (vector types) done; 4b (conversion), 5, 6 to do |
+| 9 | Decouple from ROOT where possible | 🔶 phases 1–4 done (#44, #45, #50, #55, 4b); the libraries include no ROOT header; 5 (build) and 6 (programs) to do |
 | 10 | LHAPDF interface for the nucleon structure functions | ✅ done (#46), including MSTW through LHAPDF |
 | 11 | Run bookkeeping (provenance) for all programs | 🔶 part 1 (design, `RunLog`) done; `Bookkeep` replaced in its 8 programs; `RunLog` in the other programs to do |
 
@@ -35,22 +35,20 @@ same PR.
 
 *Updated 2026-11-23.*
 
-**Done recently** (PRs #44–#54 and the phase 4a PR): ROOT decoupling phases 1–3; step 10 (LHAPDF);
+**Done recently** (PRs #44–#55 and the phase 4b PR): ROOT decoupling phases 1–3; step 10 (LHAPDF);
 He3 fixes; step 11 part 1 (`RunLog`); step 6 code layout: `Tools` split into Core, Kinematics,
 WaveFunctions and StructureFunctions (#52), then includes as paths from the repository root, `.hpp`
 as the only extension, and `Model`/`Cross` renamed to `EMQEHadronCurrent`/`EMQECross` (#53); MPI
-retired (`TMPI` and `rhod`/`rhottest` to `progs/attic/mpi`, #54); ROOT phase 4a: own vector and
-Lorentz types, bitwise equal to ROOT.
+retired (`TMPI` and `rhod`/`rhottest` to `progs/attic/mpi`, #54); ROOT phase 4: own vector and
+Lorentz types, bitwise equal to ROOT (#55), and all code converted to them.
 
-**Recommended next step:** ROOT phase 4b: convert the code to the new `nucqcd::Vector3`,
-`LorentzVector`, `Rotation` and `LorentzRotation` (phase 4a added them, bitwise equal to ROOT),
-library by library, starting with the Tools kinematics and spinors; add `namespace nucqcd` to the
-classes touched where that stays small.
+**Recommended next step:** ROOT phase 5: the libraries include no ROOT header any more, so make
+ROOT optional in the build (libraries and most tests without ROOT; `unit_vectors` and the programs
+that need ROOT only when it is found), then phase 6 (programs). `namespace nucqcd` for the other
+classes (code layout item 4) can follow class by class.
 
-Phase 4b touches ~700 uses in the libraries.
-
-**After that:** step 11 part 2 (`RunLog` in the other ~69 programs, `// ` headers to `# `) together with ROOT phase 6 (programs), and ROOT phase 5
-(ROOT optional in the build).
+**After that:** step 11 part 2 (`RunLog` in the other ~69 programs, `// ` headers to `# `), together
+with ROOT phase 6 (programs).
 
 **Open choices for the author:** the license (step 8, see the item there); the PDG constants update (changes values); whether to unbundle Cuba
 (step 7); the README (step 8) comes last.
@@ -793,11 +791,27 @@ standard) from everything that only computes cross sections.
      That also means the converted code cannot be guaranteed bitwise equal at every call site; the
      regression references are the check there (expected bitwise or within ~1e-14). The test needs
      ROOT and stays as long as ROOT is available.
-   - [ ] **4b: convert the code**, library by library (Tools kinematics and spinors, then Glauber,
-     Knockout, DIS, GPD_Partons; then the programs in phase 6), with the regression and slow tests
-     after each. `FourVector.hpp`'s `ToFourVector`/`ToLorentzVector` switch to `nucqcd::LorentzVector`
-     with the Tools conversion. Add `namespace nucqcd` to the classes touched (code layout item 4)
-     where it does not double the size of the change.
+   - [x] **4b: convert the code** (done 2026-11-23). One scripted rename over the whole tree
+     (libraries, programs, tests; line endings kept): `TVector3`, `TVector2`, `TLorentzVector`,
+     `TRotation`, `TLorentzRotation` → `nucqcd::Vector3`, `Vector2`, `LorentzVector`, `Rotation`,
+     `LorentzRotation`, their ROOT includes → `Tools/Core/{Vector3,LorentzVector,Rotation}.hpp`,
+     and forward declarations → `namespace nucqcd { class ...; }` (100 files, ~980 lines). Done in one
+     go rather than library by library because the Tools classes return these types to everything
+     else. Besides the rename: `TSpinor.cpp` used `Double_t` (now `double`); two files had relied on
+     the ROOT headers for `<cstring>`/`<iterator>`; the dictionary-era `#ifdef ROOT_Rtypes` blocks in
+     `TSpinor.hpp`/`TLorentzQuaternion.hpp` (full includes when a ROOT header came first, forward
+     declarations otherwise) now always forward-declare. `progs/GPD/diDVCS_gen_gridonly.cpp` links
+     only ROOT and stays with ROOT's types (phase 6). No other method was missing. **The libraries
+     now include no ROOT header.** Results: all tests pass with unchanged references. Re-baselining
+     to compare all digits: every value computed without integration is bitwise the same; the
+     adaptive 3D integrals of `reg_eep_planewave` (A(e,e'p) plane wave, precision 1e-5) moved by
+     1e-15 to 3e-11 relative (54 of the 72 `_pw` values; the 18 `_free` values, without integration, are unchanged) and three
+     `reg_glauber_grid` values by ≤ 7e-16: last-bit differences where the compiler contracts
+     differently into fused multiply-adds at inline call sites (see 4a), slightly amplified by the
+     adaptive subdivision. (`reg_inclusive_dis` and `reg_nucleon_structure` re-baseline differently
+     from their references on this machine on master too, at 1e-15: not from this change.) Cached
+     Glauber grids stay valid (last-bit differences only). `namespace nucqcd` for the other classes
+     (code layout item 4) is still to do.
 5. [ ] **Build system.** `find_package(ROOT)` becomes optional; the `root_libs` interface target is
    linked only by programs that need it; the libraries and tests no longer link ROOT. The
    `ROOTConfig`/`thisroot.sh` paragraph in CLAUDE.md and the README change accordingly.

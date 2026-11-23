@@ -1,9 +1,9 @@
 #include <DIS/DeuteronCross.hpp>
 #include <fstream>
-#include <TLorentzRotation.h>
+#include <Tools/Core/Rotation.hpp>
 #include <Tools/Core/FourVector.hpp>
 #include <Tools/StructureFunctions/NuclStructure.hpp>
-#include <TVector3.h>
+#include <Tools/Core/Vector3.hpp>
 #include <cassert>
 
 using namespace std;
@@ -18,7 +18,7 @@ structure(proton,struc_name),
 strucname(struc_name)
 {
 //   for(int i=0;i<200;i+=5){
-//     TVector3 p(i,0.,0.);
+//     nucqcd::Vector3 p(i,0.,0.);
 //     double E=sqrt(p.Mag2()+nucqcd::mass_p*nucqcd::mass_p);
 //     double alpha=2.*(E-p[2])/nucqcd::mass_d; //lightcone alpha_s=(E-p_z)/M_n
 //     double pt2=p[0]*p[0]+p[1]*p[1];
@@ -62,7 +62,7 @@ double DeuteronCross::getavgBonus(TKinematics2to2 &kin,TElectronKinematics &elec
   elec.GetLeptonVectors(kin,k_in,k_out);
   double costhetap=kin.GetCosthklab();
   double sinthetap=sqrt(1.-costhetap*costhetap);
-  TLorentzRotation transf(kin.GetPklab()*sinthetap/kin.GetEklab(),0.,kin.GetPklab()*costhetap/kin.GetEklab());
+  nucqcd::LorentzRotation transf(kin.GetPklab()*sinthetap/kin.GetEklab(),0.,kin.GetPklab()*costhetap/kin.GetEklab());
   FourVector<double> k_in_transf=transf*k_in;
   FourVector<double> k_out_transf=transf*k_out;
   double thetae_transf=acos((k_in_transf[1]*k_out_transf[1]+k_in_transf[2]*k_out_transf[2]
@@ -455,8 +455,8 @@ void DeuteronCross::getDeepsresultLC(double Q2, double W, double Ein, double pr,
   planewave = getavgVNALabCross(kin,*elec,1,Einoff,1,0.)/*/frontdeeps/dxprimedx/Er/nucqcd::hbarc/nucqcd::hbarc/1.E10*/;
   fsi= getavgVNALabCross(kin,*elec,0,Einoff,1,0.)/*/frontdeeps/dxprimedx/Er/nucqcd::hbarc/nucqcd::hbarc/1.E10*/;
 
-  TVector3 vecps(pr*sqrt(1-costhetar*costhetar),0.,-prz);
-  TVector3 veckin(Ein*sin(thetain),0.,-Ein*cos(thetain));
+  nucqcd::Vector3 vecps(pr*sqrt(1-costhetar*costhetar),0.,-prz);
+  nucqcd::Vector3 veckin(Ein*sin(thetain),0.,-Ein*cos(thetain));
   
   LightConeKin2to2 kinLC(nucqcd::mass_d,Q2,massr,0.,-qvec,vecps,veckin);
   double planewaveLC = getavgLCCross(kinLC,1);

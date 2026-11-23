@@ -9,20 +9,13 @@
 #ifndef LORENTZQUATERNION_H
 #define LORENTZQUATERNION_H
 
-// Include statements for classes that could be merely forward declared
-// but need a full declaration to allow the Dict.cpp file to be compiled. 
-#ifdef ROOT_Rtypes
-#include <TLorentzVector.h>
-#include <TVector3.h>
-#else
-class TLorentzVector;
-class TVector3;
-#endif
+namespace nucqcd { class LorentzVector; }
+namespace nucqcd { class Vector3; }
 
 #include <complex>
 
 // Forward declarations
-class TRotation;
+namespace nucqcd { class Rotation; }
 
 /*! \brief Lorentz transformation (boosts and rotations) as a biquaternion Q = [Q0, Q1, Q2, Q3]
  *
@@ -34,15 +27,15 @@ class TLorentzQuaternion
 {
  public:
   TLorentzQuaternion(); ///< identity transformation
-  TLorentzQuaternion(const double, const TVector3&); ///< rotation over an angle [rad] around an axis
-  TLorentzQuaternion(const TRotation&); ///< rotation
-  TLorentzQuaternion(const TVector3&); ///< pure boost with velocity beta
+  TLorentzQuaternion(const double, const nucqcd::Vector3&); ///< rotation over an angle [rad] around an axis
+  TLorentzQuaternion(const nucqcd::Rotation&); ///< rotation
+  TLorentzQuaternion(const nucqcd::Vector3&); ///< pure boost with velocity beta
   TLorentzQuaternion(const double betaX, const double betaY, const double betaZ); ///< pure boost with velocity (betaX, betaY, betaZ)
   
-  TLorentzQuaternion& Boost(const TVector3&); ///< chains a pure boost
+  TLorentzQuaternion& Boost(const nucqcd::Vector3&); ///< chains a pure boost
   TLorentzQuaternion& Boost(const double,const double,const double); ///< chains a pure boost with velocity (betaX, betaY, betaZ)
-  TLorentzQuaternion& Rotate(const double, const TVector3&); ///< chains a rotation over an angle [rad] around an axis
-  TLorentzQuaternion& Rotate(const double, const TVector3*); ///< chains a rotation over an angle [rad] around an axis
+  TLorentzQuaternion& Rotate(const double, const nucqcd::Vector3&); ///< chains a rotation over an angle [rad] around an axis
+  TLorentzQuaternion& Rotate(const double, const nucqcd::Vector3*); ///< chains a rotation over an angle [rad] around an axis
   TLorentzQuaternion& RotateX(const double); ///< chains a rotation around the x axis [rad]
   TLorentzQuaternion& RotateY(const double); ///< chains a rotation around the y axis [rad]
   TLorentzQuaternion& RotateZ(const double); ///< chains a rotation around the z axis [rad]
@@ -57,20 +50,20 @@ class TLorentzQuaternion
   static TLorentzQuaternion Hermitian(const TLorentzQuaternion&); ///< Hermitian conjugate
 
   TLorentzQuaternion operator*(const TLorentzQuaternion&) const; ///< quaternion product (chained transformation)
-  TLorentzVector operator*(const TLorentzVector&) const; ///< transforms a four-vector
-  TVector3 operator*(const TVector3&) const; ///< transforms a three-vector
+  nucqcd::LorentzVector operator*(const nucqcd::LorentzVector&) const; ///< transforms a four-vector
+  nucqcd::Vector3 operator*(const nucqcd::Vector3&) const; ///< transforms a three-vector
   TLorentzQuaternion& operator*=(const TLorentzQuaternion&); ///< a *= b sets a = a*b
   TLorentzQuaternion& Transform(const TLorentzQuaternion&); ///< a.Transform(b) sets a = b*a
 
   bool IsIdentity() const; ///< is this the identity?
   void Decompose(TLorentzQuaternion& rotation, TLorentzQuaternion& boost) const; ///< decomposes into a rotation and a boost (Lambek 1995)
-void Decompose(double& theta, TVector3& axis, TVector3& boost) const; ///< decomposes into a rotation (angle [rad] and axis) and a boost (velocity)
+void Decompose(double& theta, nucqcd::Vector3& axis, nucqcd::Vector3& boost) const; ///< decomposes into a rotation (angle [rad] and axis) and a boost (velocity)
 
   friend std::ostream& operator<<(std::ostream&, const TLorentzQuaternion&); ///< prints the components
 
  protected:
   void SetBoost(const double betaX, const double betaY, const double betaZ); ///< sets a pure boost
-  void SetRotation(const double, const TVector3&); ///< sets a rotation over an angle [rad] around an axis
+  void SetRotation(const double, const nucqcd::Vector3&); ///< sets a rotation over an angle [rad] around an axis
 
  private:
   TLorentzQuaternion(const std::complex<double>& q0,const std::complex<double>& q1,const std::complex<double>& q2,const std::complex<double>& q3); ///< constructor from the four components

@@ -329,14 +329,14 @@ double TCstPWF::GetVSp(double p) const
   return vsp;
 }
 
-double TCstPWF::GetUpoff(const TVector3& p) const{
+double TCstPWF::GetUpoff(const nucqcd::Vector3& p) const{
  
   cerr << "Off-shell wave function not implemented in TCstPWF wave function class" << endl;
   return 0.;
   
 }
 
-double TCstPWF::GetWpoff1(const TVector3& p) const{
+double TCstPWF::GetWpoff1(const nucqcd::Vector3& p) const{
  
   cerr << "Off-shell wave function not implemented in TCstPWF wave function class" << endl;
   return 0.;

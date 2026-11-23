@@ -84,7 +84,7 @@ He3wf& He3wf::operator=(const He3wf&){
   return *this;
 }
 
-complex<double> He3wf::getWF(const TVector3 &p1, const TVector3 &p2, int ms1, int ms2, int ms3, int mt1, int mt2, int mA){
+complex<double> He3wf::getWF(const nucqcd::Vector3 &p1, const nucqcd::Vector3 &p2, int ms1, int ms2, int ms3, int mt1, int mt2, int mA){
   const double q1[3]={p1.X(),p1.Y(),p1.Z()}, q2[3]={p2.X(),p2.Y(),p2.Z()};
   return getWF(q1,q2,ms1,ms2,ms3,mt1,mt2,mA);
 }

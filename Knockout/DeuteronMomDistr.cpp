@@ -43,7 +43,7 @@ looplimit(loop_limit)
 //         double phi = 2.*PI/60.*k;
 //         double sinphi,cosphi;
 //         sincos(phi,&sinphi,&cosphi);
-//         TVector3 pmom=TVector3(p*sqrt(1-costh*costh)*cosphi,p*sqrt(1-costh*costh)*sinphi,p*costh);
+//         nucqcd::Vector3 pmom=nucqcd::Vector3(p*sqrt(1-costh*costh)*cosphi,p*sqrt(1-costh*costh)*sinphi,p*costh);
 //         double temp=0.;
 //         temp+=norm(wf.DeuteronPState(m,-1,-1,pmom));
 //         temp+=norm(wf.DeuteronPState(m,-1,1,pmom));
@@ -143,7 +143,7 @@ double DeuteronMomDistr::getLCMomDistrpw(TKinematics2to2 &kin) const{
   double k_z=sqrt(k*k-pt*pt);
 //   for(int M=-2;M<=2;M+=2){
 //     for(int spinr=-1;spinr<=1;spinr+=2){
-//       complex<double> wave=wf.DeuteronPState(M, -1, spinr, TVector3(pt,
+//       complex<double> wave=wf.DeuteronPState(M, -1, spinr, nucqcd::Vector3(pt,
 // 								     0.,
 // 								     k_z));
 // 								    
@@ -157,7 +157,7 @@ double DeuteronMomDistr::getLCMomDistrpw(TKinematics2to2 &kin) const{
   return (pow(wf.GetUp(k),2.)+pow(wf.GetWp(k),2.))/(4.*PI)*sqrt(massr*massr+k*k)/pow(2.-alpha,2.)/kin.GetEklab(); 
 }
 // 
-double DeuteronMomDistr::getLCMomDistrpw(TVector3 p) const{
+double DeuteronMomDistr::getLCMomDistrpw(nucqcd::Vector3 p) const{
   double pwtotal=0.;
   double E=sqrt(p.Mag2()+massr*massr);
   double alpha=2.*(E-p[2])/nucqcd::mass_d; //lightcone alpha_s=(E-p_z)/M_n
@@ -166,7 +166,7 @@ double DeuteronMomDistr::getLCMomDistrpw(TVector3 p) const{
   double k_z=(1-alpha)*sqrt(nucqcd::mass_nucleon*nucqcd::mass_nucleon+k*k);
 //   for(int M=-2;M<=2;M+=2){
 //     for(int spinr=-1;spinr<=1;spinr+=2){
-//       complex<double> wave=wf.DeuteronPState(M, -1, spinr, TVector3(pt,
+//       complex<double> wave=wf.DeuteronPState(M, -1, spinr, nucqcd::Vector3(pt,
 // 								     0.,
 // 								     k_z));
 // 								    
@@ -188,7 +188,7 @@ double DeuteronMomDistr::getMomDistrpw(TKinematics2to2 &kin) const{
 //   double sintheta=sqrt(1.-kin.GetCosthklab()*kin.GetCosthklab());
 //   for(int M=-2;M<=2;M+=2){
 //     for(int spinr=-1;spinr<=1;spinr+=2){
-//       complex<double> wave=wf.DeuteronPState(M, -1, spinr, TVector3(kin.GetPklab()*sintheta,
+//       complex<double> wave=wf.DeuteronPState(M, -1, spinr, nucqcd::Vector3(kin.GetPklab()*sintheta,
 // 								     0.,
 // 								     kin.GetPklab()*kin.GetCosthklab()));
 // 								    
@@ -215,7 +215,7 @@ double DeuteronMomDistr::getAzzDistrpw(TKinematics2to2 &kin) const{
   double sintheta=sqrt(1.-kin.GetCosthklab()*kin.GetCosthklab());
   for(int M=-2;M<=2;M+=2){
     for(int spinr=-1;spinr<=1;spinr+=2){
-      complex<double> wave=wf.DeuteronPState(M, -1, spinr, TVector3(kin.GetPklab()*sintheta,
+      complex<double> wave=wf.DeuteronPState(M, -1, spinr, nucqcd::Vector3(kin.GetPklab()*sintheta,
 								     0.,
 								     kin.GetPklab()*kin.GetCosthklab()));
 								    
@@ -229,7 +229,7 @@ double DeuteronMomDistr::getAzzDistrpw(TKinematics2to2 &kin) const{
 }
 
 
-double DeuteronMomDistr::getMomDistrpw(TVector3 pvec) const{
+double DeuteronMomDistr::getMomDistrpw(nucqcd::Vector3 pvec) const{
 //   double pwtotal=0.;
 //   for(int M=-2;M<=2;M+=2){
 //     for(int spinr=-1;spinr<=1;spinr+=2){
@@ -243,7 +243,7 @@ double DeuteronMomDistr::getMomDistrpw(TVector3 pvec) const{
 }
 
 
-complex<double> DeuteronMomDistr::getMomDistrpwcoh(TVector3 pvec,TVector3 pvec2,int M, int M2) const{
+complex<double> DeuteronMomDistr::getMomDistrpwcoh(nucqcd::Vector3 pvec,nucqcd::Vector3 pvec2,int M, int M2) const{
   complex<double> total=0.;
   for(int spinr=-1;spinr<=1;spinr+=2){
     for(int spins=-1;spins<=1;spins+=2){
@@ -265,7 +265,7 @@ double DeuteronMomDistr::getMomDistrfsi(TKinematics2to2 &kin, double phi){
   for(int M=-2;M<=2;M+=2){
     for(int spinr=-1;spinr<=1;spinr+=2){
       //plane-wave part
-      complex<double> wave=wf.DeuteronPState(M, -1, spinr, TVector3(kin.GetPklab()*sintheta*cos(phi),
+      complex<double> wave=wf.DeuteronPState(M, -1, spinr, nucqcd::Vector3(kin.GetPklab()*sintheta*cos(phi),
 								    kin.GetPklab()*sintheta*sin(phi),
 								    kin.GetPklab()*kin.GetCosthklab()));
       complex<double> result;
@@ -311,10 +311,10 @@ double DeuteronMomDistr::getMomDistr_y_fsi(TKinematics2to2 &kin, double phi){
   for(int M=-2;M<=2;M+=2){
     for(int spinr=-1;spinr<=1;spinr+=2){
       //plane-wave part
-      complex<double> wavedown=wf.DeuteronPState(M, -1, spinr, TVector3(kin.GetPklab()*sintheta*cos(phi),
+      complex<double> wavedown=wf.DeuteronPState(M, -1, spinr, nucqcd::Vector3(kin.GetPklab()*sintheta*cos(phi),
 								    kin.GetPklab()*sintheta*sin(phi),
 								    kin.GetPklab()*kin.GetCosthklab()));
-      complex<double> waveup=wf.DeuteronPState(M, 1, spinr, TVector3(kin.GetPklab()*sintheta*cos(phi),
+      complex<double> waveup=wf.DeuteronPState(M, 1, spinr, nucqcd::Vector3(kin.GetPklab()*sintheta*cos(phi),
 								    kin.GetPklab()*sintheta*sin(phi),
 								    kin.GetPklab()*kin.GetCosthklab()));
       complex<double> result;
@@ -399,7 +399,7 @@ double DeuteronMomDistr::getAzzDistrfsi(TKinematics2to2 &kin, double phi){
   for(int M=-2;M<=2;M+=2){
     for(int spinr=-1;spinr<=1;spinr+=2){
       //plane-wave part
-      complex<double> wave=wf.DeuteronPState(M, -1, spinr, TVector3(kin.GetPklab()*sintheta*cos(phi),
+      complex<double> wave=wf.DeuteronPState(M, -1, spinr, nucqcd::Vector3(kin.GetPklab()*sintheta*cos(phi),
 								    kin.GetPklab()*sintheta*sin(phi),
 								    kin.GetPklab()*kin.GetCosthklab()));
       complex<double> result;
@@ -476,7 +476,7 @@ void DeuteronMomDistr::FSI_int(numint::vector_z & result, double qt, double qphi
   if(momdistr.offshellset==2) offshellness=exp((momdistr.betaoff-momdistr.beta)*t/2.);
   if(momdistr.offshellset==3) offshellness=0.;
   if(momdistr.offshellset==4) offshellness=1.;
-  TVector3 vecprime(pprime*sinthetaprime*cosphiprime,pprime*sinthetaprime*sinphiprime,pprime*costhetaprime);
+  nucqcd::Vector3 vecprime(pprime*sinthetaprime*cosphiprime,pprime*sinthetaprime*sinphiprime,pprime*costhetaprime);
   result[0] = qt*chi*momdistr.scatter(t)*(momdistr.wf.DeuteronPState(M, -1, spinr, vecprime)
  	 +(offshellness*(abs(offshellness)<1.E-05?1.:momdistr.wfref->DeuteronPStateOff(M, -1, spinr, vecprime))))
 	*sqrt(nucqcd::mass_d/(2.*(nucqcd::mass_d-Erprime)*Erprime));
@@ -525,7 +525,7 @@ void DeuteronMomDistr::FSI_y_int(numint::vector_z & result, double qt, double qp
   if(momdistr.offshellset==2) offshellness=exp((momdistr.betaoff-momdistr.beta)*t/2.);
   if(momdistr.offshellset==3) offshellness=0.;
   if(momdistr.offshellset==4) offshellness=1.;
-  TVector3 vecprime(pprime*sinthetaprime*cosphiprime,pprime*sinthetaprime*sinphiprime,pprime*costhetaprime);
+  nucqcd::Vector3 vecprime(pprime*sinthetaprime*cosphiprime,pprime*sinthetaprime*sinphiprime,pprime*costhetaprime);
   result[0] = qt*chi*momdistr.scatter(t)*(momdistr.wf.DeuteronPState(M, -1, spinr, vecprime)
  	 +(offshellness*(abs(offshellness)<1.E-05?1.:momdistr.wfref->DeuteronPStateOff(M, -1, spinr, vecprime))))
 	*sqrt(nucqcd::mass_d/(2.*(nucqcd::mass_d-Erprime)*Erprime));
@@ -546,8 +546,8 @@ void DeuteronMomDistr::FSI_y_int(numint::vector_z & result, double qt, double qp
 //   if(qt<1.E-03) { result[0]=0.; return;}
 //   
 //   
-//   TVector3 k_perp=kin.getK_perp(); //k_t
-//   TVector3 k_perp_prime=k_perp-TVector3(-qt*cos(qphi),-qt*sin(qphi),0.); //LC rescaled perp mom of initial spectator
+//   nucqcd::Vector3 k_perp=kin.getK_perp(); //k_t
+//   nucqcd::Vector3 k_perp_prime=k_perp-nucqcd::Vector3(-qt*cos(qphi),-qt*sin(qphi),0.); //LC rescaled perp mom of initial spectator
 //   
 //   momdistr.Wxprime2=-1.;  //invariant mass X' before rescattering
 //   momdistr.get_k_z_prime(k_perp_prime,kin);
@@ -557,7 +557,7 @@ void DeuteronMomDistr::FSI_y_int(numint::vector_z & result, double qt, double qp
 //   if(kprime>1.E03) { result[0]=0.; return;}
 //   double Ekprime=sqrt(momdistr.massr*momdistr.massr+kprime*kprime);
 //   double alpha_s_prime=1.+momdistr.k_z_prime/Ekprime; //WATCH SIGN!!
-//   TVector3 psprime_perp=k_perp_prime+alpha_s_prime/2.*kin.getPA_perp();
+//   nucqcd::Vector3 psprime_perp=k_perp_prime+alpha_s_prime/2.*kin.getPA_perp();
 //   double prprime_plus=alpha_s_prime/2.*kin.getPA_plus();
 //   double prprime_min=(psprime_perp.Mag2()+momdistr.massr*momdistr.massr)/2./prprime_plus;
 //   double przprime=(prprime_plus-prprime_min)/sqrt(2.);
@@ -573,7 +573,7 @@ void DeuteronMomDistr::FSI_y_int(numint::vector_z & result, double qt, double qp
 //   if(momdistr.offshellset==2) offshellness=exp((momdistr.betaoff-momdistr.beta)*t/2.);
 //   if(momdistr.offshellset==3) offshellness=0.;
 //   if(momdistr.offshellset==4) offshellness=1.;
-//   TVector3 vecprime(k_perp_prime.X(),k_perp_prime.Y(),momdistr.k_z_prime);
+//   nucqcd::Vector3 vecprime(k_perp_prime.X(),k_perp_prime.Y(),momdistr.k_z_prime);
 //   result[0] = qt*chi*momdistr.scatter(t)*(momdistr.wf.DeuteronPState(M, -1, spinr, vecprime)
 //  	 -(offshellness*momdistr.wfref->DeuteronPStateOff(M, -1, spinr, vecprime)))
 // 	*sqrt(Ekprime);
@@ -587,8 +587,8 @@ void DeuteronMomDistr::FSILC_int(numint::vector_z & result, double qt, double qp
   if(qt<1.E-03) { result[0]=0.; return;}
   
   
-  TVector3 k_perp=kin.getK_perp(); //k_t
-  TVector3 k_perp_prime=k_perp-TVector3(-qt*cos(qphi),-qt*sin(qphi),0.); //LC rescaled perp mom of initial spectator
+  nucqcd::Vector3 k_perp=kin.getK_perp(); //k_t
+  nucqcd::Vector3 k_perp_prime=k_perp-nucqcd::Vector3(-qt*cos(qphi),-qt*sin(qphi),0.); //LC rescaled perp mom of initial spectator
   
   momdistr.Wxprime2=-1.;  //invariant mass X' before rescattering
   momdistr.get_k_z_prime(k_perp_prime,kin);
@@ -598,7 +598,7 @@ void DeuteronMomDistr::FSILC_int(numint::vector_z & result, double qt, double qp
   if(kprime>1.E03) { result[0]=0.; return;}
   double Ekprime=sqrt(momdistr.massr*momdistr.massr+kprime*kprime);
   double alpha_s_prime=1.-momdistr.k_z_prime/Ekprime; //WATCH SIGN!!..determined k_z_prime is that of non spectator nucleon!
-  TVector3 psprime_perp=k_perp_prime+alpha_s_prime/2.*kin.getPA_perp();
+  nucqcd::Vector3 psprime_perp=k_perp_prime+alpha_s_prime/2.*kin.getPA_perp();
   double prprime_plus=alpha_s_prime/2.*kin.getPA_plus();
   double prprime_min=(psprime_perp.Mag2()+momdistr.massr*momdistr.massr)/2./prprime_plus;
   double przprime=(prprime_plus-prprime_min)/sqrt(2.);
@@ -614,7 +614,7 @@ void DeuteronMomDistr::FSILC_int(numint::vector_z & result, double qt, double qp
   if(momdistr.offshellset==2) offshellness=exp((momdistr.betaoff-momdistr.beta)*t/2.);
   if(momdistr.offshellset==3) offshellness=0.;
   if(momdistr.offshellset==4) offshellness=1.;
-  TVector3 vecprime(k_perp_prime.X(),k_perp_prime.Y(),-momdistr.k_z_prime);
+  nucqcd::Vector3 vecprime(k_perp_prime.X(),k_perp_prime.Y(),-momdistr.k_z_prime);
   result[0] = qt*chi*momdistr.scatter(t)*(momdistr.wf.DeuteronPState(M, -1, spinr, vecprime)
  	 -(offshellness*momdistr.wfref->DeuteronPStateOff(M, -1, spinr, vecprime)))
 	*sqrt(Ekprime);
@@ -674,7 +674,7 @@ void DeuteronMomDistr::FSILC_int(numint::vector_z & result, double qt, double qp
 //   if(offshellset==2) offshellness=exp((betaoff-beta)*t/2.);
 //   if(offshellset==3) offshellness=0.;
 //   if(offshellset==4) offshellness=1.;
-//   TVector3 vecprime(pprime*sinthetaprime*cosphiprime,pprime*sinthetaprime*sinphiprime,pprime*costhetaprime);
+//   nucqcd::Vector3 vecprime(pprime*sinthetaprime*cosphiprime,pprime*sinthetaprime*sinphiprime,pprime*costhetaprime);
 //   *result = chi*scatter(t)*(wf.DeuteronPState(M, -1, spinr, vecprime)
 //  	 +(offshellness*wfref->DeuteronPStateOff(M, -1, spinr, vecprime)))
 // 	*sqrt(nucqcd::mass_d/(2.*(nucqcd::mass_d-Erprime)*Erprime));
@@ -705,16 +705,16 @@ void DeuteronMomDistr::get_przprime(double pt2, double Er, TKinematics2to2 & kin
   return;
 }
 
-// void DeuteronMomDistr::get_k_z_prime(TVector3 &k_perp_prime, LightConeKin2to2 & kin){
+// void DeuteronMomDistr::get_k_z_prime(nucqcd::Vector3 &k_perp_prime, LightConeKin2to2 & kin){
 //   k_z_prime=0.;
 //   przprime=0.;
 //   double factor=kin.getPA_plus()*(kin.getA_mu()[0]+kin.getQ_mu()[0]
 //       -kin.getA_mu()[3]-kin.getQ_mu()[3])/sqrt(2.);
 //   for(int i=0;i<looplimit;i++){
-//     TVector3 k_prime=TVector3(k_perp_prime.X(),k_perp_prime.Y(),k_z_prime);
+//     nucqcd::Vector3 k_prime=nucqcd::Vector3(k_perp_prime.X(),k_perp_prime.Y(),k_z_prime);
 //     double Ekprime=sqrt(massr*massr+k_prime.Mag2());
 //     double alpha_s_prime=1.+k_z_prime/Ekprime;
-//     TVector3 psprime_perp=k_perp_prime+alpha_s_prime/2.*kin.getPA_perp();
+//     nucqcd::Vector3 psprime_perp=k_perp_prime+alpha_s_prime/2.*kin.getPA_perp();
 //     double prprime_plus=alpha_s_prime/2.*kin.getPA_plus();
 //     double prprime_min=(psprime_perp.Mag2()+massr*massr)/2./prprime_plus;
 //     double przprime=(prprime_plus-prprime_min)/sqrt(2.);
@@ -758,16 +758,16 @@ void DeuteronMomDistr::get_przprime(double pt2, double Er, TKinematics2to2 & kin
 //   return;
 // }
 
-void DeuteronMomDistr::get_k_z_prime(TVector3 &k_perp_prime, LightConeKin2to2 & kin){
+void DeuteronMomDistr::get_k_z_prime(nucqcd::Vector3 &k_perp_prime, LightConeKin2to2 & kin){
   k_z_prime=0.; //k_z of INITIAL struck nucleon
   przprime=0.;
   double factor=kin.getPA_plus()*(kin.getQ_mu()[0]
       -kin.getQ_mu()[3])/sqrt(2.);
   for(int i=0;i<looplimit;i++){
-    TVector3 k_prime=TVector3(k_perp_prime.X(),k_perp_prime.Y(),-k_z_prime); //SPECTATOR 3-mom (LC)
+    nucqcd::Vector3 k_prime=nucqcd::Vector3(k_perp_prime.X(),k_perp_prime.Y(),-k_z_prime); //SPECTATOR 3-mom (LC)
     double Ekprime=sqrt(massr*massr+k_prime.Mag2());
     double alpha_s_prime=1.-k_z_prime/Ekprime;  //WATCH SIGN
-    TVector3 psprime_perp=k_perp_prime+alpha_s_prime/2.*kin.getPA_perp();
+    nucqcd::Vector3 psprime_perp=k_perp_prime+alpha_s_prime/2.*kin.getPA_perp();
     double prprime_plus=alpha_s_prime/2.*kin.getPA_plus();
     double prprime_min=(psprime_perp.Mag2()+massr*massr)/2./prprime_plus;
     double przprime=(prprime_plus-prprime_min)/sqrt(2.);
@@ -811,10 +811,10 @@ complex<double> DeuteronMomDistr::scatter(double t){
 
 //all in MeV!
 //quasi-elastic fsi
-double DeuteronMomDistr::getMomDistrfsi(TVector3 pvec, double nu, double qvec, double s, double massother){
+double DeuteronMomDistr::getMomDistrfsi(nucqcd::Vector3 pvec, double nu, double qvec, double s, double massother){
 
   assert(1==0);
-  cerr << "fucntion DeuteronMomDistr::getMomDistrfsi(TVector3 pvec, double nu, double qvec, double s, double massother) is not implemented any more" << endl;
+  cerr << "fucntion DeuteronMomDistr::getMomDistrfsi(nucqcd::Vector3 pvec, double nu, double qvec, double s, double massother) is not implemented any more" << endl;
 //   double fsitotal=0.;
 //   double Er=sqrt(pvec.Mag2()+massr*massr);
 //   for(int M=-2;M<=2;M+=2){
@@ -837,7 +837,7 @@ double DeuteronMomDistr::getMomDistrfsi(TVector3 pvec, double nu, double qvec, d
 // 
 // void DeuteronMomDistr::totdens_qt_simple(const double qt, complex<double>* result, va_list ap){
 //   
-//   TVector3 *p_pvec = va_arg(ap,TVector3*);
+//   nucqcd::Vector3 *p_pvec = va_arg(ap,nucqcd::Vector3*);
 //   int M = va_arg(ap,int);
 //   int spinr = va_arg(ap,int);
 //   double Er = va_arg(ap,double);
@@ -856,7 +856,7 @@ double DeuteronMomDistr::getMomDistrfsi(TVector3 pvec, double nu, double qvec, d
 // 
 // void DeuteronMomDistr::totdens_qphi_simple(const double qphi, complex<double>* result, va_list ap){
 //   
-//   TVector3 *p_pvec = va_arg(ap,TVector3*);
+//   nucqcd::Vector3 *p_pvec = va_arg(ap,nucqcd::Vector3*);
 //   double qt = va_arg(ap,double);
 //   int M = va_arg(ap,int);
 //   int spinr = va_arg(ap,int);
@@ -884,7 +884,7 @@ double DeuteronMomDistr::getMomDistrfsi(TVector3 pvec, double nu, double qvec, d
 //   sincos(thetaprime,&sinthetaprime,&costhetaprime);
 //   sincos(phiprime,&sinphiprime,&cosphiprime);
 //   double chi=sqrt(s*s-2.*s*(massother*massother+massr*massr)+pow(massr*massr-massother*massother,2.));
-//   TVector3 vecprime(pprime*sinthetaprime*cosphiprime,pprime*sinthetaprime*sinphiprime,pprime*costhetaprime);
+//   nucqcd::Vector3 vecprime(pprime*sinthetaprime*cosphiprime,pprime*sinthetaprime*sinphiprime,pprime*costhetaprime);
 //   if(std::isnan(vecprime.Mag())) cout << pt2 << " " << przprime << " " << pprime << " " << thetaprime << " " << phiprime << " " << Erprime << endl;
 //   *result = chi*scatter(t)*(wf.DeuteronPState(M, -1, spinr, vecprime))
 // 	*sqrt(nucqcd::mass_d/(2.*(nucqcd::mass_d-Erprime)*Erprime));

@@ -179,7 +179,7 @@ nkt_mod(nkt_mod)
 }
 
 /** alternative constructor now using constructor delegation; needs -std=c++11 **/
-FastParticle::FastParticle(const int type, const int inc, const TVector3 &pvec, 
+FastParticle::FastParticle(const int type, const int inc, const nucqcd::Vector3 &pvec, 
 			   const double hard_scale, const double Gamma, const double lc_mod, const double nkt_mod, const std::string dir) :
 	FastParticle::FastParticle(type,inc,pvec.Mag(),pvec.Theta(),pvec.Phi(),hard_scale,Gamma, lc_mod, nkt_mod, dir) {}
 

@@ -72,8 +72,8 @@ TEST_CASE("TKinematics2to3WithLabAngles for A(e,e'pn): solutions and conservatio
   CHECK_THAT(kin.GetPn(), WithinRel(pn, 1e-9));
   CHECK_THAT(kin.GetN3().Theta(), WithinAbs(thn, 1e-9));
   CHECK_THAT(kin.GetK3().Theta(), WithinAbs(thk, 1e-9));
-  const TLorentzVector in = kin.GetG4() + kin.GetD4();
-  const TLorentzVector out = kin.GetN4() + kin.GetK4() + kin.GetY4();
+  const nucqcd::LorentzVector in = kin.GetG4() + kin.GetD4();
+  const nucqcd::LorentzVector out = kin.GetN4() + kin.GetK4() + kin.GetY4();
   CHECK_THAT(out.E(), WithinRel(in.E(), 1e-10));
   CHECK_THAT((out - in).Vect().Mag(), WithinAbs(0., 1e-6));
   for (int i = 0; i < kin.GetNumberOfSolutions(); i++) {
@@ -88,8 +88,8 @@ TEST_CASE("TKinematics2to3WithLabAngles for A(e,e'pn): solutions and conservatio
     CHECK_THAT(sol.GetPn(), WithinRel(pn, 1e-9));
     CHECK_THAT(sol.GetN3().Theta(), WithinAbs(thn, 1e-9));
     CHECK_THAT(sol.GetK3().Theta(), WithinAbs(thk, 1e-9));
-    const TLorentzVector sol_in = sol.GetG4() + sol.GetD4();
-    const TLorentzVector sol_out = sol.GetN4() + sol.GetK4() + sol.GetY4();
+    const nucqcd::LorentzVector sol_in = sol.GetG4() + sol.GetD4();
+    const nucqcd::LorentzVector sol_out = sol.GetN4() + sol.GetK4() + sol.GetY4();
     CHECK_THAT(sol_out.E(), WithinRel(sol_in.E(), 1e-10));
     CHECK_THAT((sol_out - sol_in).Vect().Mag(), WithinAbs(0., 1e-6));
   }

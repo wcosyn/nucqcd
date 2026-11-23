@@ -109,9 +109,8 @@
 #include <algorithm>
 #include <optional>
 #include <vector>
-#include <TLorentzRotation.h>
-#include <TVector2.h>
-#include <TVector3.h>
+#include <Tools/Core/Rotation.hpp>
+#include <Tools/Core/Vector3.hpp>
 // #include <numtoa.h>
 using std::cout; using std::cerr;
 using std::vector;
@@ -167,11 +166,11 @@ TKinematics2to3::TKinematics2to3(const char *name, const char *title,
   fFormat = new char[100];
   fKinSolution = new char[4];
   fVar    = new double*[6];
-  fKvector = new TLorentzVector;
-  fYvector = new TLorentzVector;
-  fNvector = new TLorentzVector;
-  fGvector = new TLorentzVector;
-  fDvector = new TLorentzVector;
+  fKvector = new nucqcd::LorentzVector;
+  fYvector = new nucqcd::LorentzVector;
+  fNvector = new nucqcd::LorentzVector;
+  fGvector = new nucqcd::LorentzVector;
+  fDvector = new nucqcd::LorentzVector;
 
   ReadFormatString(format);
   *fVar[0] = var1;
@@ -241,11 +240,11 @@ TKinematics2to3::TKinematics2to3(const TKinematics2to3& toCopy)
     ReadFormatString(toCopy.fFormat);
   }
 
-  fKvector = new TLorentzVector(*toCopy.fKvector);
-  fYvector = new TLorentzVector(*toCopy.fYvector);
-  fNvector = new TLorentzVector(*toCopy.fNvector);
-  fGvector = new TLorentzVector(*toCopy.fGvector);
-  fDvector = new TLorentzVector(*toCopy.fDvector);
+  fKvector = new nucqcd::LorentzVector(*toCopy.fKvector);
+  fYvector = new nucqcd::LorentzVector(*toCopy.fYvector);
+  fNvector = new nucqcd::LorentzVector(*toCopy.fNvector);
+  fGvector = new nucqcd::LorentzVector(*toCopy.fGvector);
+  fDvector = new nucqcd::LorentzVector(*toCopy.fDvector);
 
   if(toCopy.fKYsystem) fKYsystem = new TKinematics2to2(*toCopy.fKYsystem);
   if(toCopy.fKNsystem) fKNsystem = new TKinematics2to2(*toCopy.fKNsystem);
@@ -1777,8 +1776,8 @@ void TKinematics2to3::UpdateKinematics()
   fIsPhysical = true;
 
   // declare 4vectors in the fAC axis convention.
-  TLorentzVector vector1,vector2,vector3;
-  TLorentzVector vector23;
+  nucqcd::LorentzVector vector1,vector2,vector3;
+  nucqcd::LorentzVector vector23;
   
   // pointer to subsystem
   TKinematics2to2 *subSystem;
@@ -1981,7 +1980,7 @@ void TKinematics2to3::UpdateKinematics()
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Define rotation matrix that changes reference frame to
     // z' ~ p23,  y' ~ y and x' ~ y' x z'
-    TLorentzRotation rotateTo23; 
+    nucqcd::LorentzRotation rotateTo23; 
     double rotationAngle=0.; 
     if( 1.-fabs(vector23.CosTheta())>kUflow )
       rotationAngle = -1.*std::copysign(1.,vector23.X())
@@ -1989,8 +1988,8 @@ void TKinematics2to3::UpdateKinematics()
     rotateTo23.RotateY(rotationAngle);
     // Define Lorentzboost that boosts in reference frame defined above
     // to 23 CM system.
-    TVector3 boostVector = -1.0 * (rotateTo23*vector23).BoostVector();
-    TLorentzRotation boostCM23 = boostVector;
+    nucqcd::Vector3 boostVector = -1.0 * (rotateTo23*vector23).BoostVector();
+    nucqcd::LorentzRotation boostCM23 = boostVector;
 
  
     // Determine 4vector of 2nd particle
@@ -2270,7 +2269,7 @@ void TKinematics2to3::UpdateKinematics()
 
     //     // Azimuthal angle: tan(phi3) = (3)/(2) = -p2y / (-p1x-p2x)
     //     double phi3 = 
-    //       TVector2::Phi_0_2pi(atan2(-1.*vector2.Y(),-1.*(vector1.X()+vector2.X())));
+    //       nucqcd::Vector2::Phi_0_2pi(atan2(-1.*vector2.Y(),-1.*(vector1.X()+vector2.X())));
 
     //     // momentum 3rd particle. Iteratively solve (4) after inserting (1) and (5)
     //     double p3low2=pow(vector1.X()+vector2.X(),2)+vector2.Y()*vector2.Y(),
@@ -2492,7 +2491,7 @@ void TKinematics2to3::UpdateKinematics()
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Define rotation matrix that changes reference frame to
     // z' ~ p23,  y' ~ y and x' ~ y' x z'
-    TLorentzRotation rotateTo23; 
+    nucqcd::LorentzRotation rotateTo23; 
     double rotationAngle=0.; 
     if( 1.-fabs(vector23.CosTheta())>kUflow )
       rotationAngle = -1.*std::copysign(1.,vector23.X())
@@ -2500,8 +2499,8 @@ void TKinematics2to3::UpdateKinematics()
     rotateTo23.RotateY(rotationAngle);
     // Define Lorentzboost that boosts in reference frame defined above
     // to 23 CM system.
-    TVector3 boostVector = -1.0 * (rotateTo23*vector23).BoostVector();
-    TLorentzRotation boostCM23 = boostVector;
+    nucqcd::Vector3 boostVector = -1.0 * (rotateTo23*vector23).BoostVector();
+    nucqcd::LorentzRotation boostCM23 = boostVector;
 
 
     // Determine 4vector 2nd and 3rd particle
@@ -2632,7 +2631,7 @@ void TKinematics2to3::UpdateKinematics()
 
   // Do a final check whether we are in a physical point
   // by checking conservation of energy and momentum
-  // TLorentzVector sum = *fGvector + *fDvector - *fKvector - *fYvector - *fNvector;
+  // nucqcd::LorentzVector sum = *fGvector + *fDvector - *fKvector - *fYvector - *fNvector;
   // if( fabs(sum.E()) > nucqcd::strange_underflow || fabs(sum.X()) > nucqcd::strange_underflow ||
   //     fabs(sum.Y()) > nucqcd::strange_underflow || fabs(sum.Z()) > nucqcd::strange_underflow )
   //   fIsPhysical = false;
@@ -4366,7 +4365,7 @@ bool TKinematics2to3::IsFixed(int varNumber) const
 // }
 
 //_____________________________________________________________________
-TVector3 TKinematics2to3::GetK3(EAxisConvention axisConvention) const
+nucqcd::Vector3 TKinematics2to3::GetK3(EAxisConvention axisConvention) const
 {
   // Return the momentum 3-vector of the kaon in the LAB.
 
@@ -4374,13 +4373,13 @@ TVector3 TKinematics2to3::GetK3(EAxisConvention axisConvention) const
     return GetK3(fAC);
 
   else if( axisConvention == kY ) {
-    TVector3 rotatedKvector = fKvector->Vect();
+    nucqcd::Vector3 rotatedKvector = fKvector->Vect();
     rotatedKvector.RotateZ(-1.0*GetPhiy(kN));
     return rotatedKvector;
   }
   
   else if( axisConvention == kK ) {
-    TVector3 rotatedKvector = fKvector->Vect();
+    nucqcd::Vector3 rotatedKvector = fKvector->Vect();
     rotatedKvector.RotateZ(-1.0*GetPhik(kN));
     return rotatedKvector;
   }
@@ -4389,7 +4388,7 @@ TVector3 TKinematics2to3::GetK3(EAxisConvention axisConvention) const
 }
 
 //_____________________________________________________________________
-TVector3 TKinematics2to3::GetY3(EAxisConvention axisConvention) const
+nucqcd::Vector3 TKinematics2to3::GetY3(EAxisConvention axisConvention) const
 {
   // Return the momentum 3-vector of the hyperon in the LAB.
 
@@ -4397,13 +4396,13 @@ TVector3 TKinematics2to3::GetY3(EAxisConvention axisConvention) const
     return GetY3(fAC);
 
   else if( axisConvention == kY ) {
-    TVector3 rotatedYvector = fYvector->Vect();
+    nucqcd::Vector3 rotatedYvector = fYvector->Vect();
     rotatedYvector.RotateZ(-1.0*GetPhiy(kN));
     return rotatedYvector;
   }
   
   else if( axisConvention == kK ) {
-    TVector3 rotatedYvector = fYvector->Vect();
+    nucqcd::Vector3 rotatedYvector = fYvector->Vect();
     rotatedYvector.RotateZ(-1.0*GetPhik(kN));
     return rotatedYvector;
   }
@@ -4412,7 +4411,7 @@ TVector3 TKinematics2to3::GetY3(EAxisConvention axisConvention) const
 }
 
 //_____________________________________________________________________
-TVector3 TKinematics2to3::GetN3(EAxisConvention axisConvention) const
+nucqcd::Vector3 TKinematics2to3::GetN3(EAxisConvention axisConvention) const
 {
   // Return the momentum 3-vector of the nucleon in the LAB.
 
@@ -4420,13 +4419,13 @@ TVector3 TKinematics2to3::GetN3(EAxisConvention axisConvention) const
     return GetN3(fAC);
 
   else if( axisConvention == kY ) {
-    TVector3 rotatedNvector = fNvector->Vect();
+    nucqcd::Vector3 rotatedNvector = fNvector->Vect();
     rotatedNvector.RotateZ(-1.0*GetPhiy(kN));
     return rotatedNvector;
   }
   
   else if( axisConvention == kK ) {
-    TVector3 rotatedNvector = fNvector->Vect();
+    nucqcd::Vector3 rotatedNvector = fNvector->Vect();
     rotatedNvector.RotateZ(-1.0*GetPhik(kN));
     return rotatedNvector;
   }
@@ -4435,21 +4434,21 @@ TVector3 TKinematics2to3::GetN3(EAxisConvention axisConvention) const
 }
 
 //_____________________________________________________________________
-TVector3 TKinematics2to3::GetG3(EAxisConvention axisConvention) const
+nucqcd::Vector3 TKinematics2to3::GetG3(EAxisConvention axisConvention) const
 {
   // Return the momentum 3-vector of the photon in the LAB.
   return fGvector->Vect();
 }
 
 //_____________________________________________________________________
-TVector3 TKinematics2to3::GetD3(EAxisConvention axisConvention) const
+nucqcd::Vector3 TKinematics2to3::GetD3(EAxisConvention axisConvention) const
 {
   // Return the momentum 3-vector of the deuteron in the LAB.
   return fDvector->Vect();
 }
 
 //_____________________________________________________________________
-TLorentzVector TKinematics2to3::GetK4(EAxisConvention axisConvention) const
+nucqcd::LorentzVector TKinematics2to3::GetK4(EAxisConvention axisConvention) const
 {
   // Return the energy-momentum 4-vector of the kaon in the LAB.
 
@@ -4457,13 +4456,13 @@ TLorentzVector TKinematics2to3::GetK4(EAxisConvention axisConvention) const
     return GetK4(fAC);
 
   else if( axisConvention == kY ) {
-    TLorentzVector rotatedKvector = *fKvector;
+    nucqcd::LorentzVector rotatedKvector = *fKvector;
     rotatedKvector.RotateZ(-1.0*GetPhiy(kN));
     return rotatedKvector;
   }
   
   else if( axisConvention == kK ) {
-    TLorentzVector rotatedKvector = *fKvector;
+    nucqcd::LorentzVector rotatedKvector = *fKvector;
     rotatedKvector.RotateZ(-1.0*GetPhik(kN));
     return rotatedKvector;
   }
@@ -4472,7 +4471,7 @@ TLorentzVector TKinematics2to3::GetK4(EAxisConvention axisConvention) const
 }
 
 //_____________________________________________________________________
-TLorentzVector TKinematics2to3::GetY4(EAxisConvention axisConvention) const
+nucqcd::LorentzVector TKinematics2to3::GetY4(EAxisConvention axisConvention) const
 {
   // Return the energy-momentum 4-vector of the hyperon in the LAB.
 
@@ -4480,13 +4479,13 @@ TLorentzVector TKinematics2to3::GetY4(EAxisConvention axisConvention) const
     return GetY4(fAC);
 
   else if( axisConvention == kY ) {
-    TLorentzVector rotatedYvector = *fYvector;
+    nucqcd::LorentzVector rotatedYvector = *fYvector;
     rotatedYvector.RotateZ(-1.0*GetPhiy(kN));
     return rotatedYvector;
   }
   
   else if( axisConvention == kK ) {
-    TLorentzVector rotatedYvector = *fYvector;
+    nucqcd::LorentzVector rotatedYvector = *fYvector;
     rotatedYvector.RotateZ(-1.0*GetPhik(kN));
     return rotatedYvector;
   }
@@ -4495,7 +4494,7 @@ TLorentzVector TKinematics2to3::GetY4(EAxisConvention axisConvention) const
 }
 
 //_____________________________________________________________________
-TLorentzVector TKinematics2to3::GetN4(EAxisConvention axisConvention) const
+nucqcd::LorentzVector TKinematics2to3::GetN4(EAxisConvention axisConvention) const
 {
   // Return the energy-momentum 4-vector of the nucleon in the LAB.
 
@@ -4503,13 +4502,13 @@ TLorentzVector TKinematics2to3::GetN4(EAxisConvention axisConvention) const
     return GetN4(fAC);
 
   else if( axisConvention == kY ) {
-    TLorentzVector rotatedNvector = *fNvector;
+    nucqcd::LorentzVector rotatedNvector = *fNvector;
     rotatedNvector.RotateZ(-1.0*GetPhiy(kN));
     return rotatedNvector;
   }
   
   else if( axisConvention == kK ) {
-    TLorentzVector rotatedNvector = *fNvector;
+    nucqcd::LorentzVector rotatedNvector = *fNvector;
     rotatedNvector.RotateZ(-1.0*GetPhik(kN));
     return rotatedNvector;
   }
@@ -4518,14 +4517,14 @@ TLorentzVector TKinematics2to3::GetN4(EAxisConvention axisConvention) const
 }
 
 //_____________________________________________________________________
-TLorentzVector TKinematics2to3::GetG4(EAxisConvention axisConvention) const
+nucqcd::LorentzVector TKinematics2to3::GetG4(EAxisConvention axisConvention) const
 {
   // Return the energy-momentum 4-vector of the photon in the LAB.
   return *fGvector;
 }
 
 //_____________________________________________________________________
-TLorentzVector TKinematics2to3::GetD4(EAxisConvention axisConvention) const
+nucqcd::LorentzVector TKinematics2to3::GetD4(EAxisConvention axisConvention) const
 {
   // Return the energy-momentum 4-vector of the deuteron in the LAB
   return *fDvector;
@@ -4586,7 +4585,7 @@ double TKinematics2to3::GetPhik(EAxisConvention axisConvention) const
     return 0.0;
 
   // axisConvention == kY
-  return TVector2::Phi_0_2pi( GetPhik(kN) - GetPhiy(kN) );
+  return nucqcd::Vector2::Phi_0_2pi( GetPhik(kN) - GetPhiy(kN) );
 }
 
 //_____________________________________________________________________
@@ -4602,7 +4601,7 @@ double TKinematics2to3::GetPhiy(EAxisConvention axisConvention) const
     return 0.0;
 
   // axisConvention == kK
-  return TVector2::Phi_0_2pi( GetPhiy(kN) - GetPhik(kN) );
+  return nucqcd::Vector2::Phi_0_2pi( GetPhiy(kN) - GetPhik(kN) );
 }
 
 //_____________________________________________________________________
@@ -4615,10 +4614,10 @@ double TKinematics2to3::GetPhin(EAxisConvention axisConvention) const
     return 0.0;
 
   else if( axisConvention == kK )
-    return TVector2::Phi_0_2pi( -1.0*GetPhik(kN) );
+    return nucqcd::Vector2::Phi_0_2pi( -1.0*GetPhik(kN) );
 
   // axisConvention == kY
-  return TVector2::Phi_0_2pi( -1.0*GetPhiy(kN) );
+  return nucqcd::Vector2::Phi_0_2pi( -1.0*GetPhiy(kN) );
 }
 
 //_____________________________________________________________________
@@ -4823,7 +4822,7 @@ double TKinematics2to3::GetYNsystem_thncm() const
 double TKinematics2to3::GetKYsystem_phikcm(EAxisConvention ac) const
 {
   // Transform Kvector to the KY cm 
-  TLorentzVector vectorKcm = BoostToKYcm(GetK4(ac),ac);
+  nucqcd::LorentzVector vectorKcm = BoostToKYcm(GetK4(ac),ac);
 
   // and determine azimutal angle
   if(fabs(vectorKcm.X())<nucqcd::strange_underflow && fabs(vectorKcm.Y())<nucqcd::strange_underflow)
@@ -4836,7 +4835,7 @@ double TKinematics2to3::GetKYsystem_phikcm(EAxisConvention ac) const
 double TKinematics2to3::GetKYsystem_phiycm(EAxisConvention ac) const
 {
   // Transform Yvector to the KY cm 
-  TLorentzVector vectorYcm = BoostToKYcm(GetY4(ac),ac);
+  nucqcd::LorentzVector vectorYcm = BoostToKYcm(GetY4(ac),ac);
 
   // and determine azimutal angle
   if(fabs(vectorYcm.X())<nucqcd::strange_underflow && fabs(vectorYcm.Y())<nucqcd::strange_underflow)
@@ -4849,7 +4848,7 @@ double TKinematics2to3::GetKYsystem_phiycm(EAxisConvention ac) const
 double TKinematics2to3::GetKNsystem_phikcm(EAxisConvention ac) const
 {
   // Transform Kvector to the KN cm 
-  TLorentzVector vectorKcm = BoostToKNcm(GetK4(ac),ac);
+  nucqcd::LorentzVector vectorKcm = BoostToKNcm(GetK4(ac),ac);
 
   // and determine azimutal angle
   if(fabs(vectorKcm.X())<nucqcd::strange_underflow && fabs(vectorKcm.Y())<nucqcd::strange_underflow)
@@ -4862,7 +4861,7 @@ double TKinematics2to3::GetKNsystem_phikcm(EAxisConvention ac) const
 double TKinematics2to3::GetKNsystem_phincm(EAxisConvention ac) const
 {
   // Transform Nvector to the KN cm 
-  TLorentzVector vectorNcm = BoostToKNcm(GetN4(ac),ac);
+  nucqcd::LorentzVector vectorNcm = BoostToKNcm(GetN4(ac),ac);
 
   // and determine azimutal angle
   if(fabs(vectorNcm.X())<nucqcd::strange_underflow && fabs(vectorNcm.Y())<nucqcd::strange_underflow)
@@ -4875,7 +4874,7 @@ double TKinematics2to3::GetKNsystem_phincm(EAxisConvention ac) const
 double TKinematics2to3::GetYNsystem_phiycm(EAxisConvention ac) const
 {
   // Transform Yvector to the YN cm 
-  TLorentzVector vectorYcm = BoostToYNcm(GetY4(ac),ac);
+  nucqcd::LorentzVector vectorYcm = BoostToYNcm(GetY4(ac),ac);
 
   // and determine azimutal angle
   if(fabs(vectorYcm.X())<nucqcd::strange_underflow && fabs(vectorYcm.Y())<nucqcd::strange_underflow)
@@ -4888,7 +4887,7 @@ double TKinematics2to3::GetYNsystem_phiycm(EAxisConvention ac) const
 double TKinematics2to3::GetYNsystem_phincm(EAxisConvention ac) const
 {
   // Transform Nvector to the YN cm 
-  TLorentzVector vectorNcm = BoostToYNcm(GetN4(ac),ac);
+  nucqcd::LorentzVector vectorNcm = BoostToYNcm(GetN4(ac),ac);
 
   // and determine azimutal angle
   if(fabs(vectorNcm.X())<nucqcd::strange_underflow && fabs(vectorNcm.Y())<nucqcd::strange_underflow)
@@ -5350,7 +5349,7 @@ double TKinematics2to3::GetVarByGetter(const std::string& variable) const
 }
 
 //_____________________________________________________________________
-TLorentzVector TKinematics2to3::BoostToKYcm(const TLorentzVector& vector,
+nucqcd::LorentzVector TKinematics2to3::BoostToKYcm(const nucqcd::LorentzVector& vector,
 					    EAxisConvention ac) const
 {
   // Boost the 4vector 'vector' defined in the LAB frame with the 'ac'
@@ -5360,7 +5359,7 @@ TLorentzVector TKinematics2to3::BoostToKYcm(const TLorentzVector& vector,
 }
 
 //_____________________________________________________________________
-TLorentzVector TKinematics2to3::BoostToKNcm(const TLorentzVector& vector,
+nucqcd::LorentzVector TKinematics2to3::BoostToKNcm(const nucqcd::LorentzVector& vector,
 					    EAxisConvention ac) const
 {
   // Boost the 4vector 'vector' defined in the LAB frame with the 'ac'
@@ -5370,7 +5369,7 @@ TLorentzVector TKinematics2to3::BoostToKNcm(const TLorentzVector& vector,
 }
 
 //_____________________________________________________________________
-TLorentzVector TKinematics2to3::BoostToYNcm(const TLorentzVector& vector,
+nucqcd::LorentzVector TKinematics2to3::BoostToYNcm(const nucqcd::LorentzVector& vector,
 					    EAxisConvention ac) const
 {
   // Boost the 4vector 'vector' defined in the LAB frame with the 'ac'
@@ -5380,7 +5379,7 @@ TLorentzVector TKinematics2to3::BoostToYNcm(const TLorentzVector& vector,
 }
 
 //_____________________________________________________________________
-TLorentzVector TKinematics2to3::BoostToGNcm(const TLorentzVector& vector,
+nucqcd::LorentzVector TKinematics2to3::BoostToGNcm(const nucqcd::LorentzVector& vector,
 					    EAxisConvention ac) const
 {
   // Boost the 4vector 'vector' defined in the LAB frame with the 'ac'
@@ -5394,7 +5393,7 @@ TLorentzVector TKinematics2to3::BoostToGNcm(const TLorentzVector& vector,
   return BoostToGNcm(ac) * vector;
 }
 //_____________________________________________________________________
-TLorentzVector TKinematics2to3::BoostFromKYcm(const TLorentzVector& vector,
+nucqcd::LorentzVector TKinematics2to3::BoostFromKYcm(const nucqcd::LorentzVector& vector,
 					      EAxisConvention ac) const
 {
   // Boost the 4vector 'vector' defined in the CM frame of the 
@@ -5404,7 +5403,7 @@ TLorentzVector TKinematics2to3::BoostFromKYcm(const TLorentzVector& vector,
 }
 
 //_____________________________________________________________________
-TLorentzVector TKinematics2to3::BoostFromKNcm(const TLorentzVector& vector,
+nucqcd::LorentzVector TKinematics2to3::BoostFromKNcm(const nucqcd::LorentzVector& vector,
 					      EAxisConvention ac) const
 {
   // Boost the 4vector 'vector' defined in the CM frame of the 
@@ -5414,7 +5413,7 @@ TLorentzVector TKinematics2to3::BoostFromKNcm(const TLorentzVector& vector,
 }
 
 //_____________________________________________________________________
-TLorentzVector TKinematics2to3::BoostFromYNcm(const TLorentzVector& vector,
+nucqcd::LorentzVector TKinematics2to3::BoostFromYNcm(const nucqcd::LorentzVector& vector,
 					      EAxisConvention ac) const
 {
   // Boost the 4vector 'vector' defined in the CM frame of the 
@@ -5424,7 +5423,7 @@ TLorentzVector TKinematics2to3::BoostFromYNcm(const TLorentzVector& vector,
 }
 
 //_____________________________________________________________________
-TLorentzVector TKinematics2to3::BoostFromGNcm(const TLorentzVector& vector,
+nucqcd::LorentzVector TKinematics2to3::BoostFromGNcm(const nucqcd::LorentzVector& vector,
 					      EAxisConvention ac) const
 {
   // Boost the 4vector 'vector' defined in the CM frame of the photon 
@@ -5440,16 +5439,16 @@ TLorentzVector TKinematics2to3::BoostFromGNcm(const TLorentzVector& vector,
 }
 
 //_____________________________________________________________________
-TLorentzRotation TKinematics2to3::BoostToKYcm(EAxisConvention ac) const
+nucqcd::LorentzRotation TKinematics2to3::BoostToKYcm(EAxisConvention ac) const
 {
   // Object to boost a 4vector defined in the LAB frame with the 'ac'
   // axis convention to the CM frame of the kaon-hyperon subsystem.
 
-  TLorentzVector KYvector = GetK4(ac) + GetY4(ac);
+  nucqcd::LorentzVector KYvector = GetK4(ac) + GetY4(ac);
 
   // Define rotation matrix that changes reference frame to
   // z' ~ pKY,  y' ~ y and x' ~ y' x z'
-  TLorentzRotation rotateToKY; 
+  nucqcd::LorentzRotation rotateToKY; 
   double rotationAngle=0.; 
   if( 1.-fabs(KYvector.CosTheta())>kUflow )
     rotationAngle = -1.*std::copysign(1.,KYvector.X())
@@ -5458,23 +5457,23 @@ TLorentzRotation TKinematics2to3::BoostToKYcm(EAxisConvention ac) const
   
   // Define Lorentzboost that boosts in reference frame defined above
   // to KY CM system.
-  TVector3 boostVector = -1.0 * (rotateToKY*KYvector).BoostVector();
-  TLorentzRotation boostCMKY = boostVector;
+  nucqcd::Vector3 boostVector = -1.0 * (rotateToKY*KYvector).BoostVector();
+  nucqcd::LorentzRotation boostCMKY = boostVector;
 
   return boostCMKY * rotateToKY;
 }
 
 //_____________________________________________________________________
-TLorentzRotation TKinematics2to3::BoostToKNcm(EAxisConvention ac) const
+nucqcd::LorentzRotation TKinematics2to3::BoostToKNcm(EAxisConvention ac) const
 {
   // Object to boost a 4vector defined in the LAB frame with the 'ac'
   // axis convention to the CM frame of the kaon-nucleon subsystem.
 
-  TLorentzVector KNvector = GetK4(ac) + GetN4(ac);
+  nucqcd::LorentzVector KNvector = GetK4(ac) + GetN4(ac);
 
   // Define rotation matrix that changes reference frame to
   // z' ~ pKN,  y' ~ y and x' ~ y' x z'
-  TLorentzRotation rotateToKN; 
+  nucqcd::LorentzRotation rotateToKN; 
   double rotationAngle=0.; 
   if( 1.-fabs(KNvector.CosTheta())>kUflow )
     rotationAngle = -1.*std::copysign(1.,KNvector.X())
@@ -5483,23 +5482,23 @@ TLorentzRotation TKinematics2to3::BoostToKNcm(EAxisConvention ac) const
   
   // Define Lorentzboost that boosts in reference frame defined above
   // to KN CM system.
-  TVector3 boostVector = -1.0 * (rotateToKN*KNvector).BoostVector();
-  TLorentzRotation boostCMKN = boostVector;
+  nucqcd::Vector3 boostVector = -1.0 * (rotateToKN*KNvector).BoostVector();
+  nucqcd::LorentzRotation boostCMKN = boostVector;
 
   return boostCMKN * rotateToKN;
 }
 
 //_____________________________________________________________________
-TLorentzRotation TKinematics2to3::BoostToYNcm(EAxisConvention ac) const
+nucqcd::LorentzRotation TKinematics2to3::BoostToYNcm(EAxisConvention ac) const
 {
   // Object to boost a 4vector defined in the LAB frame with the 'ac'
   // axis convention to the CM frame of the hyperon-nucleon subsystem.
 
-  TLorentzVector YNvector = GetY4(ac) + GetN4(ac);
+  nucqcd::LorentzVector YNvector = GetY4(ac) + GetN4(ac);
 
   // Define rotation matrix that changes reference frame to
   // z' ~ pYN,  y' ~ y and x' ~ y' x z'
-  TLorentzRotation rotateToYN; 
+  nucqcd::LorentzRotation rotateToYN; 
   double rotationAngle=0.; 
   if( 1.-fabs(YNvector.CosTheta())>kUflow )
     rotationAngle = -1.*std::copysign(1.,YNvector.X())
@@ -5508,14 +5507,14 @@ TLorentzRotation TKinematics2to3::BoostToYNcm(EAxisConvention ac) const
   
   // Define Lorentzboost that boosts in reference frame defined above
   // to YN CM system.
-  TVector3 boostVector = -1.0 * (rotateToYN*YNvector).BoostVector();
-  TLorentzRotation boostCMYN = boostVector;
+  nucqcd::Vector3 boostVector = -1.0 * (rotateToYN*YNvector).BoostVector();
+  nucqcd::LorentzRotation boostCMYN = boostVector;
 
   return boostCMYN * rotateToYN;
 }
 
 //_____________________________________________________________________
-TLorentzRotation TKinematics2to3::BoostToGNcm(EAxisConvention ac) const
+nucqcd::LorentzRotation TKinematics2to3::BoostToGNcm(EAxisConvention ac) const
 {
   // Object to boost a 4vector defined in the LAB frame with the 'ac'
   // axis convention to the CM frame of the photon and the struck nucleon
@@ -5526,14 +5525,14 @@ TLorentzRotation TKinematics2to3::BoostToGNcm(EAxisConvention ac) const
   // in strangecalc. 
 
   // Find the photon vector in the KY CM
-  TLorentzVector GvectorCM = BoostToKYcm(GetG4(ac),ac);
+  nucqcd::LorentzVector GvectorCM = BoostToKYcm(GetG4(ac),ac);
 
   // Define a rotation that puts z along the photon momentum
-  TLorentzRotation rotateAxes;
+  nucqcd::LorentzRotation rotateAxes;
   rotateAxes.RotateY(-std::copysign(GvectorCM.Theta(),GvectorCM.X()));
 
   // Find the kaon vector in the KY CM with this new reference frame
-  TLorentzVector KvectorCM = rotateAxes * BoostToKYcm(GetK4(ac),ac);
+  nucqcd::LorentzVector KvectorCM = rotateAxes * BoostToKYcm(GetK4(ac),ac);
 
   // Define an extra rotation to a reference frame where the azimuthal
   // angle of the kaon is zero and as a consequence the y-axis is 
@@ -5544,16 +5543,16 @@ TLorentzRotation TKinematics2to3::BoostToGNcm(EAxisConvention ac) const
 }
 
 //_____________________________________________________________________
-TLorentzRotation TKinematics2to3::BoostFromKYcm(EAxisConvention ac) const
+nucqcd::LorentzRotation TKinematics2to3::BoostFromKYcm(EAxisConvention ac) const
 {
   // Object to boost a 4vector defined in the CM frame of the 
   // kaon-hyperon subsystem with the 'ac' axis convention to the LAB frame.
 
-  TLorentzVector KYvector = GetK4(ac) + GetY4(ac);
+  nucqcd::LorentzVector KYvector = GetK4(ac) + GetY4(ac);
 
   // Define rotation matrix that changes reference frame to
   // z' ~ pKY,  y' ~ y and x' ~ y' x z'
-  TLorentzRotation rotateToKY; 
+  nucqcd::LorentzRotation rotateToKY; 
   double rotationAngle=0.; 
   if( 1.-fabs(KYvector.CosTheta())>kUflow )
     rotationAngle = -1.*std::copysign(1.,KYvector.X())
@@ -5562,23 +5561,23 @@ TLorentzRotation TKinematics2to3::BoostFromKYcm(EAxisConvention ac) const
   
   // Define Lorentzboost that boosts in reference frame defined above
   // to KY CM system.
-  TVector3 boostVector = -1.0 * (rotateToKY*KYvector).BoostVector();
-  TLorentzRotation boostCMKY = boostVector;
+  nucqcd::Vector3 boostVector = -1.0 * (rotateToKY*KYvector).BoostVector();
+  nucqcd::LorentzRotation boostCMKY = boostVector;
 
   return  rotateToKY.Inverse() * boostCMKY.Inverse();
 }
 
 //_____________________________________________________________________
-TLorentzRotation TKinematics2to3::BoostFromKNcm(EAxisConvention ac) const
+nucqcd::LorentzRotation TKinematics2to3::BoostFromKNcm(EAxisConvention ac) const
 {
   // Object to boost a 4vector defined in the CM frame of the 
   // kaon-nucleon subsystem with the 'ac' axis convention to the LAB frame.
 
-  TLorentzVector KNvector = GetK4(ac) + GetN4(ac);
+  nucqcd::LorentzVector KNvector = GetK4(ac) + GetN4(ac);
 
   // Define rotation matrix that changes reference frame to
   // z' ~ pKN,  y' ~ y and x' ~ y' x z'
-  TLorentzRotation rotateToKN; 
+  nucqcd::LorentzRotation rotateToKN; 
   double rotationAngle=0.; 
   if( 1.-fabs(KNvector.CosTheta())>kUflow )
     rotationAngle = -1.*std::copysign(1.,KNvector.X())
@@ -5587,23 +5586,23 @@ TLorentzRotation TKinematics2to3::BoostFromKNcm(EAxisConvention ac) const
   
   // Define Lorentzboost that boosts in reference frame defined above
   // to KN CM system.
-  TVector3 boostVector = -1.0 * (rotateToKN*KNvector).BoostVector();
-  TLorentzRotation boostCMKN = boostVector;
+  nucqcd::Vector3 boostVector = -1.0 * (rotateToKN*KNvector).BoostVector();
+  nucqcd::LorentzRotation boostCMKN = boostVector;
 
   return rotateToKN.Inverse() * boostCMKN.Inverse();
 }
 
 //_____________________________________________________________________
-TLorentzRotation TKinematics2to3::BoostFromYNcm(EAxisConvention ac) const
+nucqcd::LorentzRotation TKinematics2to3::BoostFromYNcm(EAxisConvention ac) const
 {
   // Object to boost a 4vector defined in the CM frame of the 
   // hyperon-nucleon subsystem with the 'ac' axis convention to the LAB frame.
 
-  TLorentzVector YNvector = GetY4(ac) + GetN4(ac);
+  nucqcd::LorentzVector YNvector = GetY4(ac) + GetN4(ac);
 
   // Define rotation matrix that changes reference frame to
   // z' ~ pYN,  y' ~ y and x' ~ y' x z'
-  TLorentzRotation rotateToYN; 
+  nucqcd::LorentzRotation rotateToYN; 
   double rotationAngle=0.; 
   if( 1.-fabs(YNvector.CosTheta())>kUflow )
     rotationAngle = -1.*std::copysign(1.,YNvector.X())
@@ -5612,14 +5611,14 @@ TLorentzRotation TKinematics2to3::BoostFromYNcm(EAxisConvention ac) const
   
   // Define Lorentzboost that boosts in reference frame defined above
   // to YN CM system.
-  TVector3 boostVector = -1.0 * (rotateToYN*YNvector).BoostVector();
-  TLorentzRotation boostCMYN = boostVector;
+  nucqcd::Vector3 boostVector = -1.0 * (rotateToYN*YNvector).BoostVector();
+  nucqcd::LorentzRotation boostCMYN = boostVector;
 
   return rotateToYN.Inverse() * boostCMYN.Inverse();
 }
 
 //_____________________________________________________________________
-TLorentzRotation TKinematics2to3::BoostFromGNcm(EAxisConvention ac) const
+nucqcd::LorentzRotation TKinematics2to3::BoostFromGNcm(EAxisConvention ac) const
 {
   // Object to boost a 4vector defined in the CM frame of the photon 
   // and the struck nucleon inside the deuteron to the LAB frame
@@ -5631,14 +5630,14 @@ TLorentzRotation TKinematics2to3::BoostFromGNcm(EAxisConvention ac) const
   // in strangecalc. 
 
   // Find the photon vector in the KY CM
-  TLorentzVector GvectorCM = BoostToKYcm(GetG4(ac),ac);
+  nucqcd::LorentzVector GvectorCM = BoostToKYcm(GetG4(ac),ac);
 
   // Define a rotation that puts z along the photon momentum
-  TLorentzRotation rotateAxes;
+  nucqcd::LorentzRotation rotateAxes;
   rotateAxes.RotateY(-std::copysign(GvectorCM.Theta(),GvectorCM.X()));
 
   // Find the kaon vector in the KY CM with this new reference frame
-  TLorentzVector KvectorCM = rotateAxes * BoostToKYcm(GetK4(ac),ac);
+  nucqcd::LorentzVector KvectorCM = rotateAxes * BoostToKYcm(GetK4(ac),ac);
 
   // Define an extra rotation to a reference frame where the azimuthal
   // angle of the kaon is zero and as a consequence the y-axis is 
@@ -5744,7 +5743,7 @@ TSpinor::LorentzRotation TKinematics2to3::BoostSpinorToKYcm(EAxisConvention ac) 
   // Object to boost a Dirac spinor defined in the LAB frame with the 'ac'
   // axis convention to the CM frame of the kaon-hyperon subsystem.
 
-  TLorentzVector KYvector = GetK4(ac) + GetY4(ac);
+  nucqcd::LorentzVector KYvector = GetK4(ac) + GetY4(ac);
 
   // Define rotation matrix that changes reference frame to
   // z' ~ pKY,  y' ~ y and x' ~ y' x z'
@@ -5757,8 +5756,8 @@ TSpinor::LorentzRotation TKinematics2to3::BoostSpinorToKYcm(EAxisConvention ac) 
   
   // Define Lorentzboost that boosts in reference frame defined above
   // to KY CM system.
-  TVector3 boostVector 
-    = -1.0 * (TLorentzRotation().RotateY(rotationAngle)*KYvector).BoostVector();
+  nucqcd::Vector3 boostVector 
+    = -1.0 * (nucqcd::LorentzRotation().RotateY(rotationAngle)*KYvector).BoostVector();
   TSpinor::LorentzRotation boostCMKY = boostVector;
 
   return boostCMKY * rotateToKY;
@@ -5770,7 +5769,7 @@ TSpinor::LorentzRotation TKinematics2to3::BoostSpinorToKNcm(EAxisConvention ac) 
   // Object to boost a Dirac spinor defined in the LAB frame with the 'ac'
   // axis convention to the CM frame of the kaon-nucleon subsystem.
 
-  TLorentzVector KNvector = GetK4(ac) + GetN4(ac);
+  nucqcd::LorentzVector KNvector = GetK4(ac) + GetN4(ac);
 
   // Define rotation matrix that changes reference frame to
   // z' ~ pKN,  y' ~ y and x' ~ y' x z'
@@ -5783,8 +5782,8 @@ TSpinor::LorentzRotation TKinematics2to3::BoostSpinorToKNcm(EAxisConvention ac) 
   
   // Define Lorentzboost that boosts in reference frame defined above
   // to KN CM system.
-  TVector3 boostVector 
-    = -1.0 * (TLorentzRotation().RotateY(rotationAngle)*KNvector).BoostVector();
+  nucqcd::Vector3 boostVector 
+    = -1.0 * (nucqcd::LorentzRotation().RotateY(rotationAngle)*KNvector).BoostVector();
   TSpinor::LorentzRotation boostCMKN = boostVector;
 
   return boostCMKN * rotateToKN;
@@ -5796,7 +5795,7 @@ TSpinor::LorentzRotation TKinematics2to3::BoostSpinorToYNcm(EAxisConvention ac) 
   // Object to boost a Dirac spinor defined in the LAB frame with the 'ac'
   // axis convention to the CM frame of the hyperon-nucleon subsystem.
 
-  TLorentzVector YNvector = GetY4(ac) + GetN4(ac);
+  nucqcd::LorentzVector YNvector = GetY4(ac) + GetN4(ac);
 
   // Define rotation matrix that changes reference frame to
   // z' ~ pYN,  y' ~ y and x' ~ y' x z'
@@ -5809,8 +5808,8 @@ TSpinor::LorentzRotation TKinematics2to3::BoostSpinorToYNcm(EAxisConvention ac) 
   
   // Define Lorentzboost that boosts in reference frame defined above
   // to YN CM system.
-  TVector3 boostVector 
-    = -1.0 * (TLorentzRotation().RotateY(rotationAngle)*YNvector).BoostVector();
+  nucqcd::Vector3 boostVector 
+    = -1.0 * (nucqcd::LorentzRotation().RotateY(rotationAngle)*YNvector).BoostVector();
   TSpinor::LorentzRotation boostCMYN = boostVector;
 
   return boostCMYN * rotateToYN;
@@ -5828,15 +5827,15 @@ TSpinor::LorentzRotation TKinematics2to3::BoostSpinorToGNcm(EAxisConvention ac) 
   // in strangecalc. 
 
   // Find the photon vector in the KY CM
-  TLorentzVector GvectorCM = BoostToKYcm(GetG4(ac),ac);
+  nucqcd::LorentzVector GvectorCM = BoostToKYcm(GetG4(ac),ac);
 
   // Define a rotation that puts z along the photon momentum
   TSpinor::LorentzRotation rotateAxes;
   rotateAxes.RotateY(-std::copysign(GvectorCM.Theta(),GvectorCM.X()));
 
   // Find the kaon vector in the KY CM with this new reference frame
-  TLorentzVector KvectorCM 
-    = TLorentzRotation().RotateY(-std::copysign(GvectorCM.Theta(),GvectorCM.X())) 
+  nucqcd::LorentzVector KvectorCM 
+    = nucqcd::LorentzRotation().RotateY(-std::copysign(GvectorCM.Theta(),GvectorCM.X())) 
     * BoostToKYcm(GetK4(ac),ac);
 
   // Define an extra rotation to a reference frame where the azimuthal
@@ -5853,7 +5852,7 @@ TSpinor::LorentzRotation TKinematics2to3::BoostSpinorFromKYcm(EAxisConvention ac
   // Object to boost a Dirac spinor defined in the CM frame of the 
   // kaon-hyperon subsystem with the 'ac' axis convention to the LAB frame.
 
-  TLorentzVector KYvector = GetK4(ac) + GetY4(ac);
+  nucqcd::LorentzVector KYvector = GetK4(ac) + GetY4(ac);
 
   // Define rotation matrix that changes reference frame to
   // z' ~ pKY,  y' ~ y and x' ~ y' x z'
@@ -5866,8 +5865,8 @@ TSpinor::LorentzRotation TKinematics2to3::BoostSpinorFromKYcm(EAxisConvention ac
   
   // Define Lorentzboost that boosts in reference frame defined above
   // to KY CM system.
-  TVector3 boostVector 
-    = -1.0 * (TLorentzRotation().RotateY(rotationAngle)*KYvector).BoostVector();
+  nucqcd::Vector3 boostVector 
+    = -1.0 * (nucqcd::LorentzRotation().RotateY(rotationAngle)*KYvector).BoostVector();
   TSpinor::LorentzRotation boostCMKY = boostVector;
 
   return  rotateToKY.Inverse() * boostCMKY.Inverse();
@@ -5879,7 +5878,7 @@ TSpinor::LorentzRotation TKinematics2to3::BoostSpinorFromKNcm(EAxisConvention ac
   // Object to boost a Dirac spinor defined in the CM frame of the 
   // kaon-nucleon subsystem with the 'ac' axis convention to the LAB frame.
 
-  TLorentzVector KNvector = GetK4(ac) + GetN4(ac);
+  nucqcd::LorentzVector KNvector = GetK4(ac) + GetN4(ac);
 
   // Define rotation matrix that changes reference frame to
   // z' ~ pKN,  y' ~ y and x' ~ y' x z'
@@ -5892,8 +5891,8 @@ TSpinor::LorentzRotation TKinematics2to3::BoostSpinorFromKNcm(EAxisConvention ac
   
   // Define Lorentzboost that boosts in reference frame defined above
   // to KN CM system.
-  TVector3 boostVector 
-    = -1.0 * (TLorentzRotation().RotateY(rotationAngle)*KNvector).BoostVector();
+  nucqcd::Vector3 boostVector 
+    = -1.0 * (nucqcd::LorentzRotation().RotateY(rotationAngle)*KNvector).BoostVector();
   TSpinor::LorentzRotation boostCMKN = boostVector;
 
   return rotateToKN.Inverse() * boostCMKN.Inverse();
@@ -5905,7 +5904,7 @@ TSpinor::LorentzRotation TKinematics2to3::BoostSpinorFromYNcm(EAxisConvention ac
   // Object to boost a Dirac spinor defined in the CM frame of the 
   // hyperon-nucleon subsystem with the 'ac' axis convention to the LAB frame.
 
-  TLorentzVector YNvector = GetY4(ac) + GetN4(ac);
+  nucqcd::LorentzVector YNvector = GetY4(ac) + GetN4(ac);
 
   // Define rotation matrix that changes reference frame to
   // z' ~ pYN,  y' ~ y and x' ~ y' x z'
@@ -5918,8 +5917,8 @@ TSpinor::LorentzRotation TKinematics2to3::BoostSpinorFromYNcm(EAxisConvention ac
   
   // Define Lorentzboost that boosts in reference frame defined above
   // to YN CM system.
-  TVector3 boostVector 
-    = -1.0 * (TLorentzRotation().RotateY(rotationAngle)*YNvector).BoostVector();
+  nucqcd::Vector3 boostVector 
+    = -1.0 * (nucqcd::LorentzRotation().RotateY(rotationAngle)*YNvector).BoostVector();
   TSpinor::LorentzRotation boostCMYN = boostVector;
 
   return rotateToYN.Inverse() * boostCMYN.Inverse();
@@ -5938,15 +5937,15 @@ TSpinor::LorentzRotation TKinematics2to3::BoostSpinorFromGNcm(EAxisConvention ac
   // in strangecalc. 
 
   // Find the photon vector in the KY CM
-  TLorentzVector GvectorCM = BoostToKYcm(GetG4(ac),ac);
+  nucqcd::LorentzVector GvectorCM = BoostToKYcm(GetG4(ac),ac);
 
   // Define a rotation that puts z along the photon momentum
   TSpinor::LorentzRotation rotateAxes;
   rotateAxes.RotateY(-std::copysign(GvectorCM.Theta(),GvectorCM.X()));
 
   // Find the kaon vector in the KY CM with this new reference frame
-  TLorentzVector KvectorCM 
-    =  TLorentzRotation().RotateY(-std::copysign(GvectorCM.Theta(),GvectorCM.X()))
+  nucqcd::LorentzVector KvectorCM 
+    =  nucqcd::LorentzRotation().RotateY(-std::copysign(GvectorCM.Theta(),GvectorCM.X()))
     * BoostToKYcm(GetK4(ac),ac);
 
   // Define an extra rotation to a reference frame where the azimuthal
@@ -5963,7 +5962,7 @@ TLorentzQuaternion TKinematics2to3::BoostQuaternionToKYcm(EAxisConvention ac) co
   // Object to boost a 4vector defined in the LAB frame with the 'ac'
   // axis convention to the CM frame of the kaon-hyperon subsystem.
 
-  TLorentzVector KYvector = GetK4(ac) + GetY4(ac);
+  nucqcd::LorentzVector KYvector = GetK4(ac) + GetY4(ac);
 
   // Define rotation matrix that changes reference frame to
   // z' ~ pKY,  y' ~ y and x' ~ y' x z'
@@ -5976,7 +5975,7 @@ TLorentzQuaternion TKinematics2to3::BoostQuaternionToKYcm(EAxisConvention ac) co
   
   // Define Lorentzboost that boosts in reference frame defined above
   // to KY CM system.
-  TVector3 boostVector = -1.0 * (rotateToKY*KYvector).BoostVector();
+  nucqcd::Vector3 boostVector = -1.0 * (rotateToKY*KYvector).BoostVector();
   TLorentzQuaternion boostCMKY = boostVector;
 
   return boostCMKY * rotateToKY;
@@ -5988,7 +5987,7 @@ TLorentzQuaternion TKinematics2to3::BoostQuaternionToKNcm(EAxisConvention ac) co
   // Object to boost a 4vector defined in the LAB frame with the 'ac'
   // axis convention to the CM frame of the kaon-nucleon subsystem.
 
-  TLorentzVector KNvector = GetK4(ac) + GetN4(ac);
+  nucqcd::LorentzVector KNvector = GetK4(ac) + GetN4(ac);
 
   // Define rotation matrix that changes reference frame to
   // z' ~ pKN,  y' ~ y and x' ~ y' x z'
@@ -6001,7 +6000,7 @@ TLorentzQuaternion TKinematics2to3::BoostQuaternionToKNcm(EAxisConvention ac) co
   
   // Define Lorentzboost that boosts in reference frame defined above
   // to KN CM system.
-  TVector3 boostVector = -1.0 * (rotateToKN*KNvector).BoostVector();
+  nucqcd::Vector3 boostVector = -1.0 * (rotateToKN*KNvector).BoostVector();
   TLorentzQuaternion boostCMKN = boostVector;
 
   return boostCMKN * rotateToKN;
@@ -6013,7 +6012,7 @@ TLorentzQuaternion TKinematics2to3::BoostQuaternionToYNcm(EAxisConvention ac) co
   // Object to boost a 4vector defined in the LAB frame with the 'ac'
   // axis convention to the CM frame of the hyperon-nucleon subsystem.
 
-  TLorentzVector YNvector = GetY4(ac) + GetN4(ac);
+  nucqcd::LorentzVector YNvector = GetY4(ac) + GetN4(ac);
 
   // Define rotation matrix that changes reference frame to
   // z' ~ pYN,  y' ~ y and x' ~ y' x z'
@@ -6026,7 +6025,7 @@ TLorentzQuaternion TKinematics2to3::BoostQuaternionToYNcm(EAxisConvention ac) co
   
   // Define Lorentzboost that boosts in reference frame defined above
   // to YN CM system.
-  TVector3 boostVector = -1.0 * (rotateToYN*YNvector).BoostVector();
+  nucqcd::Vector3 boostVector = -1.0 * (rotateToYN*YNvector).BoostVector();
   TLorentzQuaternion boostCMYN = boostVector;
 
   return boostCMYN * rotateToYN;
@@ -6044,14 +6043,14 @@ TLorentzQuaternion TKinematics2to3::BoostQuaternionToGNcm(EAxisConvention ac) co
   // in strangecalc. 
 
   // Find the photon vector in the KY CM
-  TLorentzVector GvectorCM = BoostToKYcm(GetG4(ac),ac);
+  nucqcd::LorentzVector GvectorCM = BoostToKYcm(GetG4(ac),ac);
 
   // Define a rotation that puts z along the photon momentum
   TLorentzQuaternion rotateAxes;
   rotateAxes.RotateY(-std::copysign(GvectorCM.Theta(),GvectorCM.X()));
 
   // Find the kaon vector in the KY CM with this new reference frame
-  TLorentzVector KvectorCM = rotateAxes * BoostToKYcm(GetK4(ac),ac);
+  nucqcd::LorentzVector KvectorCM = rotateAxes * BoostToKYcm(GetK4(ac),ac);
 
   // Define an extra rotation to a reference frame where the azimuthal
   // angle of the kaon is zero and as a consequence the y-axis is 
@@ -6067,7 +6066,7 @@ TLorentzQuaternion TKinematics2to3::BoostQuaternionFromKYcm(EAxisConvention ac) 
   // Object to boost a 4vector defined in the CM frame of the 
   // kaon-hyperon subsystem with the 'ac' axis convention to the LAB frame.
 
-  TLorentzVector KYvector = GetK4(ac) + GetY4(ac);
+  nucqcd::LorentzVector KYvector = GetK4(ac) + GetY4(ac);
 
   // Define rotation matrix that changes reference frame to
   // z' ~ pKY,  y' ~ y and x' ~ y' x z'
@@ -6080,7 +6079,7 @@ TLorentzQuaternion TKinematics2to3::BoostQuaternionFromKYcm(EAxisConvention ac) 
   
   // Define Lorentzboost that boosts in reference frame defined above
   // to KY CM system.
-  TVector3 boostVector = -1.0 * (rotateToKY*KYvector).BoostVector();
+  nucqcd::Vector3 boostVector = -1.0 * (rotateToKY*KYvector).BoostVector();
   TLorentzQuaternion boostCMKY = boostVector;
 
   return  rotateToKY.Inverse() * boostCMKY.Inverse();
@@ -6092,7 +6091,7 @@ TLorentzQuaternion TKinematics2to3::BoostQuaternionFromKNcm(EAxisConvention ac) 
   // Object to boost a 4vector defined in the CM frame of the 
   // kaon-nucleon subsystem with the 'ac' axis convention to the LAB frame.
 
-  TLorentzVector KNvector = GetK4(ac) + GetN4(ac);
+  nucqcd::LorentzVector KNvector = GetK4(ac) + GetN4(ac);
 
   // Define rotation matrix that changes reference frame to
   // z' ~ pKN,  y' ~ y and x' ~ y' x z'
@@ -6105,7 +6104,7 @@ TLorentzQuaternion TKinematics2to3::BoostQuaternionFromKNcm(EAxisConvention ac) 
   
   // Define Lorentzboost that boosts in reference frame defined above
   // to KN CM system.
-  TVector3 boostVector = -1.0 * (rotateToKN*KNvector).BoostVector();
+  nucqcd::Vector3 boostVector = -1.0 * (rotateToKN*KNvector).BoostVector();
   TLorentzQuaternion boostCMKN = boostVector;
 
   return rotateToKN.Inverse() * boostCMKN.Inverse();
@@ -6117,7 +6116,7 @@ TLorentzQuaternion TKinematics2to3::BoostQuaternionFromYNcm(EAxisConvention ac) 
   // Object to boost a 4vector defined in the CM frame of the 
   // hyperon-nucleon subsystem with the 'ac' axis convention to the LAB frame.
 
-  TLorentzVector YNvector = GetY4(ac) + GetN4(ac);
+  nucqcd::LorentzVector YNvector = GetY4(ac) + GetN4(ac);
 
   // Define rotation matrix that changes reference frame to
   // z' ~ pYN,  y' ~ y and x' ~ y' x z'
@@ -6130,7 +6129,7 @@ TLorentzQuaternion TKinematics2to3::BoostQuaternionFromYNcm(EAxisConvention ac) 
   
   // Define Lorentzboost that boosts in reference frame defined above
   // to YN CM system.
-  TVector3 boostVector = -1.0 * (rotateToYN*YNvector).BoostVector();
+  nucqcd::Vector3 boostVector = -1.0 * (rotateToYN*YNvector).BoostVector();
   TLorentzQuaternion boostCMYN = boostVector;
 
   return rotateToYN.Inverse() * boostCMYN.Inverse();
@@ -6149,14 +6148,14 @@ TLorentzQuaternion TKinematics2to3::BoostQuaternionFromGNcm(EAxisConvention ac) 
   // in strangecalc. 
 
   // Find the photon vector in the KY CM
-  TLorentzVector GvectorCM = BoostToKYcm(GetG4(ac),ac);
+  nucqcd::LorentzVector GvectorCM = BoostToKYcm(GetG4(ac),ac);
 
   // Define a rotation that puts z along the photon momentum
   TLorentzQuaternion rotateAxes;
   rotateAxes.RotateY(-std::copysign(GvectorCM.Theta(),GvectorCM.X()));
 
   // Find the kaon vector in the KY CM with this new reference frame
-  TLorentzVector KvectorCM = rotateAxes * BoostToKYcm(GetK4(ac),ac);
+  nucqcd::LorentzVector KvectorCM = rotateAxes * BoostToKYcm(GetK4(ac),ac);
 
   // Define an extra rotation to a reference frame where the azimuthal
   // angle of the kaon is zero and as a consequence the y-axis is 
@@ -6174,15 +6173,15 @@ void TKinematics2to3::Help()
 }
 
 //_____________________________________________________________________
-// FourVector<double> ToFourVector(const TLorentzVector& v)
+// FourVector<double> ToFourVector(const nucqcd::LorentzVector& v)
 // {
 //   return FourVector<double>(v.E(),v.X(),v.Y(),v.Z());
 // }
 // 
 // //_____________________________________________________________________
-// TLorentzVector ToLorentzVector(const FourVector<double>& v)
+// nucqcd::LorentzVector ToLorentzVector(const FourVector<double>& v)
 // {
-//   return TLorentzVector(v[1],v[2],v[3],v[0]);
+//   return nucqcd::LorentzVector(v[1],v[2],v[3],v[0]);
 // }
 
 //_____________________________________________________________________
@@ -6279,7 +6278,7 @@ double TKinematics2to3::GetMaximumScatterAngleParticle1() const
   // This maximum is found by imposing the constraint W_23 >= m_2+m_3.
   
   // Find the 4-vector of particle 1 and sum masses of particles 2 and 3.
-  TLorentzVector *p1;
+  nucqcd::LorentzVector *p1;
   double m23;
   if( fAC==kK ) {
     p1 = fKvector;
@@ -6307,11 +6306,11 @@ double TKinematics2to3::GetMaximumScatterAngleParticle1() const
 }
 
 //_____________________________________________________________________
-TLorentzRotation TKinematics2to3::RotateToKac(EAxisConvention axisConvention) const
+nucqcd::LorentzRotation TKinematics2to3::RotateToKac(EAxisConvention axisConvention) const
 {
   // Object to rotate a 4vector defined in the LAB frame from the 'ac'
   // axis convention to the 'kK' axis convention.
-  TLorentzRotation rotation;
+  nucqcd::LorentzRotation rotation;
   
   if( axisConvention == kS )
     return RotateToKac(fAC);
@@ -6329,11 +6328,11 @@ TLorentzRotation TKinematics2to3::RotateToKac(EAxisConvention axisConvention) co
 }
 
 //_____________________________________________________________________
-TLorentzRotation TKinematics2to3::RotateToYac(EAxisConvention axisConvention) const
+nucqcd::LorentzRotation TKinematics2to3::RotateToYac(EAxisConvention axisConvention) const
 {
   // Object to rotate a 4vector defined in the LAB frame from the 'ac'
   // axis convention to the 'kY' axis convention.
-  TLorentzRotation rotation;
+  nucqcd::LorentzRotation rotation;
   
   if( axisConvention == kS )
     return RotateToYac(fAC);
@@ -6351,11 +6350,11 @@ TLorentzRotation TKinematics2to3::RotateToYac(EAxisConvention axisConvention) co
 }
 
 //_____________________________________________________________________
-TLorentzRotation TKinematics2to3::RotateToNac(EAxisConvention axisConvention) const
+nucqcd::LorentzRotation TKinematics2to3::RotateToNac(EAxisConvention axisConvention) const
 {
   // Object to rotate a 4vector defined in the LAB frame from the 'ac'
   // axis convention to the 'kN' axis convention.
-  TLorentzRotation rotation;
+  nucqcd::LorentzRotation rotation;
   
   if( axisConvention == kS )
     return RotateToNac(fAC);
@@ -6439,7 +6438,7 @@ TSpinor::LorentzRotation TKinematics2to3::RotateSpinorToNac(EAxisConvention axis
 }
 
 //_____________________________________________________________________
-TLorentzVector TKinematics2to3::RotateToKac(const TLorentzVector& vector,
+nucqcd::LorentzVector TKinematics2to3::RotateToKac(const nucqcd::LorentzVector& vector,
 					    EAxisConvention axisConvention) const
 {
   // Rotate the 4vector 'vector' defined in the LAB frame from the 'ac'
@@ -6448,7 +6447,7 @@ TLorentzVector TKinematics2to3::RotateToKac(const TLorentzVector& vector,
 }
 
 //_____________________________________________________________________
-TLorentzVector TKinematics2to3::RotateToYac(const TLorentzVector& vector,
+nucqcd::LorentzVector TKinematics2to3::RotateToYac(const nucqcd::LorentzVector& vector,
 					    EAxisConvention axisConvention) const
 {
   // Rotate the 4vector 'vector' defined in the LAB frame from the 'ac'
@@ -6457,7 +6456,7 @@ TLorentzVector TKinematics2to3::RotateToYac(const TLorentzVector& vector,
 }
 
 //_____________________________________________________________________
-TLorentzVector TKinematics2to3::RotateToNac(const TLorentzVector& vector,
+nucqcd::LorentzVector TKinematics2to3::RotateToNac(const nucqcd::LorentzVector& vector,
 					    EAxisConvention axisConvention) const
 {
   // Rotate the 4vector 'vector' defined in the LAB frame from the 'ac'

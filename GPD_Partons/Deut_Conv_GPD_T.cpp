@@ -1,4 +1,5 @@
 #include <fstream>
+#include <iterator>  // istream_iterator (came through the ROOT headers before)
 #include <GPD_Partons/Deut_Conv_GPD_T.hpp>
 #include <Tools/Core/constants.hpp>
 #include <cassert>
@@ -134,8 +135,8 @@ std::complex<double > Deut_Conv_GPD_T::test(double x, double xi, double t, int p
     // cout << alpha1 << "  " << alphaprime << " " << kperp << " " << kxprime << endl;
     double Ekprime = sqrt((nucqcd::mass_nucleon*nucqcd::mass_nucleon+kperpprime*kperpprime)/(alphaprime*(2.-alphaprime)));
     double kzprime = (alphaprime -1)*Ekprime;
-    TVector3 k_in(kperp*coskphi,kperp*sinkphi,kz);
-    TVector3 k_out(kxprime, kyprime, kzprime);
+    nucqcd::Vector3 k_in(kperp*coskphi,kperp*sinkphi,kz);
+    nucqcd::Vector3 k_out(kxprime, kyprime, kzprime);
     if(k_out.Mag2()>1.E06) {return 0.;}
 
     double phin=atan2(2*xi_n*kperp*sinkphi, 2*xi_n*(kperp*coskphi+alpha1/(4.*xi)*deltax));
@@ -204,8 +205,8 @@ void Deut_Conv_GPD_T::int_k3(numint::vector_z & res, double alpha1, double kperp
     double kperpprime=sqrt(kxprime*kxprime+kyprime*kyprime);
     double Ekprime = sqrt((nucqcd::mass_nucleon*nucqcd::mass_nucleon+kperpprime*kperpprime)/(alphaprime*(2.-alphaprime)));
     double kzprime = (alphaprime -1)*Ekprime;
-    TVector3 k_in(kperp*coskphi,kperp*sinkphi,kz);
-    TVector3 k_out(kxprime, kyprime, kzprime);
+    nucqcd::Vector3 k_in(kperp*coskphi,kperp*sinkphi,kz);
+    nucqcd::Vector3 k_out(kxprime, kyprime, kzprime);
     if(k_out.Mag2()>1.E06) {return;}
 
     //double phin=atan2(2*xi_n*kyprime, 2*xi_n*kxprime+(1.-xi_n*(1.-alphaprime/2.))*deltax); //azimuthal angle of 2xi_n*\bar{p}_1+Delta
@@ -302,8 +303,8 @@ void Deut_Conv_GPD_T::int_kprime3(numint::vector_z & res, double alphaprime, dou
     double kperp=sqrt(kx*kx+ky*ky);
     double Ek = sqrt((nucqcd::mass_nucleon*nucqcd::mass_nucleon+kperp*kperp)/(alpha1*(2.-alpha1)));
     double kz = (alpha1 -1.)*Ek;
-    TVector3 k_in(kx,ky,kz);
-    TVector3 k_out(kperpprime*coskphiprime, kperpprime*sinkphiprime, kzprime);
+    nucqcd::Vector3 k_in(kx,ky,kz);
+    nucqcd::Vector3 k_out(kperpprime*coskphiprime, kperpprime*sinkphiprime, kzprime);
     if(k_in.Mag2()>1.E06) {return;}
 
     //double phin=atan2(2*xi_n*kperpprime*sinkphiprime, 2*xi_n*kperpprime*coskphiprime+(1.-xi_n*(1.-alphaprime/2.))*deltax); //azimuthal angle of 2xi_n*\bar{p}_1+Delta
@@ -527,7 +528,7 @@ vector< complex<double> > Deut_Conv_GPD_T::gpd_conv(const double xi, const doubl
 
 
 
-vector< complex<double> > Deut_Conv_GPD_T::lf_deut(const double Ek, const TVector3& k, const vector< complex<double> > &nonrelwf){
+vector< complex<double> > Deut_Conv_GPD_T::lf_deut(const double Ek, const nucqcd::Vector3& k, const vector< complex<double> > &nonrelwf){
     vector< complex<double> > wf_out(4,0.);
     wf_out[0]=((k[2]+Ek+nucqcd::mass_nucleon)*nonrelwf.at(0)+(-k[0]-nucqcd::i_unit*k[1])*nonrelwf.at(1))/sqrt(2.*(Ek+nucqcd::mass_nucleon)*(Ek+k[2]));
     wf_out[1]=((k[2]+Ek+nucqcd::mass_nucleon)*nonrelwf.at(1)+(k[0]-nucqcd::i_unit*k[1])*nonrelwf.at(0))/sqrt(2.*(Ek+nucqcd::mass_nucleon)*(Ek+k[2]));

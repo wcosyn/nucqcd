@@ -48,7 +48,7 @@ Deut_Conv_EMTLF(const std::string &wfname);
  * @return std::vector< std::complex<double> >  deuteron light-front wf with the Melosh rotation for the active nucleon implemented.  Helicites are as follows [0] down down, [1] up down, [2] down up, [3] up up
  */
 
-static std::vector< std::complex<double> > lf_deut(const double Ek, const TVector3& k, const std::vector< std::complex<double> > &nonrelwf);
+static std::vector< std::complex<double> > lf_deut(const double Ek, const nucqcd::Vector3& k, const std::vector< std::complex<double> > &nonrelwf);
 
 
 

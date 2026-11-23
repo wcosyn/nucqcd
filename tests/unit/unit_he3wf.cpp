@@ -9,7 +9,7 @@
 #include <Tools/WaveFunctions/He3wf.hpp>
 #include <Tools/Core/constants.hpp>
 
-#include <TVector3.h>
+#include <Tools/Core/Vector3.hpp>
 #include <gsl/gsl_integration.h>
 
 #include <cmath>
@@ -21,7 +21,7 @@ using Catch::Matchers::WithinRel;
 
 namespace {
 // sum over all spins (mA = +1) and isospins of |Psi|^2 at (p1, p2) [MeV]; mt3 = +1 (proton) and -1 (neutron) separately
-void density(He3wf &wf, const TVector3 &p1, const TVector3 &p2, double &dens_p3, double &dens_n3) {
+void density(He3wf &wf, const nucqcd::Vector3 &p1, const nucqcd::Vector3 &p2, double &dens_p3, double &dens_n3) {
   dens_p3 = dens_n3 = 0.;
   for (int ms1 : {-1, 1})
     for (int ms2 : {-1, 1})
@@ -56,7 +56,7 @@ TEST_CASE("He3wf AV18: normalized to 1 in Jacobi coordinates, 2/3 and 1/3 for th
       for (int k = 0; k < nc; k++) {
         double c, wc;
         gsl_integration_glfixed_point(-1., 1., k, &c, &wc, tc);
-        const TVector3 q12(p12 * std::sqrt(1. - c * c), 0., p12 * c), q3(0., 0., p3);
+        const nucqcd::Vector3 q12(p12 * std::sqrt(1. - c * c), 0., p12 * c), q3(0., 0., p3);
         double dp, dn;
         density(wf, q12 - 0.5 * q3, -q12 - 0.5 * q3, dp, dn);
         norm_p3 += 8. * PI * PI * w12 * w3 * wc * dp;
@@ -78,8 +78,8 @@ TEST_CASE("He3wf AV18: spin-summed density rotation invariant, antisymmetric und
   std::normal_distribution<double> mom(0., 150.);  // MeV
   std::uniform_real_distribution<double> angle(0., 2. * PI);
   for (int it = 0; it < 10; it++) {
-    const TVector3 p1(mom(gen), mom(gen), mom(gen)), p2(mom(gen), mom(gen), mom(gen));
-    TVector3 axis(mom(gen), mom(gen), mom(gen)), r1 = p1, r2 = p2;
+    const nucqcd::Vector3 p1(mom(gen), mom(gen), mom(gen)), p2(mom(gen), mom(gen), mom(gen));
+    nucqcd::Vector3 axis(mom(gen), mom(gen), mom(gen)), r1 = p1, r2 = p2;
     const double phi = angle(gen);
     r1.Rotate(phi, axis);
     r2.Rotate(phi, axis);
@@ -95,7 +95,7 @@ TEST_CASE("He3wf AV18: spin-summed density rotation invariant, antisymmetric und
         CHECK(std::abs(psi + swapped) <= 1e-6 * std::sqrt(dp + dn));
       }
   }
-  CHECK_THROWS_AS(wf.getWF(TVector3(), TVector3(), 1, 1, 3, 1, 1, 1), std::invalid_argument);
+  CHECK_THROWS_AS(wf.getWF(nucqcd::Vector3(), nucqcd::Vector3(), 1, 1, 3, 1, 1, 1), std::invalid_argument);
   CHECK_THROWS_AS(He3wf("AV19", nucqcd_test::share_dir() + "/he3"), std::invalid_argument);
 }
 
@@ -121,7 +121,7 @@ TEST_CASE("He3Cross: spectator momentum distribution integrates to Z = 2 (struck
         for (int k = 0; k < nc; k++) {
           double c, wc;
           gsl_integration_glfixed_point(-1., 1., k, &c, &wc, tc);
-          const TVector3 q12(p12 * std::sqrt(1. - c * c), 0., p12 * c), q3(0., 0., p3);
+          const nucqcd::Vector3 q12(p12 * std::sqrt(1. - c * c), 0., p12 * c), q3(0., 0., p3);
           integral += 8. * PI * PI * w12 * w3 * wc * he3.getMomentumDistribution(q12 - 0.5 * q3, -q12 - 0.5 * q3);
         }
       }

@@ -12,7 +12,7 @@
 #include <Tools/Core/FourVector.hpp>
 #include <complex>
 #include <Tools/Core/GammaStructure.hpp>
-#include <TVector3.h>
+#include <Tools/Core/Vector3.hpp>
 #include <iostream>
 #include <Glauber/MeanFieldNucleus.hpp>
 

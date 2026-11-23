@@ -47,7 +47,7 @@
 #include <string>
 #include <complex>
 #include <vector>
-#include <TVector3.h>
+#include <Tools/Core/Vector3.hpp>
 
 #include <Glauber/FastParticle.hpp>
 #include <Glauber/MeanFieldNucleus.hpp>
@@ -158,7 +158,7 @@ public:
   
   //interpolation functions, one without arguments is a pure virtual function
   /*!returns the value of the fsi grid for a certain situation at coordinate (r,costheta,phi) */
-  std::complex<double> getFsiGridFull_interpvec(const TVector3 &rvec);
+  std::complex<double> getFsiGridFull_interpvec(const nucqcd::Vector3 &rvec);
   /*!returns the value of the fsi grid for a certain situation at coordinate (r,costheta,phi) */
   std::complex<double> getFsiGridFull_interp3(const double r, const double costheta, const double phi); 
   /*!returns the value of the fsi grid for a certain situation at coordinate (costheta,phi), r has been set previously */
@@ -169,7 +169,7 @@ public:
 
   //interpolation functions, one without arguments is a pure virtual function
   /*!returns the value of a grid of choice for a certain situation at coordinate (r,costheta,phi) */
-  std::complex<double> getFsiGridN_interpvec(const int grid, const TVector3 &rvec); 
+  std::complex<double> getFsiGridN_interpvec(const int grid, const nucqcd::Vector3 &rvec); 
   /*!returns the value of a grid of choice for a certain situation at coordinate (r,costheta,phi) */
   std::complex<double> getFsiGridN_interp3(const int grid, const double r, const double costheta, const double phi); 
   /*!returns the value of a grid of choice for a certain situation at coordinate (costheta,phi), r has been set previously */

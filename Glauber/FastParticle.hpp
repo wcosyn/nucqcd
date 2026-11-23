@@ -10,7 +10,7 @@
 #define FASTPARTICLE_H
 
 #include <string>
-#include <TVector3.h>
+#include <Tools/Core/Vector3.hpp>
 
 #include <Glauber/MeanFieldNucleus.hpp>
 
@@ -68,7 +68,7 @@ public:
    * \param nkt_mod [] modification of initial CT sigma value
    * \param dir homedir where all input is located
    */
-  FastParticle(const int type, const int inc, const TVector3 &pvec, 
+  FastParticle(const int type, const int inc, const nucqcd::Vector3 &pvec, 
 			   const double hard_scale, const double Gamma, 
          const double lc_mod, const double nkt_mod, const std::string dir);
   /*! Copy Constructor
@@ -99,7 +99,7 @@ public:
   double getHitz() const {return hitz;}/*!<  get z coord relative to this momentum of the hard interaction coordinate */
   double getHitbnorm() const {return hitbnorm;}/*!< get norm of b coord relative to this momentum of the hard interaction coordinate */
   const double* getHitbvec() const {return hitb;}/*!<  get b vector in regular coord system for hard interaction coord*/
-  TVector3 getPvec() const{ return p*TVector3(ex,ey,ez);} /*!<returns the momentumvector */
+  nucqcd::Vector3 getPvec() const{ return p*nucqcd::Vector3(ex,ey,ez);} /*!<returns the momentumvector */
   /*! Set (b,z) coordinates of the hard interaction point relative to this particle
    * \param r [fm] r coord of hard interaction point, spherical
    * \param costheta cos(theta) coord of hard interaction point, spherical

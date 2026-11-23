@@ -40,13 +40,13 @@ using std::stringstream;
 
 void printArray(MeanFieldNucleusThick&, const int*);
 void printNucleusInfo(MeanFieldNucleusThick&);
-void integrandum(complex<double> &, const numint::array<double,3>&, TVector3&, TSpinor*, TSpinor*, MeanFieldNucleusThick*, int shellindex1,int m1, int shellindex2, int m2, GlauberGridThick*);
+void integrandum(complex<double> &, const numint::array<double,3>&, nucqcd::Vector3&, TSpinor*, TSpinor*, MeanFieldNucleusThick*, int shellindex1,int m1, int shellindex2, int m2, GlauberGridThick*);
 
 
-void genPcmList(TVector3 [] , int nsteps); // pass a TVector pointer, will contain list, second argument is number of steps in each perpendicular direction, so length of list is 3*nsteps
+void genPcmList(nucqcd::Vector3 [] , int nsteps); // pass a TVector pointer, will contain list, second argument is number of steps in each perpendicular direction, so length of list is 3*nsteps
 
-double dist2bodymom(MeanFieldNucleusThick&, int,int,TVector3&,TVector3&, TVector3& );
-//double dist2bodymom(double,int,int,TVector3& P);
+double dist2bodymom(MeanFieldNucleusThick&, int,int,nucqcd::Vector3&,nucqcd::Vector3&, nucqcd::Vector3& );
+//double dist2bodymom(double,int,int,nucqcd::Vector3& P);
 
 struct F {
 	static void exec(const numint::array<double,3> &x, void *param, complex<double> &ret){
@@ -58,9 +58,9 @@ struct F {
 	TSpinor *u_pm,*u_ps;
 	GlauberGridThick* grid;
 	int shellindex1,m1,shellindex2,m2;
-	TVector3 P;
+	nucqcd::Vector3 P;
 
-	void (*f)(complex<double>& , const numint::array<double,3>&, TVector3& P,TSpinor*, TSpinor*, MeanFieldNucleusThick*, int, int,int,int,GlauberGridThick*);
+	void (*f)(complex<double>& , const numint::array<double,3>&, nucqcd::Vector3& P,TSpinor*, TSpinor*, MeanFieldNucleusThick*, int, int,int,int,GlauberGridThick*);
 };
 
 
@@ -70,21 +70,21 @@ void symmetric_kinematics(MeanFieldNucleusThick&,int,unsigned); // symmetric kin
 
 
 // some util function for my 2bodymomdistributionmatrix
-vector< pair<TVector3,double> >** initRho(unsigned n){ // init function -> pass rho as dynamically sized 2D array
-       	vector< pair<TVector3,double> > **rho;
-	rho = new vector< pair<TVector3,double> >*[n];
-	for (unsigned i=0;i<n;i++){ rho[i]=new vector< pair<TVector3,double> >[n]; for (unsigned j=0; j<n; j++) rho[i][j] = vector< pair<TVector3,double> >();}
+vector< pair<nucqcd::Vector3,double> >** initRho(unsigned n){ // init function -> pass rho as dynamically sized 2D array
+       	vector< pair<nucqcd::Vector3,double> > **rho;
+	rho = new vector< pair<nucqcd::Vector3,double> >*[n];
+	for (unsigned i=0;i<n;i++){ rho[i]=new vector< pair<nucqcd::Vector3,double> >[n]; for (unsigned j=0; j<n; j++) rho[i][j] = vector< pair<nucqcd::Vector3,double> >();}
 	return rho;
 }	
-void delRho(  vector<pair<TVector3,double> >** rho, unsigned n){ // del funtion -> pass rho as dynamically sized 2D array	
+void delRho(  vector<pair<nucqcd::Vector3,double> >** rho, unsigned n){ // del funtion -> pass rho as dynamically sized 2D array	
 	for (unsigned i=0;i<n;i++){ delete[] rho[i];}
 	delete[] rho;
 }
-void writeRho(string filename, MeanFieldNucleusThick& nuc, vector< pair<TVector3,double> >** rho); // write my vector pair matrix shizzle to a file
+void writeRho(string filename, MeanFieldNucleusThick& nuc, vector< pair<nucqcd::Vector3,double> >** rho); // write my vector pair matrix shizzle to a file
 
 // util print function
 
-string vecString(TVector3& v)
+string vecString(nucqcd::Vector3& v)
 {
 	std::stringstream ss;
 	ss << "[" << v.X() << ", " << v.Y() << ", " << v.Z() << "]";
@@ -114,13 +114,13 @@ void symmetric_kinematics(MeanFieldNucleusThick& nuc)
 {
 	unsigned nsteps = 30;
 	double PcmRange = 600; // [-...,+...] MeV
-	TVector3 Pcm[nsteps];
+	nucqcd::Vector3 Pcm[nsteps];
 	for (unsigned i=0; i<nsteps; i++)
 	{
-		Pcm[i] = TVector3(0.,0.,2.*PcmRange/(nsteps-1)*i-PcmRange); // zrange from -Range to Range
+		Pcm[i] = nucqcd::Vector3(0.,0.,2.*PcmRange/(nsteps-1)*i-PcmRange); // zrange from -Range to Range
 	}
-	TVector3 q = TVector3(0.,0.,3000.); // q along z
-	vector< pair<TVector3, double> > **rho = initRho(nuc.getPLevels()); //[nuc.getPLevels()][nuc.getPLevels()];
+	nucqcd::Vector3 q = nucqcd::Vector3(0.,0.,3000.); // q along z
+	vector< pair<nucqcd::Vector3, double> > **rho = initRho(nuc.getPLevels()); //[nuc.getPLevels()][nuc.getPLevels()];
 	for (int shellindex1 = 0; shellindex1 < nuc.getPLevels() ; shellindex1++)
 	{
 		cout << shellindex1+1 << " to " << nuc.getPLevels() << endl;
@@ -134,14 +134,14 @@ void symmetric_kinematics(MeanFieldNucleusThick& nuc)
 				double K = sqrt(pow((q.Mag()+EP)/2.,2)-nucqcd::mass_p*nucqcd::mass_p); // kinetic energy of ej nucleons  = (q+P)/2 - rest mass (total com energy at coll = P+q)
 				double kperp = sqrt(K*K-kz*kz); // perp component of k of ej nucleons
 				double theta = atan2(kperp,kz); // theta of ej nucleons
-				TVector3 pf(0.,0.,K), ps(0.,0.,K); // create vectors of ej nucleons
+				nucqcd::Vector3 pf(0.,0.,K), ps(0.,0.,K); // create vectors of ej nucleons
 				pf.RotateY(theta); ps.RotateY(-theta); //now rotate them into xz plane
-				TVector3 pm = pf-q; // calculate pm
-				//TVector3 pm = Pcm[i]-ps;
+				nucqcd::Vector3 pm = pf-q; // calculate pm
+				//nucqcd::Vector3 pm = Pcm[i]-ps;
 				cout << i << " to " << nsteps << endl;
 				//cout << "P " << vecString(Pcm[i]) << " pm " << vecString(pm) << " ps " << vecString(ps) << endl;	
 				double res = dist2bodymom(nuc,shellindex1,shellindex2,Pcm[i],pm,ps);
-				rho[shellindex1][shellindex2].push_back(pair<TVector3,double>(Pcm[i],res));
+				rho[shellindex1][shellindex2].push_back(pair<nucqcd::Vector3,double>(Pcm[i],res));
 			}
 		}
 		cout << endl;
@@ -156,9 +156,9 @@ void symmetric_kinematics(MeanFieldNucleusThick& nuc)
 void symmetric_kinematics(MeanFieldNucleusThick& nuc,int i, unsigned nsteps) // for parallel jobs, pass step and total steps
 {
 	double PcmRange = 600; // [-...,+...] MeV
-	TVector3 Pcm = TVector3(0.,0.,2.*PcmRange/(nsteps-1)*i-PcmRange); // zrange from -Range to Range
-	TVector3 q = TVector3(0.,0.,3000.); // q along z
-	vector< pair<TVector3, double> > **rho = initRho(nuc.getPLevels()); //[nuc.getPLevels()][nuc.getPLevels()];
+	nucqcd::Vector3 Pcm = nucqcd::Vector3(0.,0.,2.*PcmRange/(nsteps-1)*i-PcmRange); // zrange from -Range to Range
+	nucqcd::Vector3 q = nucqcd::Vector3(0.,0.,3000.); // q along z
+	vector< pair<nucqcd::Vector3, double> > **rho = initRho(nuc.getPLevels()); //[nuc.getPLevels()][nuc.getPLevels()];
 	for (int shellindex1 = 0; shellindex1 < nuc.getPLevels() ; shellindex1++)
 	{
 		cout << shellindex1+1 << " to " << nuc.getPLevels() << endl;
@@ -170,14 +170,14 @@ void symmetric_kinematics(MeanFieldNucleusThick& nuc,int i, unsigned nsteps) // 
 			double K = sqrt(pow((q.Mag()+EP)/2.,2)-nucqcd::mass_p*nucqcd::mass_p); // kinetic energy of ej nucleons  = (q+P)/2 - rest mass (total com energy at coll = P+q)
 			double kperp = sqrt(K*K-kz*kz); // perp component of k of ej nucleons
 			double theta = atan2(kperp,kz); // theta of ej nucleons
-			TVector3 pf(0.,0.,K), ps(0.,0.,K); // create vectors of ej nucleons
+			nucqcd::Vector3 pf(0.,0.,K), ps(0.,0.,K); // create vectors of ej nucleons
 			pf.RotateY(theta); ps.RotateY(-theta); //now rotate them into xz plane
-			TVector3 pm = pf-q; // calculate pm
-			//TVector3 pm = Pcm[i]-ps;
+			nucqcd::Vector3 pm = pf-q; // calculate pm
+			//nucqcd::Vector3 pm = Pcm[i]-ps;
 			cout << i << " to " << nsteps << endl;
 			//cout << "P " << vecString(Pcm[i]) << " pm " << vecString(pm) << " ps " << vecString(ps) << endl;	
 			double res = dist2bodymom(nuc,shellindex1,shellindex2,Pcm,pm,ps);
-			rho[shellindex1][shellindex2].push_back(pair<TVector3,double>(Pcm,res));
+			rho[shellindex1][shellindex2].push_back(pair<nucqcd::Vector3,double>(Pcm,res));
 		}
 		cout << endl;
 	}
@@ -198,18 +198,18 @@ void note_kinematics(MeanFieldNucleusThick& nuc)
 {
 
 	// create Pcm list
-	//TVector3 *Pcm = NULL; // explicit NULL initialization, this is good common practise for creating empty pointers!
+	//nucqcd::Vector3 *Pcm = NULL; // explicit NULL initialization, this is good common practise for creating empty pointers!
 	int nsteps = 400;
-	TVector3 Pcm[3*nsteps];
+	nucqcd::Vector3 Pcm[3*nsteps];
 	genPcmList(Pcm,nsteps);
 	// -- Vectors
-	TVector3 q = TVector3(0.,0.,1400.); // see distribution of Maarten
-	TVector3 pf = 0.8*q;
+	nucqcd::Vector3 q = nucqcd::Vector3(0.,0.,1400.); // see distribution of Maarten
+	nucqcd::Vector3 pf = 0.8*q;
 	pf.RotateY(nucqcd::deg_to_rad*5); // pf now in xz plane
-	TVector3 pm = pf-q; // pm also in xz plane
-	vector< pair<TVector3, double> >**  rho = NULL; // two shellindices of the nucleons, pair contains P vector and result
+	nucqcd::Vector3 pm = pf-q; // pm also in xz plane
+	vector< pair<nucqcd::Vector3, double> >**  rho = NULL; // two shellindices of the nucleons, pair contains P vector and result
 	rho = initRho(nuc.getPLevels());
-	vector<TVector3> ps_list;	
+	vector<nucqcd::Vector3> ps_list;	
 	
 	// make function that constructs whole rho matrix, or list for different quantum number n1,k1,n2,k2
 	
@@ -223,9 +223,9 @@ void note_kinematics(MeanFieldNucleusThick& nuc)
 			for (int i=0; i<3*nsteps; i++)
 			{
 				cout << ">>" << i+1 << " to " << 3*nsteps << endl;
-				TVector3 ps = Pcm[i]-pm;
+				nucqcd::Vector3 ps = Pcm[i]-pm;
 				double res = dist2bodymom(nuc,shellindex1,shellindex2,Pcm[i],pm,ps);
-				rho[shellindex1][shellindex2].push_back(pair<TVector3,double>(Pcm[i],res));
+				rho[shellindex1][shellindex2].push_back(pair<nucqcd::Vector3,double>(Pcm[i],res));
 				ps_list.push_back(ps);
 			}
 		}
@@ -235,7 +235,7 @@ void note_kinematics(MeanFieldNucleusThick& nuc)
 	delRho(rho,nuc.getPLevels());
 }
 
-void writeRho(string filename, MeanFieldNucleusThick& nuc, vector< pair<TVector3,double> > **rho)
+void writeRho(string filename, MeanFieldNucleusThick& nuc, vector< pair<nucqcd::Vector3,double> > **rho)
 {
 	// write to file
 	ofstream data(filename.c_str());
@@ -245,14 +245,14 @@ void writeRho(string filename, MeanFieldNucleusThick& nuc, vector< pair<TVector3
 		{
 			data << "**n1=" << nuc.getN_array()[shellindex1] << "|k1="<< nuc.getKappas()[shellindex1] << "|l1=" << nuc.getL_array()[shellindex1] << "|j1="<< nuc.getJ_array()[shellindex1];
 			data <<  "|n2=" << nuc.getN_array()[shellindex2] << "|k2="<< nuc.getKappas()[shellindex2] << "|l2=" << nuc.getL_array()[shellindex2] << "|j2="<< nuc.getJ_array()[shellindex2] << endl;
-			for (vector< pair<TVector3,double> >::iterator it=rho[shellindex1][shellindex2].begin(); it != rho[shellindex1][shellindex2].end(); it++) {
+			for (vector< pair<nucqcd::Vector3,double> >::iterator it=rho[shellindex1][shellindex2].begin(); it != rho[shellindex1][shellindex2].end(); it++) {
 				data << it->first.X() << "\t" << it->first.Y() << "\t" << it->first.Z() << "\t" << it->second << endl;
 			}
 		}
 	}
 	data.close();
 }
-double dist2bodymom(MeanFieldNucleusThick& nuc, int shellindex1, int shellindex2, TVector3& P,TVector3& pm, TVector3& ps)
+double dist2bodymom(MeanFieldNucleusThick& nuc, int shellindex1, int shellindex2, nucqcd::Vector3& P,nucqcd::Vector3& pm, nucqcd::Vector3& ps)
 {
 
 	// GLAUBER stuff -------------------------
@@ -272,7 +272,7 @@ double dist2bodymom(MeanFieldNucleusThick& nuc, int shellindex1, int shellindex2
 
 
 	double intgrl_res = 0.; // result of the integral we will return at the end
-	TVector3 diff = P-(pm+ps);
+	nucqcd::Vector3 diff = P-(pm+ps);
 	if (diff.Mag() > 1e-12)
 	{
 		cerr << " com momentum mismatch; difference between P and pm+ps should be zero " << endl;
@@ -345,27 +345,27 @@ double dist2bodymom(MeanFieldNucleusThick& nuc, int shellindex1, int shellindex2
 }
 
 
-void integrandum(complex<double>& res, const numint::array<double,3>& x, TVector3& P, TSpinor* u_pm, TSpinor* u_ps, MeanFieldNucleusThick* nuc, int shellindex1, int m1, int shellindex2,int m2, GlauberGridThick* grid)
+void integrandum(complex<double>& res, const numint::array<double,3>& x, nucqcd::Vector3& P, TSpinor* u_pm, TSpinor* u_ps, MeanFieldNucleusThick* nuc, int shellindex1, int m1, int shellindex2,int m2, GlauberGridThick* grid)
 {
 	double sinth = sqrt(1.-x[1]*x[1]);
-	double PR = P*TVector3(x[0]*sinth*cos(x[2]),x[0]*sinth*sin(x[2]),x[0]*x[1]); // dot product of vector P with vector R
+	double PR = P*nucqcd::Vector3(x[0]*sinth*cos(x[2]),x[0]*sinth*sin(x[2]),x[0]*x[1]); // dot product of vector P with vector R
 	res = exp(-nucqcd::i_unit*nucqcd::inv_hbarc*PR)*TSpinor::Bar(*u_pm)*TMFSpinor(*nuc,shellindex1,m1,x[0],x[1],x[2])*TSpinor::Bar(*u_ps)*TMFSpinor(*nuc,shellindex2,m2,x[0],x[1],x[2])*grid->getFsiCtGridFull_interp3(x[0],x[1],x[2]); // Wavefunctions already defined with factor r, so no r^2 that would appear from jacobian, no sin(theta) because we integrate over d(cos(theta))
 
 }
 
 
 
-void genPcmList(TVector3 Pcm[], int nsteps) // vary Pcm from -400 to 400 in n steps
+void genPcmList(nucqcd::Vector3 Pcm[], int nsteps) // vary Pcm from -400 to 400 in n steps
 {
 	// construct a list for Pcm in three perp directions, take x y z, we can rotate later
 	// vary Pcm from -400 to 400 [Mev]
-	//Pcm = new TVector3[nsteps*3]; // times three because three perp directions
+	//Pcm = new nucqcd::Vector3[nsteps*3]; // times three because three perp directions
 	double normPmin = -800.;
 	double normPmax = 800.;
 	double Pstep = (normPmax-normPmin)/(nsteps-1); // step value for Pcm
-	for (int i=0; i<nsteps;i++) {Pcm[i]=TVector3(normPmin+i*Pstep,0.,0.);} // x-dir
-	for (int i=nsteps; i<2*nsteps;i++) Pcm[i]=TVector3(0.,normPmin+(i-nsteps)*Pstep,0); //y-dir
-	for (int i=2*nsteps; i<3*nsteps;i++) { Pcm[i]=TVector3(0.,0.,normPmin+(i-2*nsteps)*Pstep);} //z-dir
+	for (int i=0; i<nsteps;i++) {Pcm[i]=nucqcd::Vector3(normPmin+i*Pstep,0.,0.);} // x-dir
+	for (int i=nsteps; i<2*nsteps;i++) Pcm[i]=nucqcd::Vector3(0.,normPmin+(i-nsteps)*Pstep,0); //y-dir
+	for (int i=2*nsteps; i<3*nsteps;i++) { Pcm[i]=nucqcd::Vector3(0.,0.,normPmin+(i-2*nsteps)*Pstep);} //z-dir
 }
 
 

@@ -21,7 +21,7 @@ AbstractFsiCTGridThick::~AbstractFsiCTGridThick(){
 }
 
 //interpolation functions
-complex<double> AbstractFsiCTGridThick::getFsiSrcCtGridFull_interpvec(const TVector3 &rvec){
+complex<double> AbstractFsiCTGridThick::getFsiSrcCtGridFull_interpvec(const nucqcd::Vector3 &rvec){
   return getFsiSrcCtGridFull_interp3(rvec.Mag(),rvec.CosTheta(),rvec.Phi());
 }
 

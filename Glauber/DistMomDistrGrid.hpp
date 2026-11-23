@@ -11,7 +11,7 @@
 
 #include <string>
 #include <complex>
-#include <TVector3.h>
+#include <Tools/Core/Vector3.hpp>
 #include <Tools/Core/Matrix.hpp>
 #include <Integrator/numint/numint.hpp>
 
@@ -73,7 +73,7 @@ public:
   bool getFilledgrid() const{return filledgrid;} /*!< true when the (FSI) grid is filled */
   bool getFilledctgrid() const{return filledctgrid;} /*!< true when the FSI+CT grid is filled */
   bool getFilledallgrid() const{return filledallgrid;} /*!< true when all grids are filled */
-  const TVector3 & getPvec_hit() const{return pvec_hit;} /*!< [MeV] momentum at which the distribution is computed */
+  const nucqcd::Vector3 & getPvec_hit() const{return pvec_hit;} /*!< [MeV] momentum at which the distribution is computed */
   double getP_hit() const{return p_hit;} /*!< [MeV] norm of that momentum */
   double getCostheta_hit() const{return costheta_hit;} /*!< cos(theta) of that momentum */
   double getSintheta_hit() const{return sintheta_hit;} /*!< sin(theta) of that momentum */
@@ -98,7 +98,7 @@ public:
   
   //interpolation functions, one without arguments is a pure virtual function
   /*!returns the value of the momentum distribution for a certain situation at coordinate (p,costheta,phi) */
-  double getRhoGridFull_interpvec(int gridindex, const TVector3 &pvec); 
+  double getRhoGridFull_interpvec(int gridindex, const nucqcd::Vector3 &pvec); 
   /*!returns the value of the momentum distribution for a certain situation at coordinate (p,costheta,phi) */
   double getRhoGridFull_interp3(int gridindex, const double p, const double costheta, const double phi); 
   /*!returns the value of the momentum distribution for a certain situation at coordinate (costheta,phi), p has been set previously */
@@ -112,19 +112,19 @@ public:
 
    
    /*! fills the momentum distribution grids that are used for interpolation
-    * \param rot TRotation if the frame of the missing momentum is different 
+    * \param rot nucqcd::Rotation if the frame of the missing momentum is different 
     * from the frame that was used to compute the glauberphases
     * 
     */
-   void fillGrids(TRotation & rot);  
+   void fillGrids(nucqcd::Rotation & rot);  
    /*! updates the momentum distribution grids that are used for interpolation 
     * \param fsigrid pointer to FSI grid you want to make a distorted momentum distribution forw
     * \param level knockout level
-    * \param rot TRotation if the frame of the missing momentum is different 
+    * \param rot nucqcd::Rotation if the frame of the missing momentum is different 
     * from the frame that was used to compute the glauberphases
     * 
     */
-   void updateGrids(AbstractFsiCTGrid *fsigrid, int level, TRotation & rot);
+   void updateGrids(AbstractFsiCTGrid *fsigrid, int level, nucqcd::Rotation & rot);
   
   
   
@@ -159,7 +159,7 @@ private:
   bool filledgrid; /*!< denotes if the grid has been filled */
   bool filledctgrid; /*!< denotes if the ct grid has been filled */
   bool filledallgrid; /*!< denotes if allthe (possible) grids have been filled */
-  TVector3 pvec_hit; /*!< coordinate where the mom distribution is calculated */
+  nucqcd::Vector3 pvec_hit; /*!< coordinate where the mom distribution is calculated */
   double p_hit;  /*!< p coordinate of the momentum vector point, what the grid depens on */
   double costheta_hit;/*!< cos of theta coordinate of the momentum vector point, what the grid depens on */
   double sintheta_hit;/*!< sin of theta coordinate of the momentum vector point, what the grid depens on */
@@ -178,21 +178,21 @@ private:
     
   void constructpwGrid(); /*!< construct all grids */
   /*! construct all grids 
-    * \param rot TRotation if the frame of the missing momentum is different 
+    * \param rot nucqcd::Rotation if the frame of the missing momentum is different 
     * from the frame that was used to compute the glauberphases
     */
-  void constructAllGrids(TRotation & rot); 
+  void constructAllGrids(nucqcd::Rotation & rot); 
   void readinRhoGrid(std::ifstream &infile); /*!< read in all grids */
   void writeoutRhoGrid(std::ofstream &outfile); /*!< write out all grids */
   /*! construct only the fsi+ct grids
-    * \param rot TRotation if the frame of the missing momentum is different 
+    * \param rot nucqcd::Rotation if the frame of the missing momentum is different 
     * from the frame that was used to compute the glauberphases
     */
-  void constructCtGrid(TRotation & rot);  
+  void constructCtGrid(nucqcd::Rotation & rot);  
   void readinRhoCtGrid(std::ifstream &infile); /*!< read in only the fsi+ct grids */
   /*! reads the fsi+ct grid from its cache file, or computes and caches it if the file is missing or incomplete
    * \param rot rotation passed on to constructCtGrid */
-  void readinOrConstructCtGrid(TRotation & rot);
+  void readinOrConstructCtGrid(nucqcd::Rotation & rot);
   void writeoutRhoCtGrid(std::ofstream &outfile); /*!< write out only the fsi+ct grids */
 
 

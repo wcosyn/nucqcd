@@ -52,7 +52,7 @@ public:
    * \return [MeV^-6] S(sp1,sp2) = A sum over all spins (m_A averaged) and the spectator isospins of
    * |Psi|^2, with the struck nucleon (momentum -sp1-sp2) the proton or neutron of the constructor;
    * \f$ \int d^3p_1 d^3p_2\, S = Z = 2 \f$ (struck proton) or N = 1 (struck neutron), see the class description */
-  double getMomentumDistribution(const TVector3 &sp1, const TVector3 &sp2);
+  double getMomentumDistribution(const nucqcd::Vector3 &sp1, const nucqcd::Vector3 &sp2);
   /*! Calculate He3 momentum distribution for a certain kinematics of the spectators
    * \param[in] kin LightconeKin2to3 object that has all the kinematics
    * \return [MeV-4] getMomentumDistribution at the spectator momenta (shifted by a third of the He3

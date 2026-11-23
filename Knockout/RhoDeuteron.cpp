@@ -111,7 +111,7 @@ void RhoDeuteron::intPhit(const double phi, double *result, va_list ap){
   
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
-  TVector3 pmvec = TVector3(pm*sintheta*cosphi*1.E03,pm*sintheta*sinphi*1.E03,pm*costheta*1.E03);  
+  nucqcd::Vector3 pmvec = nucqcd::Vector3(pm*sintheta*cosphi*1.E03,pm*sintheta*sinphi*1.E03,pm*costheta*1.E03);  
   double Eoff = nucqcd::mass_d*1.E-03-EN;
   
   for(int i=0;i<2;i++) result[i]=0.;
@@ -300,7 +300,7 @@ void RhoDeuteron::intPhiz(const double phi, double *result, va_list ap){
   
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
-  TVector3 pmvec = TVector3(pm*sintheta*cosphi*1.E03,pm*sintheta*sinphi*1.E03,pm*costheta*1.E03);
+  nucqcd::Vector3 pmvec = nucqcd::Vector3(pm*sintheta*cosphi*1.E03,pm*sintheta*sinphi*1.E03,pm*costheta*1.E03);
   double Eoff = nucqcd::mass_d*1.E-03-EN;
   for(int i=0;i<2;i++) result[i]=0.;  
   
@@ -357,7 +357,7 @@ void RhoDeuteron::intPhiz(const double phi, double *result, va_list ap){
 
 //all energies in MeV please
 void RhoDeuteron::getMomdistr(double *results, double Erho, double prho, double pzrho, 
-			      double pxrho, TVector3 &pmvec, double nu, double qvec){
+			      double pxrho, nucqcd::Vector3 &pmvec, double nu, double qvec){
   
   double s = MASS_N*MASS_N*1.E06+nucqcd::mass_rho*nucqcd::mass_rho+2.*Erho*sqrt(MASS_N*MASS_N*1.E06+pmvec.Mag2())-2.*(pzrho*pmvec.Z()+pxrho*pmvec.X());
   double sigmap, beta2p, epsp, sigman, beta2n, epsn;
@@ -407,7 +407,7 @@ void RhoDeuteron::getCrosst_coh(double *result, const double Ebeam, const double
 //   	  /*if(Erho/nu>0.9)*/ cout << "zero " <<
 //   	    Erho << " " << costhetarho << " " << Erho/nu << " " << tt << 
 //   	    " " << C0 << " " << ED+Erho << endl;
-      TVector3 pDvec = TVector3(pDx*1.E-03,0.,pDx*1.E-03);
+      nucqcd::Vector3 pDvec = nucqcd::Vector3(pDx*1.E-03,0.,pDx*1.E-03);
 //       *result = 1./(2.*nucqcd::mass_d*1.E-03);
 //       return;
       *result = calcCross_coh(pDvec)
@@ -436,7 +436,7 @@ void RhoDeuteron::getCrossz_coh(double *result, const double Ebeam,  const doubl
     double pxrho = sqrt(prho*prho-pzrho*pzrho);
     if(std::isnan(pxrho)) pxrho=0.;
     double ss = -Q2+MASS_N*MASS_N+2.*MASS_N*nu;
-    TVector3 pDvec = TVector3(-pxrho*1.E03,0.,(qvec-pzrho)*1.E03);
+    nucqcd::Vector3 pDvec = nucqcd::Vector3(-pxrho*1.E03,0.,(qvec-pzrho)*1.E03);
 //     cout << t << " " << pD*pD << " " << pxrho*pxrho+(qvec-pzrho)*(qvec-pzrho) << " " << pzrho/prho << endl;
 //     *result = nu;
 //     return;
@@ -447,7 +447,7 @@ void RhoDeuteron::getCrossz_coh(double *result, const double Ebeam,  const doubl
   else *result=0.;
 }
 
-double RhoDeuteron::calcCross_coh(TVector3 &pDvec){
+double RhoDeuteron::calcCross_coh(nucqcd::Vector3 &pDvec){
   double result=0.;
   double pmestimate=0.,cthestimate=0.,phiestimate=0.;
   //because of symmetry between sd and -sd for both incoming and outgoing deuteron we can simplify the summation
@@ -469,7 +469,7 @@ double RhoDeuteron::calcCross_coh(TVector3 &pDvec){
 
 
 void RhoDeuteron::intPmcoh(const double pm, complex<double> *result, va_list ap){
-  TVector3 *p_pDvec = va_arg(ap,TVector3*);
+  nucqcd::Vector3 *p_pDvec = va_arg(ap,nucqcd::Vector3*);
   int M = va_arg(ap,int);
   int M2 = va_arg(ap,int);
   double *pcthestimate = va_arg(ap,double*);
@@ -487,7 +487,7 @@ void RhoDeuteron::intPmcoh(const double pm, complex<double> *result, va_list ap)
 
 void RhoDeuteron::intCosThetacoh(const double costheta, complex<double> *result, va_list ap){
   double pm = va_arg(ap,double);
-  TVector3 *p_pDvec = va_arg(ap,TVector3*);
+  nucqcd::Vector3 *p_pDvec = va_arg(ap,nucqcd::Vector3*);
   int M = va_arg(ap,int);
   int M2 = va_arg(ap,int);
   double *pphiestimate = va_arg(ap,double*);
@@ -502,14 +502,14 @@ void RhoDeuteron::intPhicoh(const double phi, complex<double> *result, va_list a
   double pm = va_arg(ap,double);
   double costheta = va_arg(ap,double);
   double sintheta = va_arg(ap,double);
-  TVector3 *p_pDvec = va_arg(ap,TVector3*);
+  nucqcd::Vector3 *p_pDvec = va_arg(ap,nucqcd::Vector3*);
   int M = va_arg(ap,int);
   int M2 = va_arg(ap,int);
   
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
-  TVector3 ps = TVector3(pm*sintheta*cosphi,pm*sintheta*sinphi,pm*costheta);
-  TVector3 ps2 = TVector3((ps-*p_pDvec)*0.5);
+  nucqcd::Vector3 ps = nucqcd::Vector3(pm*sintheta*cosphi,pm*sintheta*sinphi,pm*costheta);
+  nucqcd::Vector3 ps2 = nucqcd::Vector3((ps-*p_pDvec)*0.5);
   
   *result=deuteron.getMomDistrpwcoh(ps,ps2,M,M2);
 }  
@@ -525,7 +525,7 @@ void RhoDeuteron::klaas_rhoD_t(numint::vector_d & results, double pm, double cos
   double sintheta = sqrt(1.-costheta*costheta);
 
   double EN = sqrt(MASS_N*MASS_N+pm*pm);
-  TVector3 pmvec = TVector3(pm*sintheta*cosphi*1.E03,pm*sintheta*sinphi*1.E03,pm*costheta*1.E03);  
+  nucqcd::Vector3 pmvec = nucqcd::Vector3(pm*sintheta*cosphi*1.E03,pm*sintheta*sinphi*1.E03,pm*costheta*1.E03);  
   double Eoff = nucqcd::mass_d*1.E-03-EN;
   
   double A = (t+Q2-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06)*0.5;
@@ -638,7 +638,7 @@ void RhoDeuteron::klaas_rhoD_z(numint::vector_d & results, double pm, double cos
   sincos(phi,&sinphi,&cosphi);
   
   double EN = sqrt(MASS_N*MASS_N+pm*pm);
-  TVector3 pmvec = TVector3(pm*sintheta*cosphi*1.E03,pm*sintheta*sinphi*1.E03,pm*costheta*1.E03);  
+  nucqcd::Vector3 pmvec = nucqcd::Vector3(pm*sintheta*cosphi*1.E03,pm*sintheta*sinphi*1.E03,pm*costheta*1.E03);  
   double Eoff = nucqcd::mass_d*1.E-03-EN;
 
   double C0 = nu+Eoff;

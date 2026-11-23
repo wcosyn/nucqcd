@@ -19,7 +19,7 @@
 
 // Forward declarations
 //class TStrangePolarization;
-class TLorentzVector;
+namespace nucqcd { class LorentzVector; }
 
 /*! \brief Namespace-like class for the deuteron: wave functions and polarization states */
 class TDeuteron
@@ -111,8 +111,8 @@ class TDeuteron
     double GetVSr(double r) const { return fImplementation->GetVSr(r); } ///< [fm^-1/2] spin-singlet P wave (relativistic wave functions only) \param r [fm]
     double GetUp(double p) const { return fImplementation->GetUp(p); } ///< [MeV^-3/2] S wave U(p) in momentum space \param p [MeV]
     double GetWp(double p) const { return fImplementation->GetWp(p); } ///< [MeV^-3/2] D wave W(p) in momentum space, Bessel transform of w(r) without the factor -1 (see the class description) \param p [MeV]
-    double GetUpoff(const TVector3& p) const { return fImplementation->GetUpoff(p); } ///< [MeV^-3/2] off-shell S-wave part, used in DeuteronPStateOff (Yukawa parametrizations) \param p [MeV] relative momentum
-    double GetWpoff1(const TVector3& p) const { return fImplementation->GetWpoff1(p); } ///< [MeV^-3/2] first off-shell D-wave part, used in DeuteronPStateOff \param p [MeV] relative momentum
+    double GetUpoff(const nucqcd::Vector3& p) const { return fImplementation->GetUpoff(p); } ///< [MeV^-3/2] off-shell S-wave part, used in DeuteronPStateOff (Yukawa parametrizations) \param p [MeV] relative momentum
+    double GetWpoff1(const nucqcd::Vector3& p) const { return fImplementation->GetWpoff1(p); } ///< [MeV^-3/2] first off-shell D-wave part, used in DeuteronPStateOff \param p [MeV] relative momentum
     double GetWpoff2(double pperp2) const { return fImplementation->GetWpoff2(pperp2); } ///< [MeV^-3/2] second off-shell D-wave part, used in DeuteronPStateOff \param pperp2 [MeV^2] transverse momentum squared
     double GetVTp(double p) const { return fImplementation->GetVTp(p); } ///< [MeV^-3/2] spin-triplet P wave in momentum space (relativistic only) \param p [MeV]
     double GetVSp(double p) const { return fImplementation->GetVSp(p); } ///< [MeV^-3/2] spin-singlet P wave in momentum space (relativistic only) \param p [MeV]
@@ -128,15 +128,15 @@ class TDeuteron
     FourVector<GammaStructure> Vertex(const FourVector<double>& p2,
 				      const FourVector<double>& pD) const;
     /*! see Vertex(const FourVector<double>&, const FourVector<double>&) */
-    FourVector<GammaStructure> Vertex(const TLorentzVector& p2,
-				      const TLorentzVector& pD) const { return Vertex(ToFourVector(p2),ToFourVector(pD)); }
+    FourVector<GammaStructure> Vertex(const nucqcd::LorentzVector& p2,
+				      const nucqcd::LorentzVector& pD) const { return Vertex(ToFourVector(p2),ToFourVector(pD)); }
     /*! momentum-space wave function, see the class description for the phase and spin conventions
      * \param deuteronPol 2 m_D \param nucleon2Pol 2 m_2 (spectator) \param nucleon1Pol 2 m_1 (nucleon hit by the photon)
      * \param p [MeV] relative momentum (momentum of nucleon 1 in the deuteron rest frame)
      * \return [MeV^-3/2] amplitude */
     std::complex<double> DeuteronPState(int deuteronPol, int nucleon2Pol,
 					int nucleon1Pol, 
-					const TVector3& p) const; 
+					const nucqcd::Vector3& p) const; 
     /*! DeuteronPState with the spatial part of p1 [MeV] */
     std::complex<double> DeuteronPState(int deuteronPol, int nucleon2Pol,
 					int nucleon1Pol, 
@@ -144,7 +144,7 @@ class TDeuteron
     /*! DeuteronPState with the spatial part of p1 [MeV] */
     std::complex<double> DeuteronPState(int deuteronPol, int nucleon2Pol,
 					int nucleon1Pol, 
-					const TLorentzVector& p1) const; 
+					const nucqcd::LorentzVector& p1) const; 
     /*! off-shell part of the momentum-space wave function (Yukawa parametrizations): the same spin
      * coupling with the off-shell radial parts GetUpoff, GetWpoff1, GetWpoff2, multiplied by
      * \f$ -i p_z/\hbar c \f$; zero for p_z = 0; not for relativistic wave functions
@@ -152,7 +152,7 @@ class TDeuteron
      * \param p [MeV] relative momentum */
     std::complex<double> DeuteronPStateOff(int deuteronPol, int nucleon2Pol,
 					int nucleon1Pol, 
-					const TVector3& p) const; 
+					const nucqcd::Vector3& p) const; 
     /*! DeuteronPStateOff with the spatial part of p1 [MeV] */
     std::complex<double> DeuteronPStateOff(int deuteronPol, int nucleon2Pol,
 					int nucleon1Pol, 
@@ -160,23 +160,23 @@ class TDeuteron
     /*! with the spatial part of p1 [MeV]; note: this overload calls DeuteronPState, not DeuteronPStateOff */
     std::complex<double> DeuteronPStateOff(int deuteronPol, int nucleon2Pol,
 					int nucleon1Pol, 
-					const TLorentzVector& p1) const; 
+					const nucqcd::LorentzVector& p1) const; 
 //     std::complex<double> DeuteronPState(const TStrangePolarization& pol,
 // 				       const TSpinor::Polarization& pol1, 
-// 				       const TVector3& p1) const; 
+// 				       const nucqcd::Vector3& p1) const; 
 //     std::complex<double> DeuteronPState(const TStrangePolarization& pol,
 // 				       const TSpinor::Polarization& pol1, 
 // 				       const FourVector<double>& p1) const; 
 //     std::complex<double> DeuteronPState(const TStrangePolarization& pol,
 // 				       const TSpinor::Polarization& pol1, 
-// 				       const TLorentzVector& p1) const;
+// 				       const nucqcd::LorentzVector& p1) const;
     /*! coordinate-space wave function times r, see the class description; not for relativistic wave functions
      * \param deuteronPol 2 m_D \param nucleon2Pol 2 m_2 (spectator) \param nucleon1Pol 2 m_1 (nucleon hit by the photon)
      * \param r [fm] relative position
      * \return [fm^-1/2] \f$ r\,\psi(\vec r) \f$ */
     std::complex<double> DeuteronRState(int deuteronPol, int nucleon2Pol,
 					int nucleon1Pol, 
-					const TVector3& r) const; 
+					const nucqcd::Vector3& r) const; 
     /*! DeuteronRState with the spatial part of r1 [fm] */
     std::complex<double> DeuteronRState(int deuteronPol, int nucleon2Pol,
 					int nucleon1Pol, 
@@ -184,16 +184,16 @@ class TDeuteron
     /*! DeuteronRState with the spatial part of r1 [fm] */
     std::complex<double> DeuteronRState(int deuteronPol, int nucleon2Pol,
 					int nucleon1Pol, 
-					const TLorentzVector& r1) const; 
+					const nucqcd::LorentzVector& r1) const; 
 //     std::complex<double> DeuteronRState(const TStrangePolarization& pol,
 // 				       const TSpinor::Polarization& pol1, 
-// 				       const TVector3& r1) const; 
+// 				       const nucqcd::Vector3& r1) const; 
 //     std::complex<double> DeuteronRState(const TStrangePolarization& pol,
 // 				       const TSpinor::Polarization& pol1, 
 // 				       const FourVector<double>& r1) const; 
 //     std::complex<double> DeuteronRState(const TStrangePolarization& pol,
 // 				       const TSpinor::Polarization& pol1, 
-// 				       const TLorentzVector& r1) const;
+// 				       const nucqcd::LorentzVector& r1) const;
     static std::complex<double> SphericalHarmonic(unsigned int l, int m, double theta, double phi); ///< normalized spherical harmonic Y_lm (Condon-Shortley phase) \param l orbital angular momentum \param m magnetic quantum number \param theta [rad] \param phi [rad]
     static std::complex<double> SphericalHarmonicCos(unsigned int l, int m, double costheta, double phi); ///< as SphericalHarmonic, with cos(theta) as argument \param l orbital angular momentum \param m magnetic quantum number \param costheta cos of the polar angle \param phi [rad]
     static double ClebschGordan(int two_j1,int two_m1,int two_j2,int two_m2,int two_j,int two_m); ///< Clebsch-Gordan coefficient <j1 m1 j2 m2|j m> (Condon-Shortley), all arguments times two

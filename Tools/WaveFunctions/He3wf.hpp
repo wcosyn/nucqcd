@@ -11,7 +11,7 @@
 #define HE3WF_HPP
 
 #include <string>
-#include <TVector3.h>
+#include <Tools/Core/Vector3.hpp>
 #include <complex>
 
 /*! \brief A class that returns the momentum space he3 wave function for a variety of parametrizations
@@ -52,7 +52,7 @@ public:
    * \return [MeV^-3] returns the complex valued He3 wave function (0 if mt3 = 1-mt1-mt2 is not +-1)
    * \throw std::invalid_argument for spin or isospin projections other than +-1
    */
-  std::complex<double> getWF(const TVector3 &p1, const TVector3 &p2, int ms1, int ms2, int ms3, int mt1, int mt2, int mA);
+  std::complex<double> getWF(const nucqcd::Vector3 &p1, const nucqcd::Vector3 &p2, int ms1, int ms2, int ms3, int mt1, int mt2, int mA);
   /*! Calculate the he3 wf for a certain momentum, spin and isospin configuration, see the other getWF
    * \param p1 [MeV] momentum of particle 1
    * \param p2 [MeV] momentum of particle 2

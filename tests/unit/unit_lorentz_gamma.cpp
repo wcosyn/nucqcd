@@ -5,8 +5,8 @@
 #include <Tools/Core/GammaStructure.hpp>
 #include <Tools/Core/Matrix.hpp>
 
-#include <TLorentzRotation.h>
-#include <TLorentzVector.h>
+#include <Tools/Core/Rotation.hpp>
+#include <Tools/Core/LorentzVector.hpp>
 
 #include <cmath>
 #include <complex>
@@ -44,7 +44,7 @@ TEST_CASE("FourVector Minkowski product uses the (+,-,-,-) metric", "[fourvector
 
 TEST_CASE("FourVector products are Lorentz invariant", "[fourvector]") {
   FourVector<double> p(1500., 300., -200., 900.), q(700., -100., 50., 400.);
-  TLorentzRotation L;
+  nucqcd::LorentzRotation L;
   L.Boost(0.3, -0.2, 0.5);
   L.RotateY(0.7);
   const FourVector<double> pp = L * p, qq = L * q;

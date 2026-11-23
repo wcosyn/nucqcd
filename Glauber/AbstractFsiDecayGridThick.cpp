@@ -21,7 +21,7 @@ AbstractFsiDecayGridThick::~AbstractFsiDecayGridThick(){
 }
 
 //interpolation functions
-complex<double> AbstractFsiDecayGridThick::getFsiDecayGridFull_interpvec(const TVector3 &rvec){
+complex<double> AbstractFsiDecayGridThick::getFsiDecayGridFull_interpvec(const nucqcd::Vector3 &rvec){
   return getFsiDecayGridFull_interp3(rvec.Mag(),rvec.CosTheta(),rvec.Phi());
 }
 
@@ -41,7 +41,7 @@ complex<double> AbstractFsiDecayGridThick::getFsiDecayGridFull_interp1(const dou
 }
 
 //interpolation functions
-complex<double> AbstractFsiDecayGridThick::getFsiSrcDecayGridFull_interpvec(const TVector3 &rvec){
+complex<double> AbstractFsiDecayGridThick::getFsiSrcDecayGridFull_interpvec(const nucqcd::Vector3 &rvec){
   return getFsiSrcDecayGridFull_interp3(rvec.Mag(),rvec.CosTheta(),rvec.Phi());
 }
 

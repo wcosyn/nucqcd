@@ -267,7 +267,7 @@ double TYukawaPWF::GetWp(double p) const
   return radial * std::sqrt(2./nucqcd::pi) / pow(fgHbarc,3/2.);
 }
 
-double TYukawaPWF::GetUpoff(const TVector3& p) const{
+double TYukawaPWF::GetUpoff(const nucqcd::Vector3& p) const{
 
   double radial=0.;
   
@@ -279,7 +279,7 @@ double TYukawaPWF::GetUpoff(const TVector3& p) const{
   
 }
 
-double TYukawaPWF::GetWpoff1(const TVector3& p) const{
+double TYukawaPWF::GetWpoff1(const nucqcd::Vector3& p) const{
 
   double radial=0.;
   

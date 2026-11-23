@@ -15,20 +15,20 @@
 #include <Tools/Core/TSpinor.hpp>
 #include <Tools/Kinematics/TKinematics2to2.hpp>
 #include <Tools/Core/FourVector.hpp>
-#include <TLorentzVector.h>
-#include <TLorentzRotation.h>
+#include <Tools/Core/LorentzVector.hpp>
+#include <Tools/Core/Rotation.hpp>
 
 // Forward declarations
-class TVector3;
+namespace nucqcd { class Vector3; }
 class TLorentzQuaternion;
 
 // Global functions for conversion 
 // from ROOT 4vectors to strangecalc 4vectors.
 // template<typename T>
-// FourVector<T> operator*(const TLorentzRotation&, const FourVector<T>&);
+// FourVector<T> operator*(const nucqcd::LorentzRotation&, const FourVector<T>&);
 // 
-// FourVector<double> ToFourVector(const TLorentzVector&);
-// TLorentzVector ToLorentzVector(const FourVector<double>&);
+// FourVector<double> ToFourVector(const nucqcd::LorentzVector&);
+// nucqcd::LorentzVector ToLorentzVector(const FourVector<double>&);
 
 /*! \brief Kinematics of gamma + D -> K + Y + N, for a grid of six independent variables
  *
@@ -116,16 +116,16 @@ class TKinematics2to3
   double         GetMy() const          { return fMy; } ///< [MeV] mass of the hyperon (Y)
   double         GetMn() const          { return fMn; } ///< [MeV] mass of the nucleon (N)
   double         GetMd() const          { return fMd; } ///< [MeV] mass of the deuteron
-  TVector3       GetK3(EAxisConvention =kS) const; ///< [MeV] momentum three-vector of the kaon (K) in the lab frame (deuteron rest frame); the argument is the axis convention (default kS: the standard one, fAC)
-  TVector3       GetY3(EAxisConvention =kS) const; ///< [MeV] momentum three-vector of the hyperon (Y) in the lab frame (deuteron rest frame); the argument is the axis convention (default kS: the standard one, fAC)
-  TVector3       GetN3(EAxisConvention =kS) const; ///< [MeV] momentum three-vector of the nucleon (N) in the lab frame (deuteron rest frame); the argument is the axis convention (default kS: the standard one, fAC)
-  TVector3       GetG3(EAxisConvention =kS) const; ///< [MeV] momentum three-vector of the photon in the lab frame (deuteron rest frame); the argument is the axis convention (default kS: the standard one, fAC)
-  TVector3       GetD3(EAxisConvention =kS) const; ///< [MeV] momentum three-vector of the deuteron in the lab frame (deuteron rest frame); the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzVector GetK4(EAxisConvention =kS) const; ///< [MeV] four-momentum of the kaon (K) in the lab frame (deuteron rest frame); the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzVector GetY4(EAxisConvention =kS) const; ///< [MeV] four-momentum of the hyperon (Y) in the lab frame (deuteron rest frame); the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzVector GetN4(EAxisConvention =kS) const; ///< [MeV] four-momentum of the nucleon (N) in the lab frame (deuteron rest frame); the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzVector GetG4(EAxisConvention =kS) const; ///< [MeV] four-momentum of the photon in the lab frame (deuteron rest frame); the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzVector GetD4(EAxisConvention =kS) const; ///< [MeV] four-momentum of the deuteron in the lab frame (deuteron rest frame); the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::Vector3       GetK3(EAxisConvention =kS) const; ///< [MeV] momentum three-vector of the kaon (K) in the lab frame (deuteron rest frame); the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::Vector3       GetY3(EAxisConvention =kS) const; ///< [MeV] momentum three-vector of the hyperon (Y) in the lab frame (deuteron rest frame); the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::Vector3       GetN3(EAxisConvention =kS) const; ///< [MeV] momentum three-vector of the nucleon (N) in the lab frame (deuteron rest frame); the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::Vector3       GetG3(EAxisConvention =kS) const; ///< [MeV] momentum three-vector of the photon in the lab frame (deuteron rest frame); the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::Vector3       GetD3(EAxisConvention =kS) const; ///< [MeV] momentum three-vector of the deuteron in the lab frame (deuteron rest frame); the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzVector GetK4(EAxisConvention =kS) const; ///< [MeV] four-momentum of the kaon (K) in the lab frame (deuteron rest frame); the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzVector GetY4(EAxisConvention =kS) const; ///< [MeV] four-momentum of the hyperon (Y) in the lab frame (deuteron rest frame); the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzVector GetN4(EAxisConvention =kS) const; ///< [MeV] four-momentum of the nucleon (N) in the lab frame (deuteron rest frame); the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzVector GetG4(EAxisConvention =kS) const; ///< [MeV] four-momentum of the photon in the lab frame (deuteron rest frame); the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzVector GetD4(EAxisConvention =kS) const; ///< [MeV] four-momentum of the deuteron in the lab frame (deuteron rest frame); the argument is the axis convention (default kS: the standard one, fAC)
   double         GetPk() const          { return fKvector->P(); } ///< [MeV] lab momentum of the kaon (K)
   double         GetPy() const          { return fYvector->P(); } ///< [MeV] lab momentum of the hyperon (Y)
   double         GetPn() const          { return fNvector->P(); } ///< [MeV] lab momentum of the nucleon (N)
@@ -215,22 +215,22 @@ class TKinematics2to3
   double         GetYNsystem_phincm(EAxisConvention =kS) const; ///< azimuthal angle of the nucleon (N) in the YN center-of-mass frame [rad]; the argument is the axis convention (default kS: the standard one, fAC)
   double         GetYNsystem_phiycm_deg(EAxisConvention =kS) const; ///< azimuthal angle of the hyperon (Y) in the YN center-of-mass frame [deg]; the argument is the axis convention (default kS: the standard one, fAC)
   double         GetYNsystem_phincm_deg(EAxisConvention =kS) const; ///< azimuthal angle of the nucleon (N) in the YN center-of-mass frame [deg]; the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzVector BoostToKYcm(const TLorentzVector&, EAxisConvention =kS) const; ///< Boost the 4vector 'vector' defined in the LAB frame with the axis convention ac to the CM frame of the kaon-hyperon subsystem.; the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzVector BoostToKNcm(const TLorentzVector&, EAxisConvention =kS) const; ///< Boost the 4vector 'vector' defined in the LAB frame with the axis convention ac to the CM frame of the kaon-nucleon subsystem.; the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzVector BoostToYNcm(const TLorentzVector&, EAxisConvention =kS) const; ///< Boost the 4vector 'vector' defined in the LAB frame with the axis convention ac to the CM frame of the hyperon-nucleon subsystem.; the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzVector BoostToGNcm(const TLorentzVector&, EAxisConvention =kS) const; ///< Boost the 4vector 'vector' defined in the LAB frame with the axis convention ac to the CM frame of the photon and the struck nucleon inside the deuteron. The z-axis lies along the photon and the y-axis is defined as being perpendicular to the gN and KY plane. This is the reference frame where the matrix elements get evaluated in strangecalc.; the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzRotation BoostToKYcm(EAxisConvention =kS) const; ///< Object to boost a 4vector defined in the LAB frame with the axis convention ac to the CM frame of the kaon-hyperon subsystem.; the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzRotation BoostToKNcm(EAxisConvention =kS) const; ///< Object to boost a 4vector defined in the LAB frame with the axis convention ac to the CM frame of the kaon-nucleon subsystem.; the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzRotation BoostToYNcm(EAxisConvention =kS) const; ///< Object to boost a 4vector defined in the LAB frame with the axis convention ac to the CM frame of the hyperon-nucleon subsystem.; the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzRotation BoostToGNcm(EAxisConvention =kS) const; ///< Object to boost a 4vector defined in the LAB frame with the axis convention ac to the CM frame of the photon and the struck nucleon inside the deuteron. The z-axis lies along the photon and the y-axis is defined as being perpendicular to the gN and KY plane. This is the reference frame where the matrix elements get evaluated in strangecalc.; the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzVector BoostFromKYcm(const TLorentzVector&, EAxisConvention =kS) const; ///< Boost the 4vector 'vector' defined in the CM frame of the kaon-hyperon subsystem with the axis convention ac to the LAB frame .; the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzVector BoostFromKNcm(const TLorentzVector&, EAxisConvention =kS) const; ///< Boost the 4vector 'vector' defined in the CM frame of the kaon-nucleon subsystem with the axis convention ac to the LAB frame .; the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzVector BoostFromYNcm(const TLorentzVector&, EAxisConvention =kS) const; ///< Boost the 4vector 'vector' defined in the CM frame of the hyperon-nucleon subsystem with the axis convention ac to the LAB frame .; the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzVector BoostFromGNcm(const TLorentzVector&, EAxisConvention =kS) const; ///< Boost the 4vector 'vector' defined in the CM frame of the photon and the struck nucleon inside the deuteron to the LAB frame with the axis convention ac.; the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzRotation BoostFromKYcm(EAxisConvention =kS) const; ///< Object to boost a 4vector defined in the CM frame of the kaon-hyperon subsystem with the axis convention ac to the LAB frame.; the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzRotation BoostFromKNcm(EAxisConvention =kS) const; ///< Object to boost a 4vector defined in the CM frame of the kaon-nucleon subsystem with the axis convention ac to the LAB frame.; the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzRotation BoostFromYNcm(EAxisConvention =kS) const; ///< Object to boost a 4vector defined in the CM frame of the hyperon-nucleon subsystem with the axis convention ac to the LAB frame.; the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzRotation BoostFromGNcm(EAxisConvention =kS) const; ///< Object to boost a 4vector defined in the CM frame of the photon and the struck nucleon inside the deuteron to the LAB frame with the axis convention ac.; the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzVector BoostToKYcm(const nucqcd::LorentzVector&, EAxisConvention =kS) const; ///< Boost the 4vector 'vector' defined in the LAB frame with the axis convention ac to the CM frame of the kaon-hyperon subsystem.; the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzVector BoostToKNcm(const nucqcd::LorentzVector&, EAxisConvention =kS) const; ///< Boost the 4vector 'vector' defined in the LAB frame with the axis convention ac to the CM frame of the kaon-nucleon subsystem.; the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzVector BoostToYNcm(const nucqcd::LorentzVector&, EAxisConvention =kS) const; ///< Boost the 4vector 'vector' defined in the LAB frame with the axis convention ac to the CM frame of the hyperon-nucleon subsystem.; the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzVector BoostToGNcm(const nucqcd::LorentzVector&, EAxisConvention =kS) const; ///< Boost the 4vector 'vector' defined in the LAB frame with the axis convention ac to the CM frame of the photon and the struck nucleon inside the deuteron. The z-axis lies along the photon and the y-axis is defined as being perpendicular to the gN and KY plane. This is the reference frame where the matrix elements get evaluated in strangecalc.; the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzRotation BoostToKYcm(EAxisConvention =kS) const; ///< Object to boost a 4vector defined in the LAB frame with the axis convention ac to the CM frame of the kaon-hyperon subsystem.; the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzRotation BoostToKNcm(EAxisConvention =kS) const; ///< Object to boost a 4vector defined in the LAB frame with the axis convention ac to the CM frame of the kaon-nucleon subsystem.; the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzRotation BoostToYNcm(EAxisConvention =kS) const; ///< Object to boost a 4vector defined in the LAB frame with the axis convention ac to the CM frame of the hyperon-nucleon subsystem.; the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzRotation BoostToGNcm(EAxisConvention =kS) const; ///< Object to boost a 4vector defined in the LAB frame with the axis convention ac to the CM frame of the photon and the struck nucleon inside the deuteron. The z-axis lies along the photon and the y-axis is defined as being perpendicular to the gN and KY plane. This is the reference frame where the matrix elements get evaluated in strangecalc.; the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzVector BoostFromKYcm(const nucqcd::LorentzVector&, EAxisConvention =kS) const; ///< Boost the 4vector 'vector' defined in the CM frame of the kaon-hyperon subsystem with the axis convention ac to the LAB frame .; the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzVector BoostFromKNcm(const nucqcd::LorentzVector&, EAxisConvention =kS) const; ///< Boost the 4vector 'vector' defined in the CM frame of the kaon-nucleon subsystem with the axis convention ac to the LAB frame .; the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzVector BoostFromYNcm(const nucqcd::LorentzVector&, EAxisConvention =kS) const; ///< Boost the 4vector 'vector' defined in the CM frame of the hyperon-nucleon subsystem with the axis convention ac to the LAB frame .; the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzVector BoostFromGNcm(const nucqcd::LorentzVector&, EAxisConvention =kS) const; ///< Boost the 4vector 'vector' defined in the CM frame of the photon and the struck nucleon inside the deuteron to the LAB frame with the axis convention ac.; the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzRotation BoostFromKYcm(EAxisConvention =kS) const; ///< Object to boost a 4vector defined in the CM frame of the kaon-hyperon subsystem with the axis convention ac to the LAB frame.; the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzRotation BoostFromKNcm(EAxisConvention =kS) const; ///< Object to boost a 4vector defined in the CM frame of the kaon-nucleon subsystem with the axis convention ac to the LAB frame.; the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzRotation BoostFromYNcm(EAxisConvention =kS) const; ///< Object to boost a 4vector defined in the CM frame of the hyperon-nucleon subsystem with the axis convention ac to the LAB frame.; the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzRotation BoostFromGNcm(EAxisConvention =kS) const; ///< Object to boost a 4vector defined in the CM frame of the photon and the struck nucleon inside the deuteron to the LAB frame with the axis convention ac.; the argument is the axis convention (default kS: the standard one, fAC)
   TSpinor        BoostToKYcm(const TSpinor&, EAxisConvention =kS) const; ///< Boost the Dirac spinor 'spinor' defined in the LAB frame with the axis convention ac to the CM frame of the kaon-hyperon subsystem.; the argument is the axis convention (default kS: the standard one, fAC)
   TSpinor        BoostToKNcm(const TSpinor&, EAxisConvention =kS) const; ///< Boost the Dirac spinor 'spinor' defined in the LAB frame with the axis convention ac to the CM frame of the kaon-nucleon subsystem.; the argument is the axis convention (default kS: the standard one, fAC)
   TSpinor        BoostToYNcm(const TSpinor&, EAxisConvention =kS) const; ///< Boost the Dirac spinor 'spinor' defined in the LAB frame with the axis convention ac to the CM frame of the hyperon-nucleon subsystem.; the argument is the axis convention (default kS: the standard one, fAC)
@@ -255,12 +255,12 @@ class TKinematics2to3
   TLorentzQuaternion BoostQuaternionFromKNcm(EAxisConvention =kS) const; ///< Object to boost a 4vector defined in the CM frame of the kaon-nucleon subsystem with the axis convention ac to the LAB frame.; the argument is the axis convention (default kS: the standard one, fAC)
   TLorentzQuaternion BoostQuaternionFromYNcm(EAxisConvention =kS) const; ///< Object to boost a 4vector defined in the CM frame of the hyperon-nucleon subsystem with the axis convention ac to the LAB frame.; the argument is the axis convention (default kS: the standard one, fAC)
   TLorentzQuaternion BoostQuaternionFromGNcm(EAxisConvention =kS) const; ///< Object to boost a 4vector defined in the CM frame of the photon and the struck nucleon inside the deuteron to the LAB frame with the axis convention ac.; the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzRotation RotateToKac(EAxisConvention =kS) const; ///< Object to rotate a 4vector defined in the LAB frame from the axis convention ac to the 'kK' axis convention.; the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzRotation RotateToYac(EAxisConvention =kS) const; ///< Object to rotate a 4vector defined in the LAB frame from the axis convention ac to the 'kY' axis convention.; the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzRotation RotateToNac(EAxisConvention =kS) const; ///< Object to rotate a 4vector defined in the LAB frame from the axis convention ac to the 'kN' axis convention.; the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzVector RotateToKac(const TLorentzVector&, EAxisConvention =kS) const; ///< Rotate the 4vector 'vector' defined in the LAB frame from the axis convention ac to the 'kK' axis convention.; the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzVector RotateToYac(const TLorentzVector&, EAxisConvention =kS) const; ///< Rotate the 4vector 'vector' defined in the LAB frame from the axis convention ac to the 'kY' axis convention.; the argument is the axis convention (default kS: the standard one, fAC)
-  TLorentzVector RotateToNac(const TLorentzVector&, EAxisConvention =kS) const; ///< Rotate the 4vector 'vector' defined in the LAB frame from the axis convention ac to the 'kN' axis convention.; the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzRotation RotateToKac(EAxisConvention =kS) const; ///< Object to rotate a 4vector defined in the LAB frame from the axis convention ac to the 'kK' axis convention.; the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzRotation RotateToYac(EAxisConvention =kS) const; ///< Object to rotate a 4vector defined in the LAB frame from the axis convention ac to the 'kY' axis convention.; the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzRotation RotateToNac(EAxisConvention =kS) const; ///< Object to rotate a 4vector defined in the LAB frame from the axis convention ac to the 'kN' axis convention.; the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzVector RotateToKac(const nucqcd::LorentzVector&, EAxisConvention =kS) const; ///< Rotate the 4vector 'vector' defined in the LAB frame from the axis convention ac to the 'kK' axis convention.; the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzVector RotateToYac(const nucqcd::LorentzVector&, EAxisConvention =kS) const; ///< Rotate the 4vector 'vector' defined in the LAB frame from the axis convention ac to the 'kY' axis convention.; the argument is the axis convention (default kS: the standard one, fAC)
+  nucqcd::LorentzVector RotateToNac(const nucqcd::LorentzVector&, EAxisConvention =kS) const; ///< Rotate the 4vector 'vector' defined in the LAB frame from the axis convention ac to the 'kN' axis convention.; the argument is the axis convention (default kS: the standard one, fAC)
   TSpinor::LorentzRotation RotateSpinorToKac(EAxisConvention =kS) const; ///< Object to rotate a Dirac spinor defined in the LAB frame from the axis convention ac to the 'kK' axis convention.; the argument is the axis convention (default kS: the standard one, fAC)
   TSpinor::LorentzRotation RotateSpinorToYac(EAxisConvention =kS) const; ///< Object to rotate a Dirac spinor defined in the LAB frame from the axis convention ac to the 'kY' axis convention.; the argument is the axis convention (default kS: the standard one, fAC)
   TSpinor::LorentzRotation RotateSpinorToNac(EAxisConvention =kS) const; ///< Object to rotate a Dirac spinor defined in the LAB frame from the axis convention ac to the 'kN' axis convention.; the argument is the axis convention (default kS: the standard one, fAC)
@@ -462,15 +462,15 @@ class TKinematics2to3
 
   // 4vectors for all particles (stored in internal reference frame)
   /// Kaon 4vector
-  TLorentzVector  *fKvector;       //-> kaon 4vector
+  nucqcd::LorentzVector  *fKvector;       //-> kaon 4vector
   /// Hyperon 4vector
-  TLorentzVector  *fYvector;       //-> hyperon 4vector
+  nucqcd::LorentzVector  *fYvector;       //-> hyperon 4vector
   /// Nucleon 4vector
-  TLorentzVector  *fNvector;       //-> nucleon 4vector
+  nucqcd::LorentzVector  *fNvector;       //-> nucleon 4vector
   /// Photon 4vector
-  TLorentzVector  *fGvector;       //-> photon 4vector
+  nucqcd::LorentzVector  *fGvector;       //-> photon 4vector
   /// Deuteron 4vector
-  TLorentzVector  *fDvector;       //-> deuteron 4vector
+  nucqcd::LorentzVector  *fDvector;       //-> deuteron 4vector
   
   // 6 independent variables
   /// Pointer to independent kinematic variable
@@ -508,7 +508,7 @@ class TKinematics2to3
 
 // //_____________________________________________________________________
 // template<typename T>
-// FourVector<T> operator*(const TLorentzRotation& rot, const FourVector<T>& v)
+// FourVector<T> operator*(const nucqcd::LorentzRotation& rot, const FourVector<T>& v)
 // {
 //   // Perform a Lorentz transformation on a strangecalc FourVector object.
 //   FourVector<T> rotated;

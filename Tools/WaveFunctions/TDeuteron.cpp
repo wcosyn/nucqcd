@@ -21,9 +21,9 @@
 #include <cstring>
 #include <iostream>
 #include <cassert>
-#include <TVector3.h>
-#include <TLorentzVector.h>
-#include <TLorentzRotation.h>
+#include <Tools/Core/Vector3.hpp>
+#include <Tools/Core/LorentzVector.hpp>
+#include <Tools/Core/Rotation.hpp>
 #include <Tools/Core/constants.hpp>
 #include <Tools/Core/StringUtil.hpp>
 #include <gsl/gsl_sf_coupling.h>
@@ -816,7 +816,7 @@ FourVector<GammaStructure> TDeuteron::Wavefunction::Vertex(const FourVector<doub
     ep = p2[0];
     p = std::sqrt( p2[1]*p2[1] + p2[2]*p2[2] + p2[3]*p2[3] );
   } else {
-    TLorentzRotation boost(-pD[1]/pD[0],-pD[2]/pD[0],-pD[3]/pD[0]);
+    nucqcd::LorentzRotation boost(-pD[1]/pD[0],-pD[2]/pD[0],-pD[3]/pD[0]);
     FourVector<double> p2CM = boost*p2;
     ep = p2CM[0];
     p = std::sqrt( p2CM[1]*p2CM[1] + p2CM[2]*p2CM[2] + p2CM[3]*p2CM[3] );
@@ -907,7 +907,7 @@ double TDeuteron::Wavefunction::ClebschGordan(int two_j1,int two_m1,int two_j2,
 //_____________________________________________________________________
 complex<double> TDeuteron::Wavefunction::DeuteronPState(int deuteronPol, int nucleon2Pol,
 						       int nucleon1Pol, 
-						       const TVector3& p) const
+						       const nucqcd::Vector3& p) const
 {
   // Calculate the state of a deuteron in momentum space. 
   // deuteronPol is the deuteron polarization (times two)
@@ -923,7 +923,7 @@ complex<double> TDeuteron::Wavefunction::DeuteronPState(int deuteronPol, int nuc
   // The labelling particle 1 and 2 is arbitrary in the non-relativistic case (You can do the math).
 //   if(IsRelativistic()) {
 //     cerr << "ERROR in TDeuteron::Wavefunction::DeuteronPState(TSpinor::Polarization&,"
-// 	 << " TVector3&&): "
+// 	 << " nucqcd::Vector3&&): "
 // 	 << "has no meaning for relativistic wave functions.\n";
 //     exit(1);
 //   }
@@ -952,20 +952,20 @@ complex<double> TDeuteron::Wavefunction::DeuteronPState(int deuteronPol, int nuc
 						       const FourVector<double>& p1) const
 {
   // See TDeuteron::Wavefunction::DeuteronPState for more info.
-  return DeuteronPState(deuteronPol,nucleon2Pol,nucleon1Pol,TVector3(p1[1],p1[2],p1[3]));    
+  return DeuteronPState(deuteronPol,nucleon2Pol,nucleon1Pol,nucqcd::Vector3(p1[1],p1[2],p1[3]));    
 }
 //_____________________________________________________________________
 complex<double> TDeuteron::Wavefunction::DeuteronPState(int deuteronPol, int nucleon2Pol,
 						       int nucleon1Pol, 
-						       const TLorentzVector& p1) const
+						       const nucqcd::LorentzVector& p1) const
 {
   // See TDeuteron::Wavefunction::DeuteronPState for more info.
-  return DeuteronPState(deuteronPol,nucleon2Pol,nucleon1Pol,TVector3(p1.X(),p1.Y(),p1.Z()));    
+  return DeuteronPState(deuteronPol,nucleon2Pol,nucleon1Pol,nucqcd::Vector3(p1.X(),p1.Y(),p1.Z()));    
 }
 //_____________________________________________________________________
 // complex<double> TDeuteron::Wavefunction::DeuteronPState(const TStrangePolarization& pol,
 // 						       const TSpinor::Polarization& pol1, 
-// 						       const TVector3& p) const
+// 						       const nucqcd::Vector3& p) const
 // {
 //   // Calculate the state of a deuteron in momentum space. 
 //   // The polarization state of reaction is given by pol. pol1 fixes the polarization
@@ -980,21 +980,21 @@ complex<double> TDeuteron::Wavefunction::DeuteronPState(int deuteronPol, int nuc
 // 						       const FourVector<double>& p1) const
 // {
 //   // See TDeuteron::Wavefunction::DeuteronPState for more info.
-//   return DeuteronPState(pol.Deuteron(),pol.Nucleon(),pol1,TVector3(p1[1],p1[2],p1[3]));  
+//   return DeuteronPState(pol.Deuteron(),pol.Nucleon(),pol1,nucqcd::Vector3(p1[1],p1[2],p1[3]));  
 // }
 // //_____________________________________________________________________
 // complex<double> TDeuteron::Wavefunction::DeuteronPState(const TStrangePolarization& pol,
 // 						       const TSpinor::Polarization& pol1, 
-// 						       const TLorentzVector& p1) const
+// 						       const nucqcd::LorentzVector& p1) const
 // {
 //   // See TDeuteron::Wavefunction::DeuteronPState for more info.
-//   return DeuteronPState(pol.Deuteron(),pol.Nucleon(),pol1,TVector3(p1.X(),p1.Y(),p1.Z()));
+//   return DeuteronPState(pol.Deuteron(),pol.Nucleon(),pol1,nucqcd::Vector3(p1.X(),p1.Y(),p1.Z()));
 // }
 
 //_____________________________________________________________________
 complex<double> TDeuteron::Wavefunction::DeuteronPStateOff(int deuteronPol, int nucleon2Pol,
 						       int nucleon1Pol, 
-						       const TVector3& p) const
+						       const nucqcd::Vector3& p) const
 {
   // Calculate the state of a deuteron in momentum space. 
   // deuteronPol is the deuteron polarization (times two)
@@ -1010,7 +1010,7 @@ complex<double> TDeuteron::Wavefunction::DeuteronPStateOff(int deuteronPol, int 
   // The labelling particle 1 and 2 is arbitrary in the non-relativistic case (You can do the math).
   if(IsRelativistic()) {
     throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TDeuteron::Wavefunction::DeuteronPState(TSpinor::Polarization&,"
-	 << " TVector3&&): "
+	 << " nucqcd::Vector3&&): "
 	 << "has no meaning for relativistic wave functions.");
   }
   if(abs(p.Z())<1.E-09) return 0.;
@@ -1046,21 +1046,21 @@ complex<double> TDeuteron::Wavefunction::DeuteronPStateOff(int deuteronPol, int 
 						       const FourVector<double>& p1) const
 {
   // See TDeuteron::Wavefunction::DeuteronPState for more info.
-  return DeuteronPStateOff(deuteronPol,nucleon2Pol,nucleon1Pol,TVector3(p1[1],p1[2],p1[3]));    
+  return DeuteronPStateOff(deuteronPol,nucleon2Pol,nucleon1Pol,nucqcd::Vector3(p1[1],p1[2],p1[3]));    
 }
 //_____________________________________________________________________
 complex<double> TDeuteron::Wavefunction::DeuteronPStateOff(int deuteronPol, int nucleon2Pol,
 						       int nucleon1Pol, 
-						       const TLorentzVector& p1) const
+						       const nucqcd::LorentzVector& p1) const
 {
   // See TDeuteron::Wavefunction::DeuteronPState for more info.
-  return DeuteronPState(deuteronPol,nucleon2Pol,nucleon1Pol,TVector3(p1.X(),p1.Y(),p1.Z()));    
+  return DeuteronPState(deuteronPol,nucleon2Pol,nucleon1Pol,nucqcd::Vector3(p1.X(),p1.Y(),p1.Z()));    
 }
 
 //_____________________________________________________________________
 complex<double> TDeuteron::Wavefunction::DeuteronRState(int deuteronPol, int nucleon2Pol,
 						       int nucleon1Pol, 
-						       const TVector3& r) const
+						       const nucqcd::Vector3& r) const
 {
   // Calculate the state of a deuteron in coordinate space. 
   // deuteronPol is the deuteron polarization (times two)
@@ -1069,7 +1069,7 @@ complex<double> TDeuteron::Wavefunction::DeuteronRState(int deuteronPol, int nuc
   
   if(IsRelativistic()) {
     throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TDeuteron::Wavefunction::DeuteronRState(TSpinor::Polarization&,"
-	 << " TVector3&&): "
+	 << " nucqcd::Vector3&&): "
 	 << "has no meaning for relativistic wave functions.");
   }
 
@@ -1099,20 +1099,20 @@ complex<double> TDeuteron::Wavefunction::DeuteronRState(int deuteronPol, int nuc
 						       const FourVector<double>& r1) const
 {
   // See TDeuteron::Wavefunction::DeuteronRState for more info.
-  return DeuteronRState(deuteronPol,nucleon2Pol,nucleon1Pol,TVector3(r1[1],r1[2],r1[3]));    
+  return DeuteronRState(deuteronPol,nucleon2Pol,nucleon1Pol,nucqcd::Vector3(r1[1],r1[2],r1[3]));    
 }
 //_____________________________________________________________________
 complex<double> TDeuteron::Wavefunction::DeuteronRState(int deuteronPol, int nucleon2Pol,
 						       int nucleon1Pol, 
-						       const TLorentzVector& r1) const
+						       const nucqcd::LorentzVector& r1) const
 {
   // See TDeuteron::Wavefunction::DeuteronRState for more info.
-  return DeuteronRState(deuteronPol,nucleon2Pol,nucleon1Pol,TVector3(r1.X(),r1.Y(),r1.Z()));    
+  return DeuteronRState(deuteronPol,nucleon2Pol,nucleon1Pol,nucqcd::Vector3(r1.X(),r1.Y(),r1.Z()));    
 }
 //_____________________________________________________________________
 /*complex<double> TDeuteron::Wavefunction::DeuteronRState(const TStrangePolarization& pol,
 						       const TSpinor::Polarization& pol1, 
-						       const TVector3& r) const
+						       const nucqcd::Vector3& r) const
 {
   // Calculate the state of a deuteron in momentum space. 
   // The polarization state of reaction is given by pol. pol1 fixes the polarization
@@ -1127,15 +1127,15 @@ complex<double> TDeuteron::Wavefunction::DeuteronRState(const TStrangePolarizati
 						       const FourVector<double>& r1) const
 {
   // See TDeuteron::Wavefunction::DeuteronRState for more info.
-  return DeuteronRState(pol.Deuteron(),pol.Nucleon(),pol1,TVector3(r1[1],r1[2],r1[3]));  
+  return DeuteronRState(pol.Deuteron(),pol.Nucleon(),pol1,nucqcd::Vector3(r1[1],r1[2],r1[3]));  
 }
 //_____________________________________________________________________
 complex<double> TDeuteron::Wavefunction::DeuteronRState(const TStrangePolarization& pol,
 						       const TSpinor::Polarization& pol1, 
-						       const TLorentzVector& r1) const
+						       const nucqcd::LorentzVector& r1) const
 {
   // See TDeuteron::Wavefunction::DeuteronRState for more info.
-  return DeuteronRState(pol.Deuteron(),pol.Nucleon(),pol1,TVector3(r1.X(),r1.Y(),r1.Z()));
+  return DeuteronRState(pol.Deuteron(),pol.Nucleon(),pol1,nucqcd::Vector3(r1.X(),r1.Y(),r1.Z()));
 }*/
 
 
