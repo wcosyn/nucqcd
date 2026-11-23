@@ -12,7 +12,6 @@
 #include "TLorentzQuaternion.h"
 #include "constants.hpp"
 //#include <numtoa.h>
-#include <TString.h>
 #include <TLorentzVector.h>
 #include <TLorentzRotation.h>
 #include <TRotation.h>
@@ -399,22 +398,6 @@ TSpinor::Polarization::operator State() const
   return fPolarizationState;
 }
 
-/*//______________________________________________________________________________
-TString TSpinor::Polarization::HashName() const
-{
-  // Returns a unique string that specifies the current state of the
-  // spinor's polarization.
-  
-  // the polarization is fixed by the angles of the quantization axis
-  // and the state.
-  double key[3] = { fTheta, fPhi, (double)fPolarizationState };
-  
-  // We create a hash key using the function in the cachetools folder
-  char hash[sizeof(double)*3*2 + 1];
-  doublestochar(3, key, hash);
-
-  return hash;
-}*/
 
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //

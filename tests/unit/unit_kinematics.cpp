@@ -112,3 +112,27 @@ TEST_CASE("TKinematics2to3: azimuthal angles with the standard axis convention",
     CHECK(kin.GetVar("phik") == kin.GetPhik(ac));
   }
 }
+
+TEST_CASE("Format strings and variable names are case insensitive, empty tokens are left out", "[kinematics]") {
+  // Since 2026-11 the parsing uses std::string instead of ROOT's TString (roadmap step 9, phase 3);
+  // the behaviour of TString::Tokenize (no empty tokens) and of the case-insensitive comparisons is kept.
+  const double mA = 11177.93, mA1 = 10255.10, Q2 = 1.0e06, omega = 600., pm = 150.;
+  TKinematics2to2 ref("", "", mA, mA1, nucqcd::mass_p, "qsquared:wlab:pklab", Q2, omega, pm);
+  TKinematics2to2 upper("", "", mA, mA1, nucqcd::mass_p, "QSquared::WLAB:pkLab:", Q2, omega, pm);
+  CHECK(upper.GetPklab() == ref.GetPklab());
+  CHECK(upper.GetCosthklab() == ref.GetCosthklab());
+  CHECK(upper.GetVarName(2) == "wlab");
+  CHECK_THROWS_AS(TKinematics2to2("", "", mA, mA1, nucqcd::mass_p, "qsquared:wlab:nonsense", Q2, omega, pm),
+                  std::invalid_argument);
+
+  const double mA2 = mA - nucqcd::mass_p - nucqcd::mass_n + 30.;
+  TKinematics2to3WithLabAngles k3("", "", 7, TKinematics2to3::kN, "QSQUARED:wlab:Pn:thn:THK:phik", 1631389.67942, 580.,
+                                  1000., 10. * nucqcd::deg_to_rad, 40. * nucqcd::deg_to_rad, PI, mA, nucqcd::mass_p,
+                                  nucqcd::mass_n, mA2);
+  REQUIRE(k3.GetNumberOfSolutions() >= 1);
+  const TKinematics2to3 &sol = k3.GetSolution(0);
+  CHECK(sol.GetVar("PN") == sol.GetPn());
+  CHECK(sol.GetVar("thk") == sol.GetThk());
+  CHECK(sol.GetVarName(3) == "pn");
+  CHECK_THROWS_AS(sol.GetVar("nonsense"), std::invalid_argument);
+}

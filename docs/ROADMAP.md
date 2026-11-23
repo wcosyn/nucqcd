@@ -27,7 +27,7 @@ same PR.
 | 6 | Structural refactors | ⬜ |
 | 7 | Unbundle Cuba | ⬜ (can be done any time after step 2) |
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
-| 9 | Decouple from ROOT where possible | 🔶 phases 1 (#44) and 2 (#45) done, 3–6 to do |
+| 9 | Decouple from ROOT where possible | 🔶 phases 1 (#44), 2 (#45) and 3 done, 4–6 to do |
 | 10 | LHAPDF interface for the nucleon structure functions | ✅ done (#46), including MSTW through LHAPDF |
 | 11 | Run bookkeeping (provenance) for all programs | 🔶 part 1 (design, `RunLog`) done; part 2 (roll-out) to do |
 
@@ -460,15 +460,43 @@ Do these one at a time, running the full test suite (including `slow`) after eac
 - [ ] **Update the constants to current PDG values** (split off from the item above): several values
   are older PDG values (e.g. the proton mass 938.27231 versus 938.27209 in PDG 2024); updating them
   changes results, so it needs the author's OK.
-- [ ] **Split `Tools` (library `MePhys`)** into coherent parts:
-  - math and Lorentz algebra
-  - kinematics
-  - deuteron wave functions
-  - structure functions and PDFs
-  - nuclear structure
-  - MPI
-- [ ] **Include paths:** prefix them (e.g. `<mephys/TDeuteron.h>`) and settle on one header extension.
-  Consider an `include/` and `src/` split.
+- [ ] **Code layout** (sharpened 2026-11-22 with the author). Headers next to their sources is fine and
+  stays (no general `include/`/`src/` split: that pays off for libraries installed for outside
+  projects, which nucqcd's are not, and moving every file would cost the `git blame` history). What
+  does not follow good practice, in this order:
+  1. **Split `Tools` (library `MePhys`)**, a grab-bag of 36 headers plus Fortran, into libraries with a
+     clear dependency order (proposal, to be checked against the actual includes):
+     - `Core`: `constants`, `ErrorMessage`, `FortranString`, `StringUtil`, `MathUtil`, `Utilfunctions`,
+       `AuxFunction`, `GridCache`, `RunLog`, the Dirac/Lorentz algebra (`FourVector`, `Matrix`,
+       `GammaStructure`, `TLorentzQuaternion`, `TSpinor`), `recmosh`, and `TMPI` (with MPI);
+     - `Kinematics`: `TKinematics`, `TKinematics2to2`, `TKinematics2to3(WithLabAngles)`,
+       `TElectronKinematics`, `TLeptonKinematics`, `LightConeKin2to2/2to3`;
+     - `WaveFunctions`: `TDeuteron` and its implementations (`TWavefunctionImplementation`,
+       `TYukawaPWF`, `TGrossPWF`, `TCstPWF`, `TInterpolatingWavefunction`), `OldDeuteron`, `He3wf`
+       (with the Fortran `getwavemod_tm.f`, `clebsch.f`, `spline.f`);
+     - `StructureFunctions`: `NucleonStructure`, `NuclStructure`, `LHAPDFStructure`,
+       `DeuteronStructure`, and the Fortran parametrizations (Alekhin, Christy-Bosted, CTEQ, GRSV,
+       HMRS, R1990/R1998).
+     Glauber, Knockout and DIS then link only what they use. `MePhys` can stay as an INTERFACE target
+     that links all four, so programs need no change.
+  2. **Prefixed includes, with the repository root as the include root.** Every library directory is
+     now a public include directory, so code writes `#include <Matrix.h>`, `<constants.hpp>`,
+     `<Utilfunctions.hpp>`: generic names that can collide with headers of ROOT, PARTONS or LHAPDF on
+     the include path, and every header is visible from everywhere (public linking), so the layering
+     is not visible or enforced. Change to paths like `#include <Tools/WaveFunctions/TDeuteron.hpp>`
+     (directory = library): one change in `nucqcd_add_library` (include root = repository root
+     instead of the library directory), plus a scripted rewrite of the ~1250 `#include` lines (the
+     headers' own includes, Fortran-interface headers, programs, tests). Do it **after** the split, so
+     the paths change only once. GPD_Partons, which already has `include/`, becomes
+     `<GPD_Partons/...>` the same way.
+  3. **One header extension: `.hpp`.** Tools has 19 `.h` (the strangecalc/ROOT-style `T*` classes,
+     `FourVector`, `Matrix`, ...) and 17 `.hpp`; the other libraries use `.hpp` (GPD_Partons has one
+     `.h`). Rename with `git mv` in the same PR as 2, since every include of them changes anyway.
+  4. **Namespace `nucqcd`.** 64 of the library headers declare their classes in the global
+     namespace (`Matrix`, `Model`, `Cross`, `Resonance`, `FastParticle`, ...), the same collision
+     risk at the symbol level. Add the namespace class by class, best together with ROOT phase 4,
+     which touches the same classes; `using` declarations in a compatibility header keep the
+     programs compiling in between.
 - [ ] **Glauber grid hierarchy:** deduplicate it. `GlauberGridThick` and `GlauberDecayGridThick` are
   largely copy-pasted, as are the {plain, Thick} × {CT, Decay} abstract classes.
 - [ ] **Model selection:** use enums or factory registries instead of model-name strings (about 700
@@ -577,10 +605,17 @@ standard) from everything that only computes cross sections.
    parametrizations, r and p space, off-shell parts), spherical harmonics and 2→3 kinematics were
    bitwise the same before and after; `unit_mathutil` keeps ROOT reference values. MathMore is no
    longer a required ROOT component. The programs still use `TMath` (phase 6).
-3. [ ] **`TString` → `std::string`.** Mostly the format-string parsing of `TKinematics`,
-   `TKinematics2to3` (`Tokenize`, `Contains`, case-insensitive `CompareTo`) and the wave-function names
-   in `TDeuteron`. Medium risk: keep the case-insensitive comparisons; the format-string unit tests
-   cover the parsing.
+3. [x] **`TString` → `std::string`** (done 2026-11-22). The format-string parsing of `TKinematics` and
+   `TKinematics2to3`, the `GetVar`/`GetVarArray`/`GetPhysicalVarArray`/`GetVarByGetter`/`GetVarName`
+   interfaces (now `const std::string&` and `std::string`; callers pass literals or `std::string`, so
+   no program changed) and the wave-function names in `TDeuteron`. New `Tools/StringUtil.hpp`
+   (`to_lower`, `iequals`, `icontains`, `split`) reproduces the TString behaviour: case-insensitive
+   comparisons where `kIgnoreCase` was used (`TKinematics::GetVarArray` stays case sensitive, as
+   before), and `split` leaves out empty tokens, as `TString::Tokenize` does (checked with ROOT).
+   Also fixed: `TKinematics2to3::ReadFormatString` copied each token into a `char[11]` with `strcpy`
+   (overflow for tokens longer than 10 characters), and the token lists leaked when a format string
+   was rejected. The dead, commented-out `HashName` functions are removed. Tests: `unit_stringutil`,
+   and mixed-case and empty-token format strings in `unit_kinematics`.
 4. [ ] **Three- and four-vectors and Lorentz transformations.** Introduce small value types in Tools,
    e.g. `nucqcd::Vector3`, `nucqcd::LorentzVector`, `nucqcd::Rotation`, `nucqcd::LorentzRotation`, with
    the subset of the ROOT API that is used (component access, `Mag`, `Mag2`, `Perp`, `Perp2`,

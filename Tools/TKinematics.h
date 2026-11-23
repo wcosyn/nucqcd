@@ -10,12 +10,11 @@
 #define TKINEMATICS_H
 
 #include <string>
-#include <TString.h>
+#include <string>
 // #include <Structures.h>
 #include "constants.hpp"
 #include <vector>
 #include <cmath>
-class TString;
 
 
 /*! \brief Kinematics of gamma(*) + N -> K + Y (2 -> 2), for a grid of independent variables
@@ -121,9 +120,9 @@ class TKinematics
   bool          IsPhysical() const     { return fIsPhysical; } ///< does the current point lie in the physical region?
   int           GetNumberOfIndependentVariables() const { return fNVars; } ///< number of independent variables in the format string (2 to 4)
   double        GetVar(int) const; ///< current value of independent variable varNum (1 to GetNumberOfIndependentVariables())
-  double       *GetVarArray(const TString& varName) const; ///< values of the named variable (any variable with a getter) at all grid points; the caller owns the array (size GetNumberOfSteps())
-  double       *GetPhysicalVarArray(const TString& varName) const; ///< values of the named variable at the physical grid points; the caller owns the array (size GetNumberOfPhysicalSteps())
-  TString       GetVarName(int varNumber) const; ///< name of independent variable varNumber in the format string
+  double       *GetVarArray(const std::string& varName) const; ///< values of the named variable (any variable with a getter) at all grid points; the caller owns the array (size GetNumberOfSteps())
+  double       *GetPhysicalVarArray(const std::string& varName) const; ///< values of the named variable at the physical grid points; the caller owns the array (size GetNumberOfPhysicalSteps())
+  std::string   GetVarName(int varNumber) const; ///< name of independent variable varNumber in the format string
   int           GetNumberOfSteps(int varNumber) const; ///< number of grid points of variable varNumber
   int           GetNumberOfSteps() const; ///< number of points in the grid
   int           GetNumberOfPhysicalSteps() const; ///< number of physical points in the grid
@@ -145,7 +144,7 @@ class TKinematics
 
  private:
   void          InitializeArrays(); ///< resizes the member vectors to the number of independent variables, all constant
-  void          ReadFormatString(const TString); ///< processes the format string and points the independent variables at the right members
+  void          ReadFormatString(const std::string&); ///< processes the format string and points the independent variables at the right members
   void          ChangeIsospinChannel(int); ///< sets the masses for the isospin channel
   double        EnergyConservation(double); ///< deviation from energy conservation in the cm for meson momentum pk [MeV]
   

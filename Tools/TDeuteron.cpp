@@ -25,6 +25,7 @@
 #include <TLorentzVector.h>
 #include <TLorentzRotation.h>
 #include "constants.hpp"
+#include "StringUtil.hpp"
 #include <gsl/gsl_sf_coupling.h>
 #include <gsl/gsl_sf_legendre.h>
 #include <cmath>
@@ -85,8 +86,8 @@ using std::complex;
 const double TDeuteron::Wavefunction::kMd = 1877.05;
 
 //_____________________________________________________________________
-TDeuteron::Wavefunction::Wavefunction(const TString& name,
-			     const TString& title)
+TDeuteron::Wavefunction::Wavefunction(const std::string& name,
+			     const std::string& title)
   : fName(name),fTitle(title), fRelativistic(0), fImplementation(0), yukawa(0)
 {
   // Default constructor is private
@@ -745,7 +746,7 @@ TDeuteron::Wavefunction* TDeuteron::Wavefunction::CreateTestWavefunction()
 }
 
 //_____________________________________________________________________
-TDeuteron::Wavefunction* TDeuteron::Wavefunction::CreateWavefunction(const TString& name)
+TDeuteron::Wavefunction* TDeuteron::Wavefunction::CreateWavefunction(const std::string& name)
 {
   // known types are * CDBonn           (cdbonn)
   //                 * Paris            (paris)
@@ -757,31 +758,31 @@ TDeuteron::Wavefunction* TDeuteron::Wavefunction::CreateWavefunction(const TStri
 
   Wavefunction *wf=0;
 
-  if(!name.CompareTo("cdbonn",TString::kIgnoreCase))
+  if(nucqcd::iequals(name,"cdbonn"))
     wf = CreateCDBonnWavefunction();
-  else if(!name.CompareTo("cdbonn87",TString::kIgnoreCase))
+  else if(nucqcd::iequals(name,"cdbonn87"))
     wf = CreateCDBonn87Wavefunction();
-  else if(!name.CompareTo("paris",TString::kIgnoreCase))
+  else if(nucqcd::iequals(name,"paris"))
     wf = CreateParisWavefunction();
-  else if(!name.CompareTo("av18",TString::kIgnoreCase))
+  else if(nucqcd::iequals(name,"av18"))
     wf = CreateAV18Wavefunction();
-  else if(!name.CompareTo("av18b",TString::kIgnoreCase))
+  else if(nucqcd::iequals(name,"av18b"))
     wf = CreateAV18bWavefunction();
-  else if(!name.CompareTo("nijm3",TString::kIgnoreCase))
+  else if(nucqcd::iequals(name,"nijm3"))
     wf = CreateNijmegenWavefunction();
-  else if(!name.CompareTo("grossiib",TString::kIgnoreCase))
+  else if(nucqcd::iequals(name,"grossiib"))
     wf = CreateGrossIIbWavefunction();
-  else if(!name.CompareTo("grossl4",TString::kIgnoreCase))
+  else if(nucqcd::iequals(name,"grossl4"))
     wf = CreateGrossL4Wavefunction();
-  else if(!name.CompareTo("grosswjc1",TString::kIgnoreCase))
+  else if(nucqcd::iequals(name,"grosswjc1"))
     wf = CreateGrossWJC1Wavefunction();
-  else if(!name.CompareTo("grosswjc2",TString::kIgnoreCase))
+  else if(nucqcd::iequals(name,"grosswjc2"))
     wf = CreateGrossWJC2Wavefunction();
-  else if(!name.CompareTo("test",TString::kIgnoreCase))
+  else if(nucqcd::iequals(name,"test"))
     wf = CreateTestWavefunction();
   else
     throw std::invalid_argument(nucqcd::ErrorMessage() << "TDeuteron::Wavefunction::CreateWavefunction: unknown wave function \""
-                                << name.Data() << "\" (known: cdbonn, cdbonn87, paris, av18, av18b, nijm3, grossiib, grossl4, grosswjc1, grosswjc2, test)");
+                                << name << "\" (known: cdbonn, cdbonn87, paris, av18, av18b, nijm3, grossiib, grossl4, grosswjc1, grosswjc2, test)");
   
   return wf;
 }
@@ -1302,23 +1303,6 @@ FourVector<complex<double> > TDeuteron::Polarization::GetPolarizationVector() co
   return FourVector<complex<double> >();
 }
 
-/*//______________________________________________________________________________
-TString TDeuteron::Polarization::HashName() const
-{
-  // Returns a unique string that specifies the current state of
-  // the deuteron's polarization.
-
-  // the polarization is fixed by the angles of the quantization axis
-  // and the state.
-  double key[3] = { fTheta, fPhi, (double)fPolarizationState };
-  
-  // We create a hash key using the function in the cachetools folder
-  char hash[sizeof(double)*3*2 + 1];
-  doublestochar(3, key, hash);
-
-  return hash;
-}
-*/
 //_____________________________________________________________________
 TDeuteron::Wavefunction* TDeuteron::Wavefunction::CreateNijmegenWavefunction()
 {

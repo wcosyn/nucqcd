@@ -57,9 +57,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cmath>
-#include <TString.h>
-#include <TObjArray.h>
-#include <TObjString.h>
+#include "StringUtil.hpp"
 #include "TKinematics.h"
 // #include <numtoa.h>
 #include <vector>
@@ -598,7 +596,7 @@ void TKinematics::SetFormat(const char* format)
 }
 
 //_____________________________________________________________________
-void TKinematics::ReadFormatString(const TString format)
+void TKinematics::ReadFormatString(const std::string& format)
 {
   // Process the format string
   //
@@ -615,21 +613,21 @@ void TKinematics::ReadFormatString(const TString format)
   // Check that the choosen variables make sense.
 
   // fFormat holds at most 99 characters plus the terminating NUL (see below)
-  if( format.Length() >= 100 )
+  if( format.size() >= 100 )
     throw std::length_error(std::string("TKinematics::ReadFormatString: format string '")
-                            + format.Data() + "' is longer than 99 characters");
+                            + format + "' is longer than 99 characters");
 
   // Tokenize the format string
-  TObjArray *listOfTokens = format.Tokenize(":");
-  const int nvars = listOfTokens->GetEntries();
+  // (empty tokens are left out, as with ROOT's Tokenize before 2026-11)
+  const std::vector<std::string> listOfTokens = nucqcd::split(format, ':');
+  const int nvars = listOfTokens.size();
 
   // and check the number of variables
   // (until 2026-11 this read (fNVars<2) && (fNVars>4), which is never true, and stopped with an
   // assert, which does nothing in release builds)
   if( (nvars<2) || (nvars>4) ) {
-    delete listOfTokens;
     throw std::invalid_argument(std::string("TKinematics::ReadFormatString: format string '")
-                                + format.Data() + "' should provide 2, 3 or 4 independent variables: "
+                                + format + "' should provide 2, 3 or 4 independent variables: "
                                 + "\"var1:var2[:var3[:var4]]\"");
   }
   fNVars = nvars;
@@ -639,7 +637,7 @@ void TKinematics::ReadFormatString(const TString format)
   fVar.resize( fNVars );
 
   // Put format string in member and in temporary *char.
-  std::strcpy(fFormat,format);
+  std::strcpy(fFormat,format.c_str());
   
   // Loop over all tokens
   // and determine independent kinematic variables
@@ -647,85 +645,82 @@ void TKinematics::ReadFormatString(const TString format)
 
   for(int itoken=0; itoken<fNVars; ++itoken)
     {
-      TString token = dynamic_cast<TObjString*>(listOfTokens->At(itoken))->GetString();
+      const std::string &token = listOfTokens[itoken];
 
-      if( !token.CompareTo("wlab",TString::kIgnoreCase) ) {
+      if( nucqcd::iequals(token,"wlab") ) {
 	fVar[itoken] = fEVar = &fWlab;
 	++energyCount;
       }
-      else if( !token.CompareTo("costhkcm",TString::kIgnoreCase) ) {
+      else if( nucqcd::iequals(token,"costhkcm") ) {
 	fVar[itoken] = fAVar = &fCosthkcm;
 	++angleCount;
       }
-      else if( !token.CompareTo("qsquared",TString::kIgnoreCase) ) {
+      else if( nucqcd::iequals(token,"qsquared") ) {
 	fVar[itoken] = &fQsquared;
 	++qsqCount;
       }
-      else if( !token.CompareTo("w",TString::kIgnoreCase) ) {
+      else if( nucqcd::iequals(token,"w") ) {
 	fVar[itoken] = fEVar = &fW;
 	++energyCount;
       }
-      else if( !token.CompareTo("s",TString::kIgnoreCase) ) {
+      else if( nucqcd::iequals(token,"s") ) {
 	fVar[itoken] = fEVar = &fS;
 	++energyCount;
       }
-      else if( !token.CompareTo("t",TString::kIgnoreCase) ) {
+      else if( nucqcd::iequals(token,"t") ) {
 	fVar[itoken] = fAVar = &fT;
 	++angleCount;
       }
-      else if( !token.CompareTo("wcm",TString::kIgnoreCase) ) {
+      else if( nucqcd::iequals(token,"wcm") ) {
 	fVar[itoken] = fEVar = &fWcm;
 	++energyCount;
       }
-      else if( !token.CompareTo("klab",TString::kIgnoreCase) ) {
+      else if( nucqcd::iequals(token,"klab") ) {
 	fVar[itoken] = fEVar = &fKlab;
 	++energyCount;
       }
-      else if( !token.CompareTo("kcm",TString::kIgnoreCase) ) {
+      else if( nucqcd::iequals(token,"kcm") ) {
 	fVar[itoken] = fEVar = &fKcm;
 	++energyCount;
       }
-      else if( !token.CompareTo("pk",TString::kIgnoreCase) ) {
+      else if( nucqcd::iequals(token,"pk") ) {
 	fVar[itoken] = fEVar = &fPk;
 	++energyCount;
       }
-      else if( !token.CompareTo("pkcm",TString::kIgnoreCase) ) {
+      else if( nucqcd::iequals(token,"pkcm") ) {
 	fVar[itoken] = fEVar = &fPk;
 	++energyCount;
       }
-      else if( !token.CompareTo("pklab",TString::kIgnoreCase) ) {
+      else if( nucqcd::iequals(token,"pklab") ) {
 	//hacked by me, coz I use pklab as an angle variable!!!
 	fVar[itoken] = fAVar = &fPklab;
 	++angleCount;
       }
-      else if( !token.CompareTo("u",TString::kIgnoreCase) ) {
+      else if( nucqcd::iequals(token,"u") ) {
 	fVar[itoken] = fAVar = &fU;
 	++angleCount;
       }
-      else if( !token.CompareTo("xb",TString::kIgnoreCase) ) {
+      else if( nucqcd::iequals(token,"xb") ) {
 	fVar[itoken] = fEVar = &fXb;
 	++energyCount;
       }
-      else if( !token.CompareTo("phi",TString::kIgnoreCase) ) {
+      else if( nucqcd::iequals(token,"phi") ) {
 	fVar[itoken] = &fPhi;
 	++phiCount;
       }
       else {
 	fVar[itoken] = NULL;
-	throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics::ReadFormatString(const TString):\n"
+	throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics::ReadFormatString(const std::string&):\n"
 	     << "Kinematic variable \"" << token << "\" unknown!");
       }
     }  // end loop over tokens
-
-  // Get rid of the list of tokens
-  delete listOfTokens;
 
   // Check whether the user provided a meaningful format string
   // First the optional arguments: Q^2 and phi (set them to zero when necessary)
   if( fNVars == 3 ) {
     if( qsqCount != 1 ) {
       if( phiCount != 1 ) {
-	throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics::ReadFormatString(const TString):\n"
+	throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics::ReadFormatString(const std::string&):\n"
 	     << "The angle phi or Q^2 need to be one of the 3 independent kinematic variables!");
       }
       else {
@@ -734,7 +729,7 @@ void TKinematics::ReadFormatString(const TString format)
     }
     else {
       if( phiCount == 1 ) {
-	throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics::ReadFormatString(const TString):\n"
+	throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics::ReadFormatString(const std::string&):\n"
 	     << "The angle phi and Q^2 cannot simultaneously be one of the 3 independent kinematic variables!");
       }
       else {
@@ -743,7 +738,7 @@ void TKinematics::ReadFormatString(const TString format)
     }
   }
   else if( fNVars == 4 && qsqCount != 1 && phiCount != 1 ) {
-    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics::ReadFormatString(const TString):\n"
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics::ReadFormatString(const std::string&):\n"
 	 << "The angle phi and Q^2 need to be one of the 4 independent kinematic variables!");
   }
   else {
@@ -752,22 +747,22 @@ void TKinematics::ReadFormatString(const TString format)
 
   // Check for 1 and only 1 energy variable
   if( energyCount == 0 ) {
-    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics::ReadFormatString(const TString):\n"
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics::ReadFormatString(const std::string&):\n"
 	 << "wlab/wcm/klab/kcm/pk/pklab/w/s/xb needs to be one of " << fNVars
 	 << " independent kinematic variables."); }
   else if( energyCount != 1 ) {
-    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics::ReadFormatString(const TString):\n"
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics::ReadFormatString(const std::string&):\n"
 	 << "Only one of following kinematic variables can be independent: "
 	 << "wlab/wcm/klab/kcm/pk/pklab/w/s/xb.");
   }
 
   // Check for 1 and only 1 angular variable
   if( angleCount == 0 ) {
-    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics::ReadFormatString(const TString):\n"
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics::ReadFormatString(const std::string&):\n"
 	 << "costhkcm/t/u needs to be one of " << fNVars
 	 << " independent kinematic variables."); }
   else if( angleCount != 1 ) {
-    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics::ReadFormatString(const TString):\n"
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics::ReadFormatString(const std::string&):\n"
 	 << "Only one of following kinematic variables can be independent: "
 	 << "costhkcm/t/u.");
   }
@@ -775,14 +770,14 @@ void TKinematics::ReadFormatString(const TString format)
   // Some variables are not possible for certain isospin channels
   if( fIsospin == 11 || fIsospin == 12 ) {
     if( fEVar==&fKlab || fEVar==&fWlab || fEVar==&fXb ) {
-      throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics::ReadFormatString(const TString):\n"
+      throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics::ReadFormatString(const std::string&):\n"
 	   << "Kinematic variable wlab/klab/xb is not allowed "
 	   << "as independent variable in radiative capture kinematics!");
     }
   }
   else {
     if( fEVar==&fPk || fEVar==&fPklab ) {
-      throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics::ReadFormatString(const TString):\n"
+      throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics::ReadFormatString(const std::string&):\n"
 	   << "Kinematic variable pk/pkcm/pklab is not allowed "
 	   << "as independent variable in EM meson production!");
     }
@@ -790,7 +785,7 @@ void TKinematics::ReadFormatString(const TString format)
 }
 
 //_____________________________________________________________________
-TString TKinematics::GetVarName(int varNumber) const
+std::string TKinematics::GetVarName(int varNumber) const
 {
   // Returns the name of the 'varNumber'th independent variable 
   // as specified in the format string.
@@ -799,16 +794,16 @@ TString TKinematics::GetVarName(int varNumber) const
   if( varNumber<1 || varNumber>fNVars ) {
     cerr << "ERROR in TKinematics::GetVarName(int):\n"
 	 << "Index out-of-bounds!\n";
-    return TString();
+    return std::string();
   }
 
   if( fVar.size()==0 ) {
     cerr << "ERROR in TKinematics::GetVarName(int):\n"
 	 << "Independent kinematic variables have not been initialized!\n";
-    return TString();
+    return std::string();
   }
 
-  TString varName;
+  std::string varName;
   
   // Lookup name
   if( fVar[varNumber-1] == &fWlab )
@@ -1511,7 +1506,7 @@ void TKinematics::UpdateKinematics()
 }
 
 //_____________________________________________________________________
-double* TKinematics::GetVarArray(const TString& variable) const
+double* TKinematics::GetVarArray(const std::string& variable) const
 {
   // Return an array of the variable of type 'variable'. The variable can effectively
   // by any one for which their exists a getter. It need not be listed in the info
@@ -1522,54 +1517,54 @@ double* TKinematics::GetVarArray(const TString& variable) const
   double(TKinematics::*ptrToVarGetter)() const; // pointer to TKinematics getters
 
   // Assign the correct Getter
-  if( !std::strcmp(variable,"wlab") ) {
+  if( (variable=="wlab") ) {
     ptrToVarGetter = &TKinematics::GetWlab;
   }
-  else if( !std::strcmp(variable,"costhkcm") ) {
+  else if( (variable=="costhkcm") ) {
     ptrToVarGetter = &TKinematics::GetCosthkcm;
   }
-  else if( !std::strcmp(variable,"qsquared") ) {
+  else if( (variable=="qsquared") ) {
     ptrToVarGetter = &TKinematics::GetQsquared;
   }
-  else if( !std::strcmp(variable,"w") ) {
+  else if( (variable=="w") ) {
     ptrToVarGetter = &TKinematics::GetW;
   }
-  else if( !std::strcmp(variable,"s") ) {
+  else if( (variable=="s") ) {
     ptrToVarGetter = &TKinematics::GetS;
   }
-  else if( !std::strcmp(variable,"t") || 
-	   !std::strcmp(variable,"-t") ) {
+  else if( (variable=="t") || 
+	   (variable=="-t") ) {
     ptrToVarGetter = &TKinematics::GetT;
   }
-  else if( !std::strcmp(variable,"wcm") ) {
+  else if( (variable=="wcm") ) {
     ptrToVarGetter = &TKinematics::GetWcm;
   }
-  else if( !std::strcmp(variable,"klab") ) {
+  else if( (variable=="klab") ) {
     ptrToVarGetter = &TKinematics::GetKlab;
   }
-  else if( !std::strcmp(variable,"kcm") ) {
+  else if( (variable=="kcm") ) {
     ptrToVarGetter = &TKinematics::GetKcm;
   }
-  else if( !std::strcmp(variable,"pk") ) {
+  else if( (variable=="pk") ) {
     ptrToVarGetter = &TKinematics::GetPk;
   }
-  else if( !std::strcmp(variable,"pkcm") ) {
+  else if( (variable=="pkcm") ) {
     ptrToVarGetter = &TKinematics::GetPk;
   }  
-  else if( !std::strcmp(variable,"pklab") ) {
+  else if( (variable=="pklab") ) {
     ptrToVarGetter = &TKinematics::GetPklab;
   }
-  else if( !std::strcmp(variable,"u") ) {
+  else if( (variable=="u") ) {
     ptrToVarGetter = &TKinematics::GetU;
   }
-  else if( !std::strcmp(variable,"xb") ) {
+  else if( (variable=="xb") ) {
     ptrToVarGetter = &TKinematics::GetXb;
   }
-  else if( !std::strcmp(variable,"phi") ) {
+  else if( (variable=="phi") ) {
     ptrToVarGetter = &TKinematics::GetPhi;
   }
   else {
-    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics::GetVarArray(TString): "
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics::GetVarArray(std::string): "
 	 << "Kinematic variable \"" << variable << "\" unknown!");
   }
 
@@ -1579,14 +1574,14 @@ double* TKinematics::GetVarArray(const TString& variable) const
   for(int step=0; step<tk.GetNumberOfSteps(); ++step) {
     tk.GoTo(step);
     array[step] = (tk.*ptrToVarGetter)();
-    if(!std::strcmp(variable,"-t")) array[step] *= -1.;
+    if((variable=="-t")) array[step] *= -1.;
   }    
 
   return array;
 }
 
 //_____________________________________________________________________
-double*  TKinematics::GetPhysicalVarArray(const TString& variable) const
+double*  TKinematics::GetPhysicalVarArray(const std::string& variable) const
 {
   // Return an array of the variable of type 'variable' in all physical points. 
   // The variable can effectively by any one for which their exists a getter. 
@@ -1598,54 +1593,54 @@ double*  TKinematics::GetPhysicalVarArray(const TString& variable) const
   double(TKinematics::*ptrToVarGetter)() const; // pointer to TKinematics getters
 
   // Assign the correct Getter
-  if( !std::strcmp(variable,"wlab") ) {
+  if( (variable=="wlab") ) {
     ptrToVarGetter = &TKinematics::GetWlab;
   }
-  else if( !std::strcmp(variable,"costhkcm") ) {
+  else if( (variable=="costhkcm") ) {
     ptrToVarGetter = &TKinematics::GetCosthkcm;
   }
-  else if( !std::strcmp(variable,"qsquared") ) {
+  else if( (variable=="qsquared") ) {
     ptrToVarGetter = &TKinematics::GetQsquared;
   }
-  else if( !std::strcmp(variable,"w") ) {
+  else if( (variable=="w") ) {
     ptrToVarGetter = &TKinematics::GetW;
   }
-  else if( !std::strcmp(variable,"s") ) {
+  else if( (variable=="s") ) {
     ptrToVarGetter = &TKinematics::GetS;
   }
-  else if( !std::strcmp(variable,"t")  || 
-	   !std::strcmp(variable,"-t") ) {
+  else if( (variable=="t")  || 
+	   (variable=="-t") ) {
     ptrToVarGetter = &TKinematics::GetT;
   }
-  else if( !std::strcmp(variable,"wcm") ) {
+  else if( (variable=="wcm") ) {
     ptrToVarGetter = &TKinematics::GetWcm;
   }
-  else if( !std::strcmp(variable,"klab") ) {
+  else if( (variable=="klab") ) {
     ptrToVarGetter = &TKinematics::GetKlab;
   }
-  else if( !std::strcmp(variable,"kcm") ) {
+  else if( (variable=="kcm") ) {
     ptrToVarGetter = &TKinematics::GetKcm;
   }
-  else if( !std::strcmp(variable,"pk") ) {
+  else if( (variable=="pk") ) {
     ptrToVarGetter = &TKinematics::GetPk;
   }
-  else if( !std::strcmp(variable,"pkcm") ) {
+  else if( (variable=="pkcm") ) {
     ptrToVarGetter = &TKinematics::GetPk;
   }  
-  else if( !std::strcmp(variable,"pklab") ) {
+  else if( (variable=="pklab") ) {
     ptrToVarGetter = &TKinematics::GetPklab;
   }
-  else if( !std::strcmp(variable,"u") ) {
+  else if( (variable=="u") ) {
     ptrToVarGetter = &TKinematics::GetU;
   }
-  else if( !std::strcmp(variable,"xb") ) {
+  else if( (variable=="xb") ) {
     ptrToVarGetter = &TKinematics::GetXb;
   }
-  else if( !std::strcmp(variable,"phi") ) {
+  else if( (variable=="phi") ) {
     ptrToVarGetter = &TKinematics::GetPhi;
   }
   else {
-    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics::GetVarArray(TString): "
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in  TKinematics::GetVarArray(std::string): "
 	 << "Kinematic variable \"" << variable << "\" unknown!");
   }
 
@@ -1657,7 +1652,7 @@ double*  TKinematics::GetPhysicalVarArray(const TString& variable) const
     tk.GoTo(step);
     if(tk.IsPhysical()) {
       array[physicalStep++] = (tk.*ptrToVarGetter)();
-      if(!std::strcmp(variable,"-t")) array[physicalStep-1] *= -1.;
+      if((variable=="-t")) array[physicalStep-1] *= -1.;
     }
   }    
 
