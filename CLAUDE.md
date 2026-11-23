@@ -60,6 +60,8 @@ All CMakeLists use the helpers in `cmake/NucQCD.cmake`:
 - `nucqcd_add_program(<name> [SOURCES ...] LINK ... [DESTINATION dir])` and `nucqcd_add_programs(LINK ... PROGRAMS a b c ...)`: executables (default source `<name>.cpp`), built by `make` and installed only with `BUILD_PROGS`.
 - Interface targets for external dependencies: `root_libs`, `GSL::gsl`, `cuba`, `MPI::MPI_CXX`, `partons_libs`.
 
+Programs start `main` with `nucqcd::RunLog runlog(argc, argv, {"name of argv[1]", ...});` (`Tools/RunLog.hpp`): it writes the command line, date, host and build (git describe, flags, library versions) as `# ` comment lines to stdout, and the wall time at the end. The git state is generated into the build tree at every build (`cmake/BuildInfo.cmake`).
+
 To add a source file, list it explicitly in that library's `CMakeLists.txt`; there is no globbing. To add a program, add a `nucqcd_add_program(s)` line to the `CMakeLists.txt` of its `progs/` subdirectory (new directories are registered in `progs/CMakeLists.txt`).
 
 ## Key cross-cutting conventions
