@@ -16,7 +16,24 @@
 
 #include <string>
 
-/*! \brief A class that computes tagged spectator he3 cross sections */
+/*! \brief A class that computes tagged spectator he3 cross sections
+ *
+ * Plane-wave (virtual nucleon) DIS on He3 with both spectator nucleons detected, following the LDRD note
+ * "Tagged Deep Inelastic Scattering for general nucleus" (he3.tex):
+ * \f[ \frac{d\sigma}{dx_A dQ^2 d\phi_{e'}} = \frac{y_A^2\alpha^2}{Q^6}\, m_N L_{\mu\nu}W^{\mu\nu}_N\, S(p_{s_1},p_{s_2})\,
+ *     [(A-1)!\,\Theta]\, d^3p_{s_1} d^3p_{s_2}. \f]
+ * The two spectators are not identified (for a struck proton: one proton and one neutron, either at
+ * either momentum), so they are treated like the identical pp pair of a struck neutron:
+ * (A-1)! Theta = 1, and the cross section is integrated over the full (ordered) spectator phase space.
+ *
+ * Normalization of S: the note normalizes the wave function to 1 for each struck nucleon (its
+ * optical-theorem check sums sigma_hN over the nucleons N), whereas the He3 wave function of He3wf is
+ * antisymmetric, including isospin, and normalized to 1 summed over all isospin arrangements, so that
+ * each arrangement carries 1/A of it. Hence S = A sum |Psi_He3wf|^2, and the momentum distribution
+ * integrates to Z = 2 (struck proton) and N = 1 (struck neutron). Until 2026-11 the factor A = 3 was
+ * missing (the tagged cross section was 3 times too small), and before that S also missed part of the D
+ * and P waves (see He3wf).
+ */
 class He3Cross{
 public:
     /*! Constructor
@@ -30,18 +47,22 @@ public:
   He3Cross& operator=(const He3Cross&); /*!< assignment operator */
   ~He3Cross(); /*!<Destructor */
   
+  /*! He3 momentum distribution of the two (unidentified) spectators in the He3 rest frame
+   * \param sp1 [MeV] momentum of spectator 1 \param sp2 [MeV] momentum of spectator 2
+   * \return [MeV^-6] S(sp1,sp2) = A sum over all spins (m_A averaged) and the spectator isospins of
+   * |Psi|^2, with the struck nucleon (momentum -sp1-sp2) the proton or neutron of the constructor;
+   * \f$ \int d^3p_1 d^3p_2\, S = Z = 2 \f$ (struck proton) or N = 1 (struck neutron), see the class description */
+  double getMomentumDistribution(const TVector3 &sp1, const TVector3 &sp2);
   /*! Calculate He3 momentum distribution for a certain kinematics of the spectators
    * \param[in] kin LightconeKin2to3 object that has all the kinematics
-   * \return [MeV-4] momentum distribution S(ps1,ps2) times E_sp1_lab*E_sp2_lab, with S summed over all
-   * spins and the spectator isospins for a struck proton (neutron): \f$ \int d^3p_1 d^3p_2\, S = 2/3 \f$
-   * (1/3), the probability that nucleon 3 is a proton (neutron) (the He3 wave function is normalized
-   * to 1, see He3wf). Until 2026-11 this said 1, and S missed part of the D and P waves (see He3wf). 
+   * \return [MeV-4] getMomentumDistribution at the spectator momenta (shifted by a third of the He3
+   * momentum), times E_sp1_lab*E_sp2_lab
    */  
   double getDensity(LightConeKin2to3 &kin);
     /*! get the average cross section
    * \param kin kinematics object containing the gamma+He3->X+N1+N2 kinematics <BR>
    * \return [nb/GeV^6] tagged spectators cross section \f$ \frac{d\sigma}{dx_A dQ^2 \frac{d^3p_{s_1}}{E_{s_1}}\frac{d^3p_{s_2}}{E_{s_2}}} \f$ 
-   * NOT averaged over phi [see he3.pdf note for formula details]
+   * NOT averaged over phi, for unidentified spectators (see the class description and the he3 note)
    */
   double getCross (LightConeKin2to3 &kin);
   
