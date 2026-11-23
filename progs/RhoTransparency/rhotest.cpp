@@ -15,7 +15,7 @@ using namespace std;
 #include <Glauber/GlauberDecayGridThick.hpp>
 #include <Glauber/DistMomDistrGrid.hpp>
 #include <Glauber/TMFSpinor.hpp>
-#include <TRotation.h>
+#include <Tools/Core/Rotation.hpp>
 
 int main(int argc, char *argv[])
 {
@@ -97,8 +97,8 @@ int main(int argc, char *argv[])
      double tot =0.,totpw=0.;
 //      cout << p << " "; 
      for(int shell=0;shell<FeThick.getTotalLevels();shell++){
-      TRotation rot;
-      rot.Rotate(0.,TVector3(0.,1.,0.));
+      nucqcd::Rotation rot;
+      rot.Rotate(0.,nucqcd::Vector3(0.,1.,0.));
          pdistgrid[shell]->updateGrids(&gridthick,shell,rot);
 	 double pw = pdistgrid[shell]->getRhopwGridFull_interp(p);
 	 double fsi = pdistgrid[shell]->getRhoGridFull_interp3(0, p, 1., 0.);

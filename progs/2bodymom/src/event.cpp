@@ -11,16 +11,16 @@ Event::Event() :
 	type2(-1),
 	shellindex1(-1),
 	shellindex2(-1),
-	k1 (TVector3(0.,0.,0.)),
-	q  (TVector3(0.,0.,0.)),
-	p1 (TVector3(0.,0.,0.)),
-	p2 (TVector3(0.,0.,0.)),
+	k1 (nucqcd::Vector3(0.,0.,0.)),
+	q  (nucqcd::Vector3(0.,0.,0.)),
+	p1 (nucqcd::Vector3(0.,0.,0.)),
+	p2 (nucqcd::Vector3(0.,0.,0.)),
 	status(666) // should never stay 666 //
 {}
 
        
 
-string vecString(TVector3& v){
+string vecString(nucqcd::Vector3& v){
 	std::stringstream ss;
 	ss << "[" << v.X() << ", " << v.Y() << ", " << v.Z() << "]";
 	return ss.str();

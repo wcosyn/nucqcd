@@ -9,7 +9,7 @@
 #ifndef TWAVEFUNCTIONIMPLEMENTATION_H
 #define TWAVEFUNCTIONIMPLEMENTATION_H
 
-#include <TVector3.h>
+#include <Tools/Core/Vector3.hpp>
 
 /*! \brief Interface of a deuteron wave function implementation (used by TDeuteron::Wavefunction)
  *
@@ -54,10 +54,10 @@ class TWavefunctionImplementation
   virtual double GetVSp(double p) const =0; ///< [MeV^-3/2] spin-singlet P wave (L=1) in momentum space \param p [MeV]
 
   // L=0 off-shell wave in momentum space (pure virtual)
-  virtual double GetUpoff(const TVector3& p) const =0; ///< [MeV^-3/2] off-shell S-wave part, see TDeuteron::Wavefunction::DeuteronPStateOff \param p [MeV]
+  virtual double GetUpoff(const nucqcd::Vector3& p) const =0; ///< [MeV^-3/2] off-shell S-wave part, see TDeuteron::Wavefunction::DeuteronPStateOff \param p [MeV]
 
   // L=2 off-shell wave in momentum space (pure virtual)
-  virtual double GetWpoff1(const TVector3& p) const =0; ///< [MeV^-3/2] first off-shell D-wave part \param p [MeV]
+  virtual double GetWpoff1(const nucqcd::Vector3& p) const =0; ///< [MeV^-3/2] first off-shell D-wave part \param p [MeV]
 
   // L=2 off-shell wave in momentum space (pure virtual)
   virtual double GetWpoff2(double pperp2) const =0; ///< [MeV^-3/2] second off-shell D-wave part \param pperp2 [MeV^2]

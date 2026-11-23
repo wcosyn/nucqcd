@@ -9,7 +9,7 @@
 #ifndef DEUTERONMOMDISTR_HPP
 #define DEUTERONMOMDISTR_HPP
 
-#include <TVector3.h>
+#include <Tools/Core/Vector3.hpp>
 #include <Tools/WaveFunctions/TDeuteron.hpp>
 #include <Tools/Kinematics/TKinematics2to2.hpp>
 #include <Tools/WaveFunctions/TInterpolatingWavefunction.hpp>
@@ -65,7 +65,7 @@ public:
   * \param p [MeV] relative momentum in deuteron rest frame
   * \return plane-wave momentum distribution [MeV^-3]
    */
-  double getLCMomDistrpw(TVector3 p) const;
+  double getLCMomDistrpw(nucqcd::Vector3 p) const;
   /*! Computes plane-wave momentum distribution, does not depend on phi, includes flux factor for baryon conservation
    * \param[in] kin kinematics object containing the gamma+D->X+N kinematics <BR>
    * in TKinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
@@ -94,7 +94,7 @@ public:
    * \param pvec vector of spectator momentum
    * \return plane-wave momentum distribution [MeV^-3]
    */
-  double getMomDistrpw(TVector3 pvec) const;  
+  double getMomDistrpw(nucqcd::Vector3 pvec) const;  
   /*! Computes plane-wave momentum distribution, but off-diagonal in deuteron polarization and spectator momentum!
    * \param pvec vector of spectator momentum
    * \param pvec2 vector of other spectator momentum
@@ -102,7 +102,7 @@ public:
    * \param M2 other deuteron polarization (-1,0,1)
    * \return plane-wave momentum distribution [MeV^-3]
    */
-  std::complex<double> getMomDistrpwcoh(TVector3 pvec,TVector3 pvec2,int M, int M2) const;
+  std::complex<double> getMomDistrpwcoh(nucqcd::Vector3 pvec,nucqcd::Vector3 pvec2,int M, int M2) const;
   /*! Computes distorted momentum distribution for DIS production off deuteron
    * \param[in] kin kinematics object containing the gamma+D->X+N kinematics <BR>
    * in TKinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
@@ -130,7 +130,7 @@ public:
    * \param massother mass of other particle involved in the FSI [MeV]
    * \return distorted momentum distribution [MeV^-3]
    */
-  double getMomDistrfsi(TVector3 pvec, double nu, double qvec, double s, double massother);
+  double getMomDistrfsi(nucqcd::Vector3 pvec, double nu, double qvec, double s, double massother);
   /*! Set scattering parameters for FSI
    * \param sigmain total cross section [mb]
    * \param betain slope parameter [GeV^-2]
@@ -198,7 +198,7 @@ private:
    * \param k_perp_prime [MeV] threevector of initial spectator LC rescaled perp momentum
    * \param kin LC kinematics object containing the gamma+D->X+N kinematics <BR>
    */
-  void get_k_z_prime(TVector3 &k_perp_prime, LightConeKin2to2 & kin);
+  void get_k_z_prime(nucqcd::Vector3 &k_perp_prime, LightConeKin2to2 & kin);
   /*! gives you the scatter amplitude of the final-state interaction
    * \param t [MeV^2] momentum transfer squared
    * \return \f$ \sigma_{tot} (I+\epsilon) e^{\beta t/2} \f$

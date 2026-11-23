@@ -48,7 +48,7 @@ public:
   virtual void printFsi_ct_grid()=0; /*!< Prints the FSI+CT grid for a certain situation, pure virtual function!! */
 
   /*!returns the value of the fsi+ct grid for a certain situation at coordinate (r,costheta,phi) */
-  std::complex<double> getFsiCtGridFull_interpvec(const TVector3 &rvec);
+  std::complex<double> getFsiCtGridFull_interpvec(const nucqcd::Vector3 &rvec);
   /*!returns the value of the fsi+ct grid for a certain situation at coordinate (r,costheta,phi) */
   std::complex<double> getFsiCtGridFull_interp3(const double r, const double costheta, const double phi);
   /*!returns the value of the fsi+ct grid for a certain situation at coordinate (costheta,phi), r has been set previously */

@@ -12,9 +12,8 @@
 #include <Tools/Core/TLorentzQuaternion.hpp>
 #include <Tools/Core/constants.hpp>
 //#include <numtoa.h>
-#include <TLorentzVector.h>
-#include <TLorentzRotation.h>
-#include <TRotation.h>
+#include <Tools/Core/LorentzVector.hpp>
+#include <Tools/Core/Rotation.hpp>
 #include <Tools/Core/FourVector.hpp>
 #include <cassert>
 #include <cmath>
@@ -69,7 +68,7 @@ TSpinor::TSpinor(double px,double py,double pz,double mass, const Polarization& 
 }
 
 //_____________________________________________________________________
-TSpinor::TSpinor(const TLorentzVector& v, double mass, const Polarization& pol, 
+TSpinor::TSpinor(const nucqcd::LorentzVector& v, double mass, const Polarization& pol, 
 		 Normalization norm)
   : fComponent(new Matrix<4,1>)
 {
@@ -416,7 +415,7 @@ TSpinor::Polarization::operator State() const
 
 
 //_____________________________________________________________________
-TVSpinor::TVSpinor(const TLorentzVector& v, double mass, const Polarization& pol, 
+TVSpinor::TVSpinor(const nucqcd::LorentzVector& v, double mass, const Polarization& pol, 
 		   Normalization norm)
 : TSpinor(v.X(),v.Y(),v.Z(),mass,pol,norm,-1)
 {
@@ -482,7 +481,7 @@ TVSpinor* TVSpinor::Clone(const char*) const
 ///////////////////////////////////////////////////////////////////////////
 
 //_____________________________________________________________________
-THelicitySpinor::THelicitySpinor(const TLorentzVector& v, double mass, 
+THelicitySpinor::THelicitySpinor(const nucqcd::LorentzVector& v, double mass, 
 				 const Polarization::State& polState, 
 				 Normalization norm)
 : TSpinor(0.,0.,v.P(),mass,
@@ -588,7 +587,7 @@ void THelicitySpinor::ToHelicitySpinor(const Polarization::State& polState,
 
 
 //_____________________________________________________________________
-THelicityVSpinor::THelicityVSpinor(const TLorentzVector& v, double mass, 
+THelicityVSpinor::THelicityVSpinor(const nucqcd::LorentzVector& v, double mass, 
 				 const Polarization::State& polState, 
 				 Normalization norm)
 : TSpinor(0.,0.,v.P(),mass,
@@ -677,7 +676,7 @@ void THelicityVSpinor::ToHelicityVSpinor(const Polarization::State& polState,
 //                                                                       //
 // A representation of the Lorentz group on the four-dimensional Dirac space.
 // Takes care of pure boosts and rotation or any combination. This class is
-// closely linked to TLorentzRotation which acts on Lorentz indices.
+// closely linked to nucqcd::LorentzRotation which acts on Lorentz indices.
 // 
 // A concise treatment of the transformation rules for spinors can be found
 // in section 5.9 (p.146-152) in
@@ -694,19 +693,19 @@ TSpinor::LorentzRotation::LorentzRotation()
 }
 
 //______________________________________________________________________________
-TSpinor::LorentzRotation::LorentzRotation(const TRotation& rot)
+TSpinor::LorentzRotation::LorentzRotation(const nucqcd::Rotation& rot)
 : fTransformation(1.)
 {
   // Constructor
   // Initialize transformation in spinor space corresponding to the given rotation
   double theta;
-  TVector3 axis;
+  nucqcd::Vector3 axis;
   rot.AngleAxis(theta,axis);
   SetRotation( theta*axis.X(), theta*axis.Y(), theta*axis.Z() );
 }
 
 //______________________________________________________________________________
-TSpinor::LorentzRotation::LorentzRotation(const TVector3& boostVector)
+TSpinor::LorentzRotation::LorentzRotation(const nucqcd::Vector3& boostVector)
 : fTransformation(1.)
 {
   // Constructor
@@ -773,7 +772,7 @@ GammaStructure TSpinor::LorentzRotation::operator*(const GammaStructure& rhs) co
 }
 
 //______________________________________________________________________________
-TSpinor::LorentzRotation& TSpinor::LorentzRotation::Rotate(double angle, const TVector3& axis)
+TSpinor::LorentzRotation& TSpinor::LorentzRotation::Rotate(double angle, const nucqcd::Vector3& axis)
 {
   // Rotate over a certain angle around an axis
   SetRotation(angle*axis.X(),angle*axis.Y(),angle*axis.Z());
@@ -887,20 +886,20 @@ Matrix<4,1> operator*(const GammaStructure& lhs, const TSpinor& rhs)
 }
 
 //______________________________________________________________________________
-TLorentzRotation THelicitySpinor::HelicityTransformation(const TLorentzVector& p)
+nucqcd::LorentzRotation THelicitySpinor::HelicityTransformation(const nucqcd::LorentzVector& p)
 {
   // Compute the helicity transformation h(p) as defined in section 1.2.2 of
   // 'Spin in particle physics' by E.Leader.
   //
   //BEGIN_LATEX h(p) = r_{z}(#phi) #times r_{y}(#theta) #times l_{z}(#frac{|#vec{p}|}{p^{0}})END_LATEX
   return 
-    TLorentzRotation(0.,0.,p.P()/p.E())
+    nucqcd::LorentzRotation(0.,0.,p.P()/p.E())
     .RotateY(p.Theta())
     .RotateZ(p.Phi());
 }
 
 //______________________________________________________________________________
-TSpinor::LorentzRotation THelicitySpinor::HelicitySpinorTransformation(const TLorentzVector& p)
+TSpinor::LorentzRotation THelicitySpinor::HelicitySpinorTransformation(const nucqcd::LorentzVector& p)
 {
   // Compute the helicity transformation h(p) as defined in section 1.2.2 of
   // 'Spin in particle physics' by E.Leader.
@@ -913,7 +912,7 @@ TSpinor::LorentzRotation THelicitySpinor::HelicitySpinorTransformation(const TLo
 }
 
 //______________________________________________________________________________
-TLorentzQuaternion THelicitySpinor::HelicityQuaternionTransformation(const TLorentzVector& p)
+TLorentzQuaternion THelicitySpinor::HelicityQuaternionTransformation(const nucqcd::LorentzVector& p)
 {
   // Compute the helicity transformation h(p) as defined in section 1.2.2 of
   // 'Spin in particle physics' by E.Leader.
@@ -926,8 +925,8 @@ TLorentzQuaternion THelicitySpinor::HelicityQuaternionTransformation(const TLore
 }
 
 //______________________________________________________________________________
-TLorentzRotation THelicitySpinor::WickRotation(const TLorentzRotation& l,
-						 const TLorentzVector& p)
+nucqcd::LorentzRotation THelicitySpinor::WickRotation(const nucqcd::LorentzRotation& l,
+						 const nucqcd::LorentzVector& p)
 {
   // Compute the Wick helicity rotation as defined in (2.1.7) in section 2.1
   // of 'Spin in particle physics' by E.Leader.
@@ -943,7 +942,7 @@ TLorentzRotation THelicitySpinor::WickRotation(const TLorentzRotation& l,
 
 //______________________________________________________________________________
 TLorentzQuaternion THelicitySpinor::WickRotation(const TLorentzQuaternion& l,
-						 const TLorentzVector& p)
+						 const nucqcd::LorentzVector& p)
 {
   // Compute the Wick helicity rotation as defined in (2.1.7) in section 2.1
   // of 'Spin in particle physics' by E.Leader.
@@ -958,8 +957,8 @@ TLorentzQuaternion THelicitySpinor::WickRotation(const TLorentzQuaternion& l,
 }
 
 //______________________________________________________________________________
-void THelicitySpinor::WickRotationEulerAngles(const TLorentzRotation& l,
-					      const TLorentzVector& p,
+void THelicitySpinor::WickRotationEulerAngles(const nucqcd::LorentzRotation& l,
+					      const nucqcd::LorentzVector& p,
 					      double& alpha, double& beta, 
 					      double& gamma)
 {
@@ -970,49 +969,49 @@ void THelicitySpinor::WickRotationEulerAngles(const TLorentzRotation& l,
   //
   //BEGIN_LATEX r(l,p) = h(l*p)^{-1} #times l #times h(l*p) = r(#alpha,#beta,#gamma)END_LATEX
   // We use the Y-convention Euler angles as explained in the documentation 
-  // of TRotation.
+  // of nucqcd::Rotation.
 
-  TLorentzRotation wickRotation = WickRotation(l,p);
+  nucqcd::LorentzRotation wickRotation = WickRotation(l,p);
 
   // We know the wickRotation is a pure rotation, but ROOT doesn't give
-  // us the possibility to turn a TLorentzRotation in a TRotation. We will
-  // copy TRotation::GetYTheta(), TRotation::GetYPhi() and TRotation::GetYPsi()
+  // us the possibility to turn a nucqcd::LorentzRotation in a nucqcd::Rotation. We will
+  // copy nucqcd::Rotation::GetYTheta(), nucqcd::Rotation::GetYPhi() and nucqcd::Rotation::GetYPsi()
   // verbatim here, but calling wickRotation's members instead.
 
   // We define an underflow parameter to deal with sines and cosines near
   // the edges.
   const double underflow = 1.e-7;
 
-  Double_t s2 =  1.0 - wickRotation.ZZ()*wickRotation.ZZ();
+  double s2 =  1.0 - wickRotation.ZZ()*wickRotation.ZZ();
   if (s2 < 0) {
     if( (fabs(wickRotation.ZZ())-1.) < underflow ) {
       s2 = 0;
     } 
     else {
       cerr << "WARNING in  THelicitySpinor::WickRotationEulerAngles("
-	   << "const TLorentzRotation&,const TLorentzVector&,"
+	   << "const nucqcd::LorentzRotation&,const nucqcd::LorentzVector&,"
 	   << "double&,double&,double&): "
 	   << "|fzz| > 1" << endl;
       assert(1==0);
     }
   }
-  const Double_t sinTheta = std::sqrt(s2);
+  const double sinTheta = std::sqrt(s2);
 
   if ( fabs(sinTheta) > underflow  ) {
-    Double_t cscTheta = 1/sinTheta;
-    Double_t cosAbsPhi =  wickRotation.ZY() * cscTheta;
+    double cscTheta = 1/sinTheta;
+    double cosAbsPhi =  wickRotation.ZY() * cscTheta;
     if( std::abs(cosAbsPhi-1.) < underflow ) {
       cosAbsPhi = 1.;
     } else if( std::abs(cosAbsPhi+1.) < underflow ) {
       cosAbsPhi = -1.;
     } else if ( std::abs(cosAbsPhi) > 1 ) {        // NaN-proofing
       cerr << "Error in  THelicitySpinor::WickRotationEulerAngles("
-	   << "const TLorentzRotation&,const TLorentzVector&,"
+	   << "const nucqcd::LorentzRotation&,const nucqcd::LorentzVector&,"
 	   << "double&,double&,double&): "
 	   << "finds |cos(phi)| > 1" << endl;
       assert(1==0);
     }
-    Double_t absPhi;
+    double absPhi;
     if( fabs(cosAbsPhi-1.) < underflow ) absPhi = 0.;
     else if( fabs(cosAbsPhi+1.) < underflow ) absPhi = nucqcd::pi;
     else absPhi= std::acos(cosAbsPhi);
@@ -1026,8 +1025,8 @@ void THelicitySpinor::WickRotationEulerAngles(const TLorentzRotation& l,
       alpha = nucqcd::pi;
     }
   } else {              // sinTheta == 0 so |Fzz| = 1
-    Double_t cosAbsPhi = wickRotation.XX();
-    Double_t absPhi;
+    double cosAbsPhi = wickRotation.XX();
+    double absPhi;
     if( fabs(cosAbsPhi-1.) < underflow ) absPhi = 0.;
     else if( fabs(cosAbsPhi+1.) < underflow ) absPhi = (nucqcd::pi/2.);
     else absPhi= .5 * std::acos(cosAbsPhi);
@@ -1053,16 +1052,16 @@ void THelicitySpinor::WickRotationEulerAngles(const TLorentzRotation& l,
 
   // GetXPsi(): store the finalPsi in gamma
   if ( fabs(sinTheta) > underflow ) {
-    Double_t cscTheta = 1/sinTheta;
-    Double_t cosAbsPsi =  - wickRotation.YZ() * cscTheta;
+    double cscTheta = 1/sinTheta;
+    double cosAbsPsi =  - wickRotation.YZ() * cscTheta;
     if ( std::abs(cosAbsPsi) > 1 ) {        // NaN-proofing
       cerr << "WARNING in  THelicitySpinor::WickRotationEulerAngles("
-	   << "const TLorentzRotation&,const TLorentzVector&,"
+	   << "const nucqcd::LorentzRotation&,const nucqcd::LorentzVector&,"
 	   << "double&,double&,double&): "
 	   << "GetPsi(): | cos psi | > 1" << endl;
       cosAbsPsi = 1;
     }
-    Double_t absPsi;
+    double absPsi;
     if( fabs(cosAbsPsi-1.) < underflow ) absPsi = 0.;
     else if( fabs(cosAbsPsi+1.) < underflow ) absPsi = nucqcd::pi;
     else absPsi= std::acos(cosAbsPsi);
@@ -1074,15 +1073,15 @@ void THelicitySpinor::WickRotationEulerAngles(const TLorentzRotation& l,
       gamma = (wickRotation.YZ() < 0) ? 0 : nucqcd::pi;
     }
   } else {              // sinTheta == 0 so |Fzz| = 1
-    Double_t cosAbsPsi = wickRotation.XX();
+    double cosAbsPsi = wickRotation.XX();
     if ( std::abs(cosAbsPsi) > 1 ) {        // NaN-proofing
       cerr << "WARNING in  THelicitySpinor::WickRotationEulerAngles("
-	   << "const TLorentzRotation&,const TLorentzVector&,"
+	   << "const nucqcd::LorentzRotation&,const nucqcd::LorentzVector&,"
 	   << "double&,double&,double&): "
 	   << "GetPsi(): | fxx | > 1" << endl;
       cosAbsPsi = 1;
     }
-    Double_t absPsi;
+    double absPsi;
     if( fabs(cosAbsPsi-1.) < underflow ) absPsi = 0.;
     else if( fabs(cosAbsPsi+1.) < underflow ) absPsi = (nucqcd::pi/2.);
     else absPsi= .5 * std::acos(cosAbsPsi);
@@ -1101,7 +1100,7 @@ void THelicitySpinor::WickRotationEulerAngles(const TLorentzRotation& l,
 
 //______________________________________________________________________________
 Matrix<2,2> THelicitySpinor::RotationMatrix(const TLorentzQuaternion& l,
-					    const TLorentzVector& p)
+					    const nucqcd::LorentzVector& p)
 {
   // Compute the Wick helicity rotation as defined in (2.1.7) in section 2.1
   // of 'Spin in particle physics' by E.Leader and determine the corresponding
@@ -1115,7 +1114,7 @@ Matrix<2,2> THelicitySpinor::RotationMatrix(const TLorentzQuaternion& l,
   // The Lorentz transformation 'l', given as argument, acts on 4-vectors,...
   // however not on the reference frame.
   double omega;				    
-  TVector3 axis,boost;
+  nucqcd::Vector3 axis,boost;
   WickRotation(l,p).Decompose(omega,axis,boost);
   const double theta = axis.Theta();
   const double phi = axis.Phi();
@@ -1131,8 +1130,8 @@ Matrix<2,2> THelicitySpinor::RotationMatrix(const TLorentzQuaternion& l,
 }
 
 //______________________________________________________________________________
-Matrix<2,2> THelicitySpinor::RotationMatrix(const TLorentzRotation& l,
-					    const TLorentzVector& p)
+Matrix<2,2> THelicitySpinor::RotationMatrix(const nucqcd::LorentzRotation& l,
+					    const nucqcd::LorentzVector& p)
 {
   // Compute the Wick helicity rotation as defined in (2.1.7) in section 2.1
   // of 'Spin in particle physics' by E.Leader and determine the corresponding
@@ -1148,7 +1147,7 @@ Matrix<2,2> THelicitySpinor::RotationMatrix(const TLorentzRotation& l,
   //
   // Due to the 2-to-1 homomorphism between SU(2) and O(3) this method is not
   // fail-safe. It is recommended to use the
-  // RotationMatrix(const TLorentzQuaternion&,const TLorentzVector&) method.
+  // RotationMatrix(const TLorentzQuaternion&,const nucqcd::LorentzVector&) method.
   double alpha,beta,gamma;
   WickRotationEulerAngles(l,p,alpha,beta,gamma);
 

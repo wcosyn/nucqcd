@@ -43,7 +43,7 @@ End_Html */
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
-#include <TLorentzRotation.h>
+#include <Tools/Core/Rotation.hpp>
 #include <iostream>
 using std::cout; using std::cerr;
 #include <cassert>
@@ -202,8 +202,8 @@ void TKinematics2to3WithLabAngles::UpdateKinematics()
   fIsPhysical = true;
 
   // declare 4vectors in the fAC axis convention.
-  TLorentzVector vector1,vector2,vector3;
-  TLorentzVector vector23;
+  nucqcd::LorentzVector vector1,vector2,vector3;
+  nucqcd::LorentzVector vector23;
   
   // pointer to subsystem
   TKinematics2to2 *subSystem;
@@ -395,7 +395,7 @@ void TKinematics2to3WithLabAngles::UpdateKinematics()
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Define rotation matrix that changes reference frame to
   // z' ~ p23,  y' ~ y and x' ~ y' x z'
-  TLorentzRotation rotateTo23; 
+  nucqcd::LorentzRotation rotateTo23; 
   double rotationAngle=0.; 
   if( 1.-fabs(vector23.CosTheta())>kUflow )
     rotationAngle = -1.*std::copysign(1.,vector23.X())
@@ -403,8 +403,8 @@ void TKinematics2to3WithLabAngles::UpdateKinematics()
   rotateTo23.RotateY(rotationAngle);
   // Define Lorentzboost that boosts in reference frame defined above
   // to 23 CM system.
-  TVector3 boostVector = -1.0 * (rotateTo23*vector23).BoostVector();
-  TLorentzRotation boostCM23 = boostVector;
+  nucqcd::Vector3 boostVector = -1.0 * (rotateTo23*vector23).BoostVector();
+  nucqcd::LorentzRotation boostCM23 = boostVector;
 
  
   // Determine 4vector of 2nd particle
@@ -568,7 +568,7 @@ void TKinematics2to3WithLabAngles::UpdateKinematics()
 
   // Do a final check whether we are in a physical point
   // by checking conservation of energy and momentum
-  TLorentzVector sum = *fGvector + *fDvector - *fKvector - *fYvector - *fNvector;
+  nucqcd::LorentzVector sum = *fGvector + *fDvector - *fKvector - *fYvector - *fNvector;
   if( fabs(sum.E()) > nucqcd::strange_underflow || fabs(sum.X()) > nucqcd::strange_underflow ||
       fabs(sum.Y()) > nucqcd::strange_underflow || fabs(sum.Z()) > nucqcd::strange_underflow )
     fIsPhysical = false;
@@ -586,7 +586,7 @@ void TKinematics2to3WithLabAngles::UpdateKinematics()
     double costh2cm=0., phi2cm=0.;
     
     // Build the vector in the lab and boost it!
-    TLorentzVector vector2cm;
+    nucqcd::LorentzVector vector2cm;
     vector2cm.SetXYZM(sinth2*std::cos(*fPhi2Var)*roots[i],
 		      sinth2*std::sin(*fPhi2Var)*roots[i],
 		      costh2*roots[i], m2);

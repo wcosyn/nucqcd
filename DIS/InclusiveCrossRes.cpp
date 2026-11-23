@@ -158,7 +158,7 @@ void InclusiveCrossRes::int_costheta_incl_fsi(double costheta, double *results, 
 //   double chi=sqrt(kin.GetS()*kin.GetS()-2.*kin.GetS()*
 // 	      (getResonance_vec()[res1].getMass2()+massr*massr)+pow(massr*massr-getResonance_vec()[res1].getMass2(),2.));
   complex<double> wave[12];
-  for(int i=0;i<12;i++) wave[i] = wf->DeuteronPState((i/4)*2-2, ((i/2)%2)*2-1, (i%2)*2-1, TVector3(prnorm*sqrt(1.-costheta*costheta),0.,
+  for(int i=0;i<12;i++) wave[i] = wf->DeuteronPState((i/4)*2-2, ((i/2)%2)*2-1, (i%2)*2-1, nucqcd::Vector3(prnorm*sqrt(1.-costheta*costheta),0.,
 								   prnorm*costheta)); 
   double qresults[2];
   double qestimate=0.,qphiestimate=0.;
@@ -266,7 +266,7 @@ void InclusiveCrossRes::int_qphi(double qphi, double *results, va_list ap){
       if(offshellset==3) offshellness=0.;
       if(offshellset==4) offshellness=1.;
       complex<double> wave2[12];
-      TVector3 vecprime(pprime*sinthetaprime*cosphiprime,pprime*sinthetaprime*sinphiprime,przprime);
+      nucqcd::Vector3 vecprime(pprime*sinthetaprime*cosphiprime,pprime*sinthetaprime*sinphiprime,przprime);
       for(int i=0;i<12;i++) wave2[i] = wf->DeuteronPState((i/4)*2-2, ((i/2)%2)*2-1, (i%2)*2-1, vecprime)
 			-offshellness*wf->DeuteronPStateOff((i/4)*2-2, ((i/2)%2)*2-1, (i%2)*2-1, vecprime); 
       complex<double> temp=0.;
@@ -323,7 +323,7 @@ void InclusiveCrossRes::int_qphi(double qphi, double *results, va_list ap){
     if(offshellset==3) offshellness=0.;
     if(offshellset==4) offshellness=1.;
     complex<double> wave2[12];
-    TVector3 vecprime(pprime*sinthetaprime*cosphiprime,pprime*sinthetaprime*sinphiprime,przprime);
+    nucqcd::Vector3 vecprime(pprime*sinthetaprime*cosphiprime,pprime*sinthetaprime*sinphiprime,przprime);
     for(int i=0;i<12;i++) wave2[i] = wf->DeuteronPState((i/4)*2-2, ((i/2)%2)*2-1, (i%2)*2-1, vecprime)
 		      +offshellness*wf->DeuteronPStateOff((i/4)*2-2, ((i/2)%2)*2-1, (i%2)*2-1, vecprime); 
     complex<double> temp=0.;
@@ -385,7 +385,7 @@ void InclusiveCrossRes::int_qphi(double qphi, double *results, va_list ap){
 	if(offshellset==3) offshellness=0.;
 	if(offshellset==4) offshellness=1.;
 	complex<double> wave2[12];
-	TVector3 vecprime(pprime*sinthetaprime*cosphiprime,pprime*sinthetaprime*sinphiprime,przprime);
+	nucqcd::Vector3 vecprime(pprime*sinthetaprime*cosphiprime,pprime*sinthetaprime*sinphiprime,przprime);
 	for(int i=0;i<12;i++) wave2[i] = wf->DeuteronPState((i/4)*2-2, ((i/2)%2)*2-1, (i%2)*2-1, vecprime)
 			  -offshellness*wf->DeuteronPStateOff((i/4)*2-2, ((i/2)%2)*2-1, (i%2)*2-1, vecprime); 
 	complex<double> temp=0.;
@@ -443,7 +443,7 @@ void InclusiveCrossRes::int_qphi(double qphi, double *results, va_list ap){
     if(offshellset==3) offshellness=0.;
     if(offshellset==4) offshellness=1.;
     complex<double> wave2[12];
-    TVector3 vecprime(pprime*sinthetaprime*cosphiprime,pprime*sinthetaprime*sinphiprime,pprime*costhetaprime);
+    nucqcd::Vector3 vecprime(pprime*sinthetaprime*cosphiprime,pprime*sinthetaprime*sinphiprime,pprime*costhetaprime);
     for(int i=0;i<12;i++) wave2[i] = wf->DeuteronPState((i/4)*2-2, ((i/2)%2)*2-1, (i%2)*2-1, vecprime)
 		      +offshellness*wf->DeuteronPStateOff((i/4)*2-2, ((i/2)%2)*2-1, (i%2)*2-1, vecprime); 
     complex<double> temp=0.;

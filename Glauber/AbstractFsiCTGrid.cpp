@@ -27,7 +27,7 @@ const string AbstractFsiCTGrid::getFsi_Ct_Filename() const{
 }
 
 //interpolation functions
-complex<double> AbstractFsiCTGrid::getFsiCtGridFull_interpvec(const TVector3 &rvec){
+complex<double> AbstractFsiCTGrid::getFsiCtGridFull_interpvec(const nucqcd::Vector3 &rvec){
   return getFsiCtGridFull_interp3(rvec.Mag(),rvec.CosTheta(),rvec.Phi());
 }
 

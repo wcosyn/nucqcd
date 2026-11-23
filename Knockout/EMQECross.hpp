@@ -259,7 +259,7 @@ private:
     EMQECross *cross;/*!< pointer to cross instance that contains all */
     int total;/*!< number of results (5 with thicknes,3 without)*/
     AbstractFsiGrid *grid; /*!< Glauber grid */
-    TVector3 pm; /*!< [MeV] missing momentum */
+    nucqcd::Vector3 pm; /*!< [MeV] missing momentum */
     Matrix<1,4> spinor; /*!< bar spinor of the outgoing nucleon */
     int shell; /*!< shell index */
     int m; /*!< \f$ 2m_j \f$ of the initial nucleon */
@@ -276,11 +276,11 @@ private:
     * \param m \f$ m_j \f$ times TWO!!! of the initial nucleon
     */
     void (*f)(numint::vector_z & res, double r, double costheta, double phi, EMQECross & cross, int total,
-	      AbstractFsiGrid *grid, TVector3 &pm, Matrix<1,4> &spinor, int shell, int m);
+	      AbstractFsiGrid *grid, nucqcd::Vector3 &pm, Matrix<1,4> &spinor, int shell, int m);
   };
   /*! integrand of the distorted Fourier transform phi_d, for the cubature integrators (parameters as Ftor_phid::f) */
   static void klaas_phid(numint::vector_z & res, double r, double costheta, double phi, EMQECross & cross, int total,
-	      AbstractFsiGrid *grid, TVector3 &pm, Matrix<1,4> &spinor, int shell, int m);
+	      AbstractFsiGrid *grid, nucqcd::Vector3 &pm, Matrix<1,4> &spinor, int shell, int m);
   
   
   /*! struct that is used for integration of phi_d */
@@ -294,7 +294,7 @@ private:
     EMQECross *cross;/*!< pointer to cross instance that contains all */
     int total;/*!< number of results (5 with thicknes,3 without)*/
     AbstractFsiGrid *grid; /*!< Glauber grid */
-    TVector3 pm; /*!< [MeV] missing momentum */
+    nucqcd::Vector3 pm; /*!< [MeV] missing momentum */
     Matrix<1,4> spinordown; /*!< bar spinor of the outgoing nucleon, spin down */
     Matrix<1,4> spinorup; /*!< bar spinor of the outgoing nucleon, spin up */
     std::complex<double>  **phid; /*!< distorted Fourier transform */
@@ -315,12 +315,12 @@ private:
     * \param shell shellindex
     */
     void (*f)(numint::vector_d & res, double costheta, double phi, EMQECross & cross, int total,
-	      AbstractFsiGrid *grid, TVector3 &pm, Matrix<1,4> &spinordown, Matrix<1,4> &spinorup,
+	      AbstractFsiGrid *grid, nucqcd::Vector3 &pm, Matrix<1,4> &spinordown, Matrix<1,4> &spinorup,
 	      std::complex<double>  **phid, double r, int shell);
   };
   /*! integrand over cos(theta) and phi of the density, for the cubature integrators (parameters as Ftor_densr::f) */
   static void klaas_densr(numint::vector_d & res, double costheta, double phi, EMQECross & cross, int total,
-	      AbstractFsiGrid *grid, TVector3 &pm, Matrix<1,4> &spinordown, Matrix<1,4> &spinorup,
+	      AbstractFsiGrid *grid, nucqcd::Vector3 &pm, Matrix<1,4> &spinordown, Matrix<1,4> &spinorup,
 	      std::complex<double>  **phid, double r, int shell);
  /*! struct that is used for integration of phi_d */
   struct Ftor_densr_ctheta {
@@ -333,7 +333,7 @@ private:
     EMQECross *cross;/*!< pointer to cross instance that contains all */
     int total;/*!< number of results (5 with thicknes,3 without)*/
     AbstractFsiGrid *grid; /*!< Glauber grid */
-    TVector3 pm; /*!< [MeV] missing momentum */
+    nucqcd::Vector3 pm; /*!< [MeV] missing momentum */
     Matrix<1,4> spinordown; /*!< bar spinor of the outgoing nucleon, spin down */
     Matrix<1,4> spinorup; /*!< bar spinor of the outgoing nucleon, spin up */
     std::complex<double>  **phid; /*!< distorted Fourier transform */
@@ -355,12 +355,12 @@ private:
     * \param shell shellindex
     */
     void (*f)(numint::vector_d & res, double phi, EMQECross & cross, int total,
-	      AbstractFsiGrid *grid, TVector3 &pm, Matrix<1,4> &spinordown, Matrix<1,4> &spinorup,
+	      AbstractFsiGrid *grid, nucqcd::Vector3 &pm, Matrix<1,4> &spinordown, Matrix<1,4> &spinorup,
 	      std::complex<double>  **phid, double r, double costheta, int shell);
   };
   /*! integrand over phi of the density, for the cubature integrators (parameters as Ftor_densr_ctheta::f) */
   static void klaas_densr_ctheta(numint::vector_d & res, double phi, EMQECross & cross, int total,
-	      AbstractFsiGrid *grid, TVector3 &pm, Matrix<1,4> &spinordown, Matrix<1,4> &spinorup,
+	      AbstractFsiGrid *grid, nucqcd::Vector3 &pm, Matrix<1,4> &spinordown, Matrix<1,4> &spinorup,
 	      std::complex<double>  **phid, double r, double costheta, int shell);
 };
 /** @} */  

@@ -17,10 +17,10 @@ nucqcd_test::RefStore refs("reg_deuteron_tagged");
 
 TEST_CASE("DeuteronCross: light-cone and VNA, plane wave and FSI", "[tagged]") {
   const double Ein = 12.E03, thetain = PI - 0.1, Q2 = 0.1E06;
-  TVector3 vecpd(0., 0., 10.E03);
-  TVector3 vecps = TVector3(100., 50., 30.) + 0.5 * vecpd;
-  TVector3 qvec(0., 0., 10.E03);
-  TVector3 veckin(Ein * std::sin(thetain), 0., Ein * std::cos(thetain));
+  nucqcd::Vector3 vecpd(0., 0., 10.E03);
+  nucqcd::Vector3 vecps = nucqcd::Vector3(100., 50., 30.) + 0.5 * vecpd;
+  nucqcd::Vector3 qvec(0., 0., 10.E03);
+  nucqcd::Vector3 veckin(Ein * std::sin(thetain), 0., Ein * std::cos(thetain));
   LightConeKin2to2 kin(nucqcd::mass_d, Q2, nucqcd::mass_p, vecpd, qvec, vecps, veckin);
   CHECK_REF(refs, "kin_massX", kin.getMassX());
   CHECK_REF(refs, "kin_xA", kin.getXA());
@@ -46,9 +46,9 @@ TEST_CASE("DeuteronCross: light-cone and VNA, plane wave and FSI", "[tagged]") {
 // and could not read its wave function. The proton and neutron loop below also checks that the
 // wave function can be read twice in one process.
 TEST_CASE("He3Cross: tagged DIS with two spectators", "[tagged]") {
-  TVector3 sp1(0., 200., 0.), sp2(100., -100., 100.);
-  TVector3 spcm = sp1 + sp2;
-  TVector3 beam(5000. * std::cos(-1.), 0., 5000. * std::sin(-1.));
+  nucqcd::Vector3 sp1(0., 200., 0.), sp2(100., -100., 100.);
+  nucqcd::Vector3 spcm = sp1 + sp2;
+  nucqcd::Vector3 beam(5000. * std::cos(-1.), 0., 5000. * std::sin(-1.));
   LightConeKin2to3 kin(nucqcd::mass_he3, 2.E06, nucqcd::mass_p, nucqcd::mass_p, 0., 4.E03, sp1, sp2, beam, spcm);
   for (int proton = 0; proton <= 1; proton++) {
     He3Cross he3("AV18", nucqcd_test::share_dir(), "SLAC", proton);

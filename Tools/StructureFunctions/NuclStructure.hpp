@@ -31,10 +31,10 @@
   * // Global functions for conversion <BR>
   * // from ROOT 4vectors to strangecalc 4vectors.<BR>
   * template<typename T> <BR>
-  * FourVector<T> operator*(const TLorentzRotation&, const FourVector<T>&); <BR>
+  * FourVector<T> operator*(const nucqcd::LorentzRotation&, const FourVector<T>&); <BR>
   * <BR>
-  * FourVector<double> ToFourVector(const TLorentzVector&); <BR>
-  * TLorentzVector ToLorentzVector(const FourVector<double>&); <BR>
+  * FourVector<double> ToFourVector(const nucqcd::LorentzVector&); <BR>
+  * nucqcd::LorentzVector ToLorentzVector(const FourVector<double>&); <BR>
   * <BR>
   * -moved definitions of ToFourVector and ToLorentzVector from kinematics2to3.cpp to a new file FourVector.cpp <BR>
   * <BR>

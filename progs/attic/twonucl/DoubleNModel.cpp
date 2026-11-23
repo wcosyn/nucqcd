@@ -215,8 +215,8 @@ complex<double> DoubleNModel::MC_helper(const double r1, const double costheta1,
   double sintheta1 = sqrt(1.-costheta1*costheta1);
   double sintheta2 = sqrt(1.-costheta2*costheta2);
   
-  TVector3 r1vec = TVector3(sintheta1*cos(phi1),sintheta1*sin(phi1),costheta1)*r1;
-  TVector3 r2vec = TVector3(sintheta2*cos(phi2),sintheta2*sin(phi2),costheta2)*r2; // z was phi2 until 2026-11
+  nucqcd::Vector3 r1vec = nucqcd::Vector3(sintheta1*cos(phi1),sintheta1*sin(phi1),costheta1)*r1;
+  nucqcd::Vector3 r2vec = nucqcd::Vector3(sintheta2*cos(phi2),sintheta2*sin(phi2),costheta2)*r2; // z was phi2 until 2026-11
   
   complex<double> glf1r1, glf1r2, glf2r1, glf2r2;
   if(getPW()){ glf1r1=glf1r2=glf2r1=glf2r2=1.; } // no FSI grids in plane-wave mode (this crashed until 2026-11)

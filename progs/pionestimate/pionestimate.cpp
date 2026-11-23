@@ -15,7 +15,7 @@ using namespace std;
 #include <Tools/Kinematics/TKinematics2to2.hpp>
 #include <Tools/Kinematics/TElectronKinematics.hpp>
 #include <Knockout/EMQECross.hpp>
-#include <TRotation.h>
+#include <Tools/Core/Rotation.hpp>
 #include <Glauber/DistMomDistrGrid.hpp>
 
 //run ./pionest [nucleus] [one doublepion=0, two pions=1] 
@@ -64,8 +64,8 @@ int main(int argc, char *argv[])
     grid.clearKnockout();
     for(int i=0;i<nucl.getTotalLevels();i++){
       pgrid[i] = new DistMomDistrGrid(i, 300., 30,20,5,&grid,1.E-03,2,5E04,0.,homedir);
-      TRotation rot;
-      rot.Rotate(0.,TVector3(0.,1.,0.)); //no rotation...
+      nucqcd::Rotation rot;
+      rot.Rotate(0.,nucqcd::Vector3(0.,1.,0.)); //no rotation...
       pgrid[i]->updateGrids(&grid,i,rot);
       pgrid[i]->printRho_grid(0);
     }
@@ -93,8 +93,8 @@ int main(int argc, char *argv[])
     grid.clearKnockout();
     for(int i=0;i<nucl.getTotalLevels();i++){
       pgrid[i] = new DistMomDistrGrid(i, 300., 30,20,5,&grid,1.E-03,2,5E04,0.,homedir);
-      TRotation rot;
-      rot.Rotate(0.,TVector3(0.,1.,0.));
+      nucqcd::Rotation rot;
+      rot.Rotate(0.,nucqcd::Vector3(0.,1.,0.));
       pgrid[i]->updateGrids(&grid,i,rot);
       pgrid[i]->printRho_grid(0);
     }  
@@ -108,8 +108,8 @@ int main(int argc, char *argv[])
     grid.clearKnockout();
     for(int i=0;i<nucl.getTotalLevels();i++){
       pgrid[i] = new DistMomDistrGrid(i, 300., 30,20,5,&grid,1.E-03,2,5E04,0.,homedir);
-      TRotation rot;
-      rot.Rotate(0.,TVector3(0.,1.,0.));
+      nucqcd::Rotation rot;
+      rot.Rotate(0.,nucqcd::Vector3(0.,1.,0.));
       pgrid[i]->updateGrids(&grid,i,rot);
       pgrid[i]->printRho_grid(0);
     }

@@ -56,16 +56,16 @@ struct Ftor_one {
     }
     MeanFieldNucleusThick *pnucleus;
     OneGlauberGrid *pgrid;
-    TVector3 pmiss;
+    nucqcd::Vector3 pmiss;
     TSpinor *pspinoru;
     int shellindex;
     int mindex;
     void (*f)(numint::vector_z & res, double r, double costheta, double phi, MeanFieldNucleusThick * pnucleus, OneGlauberGrid *pgrid,
-        TVector3 &pmiss, TSpinor * pspinoru, int shellindex, int mindex);
+        nucqcd::Vector3 &pmiss, TSpinor * pspinoru, int shellindex, int mindex);
   };
 
 void int_r3(numint::vector_z & res, double r, double costheta, double phi, MeanFieldNucleusThick * pnucleus, OneGlauberGrid *grid,
-        TVector3 &pmiss, TSpinor *spinoru, int shellindex, int mindex);
+        nucqcd::Vector3 &pmiss, TSpinor *spinoru, int shellindex, int mindex);
 
 
 int main(int argc, char *argv[])
@@ -300,11 +300,11 @@ void rhoD(std::vector<double> &cross, MeanFieldNucleusThick * pnucleus, TKinemat
   //careful!! we compute in a frame with p_f along z-axis, so have to rotate the pmiss vector!
   cross=vector<double>(3,0.);
   double thetaN=pkin->GetThn();
-  TVector3 pN = pkin->GetN3();
+  nucqcd::Vector3 pN = pkin->GetN3();
   //cout << "pre " << pN[0] << " " << pN[1] << " " << pN[2] << endl;
   pN.RotateY(-thetaN);
   //cout << "post " << pN[0] << " " << pN[1] << " " << pN[2] << endl;
-  TVector3 pmiss = -pkin->GetY3();
+  nucqcd::Vector3 pmiss = -pkin->GetY3();
   pmiss.RotateY(-thetaN);
   FourVector<double> pmiss4(sqrt(nucqcd::mass_p*nucqcd::mass_p+pmiss.Mag2()),pmiss[0],pmiss[1],pmiss[2]);
   TSpinor spinoru(pmiss4,nucqcd::mass_p,TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity);
@@ -343,7 +343,7 @@ void rhoD(std::vector<double> &cross, MeanFieldNucleusThick * pnucleus, TKinemat
 }
 
 void int_r3(numint::vector_z & results, double r, double costheta, double phi, MeanFieldNucleusThick * pnucleus, OneGlauberGrid * pgrid,
-        TVector3 &pmiss, TSpinor * pspinoru, int shellindex, int mindex){
+        nucqcd::Vector3 &pmiss, TSpinor * pspinoru, int shellindex, int mindex){
 
   results=numint::vector_z(3,0.);
   double sintheta=sqrt(1.-costheta*costheta);
@@ -351,7 +351,7 @@ void int_r3(numint::vector_z & results, double r, double costheta, double phi, M
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
   TMFSpinor wave(*pnucleus,shellindex,mindex,r,costheta,phi);
-  complex<double> exp_pr=r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(pmiss*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
+  complex<double> exp_pr=r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(pmiss*nucqcd::Vector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
   complex<double> temp = TSpinor::Bar(*pspinoru)*wave;
   for(int i=0; i<3; i++) results[i] = temp*exp_pr;
   results[0]*=pgrid->getFsiGridFull_interp3(r,costheta,phi);

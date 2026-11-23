@@ -29,8 +29,8 @@ using namespace std;
 
 
 
-#include <TVector3.h>
-#include <TLorentzVector.h>
+#include <Tools/Core/Vector3.hpp>
+#include <Tools/Core/LorentzVector.hpp>
 #include <TMath.h>
 #include <iostream>
 #include <fstream>
@@ -53,15 +53,15 @@ double mrho;
 double psf;
 
 
-TLorentzVector BeamL;
-TLorentzVector BeamH;
-TLorentzVector Rho0,eplus,eminus,piplus,piminus;
-TLorentzVector QPrime;
-TLorentzVector Proton;
-TLorentzVector ScattL;
-TLorentzVector q;
-TLorentzVector cms;
-TLorentzVector S2;
+nucqcd::LorentzVector BeamL;
+nucqcd::LorentzVector BeamH;
+nucqcd::LorentzVector Rho0,eplus,eminus,piplus,piminus;
+nucqcd::LorentzVector QPrime;
+nucqcd::LorentzVector Proton;
+nucqcd::LorentzVector ScattL;
+nucqcd::LorentzVector q;
+nucqcd::LorentzVector cms;
+nucqcd::LorentzVector S2;
 
 
 double s;
@@ -80,9 +80,9 @@ double Ecm,pcm; //Energy/momentum in center-of-mass of (rho+q')
 double Ecm_pr,pcm_pr;  //Energy/momentum in center-of-mass of (p')
 double Ecm_rho,pcm_rho; //Energy/momentum in center-of-mass of (rho)
 
-TVector3 dir_pr;
-TVector3 dir_qp;
-TVector3 rot_dir;
+nucqcd::Vector3 dir_pr;
+nucqcd::Vector3 dir_qp;
+nucqcd::Vector3 rot_dir;
 
 //To generate kinematics
 double theta_max=177.9*TMath::DegToRad();
@@ -163,7 +163,7 @@ void ComputePrQprime(double s2, double q2prime, double t_N, double phi_trento){
 
   double theta=acos(((t_N-2*Mp*Mp)/2.+BeamH.E()*Es2_pr)/BeamH.Vect().Mag()/ps2);
  
-  TVector3 unit=BeamH.Vect().Unit();
+  nucqcd::Vector3 unit=BeamH.Vect().Unit();
   unit.Rotate(theta,unit.Orthogonal());
   unit.Rotate(phi_trento,BeamH.Vect());
   Proton.SetPxPyPzE(ps2*unit.X(),ps2*unit.Y(),ps2*unit.Z(),Es2_pr);
@@ -196,9 +196,9 @@ void ComputeRho(double mpp, double mrecoil, double t_rho, double phi_trento){
   
   double theta_cm=acos(1-(tmin(-q.Mag2(), xb, mrecoil, mpp)-t_rho)/2./pcm/q.Vect().Mag());
    //Phi is a rotation of all four momentum around the axis defined by the virtual photon.
-  TVector3 dir_pr=q.Vect().Unit();
-  TVector3 dir_qp=q.Vect().Unit();
-  TVector3 rot_dir=q.Vect().Orthogonal().Unit();
+  nucqcd::Vector3 dir_pr=q.Vect().Unit();
+  nucqcd::Vector3 dir_qp=q.Vect().Unit();
+  nucqcd::Vector3 rot_dir=q.Vect().Orthogonal().Unit();
    dir_pr.Rotate(theta_cm,rot_dir);
    dir_pr.Rotate(phi_trento,q.Vect().Unit());
     Rho0.SetPxPyPzE(pcm*dir_pr.X(),pcm*dir_pr.Y(),pcm*dir_pr.Z(),Ecm);
@@ -209,7 +209,7 @@ void ComputeRho(double mpp, double mrecoil, double t_rho, double phi_trento){
 void GammaPrimeDecay(){
   double th_gen=virt_long->GetRandom();
   double pel=TMath::Sqrt(QPrime.Mag2()/4.-me*me);
-  TVector3 unit_dir=QPrime.Vect().Unit();
+  nucqcd::Vector3 unit_dir=QPrime.Vect().Unit();
   unit_dir.Rotate(th_gen,unit_dir.Orthogonal()); //theta angle with photon direction
   unit_dir.Rotate(rando->Uniform(0,2*TMath::Pi()),QPrime.Vect()); //rotation around the photon direction
   eminus.SetPxPyPzE(pel*unit_dir.X(),pel*unit_dir.Y(),pel*unit_dir.Z(),QPrime.Mag()/2.);
@@ -224,7 +224,7 @@ void GammaPrimeDecay(){
 void RhoDecay(){
   double th_gen_rho=rho_long->GetRandom();
   double ppi=TMath::Sqrt(mrho*mrho/4.-mpi*mpi);
-  TVector3 unit_dir=Rho0.Vect().Unit();
+  nucqcd::Vector3 unit_dir=Rho0.Vect().Unit();
   unit_dir.Rotate(th_gen_rho,unit_dir.Orthogonal()); //theta angle with rho direction
   unit_dir.Rotate(rando->Uniform(0,2*TMath::Pi()),Rho0.Vect()); //rotation around the rho direction
   piminus.SetPxPyPzE(ppi*unit_dir.X(),ppi*unit_dir.Y(),ppi*unit_dir.Z(),mrho/2.);

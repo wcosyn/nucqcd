@@ -128,13 +128,13 @@ void InclusiveCross::Azzplanewave_int(numint::vector_d & result, double prnorm, 
   complex<double> dens1(0.),dens2(0.),dens3(0.),dens4(0.),dens5(0.);
   for(int spini=-1;spini<=0;spini+=2){
     for(int spinr=-1;spinr<=1;spinr+=2){
-      complex<double> wavemin=cross.wf->DeuteronPState(-2, spini, spinr, TVector3(kin.GetPklab()*sintheta,
+      complex<double> wavemin=cross.wf->DeuteronPState(-2, spini, spinr, nucqcd::Vector3(kin.GetPklab()*sintheta,
 								     0.,
 								     kin.GetPklab()*kin.GetCosthklab()));
-      complex<double> wavezero=cross.wf->DeuteronPState(0, spini, spinr, TVector3(kin.GetPklab()*sintheta,
+      complex<double> wavezero=cross.wf->DeuteronPState(0, spini, spinr, nucqcd::Vector3(kin.GetPklab()*sintheta,
 								     0.,
 								     kin.GetPklab()*kin.GetCosthklab()));
-      complex<double> waveplus=cross.wf->DeuteronPState(2, spini, spinr, TVector3(kin.GetPklab()*sintheta,
+      complex<double> waveplus=cross.wf->DeuteronPState(2, spini, spinr, nucqcd::Vector3(kin.GetPklab()*sintheta,
 								     0.,
 								     kin.GetPklab()*kin.GetCosthklab()));
 								    
@@ -216,7 +216,7 @@ void InclusiveCross::FSI_int(numint::vector_d & result, double prnorm, double co
 	      +pow(cross.massr*cross.massr-cross.Wxprime2,2.));
   complex<double> wave[6];
   for(int i=0;i<6;i++){
-    wave[i] = cross.wf->DeuteronPState((i/4)*2-2, ((i/2)%2)*2-1, (i%2)*2-1, TVector3(prnorm*sqrt(1.-costheta*costheta),0.,
+    wave[i] = cross.wf->DeuteronPState((i/4)*2-2, ((i/2)%2)*2-1, (i%2)*2-1, nucqcd::Vector3(prnorm*sqrt(1.-costheta*costheta),0.,
 								   prnorm*costheta)); 
   }
   double prt=kin.GetPklab()*sqrt(1.-kin.GetCosthklab()*kin.GetCosthklab());
@@ -254,7 +254,7 @@ void InclusiveCross::FSI_int(numint::vector_d & result, double prnorm, double co
   //t = (ps-ps')^2
   double t=(Er-Erprime)*(Er-Erprime)-(prz-przprime)*(prz-przprime)-qt*qt;
   complex<double> wave2[6];
-  TVector3 vecprime(pprime*sinthetaprime*cosphiprime,pprime*sinthetaprime*sinphiprime,przprime);
+  nucqcd::Vector3 vecprime(pprime*sinthetaprime*cosphiprime,pprime*sinthetaprime*sinphiprime,przprime);
   for(int i=0;i<6;i++){
     wave2[i] = cross.wf->DeuteronPState((i/4)*2-2, ((i/2)%2)*2-1, (i%2)*2-1, vecprime);
   }
@@ -343,7 +343,7 @@ void InclusiveCross::AzzFSI_int(numint::vector_d & result, double prnorm, double
   for(int i=0;i<6;i++){
 //     cout << (i/4)*2-2 << " " << ((i/2)%2)*2-1 << " " << (i%2)*2-1 << endl;
 //     cout << (i/2)*2-2 << " " << (i%2)*2-1 << endl;
-    wave[i] = cross.wf->DeuteronPState((i/2)*2-2, -1, (i%2)*2-1, TVector3(prnorm*sqrt(1.-costheta*costheta),0.,
+    wave[i] = cross.wf->DeuteronPState((i/2)*2-2, -1, (i%2)*2-1, nucqcd::Vector3(prnorm*sqrt(1.-costheta*costheta),0.,
 								   prnorm*costheta)); 
   }
   double prt=kin.GetPklab()*sqrt(1.-kin.GetCosthklab()*kin.GetCosthklab());
@@ -387,7 +387,7 @@ void InclusiveCross::AzzFSI_int(numint::vector_d & result, double prnorm, double
   //t = (ps-ps')^2
   double t=(Er-Erprime)*(Er-Erprime)-(prz-przprime)*(prz-przprime)-qt*qt;
   complex<double> wave2[6];
-  TVector3 vecprime(pprime*sinthetaprime*cosphiprime,pprime*sinthetaprime*sinphiprime,przprime);
+  nucqcd::Vector3 vecprime(pprime*sinthetaprime*cosphiprime,pprime*sinthetaprime*sinphiprime,przprime);
   for(int i=0;i<6;i++){
     wave2[i] = cross.wf->DeuteronPState((i/2)*2-2, -1, (i%2)*2-1, vecprime);
   }
@@ -524,7 +524,7 @@ void InclusiveCross::FSI_int_off(numint::vector_d & result, double prt, double W
   complex<double> wave[6];
   for(int i=0;i<6;i++){
     wave[i] = cross.wf->DeuteronPStateOff((i/4)*2-2, ((i/2)%2)*2-1, (i%2)*2-1, 
-		TVector3(prnormtilde*sqrt(1.-costhetatilde*costhetatilde),0.,prnormtilde*costhetatilde)); 
+		nucqcd::Vector3(prnormtilde*sqrt(1.-costhetatilde*costhetatilde),0.,prnormtilde*costhetatilde)); 
   }
 
   //off-shell wave function second vertex (on-shell tilde)
@@ -541,7 +541,7 @@ void InclusiveCross::FSI_int_off(numint::vector_d & result, double prt, double W
   complex<double> wave2[6];
   for(int i=0;i<6;i++){
     wave2[i] = -cross.wf->DeuteronPStateOff((i/4)*2-2, ((i/2)%2)*2-1, (i%2)*2-1, 
-      TVector3(ptildeprime*sinthetatildeprime*cosphiprime,ptildeprime*sinthetatildeprime*sinphiprime,prztildeprime));
+      nucqcd::Vector3(ptildeprime*sinthetatildeprime*cosphiprime,ptildeprime*sinthetatildeprime*sinphiprime,prztildeprime));
   }
   complex<double> temp=0.;
   for(int i=0;i<6;i++){
@@ -700,7 +700,7 @@ void InclusiveCross::AzzFSI_int_off(numint::vector_d & result, double prt, doubl
   complex<double> wave[6];
   for(int i=0;i<6;i++){
     wave[i] = cross.wf->DeuteronPStateOff((i/2)*2-2, -1, (i%2)*2-1, 
-		TVector3(prnormtilde*sqrt(1.-costhetatilde*costhetatilde),0.,prnormtilde*costhetatilde)); 
+		nucqcd::Vector3(prnormtilde*sqrt(1.-costhetatilde*costhetatilde),0.,prnormtilde*costhetatilde)); 
   }
 
   //off-shell wave function second vertex (on-shell tilde)
@@ -717,7 +717,7 @@ void InclusiveCross::AzzFSI_int_off(numint::vector_d & result, double prt, doubl
   complex<double> wave2[6];
   for(int i=0;i<6;i++){
     wave2[i] = -cross.wf->DeuteronPStateOff((i/2)*2-2, -1, (i%2)*2-1, 
-      TVector3(ptildeprime*sinthetatildeprime*cosphiprime,ptildeprime*sinthetatildeprime*sinphiprime,prztildeprime));
+      nucqcd::Vector3(ptildeprime*sinthetatildeprime*cosphiprime,ptildeprime*sinthetatildeprime*sinphiprime,prztildeprime));
   }
   complex<double> temp=0.,azz=0.;
   for(int i=0;i<6;i++){

@@ -476,14 +476,14 @@ double TInterpolatingWavefunction::GetVSp(double p) const
   return Interpolate(fVSp,p);
 }
 
-double TInterpolatingWavefunction::GetUpoff(const TVector3& p) const{
+double TInterpolatingWavefunction::GetUpoff(const nucqcd::Vector3& p) const{
  
   cerr << "Off-shell wave function not implemented in Interpolating wave function class" << endl;
   return 0.;
   
 }
 
-double TInterpolatingWavefunction::GetWpoff1(const TVector3& p) const{
+double TInterpolatingWavefunction::GetWpoff1(const nucqcd::Vector3& p) const{
  
   cerr << "Off-shell wave function not implemented in Interpolating wave function class" << endl;
   return 0.;
@@ -543,7 +543,7 @@ double TInterpolatingWavefunction::Interpolate(map<double,double>* list,
 
 std::complex<double> TInterpolatingWavefunction::DeuteronPState(int deuteronPol, int nucleon2Pol,
 						       int nucleon1Pol, 
-						       const TVector3& p) const
+						       const nucqcd::Vector3& p) const
 {
   // Calculate the state of a deuteron in momentum space. 
   // deuteronPol is the deuteron polarization (times two)
@@ -582,7 +582,7 @@ std::complex<double> TInterpolatingWavefunction::DeuteronPState(int deuteronPol,
 
 std::complex<double> TInterpolatingWavefunction::DeuteronRState(int deuteronPol, int nucleon2Pol,
 						       int nucleon1Pol, 
-						       const TVector3& r) const
+						       const nucqcd::Vector3& r) const
 {
   std::complex<double> state=0.;
 // L=2, mL=mD-mS, S=1, mS=m1+m2

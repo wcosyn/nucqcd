@@ -15,8 +15,8 @@
 #include <cmath>
 #include <Tools/Core/Matrix.hpp>
 #include <Tools/Core/GammaStructure.hpp>
-#include <TLorentzVector.h>
-#include <TLorentzRotation.h>
+#include <Tools/Core/LorentzVector.hpp>
+#include <Tools/Core/Rotation.hpp>
 
 //-------------------------------------------------------------------------
 //---- Certain classes and functions need to be pre-declared
@@ -32,10 +32,10 @@ std::ostream& operator<<(std::ostream&,const FourVector<T>&);
 from ROOT 4vectors to strangecalc 4vectors.*/
 /// applies a ROOT Lorentz transformation to a FourVector
 template<typename T>
-FourVector<T> operator*(const TLorentzRotation&, const FourVector<T>&);
+FourVector<T> operator*(const nucqcd::LorentzRotation&, const FourVector<T>&);
 
-FourVector<double> ToFourVector(const TLorentzVector&); ///< converts a ROOT TLorentzVector to a FourVector
-TLorentzVector ToLorentzVector(const FourVector<double>&); ///< converts a FourVector to a ROOT TLorentzVector
+FourVector<double> ToFourVector(const nucqcd::LorentzVector&); ///< converts a ROOT nucqcd::LorentzVector to a FourVector
+nucqcd::LorentzVector ToLorentzVector(const FourVector<double>&); ///< converts a FourVector to a ROOT nucqcd::LorentzVector
 
 //-------------------------------------------------------------------------
 //---- class FourVector<T> declaration
@@ -475,7 +475,7 @@ std::ostream& operator<<(std::ostream& output, const FourVector<T>& vector)
 
 //_____________________________________________________________________
 template<typename T>
-FourVector<T> operator*(const TLorentzRotation& rot, const FourVector<T>& v)
+FourVector<T> operator*(const nucqcd::LorentzRotation& rot, const FourVector<T>& v)
 {
   // Perform a Lorentz transformation on a strangecalc FourVector object.
   FourVector<T> rotated;

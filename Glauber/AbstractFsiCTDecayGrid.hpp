@@ -48,7 +48,7 @@ public:
   virtual void printFsi_ct_decay_grid()=0; /*!< Prints the FSI+ct+decay grid for a certain situation, pure virtual function!! */
 
   /*!returns the value of the fsi+ct+decay grid for a certain situation at coordinate (r,costheta,phi) */
-  std::complex<double> getFsiCtDecayGridFull_interpvec(const TVector3 &rvec);
+  std::complex<double> getFsiCtDecayGridFull_interpvec(const nucqcd::Vector3 &rvec);
   /*!returns the value of the fsi+ct+decay grid for a certain situation at coordinate (r,costheta,phi) */
   std::complex<double> getFsiCtDecayGridFull_interp3(const double r, const double costheta, const double phi);
   /*!returns the value of the fsi+ct+decay grid for a certain situation at coordinate (costheta,phi), r has been set previously */
@@ -60,7 +60,7 @@ public:
   virtual std::complex<double> getFsiCtDecayGridFull_interp()=0;
   
   /*!returns the value of the fsi+decay grid for a certain situation at coordinate (r,costheta,phi) */
-  std::complex<double> getFsiDecayGridFull_interpvec(const TVector3 &rvec);
+  std::complex<double> getFsiDecayGridFull_interpvec(const nucqcd::Vector3 &rvec);
   /*!returns the value of the fsi+decay grid for a certain situation at coordinate (r,costheta,phi) */
   std::complex<double> getFsiDecayGridFull_interp3(const double r, const double costheta, const double phi);
   /*!returns the value of the fsi+decay grid for a certain situation at coordinate (costheta,phi), r has been set previously */

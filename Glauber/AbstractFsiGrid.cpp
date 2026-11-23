@@ -171,7 +171,7 @@ void AbstractFsiGrid::setinterp(const double phi)
 }
 
 //interpolation functions
-complex<double> AbstractFsiGrid::getFsiGridFull_interpvec(const TVector3 &rvec){
+complex<double> AbstractFsiGrid::getFsiGridFull_interpvec(const nucqcd::Vector3 &rvec){
   return getFsiGridFull_interp3(rvec.Mag(),rvec.CosTheta(),rvec.Phi());
 }
 
@@ -192,7 +192,7 @@ complex<double> AbstractFsiGrid::getFsiGridFull_interp1(const double phi){
 
 
 //interpolation functions
-complex<double> AbstractFsiGrid::getFsiGridN_interpvec(const int grid, const TVector3 &rvec){
+complex<double> AbstractFsiGrid::getFsiGridN_interpvec(const int grid, const nucqcd::Vector3 &rvec){
   return getFsiGridN_interp3(grid, rvec.Mag(),rvec.CosTheta(),rvec.Phi());
 }
 

@@ -28,10 +28,10 @@
  *  **/
 namespace PRL99_072501 {
 	// some forward declarations
-	TVector3 get_e_p2(); // get random direction for p2
+	nucqcd::Vector3 get_e_p2(); // get random direction for p2
 	bool validate_p2(double); // determine if |p2| is within detector acceptance
-	TVector3 get_ef(); // get a random vector for e'
-	TVector3 get_p1();  // get a random vector for p1
+	nucqcd::Vector3 get_ef(); // get a random vector for e'
+	nucqcd::Vector3 get_p1();  // get a random vector for p1
 	
 	/** n is number of events without loop over shellcombos, total
 	 *  number of events generated will be at most n*shellcombos
@@ -45,7 +45,7 @@ namespace PRL99_072501 {
 		std::uniform_int_distribution<int> shell2_distribution(0,nuc.getPLevels()-1);
 		events.clear();
 		double Eei  = 4627.; // MeV
-		TVector3 ei = TVector3(0.,0.,Eei); // @ ultra relativistic E = |p|c
+		nucqcd::Vector3 ei = nucqcd::Vector3(0.,0.,Eei); // @ ultra relativistic E = |p|c
 		printf("Seed is : %d\n",seed);
 
 		struct sampler_logger{ // a logger to check sampling efficiency
@@ -63,16 +63,16 @@ namespace PRL99_072501 {
 		while (logger.accept < n) {
 			//   ------------------------   //
 			// shell independent quantities //
-			TVector3 ef     = get_ef();
+			nucqcd::Vector3 ef     = get_ef();
 			double Eef      = ef.Mag(); // @ ultra relativistic E = |p|c
 			double omega    = Eei - Eef;
-			TVector3 q      = ei - ef;
+			nucqcd::Vector3 q      = ei - ef;
 			double Q2       = q.Mag2() - omega*omega; // Q^2 = q^2 - w^2
 			double xB       = Q2/(2.*nucqcd::mass_p*omega);	
-			TVector3 e_p2   = get_e_p2(); // random direction for e_p2
-			TVector3 p1     = get_p1();
+			nucqcd::Vector3 e_p2   = get_e_p2(); // random direction for e_p2
+			nucqcd::Vector3 p1     = get_p1();
 			double E1       = sqrt( nucqcd::mass_p*nucqcd::mass_p + p1.Mag2() );
-			TVector3 k1     = p1-q;
+			nucqcd::Vector3 k1     = p1-q;
 			double ek1_ep2  = k1.Unit().Dot(e_p2); // (e_{k1} \cdot e_{p2})
 			//   -----------------------   //
 			//
@@ -126,7 +126,7 @@ namespace PRL99_072501 {
 				if (accept){
 					ev.p2  = p2_mag*e_p2;
 					ev.status = Event::SURVIVED;
-					TVector3 Pcm = ev.k1 + ev.p2;
+					nucqcd::Vector3 Pcm = ev.k1 + ev.p2;
 					double initE  = ev.omega + nuc.getMassA();
 					double finalE = sqrt( M_Amin2*M_Amin2 + Pcm.Mag2()) + sqrt(ev.mass1*ev.mass1 + ev.p1.Mag2()) + sqrt(ev.mass2*ev.mass2 + ev.p2.Mag2());
 					assert(fabs(initE-finalE) < 1e-9); // allow energy discrepancy of 1 meV as units are MeV
@@ -165,7 +165,7 @@ namespace PRL99_072501 {
 		return ( p2 > 250. && p2 < 900.);
 	}
 
-	TVector3 get_e_p2(){
+	nucqcd::Vector3 get_e_p2(){
 		double Omega = 0.096; // in sr
 		double costhMin = 1. - Omega/(2.*PI); // maximum deviation angle of top cone of ps, minimum cosine of that angle
 		
@@ -176,7 +176,7 @@ namespace PRL99_072501 {
 		double th    = acos(costh); // acos returns always in [0,pi], this is what we want
 		double phi   = 2.*PI*u; 
 		
-		TVector3 p2   = TVector3();
+		nucqcd::Vector3 p2   = nucqcd::Vector3();
 		p2.SetMagThetaPhi(1.,th,phi); // unit vector, mag = 1, angles
 		if (KIN_SETTING == 350 || KIN_SETTING == 450 || KIN_SETTING == 550 )
 			p2.RotateY(-99.*nucqcd::deg_to_rad); //
@@ -186,10 +186,10 @@ namespace PRL99_072501 {
 		return p2;
 	}
 
-	TVector3 get_ef(){
+	nucqcd::Vector3 get_ef(){
 		double hacc = 0.03; // in rad
 		double vacc = 0.06; // in rad
-		TVector3 ef = TVector3(0.,0.,1.); // create // at z-axis with unit magnitude
+		nucqcd::Vector3 ef = nucqcd::Vector3(0.,0.,1.); // create // at z-axis with unit magnitude
 		
 		double u = (double) rand()/RAND_MAX;
 		double v = (double) rand()/RAND_MAX;
@@ -202,10 +202,10 @@ namespace PRL99_072501 {
 		return ef;
 	}
 
-	TVector3 get_p1(){
+	nucqcd::Vector3 get_p1(){
 		double hacc = 0.03; // in rad
 		double vacc = 0.06; // in rad
-		TVector3 p = TVector3(0.,0.,1.); // create at z-axis with unit magnitude
+		nucqcd::Vector3 p = nucqcd::Vector3(0.,0.,1.); // create at z-axis with unit magnitude
 		
 		double u = (double) rand()/RAND_MAX;
 		double v = (double) rand()/RAND_MAX;

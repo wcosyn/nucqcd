@@ -140,7 +140,7 @@ void WeakQEHadronCurrent::getMatrixEl(TKinematics2to2 &tk, Matrix<2,4> & matrixe
   FourVector<double> pf(sqrt(tk.GetHyperonMass()*tk.GetHyperonMass()+tk.GetPYlab()*tk.GetPYlab()),0.,0.,tk.GetPYlab());
   FourVector<double> pi=pf-q;
   pi[0]=sqrt(tk.GetHyperonMass()*tk.GetHyperonMass()+pi[1]*pi[1]+pi[2]*pi[2]+pi[3]*pi[3]);
-  pm=TVector3(-q[1],0.,pf[3]-q[3]);
+  pm=nucqcd::Vector3(-q[1],0.,pf[3]-q[3]);
   if(vector_or_axial){
     Jcontr0 = J->getCC_weak(current, q, pi, pf, 0.,0,*pnucl)*polVector0;
     Jcontrmin= J->getCC_weak(current, q, pi, pf, 0.,0,*pnucl)*polVectorMin;
@@ -240,7 +240,7 @@ void WeakQEHadronCurrent::getAllMatrixElMult(TKinematics2to2 &tk, Matrix<2,4> *m
   FourVector<double> pf(sqrt(tk.GetHyperonMass()*tk.GetHyperonMass()+tk.GetPYlab()*tk.GetPYlab()),0.,0.,tk.GetPYlab());
   FourVector<double> pi=pf-q;
   pi[0]=sqrt(tk.GetHyperonMass()*tk.GetHyperonMass()+pi[1]*pi[1]+pi[2]*pi[2]+pi[3]*pi[3]);
-  pm=TVector3(-q[1],0.,pf[3]-q[3]);
+  pm=nucqcd::Vector3(-q[1],0.,pf[3]-q[3]);
   for(int spinout=0;spinout<2;++spinout){
     for(int photopol=0;photopol<3;++photopol){
       if(photopol==0) Jcontr = J->getCC_weak(current, q, pi, pf, 0.,0,*pnucl)*polVector0;
@@ -312,7 +312,7 @@ void WeakQEHadronCurrent::getAllMatrixEl(TKinematics2to2 &tk, Matrix<2,4> *matri
   FourVector<double> pf(sqrt(tk.GetHyperonMass()*tk.GetHyperonMass()+tk.GetPYlab()*tk.GetPYlab()),0.,0.,tk.GetPYlab());
   FourVector<double> pi=pf-q;
   pi[0]=sqrt(tk.GetHyperonMass()*tk.GetHyperonMass()+pi[1]*pi[1]+pi[2]*pi[2]+pi[3]*pi[3]);
-  pm=TVector3(-q[1],0.,pf[3]-q[3]);
+  pm=nucqcd::Vector3(-q[1],0.,pf[3]-q[3]);
   //careful!! we compute in a frame with p_f along z-axis, so have to rotate the photon polarization 4-vectors!
   FourVector<std::complex<double> > polVectorPlus = FourVector< complex<double> >(0.,
 						    -1./sqrt(2.)*costheta,
@@ -441,7 +441,7 @@ void WeakQEHadronCurrent::klaas_one_amp(numint::vector_z & results, double r, do
   sincos(phi,&sinphi,&cosphi);
   TMFSpinor wave(*(model.getPnucleus()),model.getShell(),model.getM(),r,costheta,phi);
   //no r squared because wave function already is multiplied by r
-  complex<double> exp_pr=r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(model.getPm()*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
+  complex<double> exp_pr=r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(model.getPm()*nucqcd::Vector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
   results[1]=results[0]= exp_pr*(model.getBarcontract0down()*wave);
   results[2]=results[3]= exp_pr*(model.getBarcontractmindown()*wave);
   results[4]=results[5]= exp_pr*(model.getBarcontractplusdown()*wave);
@@ -486,7 +486,7 @@ void WeakQEHadronCurrent::klaas_all_amp(numint::vector_z & results, double r, do
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
   TMFSpinor wave(*(model.getPnucleus()),model.getShell(),model.getM(),r,costheta,phi);
-  complex<double> exp_pr=r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(model.getPm()*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
+  complex<double> exp_pr=r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(model.getPm()*nucqcd::Vector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
   results[0*total_grid]= exp_pr*(model.getBarcontract0down()*wave);
   results[1*total_grid]= exp_pr*(model.getBarcontractmindown()*wave);
   results[2*total_grid]= exp_pr*(model.getBarcontractplusdown()*wave);
@@ -525,7 +525,7 @@ void WeakQEHadronCurrent::klaas_all_amp_medium(numint::vector_z & results, doubl
   sincos(phi,&sinphi,&cosphi);
   TMFSpinor wave(*(model.getPnucleus()),model.getShell(),model.getM(),r,costheta,phi);
   //includes phase space r
-  complex<double> exp_pr=r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(model.getPm()*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
+  complex<double> exp_pr=r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(model.getPm()*nucqcd::Vector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
   results[0*total]= exp_pr*(spindown*Jcontr0*wave);
   results[1*total]= exp_pr*(spindown*Jcontrmin*wave);
   results[2*total]= exp_pr*(spindown*Jcontrplus*wave);
@@ -557,7 +557,7 @@ void WeakQEHadronCurrent::klaas_mult_amp(numint::vector_z & results, double r, d
   
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
-  results[total-1]= r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(model.getPm()*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)))
+  results[total-1]= r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(model.getPm()*nucqcd::Vector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)))
 	      *(model.getBarcontract()*TMFSpinor(*(model.getPnucleus()),model.getShell(),model.getM(),r,costheta,phi));
   for(int i=0;i<total-1;++i) results[i]=results[total-1]*model.getThickGrid()->getFsiGridN_interp3(i,r,costheta,phi);
   return;

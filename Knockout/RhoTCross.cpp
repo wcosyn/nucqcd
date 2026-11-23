@@ -1,6 +1,6 @@
 #include <Knockout/RhoTCross.hpp>
 #include <Tools/Core/AuxFunction.hpp>
-#include <TRotation.h>
+#include <Tools/Core/Rotation.hpp>
 #include <Tools/Core/Utilfunctions.hpp>
 
 using namespace std;
@@ -422,8 +422,8 @@ void RhoTCross::getMomdistr(double *results, double prho, double thetarho, doubl
     pfsigrid[shell]->clearKnockout();
   }
   //update the grid if necessary
-  TRotation rot;
-  rot.Rotate(-thetarho,TVector3(0.,1.,0.));
+  nucqcd::Rotation rot;
+  rot.Rotate(-thetarho,nucqcd::Vector3(0.,1.,0.));
   double key=double(shell)/getNucleusthick().getTotalLevels()+int(round(thetarho*10.));
   map<double,DistMomDistrGrid>::iterator it=distgridmap.find(key);
 //   cout << key << " " << thetarho << " " << shell  << endl;

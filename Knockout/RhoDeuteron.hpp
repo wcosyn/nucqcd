@@ -83,7 +83,7 @@ private:
    * \param pDvec [MeV] final deuteron momentum vec
    * \return cross section []
    */
-  double calcCross_coh(TVector3 &pDvec);
+  double calcCross_coh(nucqcd::Vector3 &pDvec);
   //   TKinematics2to2 *pkin;
   /*! function that gets integrated over pm, all different fsi outputs, incoherent cross section fixed t
    * \param pm [MeV] radial coordinate
@@ -151,7 +151,7 @@ private:
    * \param qvec [MeV] virtual photon momentum
   */
   void getMomdistr(double *results, double Erho, double prho, double pzrho, 
-			      double pxrho, TVector3 &pmvec, double nu, double qvec);
+			      double pxrho, nucqcd::Vector3 &pmvec, double nu, double qvec);
   /*! Calculates a kinematic frontfactor that enters in the integrations
    * \param qvec [GeV] virtual photon momentum
    * \param Erho [GeV] rho energy

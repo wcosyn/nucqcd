@@ -19,7 +19,7 @@
 #include <Glauber/GlauberGridThick.hpp>
 #include <Tools/Kinematics/TKinematics2to3WithLabAngles.hpp>
 #include <Glauber/NucleonEMOperator.hpp>
-#include <TVector3.h>
+#include <Tools/Core/Vector3.hpp>
 #include "pair.h"
 
 #include <string>
@@ -83,9 +83,9 @@ public:
   Pair * getPair2down() const {return pair2down;}
   GlauberGridThick * getGridf1() const {return gridf1;}
   GlauberGridThick * getGridf2() const {return gridf2;}
-  TVector3 getPf1() const {return pf1;}
-  TVector3 getPf2() const {return pf2;}
-  TVector3 getQvec3() const {return qvec3;}
+  nucqcd::Vector3 getPf1() const {return pf1;}
+  nucqcd::Vector3 getPf2() const {return pf2;}
+  nucqcd::Vector3 getQvec3() const {return qvec3;}
   double getPrec() const {return prec;}
   
   
@@ -108,9 +108,9 @@ private:
 //   Matrix<1,4> barcontract0down;
 //   Matrix<1,4> barcontractmindown;
 //   Matrix<1,4> barcontractplusdown;
-  TVector3 pf1; /*!< final nucleon1 momentum*/
-  TVector3 pf2; /*!< final nucleon2 momentum */
-  TVector3 qvec3; /*!< virtual photon momentum */
+  nucqcd::Vector3 pf1; /*!< final nucleon1 momentum*/
+  nucqcd::Vector3 pf2; /*!< final nucleon2 momentum */
+  nucqcd::Vector3 qvec3; /*!< virtual photon momentum */
   std::complex<double> J1contrup; /*!< intermediate contraction of spinor with current 4*4 operator*/
   std::complex<double> J1contrdown;/*!< intermediate contraction of spinor with current 4*4 operator*/
   std::complex<double> J2contrup;/*!< intermediate contraction of spinor with current 4*4 operator*/

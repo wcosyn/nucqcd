@@ -14,9 +14,9 @@
 /** forward declarations here instead of header sampler.hpp to prevent pollution of sampler.hpp **/
 namespace HALLB {
 	bool cut(Event& e); // check if a event survives our cuts
-	bool get_q(Event& e, const MeanFieldNucleus& nuc, const TVector3& Pcm,const double qmag); // get angle of q
-	//bool get_k1(Event& e,const MeanFieldNucleus& nuc, const TVector3& Pcm); // get k1, returns false if no physical solution is possible, else true
-	void get_Pcm(TVector3& Pcm); // get a possible c.m. momentum vector
+	bool get_q(Event& e, const MeanFieldNucleus& nuc, const nucqcd::Vector3& Pcm,const double qmag); // get angle of q
+	//bool get_k1(Event& e,const MeanFieldNucleus& nuc, const nucqcd::Vector3& Pcm); // get k1, returns false if no physical solution is possible, else true
+	void get_Pcm(nucqcd::Vector3& Pcm); // get a possible c.m. momentum vector
 
 	// nested class
 	// a xB-Q2 sampler to get xB-Q2 from exp distribution
@@ -103,9 +103,9 @@ void HALLB::generateKinematics(std::vector<struct Event>& events, unsigned n, Me
 		/** |q| **/
 		double qmag = sqrt( omega*omega + Q2 );
 		/** Pcm **/
-		TVector3 Pcm = TVector3();	
+		nucqcd::Vector3 Pcm = nucqcd::Vector3();	
 		get_Pcm(Pcm);
-		TVector3 k1  = TVector3(0.,0.,300. + 300.*rand()/RAND_MAX );
+		nucqcd::Vector3 k1  = nucqcd::Vector3(0.,0.,300. + 300.*rand()/RAND_MAX );
 		/** shellindices **/
 		int shellindex1 = shell1_distribution(generator); // get a random shellindex1
 		int shellindex2 = shell2_distribution(generator); // get a random shellindex2
@@ -202,7 +202,7 @@ bool HALLB::cut(Event& e){
  * it is assumed that particle "1" is the leading proton
  * it is assumed that particle "2" is the recoiling proton
  */
-bool HALLB::get_q(Event& e, const MeanFieldNucleus& nuc, const TVector3& Pcm, const double qmag){
+bool HALLB::get_q(Event& e, const MeanFieldNucleus& nuc, const nucqcd::Vector3& Pcm, const double qmag){
 	double M_Amin2 = nuc.getMassA_min_pp() + nuc.getExcitation()[e.shellindex1] + nuc.getExcitation()[e.shellindex2];
 	double E_Amin2 = sqrt( M_Amin2*M_Amin2 + Pcm.Mag2() );
 	double E_2     = sqrt( e.mass2*e.mass2 + e.p2.Mag2());
@@ -211,10 +211,10 @@ bool HALLB::get_q(Event& e, const MeanFieldNucleus& nuc, const TVector3& Pcm, co
 	double cosThetaq = ( A*A - e.mass1*e.mass1 - e.k1.Mag2() - qmag*qmag )/(2.*e.k1.Mag()*qmag);
 	
 	if ( fabs(cosThetaq) <= 1.0 ){ // valid!
-		e.q = qmag*TVector3(sqrt(1.-cosThetaq*cosThetaq),0.,cosThetaq);
+		e.q = qmag*nucqcd::Vector3(sqrt(1.-cosThetaq*cosThetaq),0.,cosThetaq);
 		return true;
 	} else { // invalid
-		e.q = TVector3(0.,0.,0.);
+		e.q = nucqcd::Vector3(0.,0.,0.);
 		return false;
 	}
 }
@@ -226,7 +226,7 @@ bool HALLB::get_q(Event& e, const MeanFieldNucleus& nuc, const TVector3& Pcm, co
  *  Event::omega
  *  Event::q
  *
-bool HALLB::get_k1(Event& e,const MeanFieldNucleus& nuc, const TVector3& Pcm){
+bool HALLB::get_k1(Event& e,const MeanFieldNucleus& nuc, const nucqcd::Vector3& Pcm){
 	double M_Amin2 = nuc.getMassA_min_pp() + nuc.getExcitation()[e.shellindex1] + nuc.getExcitation()[e.shellindex2];
 	double E_Amin2 = sqrt( M_Amin2*M_Amin2 + Pcm.Mag2() );
 	double deltaM2 = e.mass1*e.mass1 - e.mass2*e.mass2;
@@ -257,12 +257,12 @@ bool HALLB::get_k1(Event& e,const MeanFieldNucleus& nuc, const TVector3& Pcm){
 			printf("ERROR YOU SHOULD NEVER END UP HERE\n");
 			exit(-1);
 		}
-		e.k1 = TVector3(0.,0.,k1_mag);
+		e.k1 = nucqcd::Vector3(0.,0.,k1_mag);
 	}
 	return true;
 }
 */
-void HALLB::get_Pcm(TVector3& Pcm){
+void HALLB::get_Pcm(nucqcd::Vector3& Pcm){
 	Pcm.SetX(-600.0 + 1200.*(double) rand()/RAND_MAX);
 	Pcm.SetY(-600.0 + 1200.*(double) rand()/RAND_MAX);
 	Pcm.SetZ(-600.0 + 1200.*(double) rand()/RAND_MAX);

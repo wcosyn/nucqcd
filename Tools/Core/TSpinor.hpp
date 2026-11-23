@@ -10,26 +10,19 @@
 #ifndef TSPINOR_H
 #define TSPINOR_H
 
-// Include statements for classes that could be merely forward declared
-// but need a full declaration to allow the Dict.cpp file to be compiled. 
-#ifdef ROOT_Rtypes
-#include <Tools/Core/TLorentzQuaternion.hpp>
-#include <TLorentzRotation.h>
-#else
 class TLorentzQuaternion;
-class TLorentzRotation;
-#endif
+namespace nucqcd { class LorentzRotation; }
 
 #include <Tools/Core/Matrix.hpp>
 #include <Tools/Core/FourVector.hpp>
 #include <complex>
 #include <Tools/Core/GammaStructure.hpp>
-#include <TVector3.h>
+#include <Tools/Core/Vector3.hpp>
 #include <iostream>
 
 // Forward declarations
-class TLorentzVector;
-class TRotation;
+namespace nucqcd { class LorentzVector; }
+namespace nucqcd { class Rotation; }
 
 /*! \brief Dirac spinor u(p,s) of a positive-energy spin-1/2 particle
  *
@@ -57,8 +50,8 @@ class TSpinor
  protected:
   TSpinor(double px,double py,double pz,double mass, const Polarization&, Normalization,int energyState); ///< constructor for positive (energyState > 0) or negative (< 0) energy solutions, used by TVSpinor; momentum (px,py,pz) [MeV], mass [MeV]
  public:
-  TSpinor(const TLorentzVector&, double mass, const Polarization&, Normalization=kDoubleMass); ///< constructor: four-momentum [MeV] (only its spatial part is used), mass [MeV], polarization, normalization
-  TSpinor(const FourVector<double>&, double mass, const Polarization&, Normalization=kDoubleMass); ///< as the TLorentzVector constructor
+  TSpinor(const nucqcd::LorentzVector&, double mass, const Polarization&, Normalization=kDoubleMass); ///< constructor: four-momentum [MeV] (only its spatial part is used), mass [MeV], polarization, normalization
+  TSpinor(const FourVector<double>&, double mass, const Polarization&, Normalization=kDoubleMass); ///< as the nucqcd::LorentzVector constructor
   TSpinor(const TSpinor&); ///< copy constructor
   virtual ~TSpinor(); ///< destructor
   TSpinor& operator=(const TSpinor&); ///< assignment
@@ -134,8 +127,8 @@ class TSpinor
   {
   public:
     LorentzRotation(); ///< unity
-    LorentzRotation(const TRotation&); ///< pure rotation
-    LorentzRotation(const TVector3&); ///< pure boost with velocity beta
+    LorentzRotation(const nucqcd::Rotation&); ///< pure rotation
+    LorentzRotation(const nucqcd::Vector3&); ///< pure boost with velocity beta
     LorentzRotation(double betaX, double betaY, double betaZ); ///< pure boost with velocity (betaX, betaY, betaZ)
 
     // Const Cast to GammaStructure
@@ -148,7 +141,7 @@ class TSpinor
     friend 
       std::ostream& operator<<(std::ostream&, const LorentzRotation&);
 
-    LorentzRotation& Boost(const TVector3& boostVector) { return Transform(LorentzRotation(boostVector)); } ///< followed by a boost with velocity boostVector
+    LorentzRotation& Boost(const nucqcd::Vector3& boostVector) { return Transform(LorentzRotation(boostVector)); } ///< followed by a boost with velocity boostVector
     LorentzRotation& Boost(double betaX, double betaY, double betaZ) { return Transform(LorentzRotation(betaX,betaY,betaZ)); } ///< followed by a boost with velocity (betaX, betaY, betaZ)
     LorentzRotation  Inverse() const; ///< inverse transformation
     LorentzRotation& Invert(); ///< inverts the transformation
@@ -156,11 +149,11 @@ class TSpinor
     LorentzRotation  operator*(const LorentzRotation&) const; ///< compound transformation
     LorentzRotation& operator*=(const LorentzRotation&); ///< compound transformation
     GammaStructure   operator*(const GammaStructure&) const; ///< product with a 4x4 matrix
-    LorentzRotation& Rotate(double angle, const TVector3& axis); ///< followed by a rotation over angle [rad] around axis
-    LorentzRotation& Rotate(double angle, const TVector3* axis) { return Rotate(angle,*axis); } ///< followed by a rotation over angle [rad] around axis
-    LorentzRotation& RotateX(double angle) { return Rotate(angle,TVector3(1.,0.,0.)); } ///< followed by a rotation around the x axis [rad]
-    LorentzRotation& RotateY(double angle) { return Rotate(angle,TVector3(0.,1.,0.)); } ///< followed by a rotation around the y axis [rad]
-    LorentzRotation& RotateZ(double angle) { return Rotate(angle,TVector3(0.,0.,1.)); } ///< followed by a rotation around the z axis [rad]
+    LorentzRotation& Rotate(double angle, const nucqcd::Vector3& axis); ///< followed by a rotation over angle [rad] around axis
+    LorentzRotation& Rotate(double angle, const nucqcd::Vector3* axis) { return Rotate(angle,*axis); } ///< followed by a rotation over angle [rad] around axis
+    LorentzRotation& RotateX(double angle) { return Rotate(angle,nucqcd::Vector3(1.,0.,0.)); } ///< followed by a rotation around the x axis [rad]
+    LorentzRotation& RotateY(double angle) { return Rotate(angle,nucqcd::Vector3(0.,1.,0.)); } ///< followed by a rotation around the y axis [rad]
+    LorentzRotation& RotateZ(double angle) { return Rotate(angle,nucqcd::Vector3(0.,0.,1.)); } ///< followed by a rotation around the z axis [rad]
     LorentzRotation& Transform(const LorentzRotation&); ///< a.Transform(b) sets a = b*a
 
   protected:
@@ -180,7 +173,7 @@ class TSpinor
 class TVSpinor : public TSpinor
 {
  public:
-  TVSpinor(const TLorentzVector&, double mass, const Polarization&, Normalization=kDoubleMass); ///< constructor, see TSpinor
+  TVSpinor(const nucqcd::LorentzVector&, double mass, const Polarization&, Normalization=kDoubleMass); ///< constructor, see TSpinor
   TVSpinor(const FourVector<double>&, double mass, const Polarization&, Normalization=kDoubleMass); ///< constructor, see TSpinor
   TVSpinor(const TVSpinor&); ///< copy constructor
   virtual ~TVSpinor(); ///< destructor
@@ -195,21 +188,21 @@ class TVSpinor : public TSpinor
 class THelicitySpinor : public TSpinor
 {
  public:
-  THelicitySpinor(const TLorentzVector&, double mass, const Polarization::State&, Normalization=kDoubleMass); ///< constructor: four-momentum [MeV], mass [MeV], helicity state, normalization
-  THelicitySpinor(const FourVector<double>&, double mass, const Polarization::State&, Normalization=kDoubleMass); ///< as the TLorentzVector constructor
+  THelicitySpinor(const nucqcd::LorentzVector&, double mass, const Polarization::State&, Normalization=kDoubleMass); ///< constructor: four-momentum [MeV], mass [MeV], helicity state, normalization
+  THelicitySpinor(const FourVector<double>&, double mass, const Polarization::State&, Normalization=kDoubleMass); ///< as the nucqcd::LorentzVector constructor
   THelicitySpinor(const THelicitySpinor&); ///< copy constructor
   virtual ~THelicitySpinor(); ///< destructor
   THelicitySpinor& operator=(const THelicitySpinor&); ///< assignment
   virtual THelicitySpinor* Clone(const char* ="") const; ///< virtual copy constructor
 
-  static TLorentzRotation HelicityTransformation(const TLorentzVector&); ///< helicity transformation \f$ h(p) = r_z(\phi) r_y(\theta) l_z(|\vec p|/p^0) \f$ (Leader, section 1.2.2)
-  static TSpinor::LorentzRotation HelicitySpinorTransformation(const TLorentzVector&); ///< helicity transformation h(p) in spinor space
-  static TLorentzQuaternion HelicityQuaternionTransformation(const TLorentzVector&); ///< helicity transformation h(p) as a quaternion
-  static TLorentzRotation WickRotation(const TLorentzRotation&, const TLorentzVector&); ///< Wick helicity rotation \f$ r(l,p) = h(lp)^{-1}\, l\, h(p) \f$ (Leader, eq. (2.1.7)); l acts on four-vectors, not on the frame
-  static TLorentzQuaternion WickRotation(const TLorentzQuaternion&, const TLorentzVector&); ///< Wick helicity rotation, quaternion version
-  static void WickRotationEulerAngles(const TLorentzRotation&, const TLorentzVector&,double& alpha, double& beta, double& gamma); ///< Euler angles (alpha, beta, gamma), Y convention of TRotation, of the Wick helicity rotation
-  static Matrix<2,2> RotationMatrix(const TLorentzRotation&, const TLorentzVector&); ///< spin-1/2 Wigner matrix of the Wick helicity rotation: \f$ U(l)|p,\lambda\rangle = \sum_{\lambda'} M_{\lambda\lambda'}|lp,\lambda'\rangle \f$
-  static Matrix<2,2> RotationMatrix(const TLorentzQuaternion&, const TLorentzVector&); ///< as above, quaternion version
+  static nucqcd::LorentzRotation HelicityTransformation(const nucqcd::LorentzVector&); ///< helicity transformation \f$ h(p) = r_z(\phi) r_y(\theta) l_z(|\vec p|/p^0) \f$ (Leader, section 1.2.2)
+  static TSpinor::LorentzRotation HelicitySpinorTransformation(const nucqcd::LorentzVector&); ///< helicity transformation h(p) in spinor space
+  static TLorentzQuaternion HelicityQuaternionTransformation(const nucqcd::LorentzVector&); ///< helicity transformation h(p) as a quaternion
+  static nucqcd::LorentzRotation WickRotation(const nucqcd::LorentzRotation&, const nucqcd::LorentzVector&); ///< Wick helicity rotation \f$ r(l,p) = h(lp)^{-1}\, l\, h(p) \f$ (Leader, eq. (2.1.7)); l acts on four-vectors, not on the frame
+  static TLorentzQuaternion WickRotation(const TLorentzQuaternion&, const nucqcd::LorentzVector&); ///< Wick helicity rotation, quaternion version
+  static void WickRotationEulerAngles(const nucqcd::LorentzRotation&, const nucqcd::LorentzVector&,double& alpha, double& beta, double& gamma); ///< Euler angles (alpha, beta, gamma), Y convention of nucqcd::Rotation, of the Wick helicity rotation
+  static Matrix<2,2> RotationMatrix(const nucqcd::LorentzRotation&, const nucqcd::LorentzVector&); ///< spin-1/2 Wigner matrix of the Wick helicity rotation: \f$ U(l)|p,\lambda\rangle = \sum_{\lambda'} M_{\lambda\lambda'}|lp,\lambda'\rangle \f$
+  static Matrix<2,2> RotationMatrix(const TLorentzQuaternion&, const nucqcd::LorentzVector&); ///< as above, quaternion version
 
  private:
   void ToHelicitySpinor(const Polarization::State&, const double phi); ///< rotates the Pauli spinors of the TSpinor constructor to the helicity basis
@@ -221,7 +214,7 @@ class THelicitySpinor : public TSpinor
 class THelicityVSpinor : public TSpinor
 {
  public:
-  THelicityVSpinor(const TLorentzVector&, double mass, const Polarization::State&, Normalization=kDoubleMass); ///< constructor, see THelicitySpinor
+  THelicityVSpinor(const nucqcd::LorentzVector&, double mass, const Polarization::State&, Normalization=kDoubleMass); ///< constructor, see THelicitySpinor
   THelicityVSpinor(const FourVector<double>&, double mass, const Polarization::State&, Normalization=kDoubleMass); ///< constructor, see THelicitySpinor
   THelicityVSpinor(const THelicityVSpinor&); ///< copy constructor
   virtual ~THelicityVSpinor(); ///< destructor

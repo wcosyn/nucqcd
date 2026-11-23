@@ -38,7 +38,7 @@ FsiCorrelator& AbstractFsiGridThick::getFsiCorrelator(){
 }
 
 //interpolation functions
-complex<double> AbstractFsiGridThick::getFsiSrcGridFull_interpvec(const TVector3 &rvec){
+complex<double> AbstractFsiGridThick::getFsiSrcGridFull_interpvec(const nucqcd::Vector3 &rvec){
   return getFsiSrcGridFull_interp3(rvec.Mag(),rvec.CosTheta(),rvec.Phi());
 }
 

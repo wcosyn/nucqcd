@@ -71,11 +71,11 @@ class TInterpolatingWavefunction : public TWavefunctionImplementation
   virtual double GetWp(double p) const; ///< [MeV^-3/2] D wave w (L=2) in momentum space \param p [MeV]
   virtual double GetVTp(double p) const; ///< [MeV^-3/2] spin-triplet P wave (L=1) in momentum space \param p [MeV]
   virtual double GetVSp(double p) const; ///< [MeV^-3/2] spin-singlet P wave (L=1) in momentum space \param p [MeV]
-  virtual double GetUpoff(const TVector3& p) const; ///< [MeV^-3/2] off-shell S-wave part, see TDeuteron::Wavefunction::DeuteronPStateOff \param p [MeV]
-  virtual double GetWpoff1(const TVector3& p) const; ///< [MeV^-3/2] first off-shell D-wave part \param p [MeV]
+  virtual double GetUpoff(const nucqcd::Vector3& p) const; ///< [MeV^-3/2] off-shell S-wave part, see TDeuteron::Wavefunction::DeuteronPStateOff \param p [MeV]
+  virtual double GetWpoff1(const nucqcd::Vector3& p) const; ///< [MeV^-3/2] first off-shell D-wave part \param p [MeV]
   virtual double GetWpoff2(double pperp2) const; ///< [MeV^-3/2] second off-shell D-wave part \param pperp2 [MeV^2]
-  virtual std::complex<double> DeuteronPState(int deuteronPol, int nucleon2Pol,int nucleon1Pol, const TVector3& p) const; ///< [MeV^-3/2] momentum-space wave function, same conventions and arguments as TDeuteron::Wavefunction::DeuteronPState
-  virtual std::complex<double> DeuteronRState(int deuteronPol, int nucleon2Pol,int nucleon1Pol, const TVector3& r) const; ///< [fm^-1/2] r times the coordinate-space wave function, same conventions and arguments as TDeuteron::Wavefunction::DeuteronRState
+  virtual std::complex<double> DeuteronPState(int deuteronPol, int nucleon2Pol,int nucleon1Pol, const nucqcd::Vector3& p) const; ///< [MeV^-3/2] momentum-space wave function, same conventions and arguments as TDeuteron::Wavefunction::DeuteronPState
+  virtual std::complex<double> DeuteronRState(int deuteronPol, int nucleon2Pol,int nucleon1Pol, const nucqcd::Vector3& r) const; ///< [fm^-1/2] r times the coordinate-space wave function, same conventions and arguments as TDeuteron::Wavefunction::DeuteronRState
 
   void setS(const bool S){ inclS=S;} ///< switches the S wave on (default) or off in DeuteronPState and DeuteronRState
   void setD(const bool D){ inclD=D;} ///< switches the D wave on (default) or off in DeuteronPState and DeuteronRState

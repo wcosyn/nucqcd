@@ -15,7 +15,7 @@
 #include <Glauber/AbstractFsiCTGrid.hpp>
 #include <Tools/Kinematics/TKinematics2to2.hpp>
 #include <Glauber/NucleonWeakOperator.hpp>
-#include <TVector3.h>
+#include <Tools/Core/Vector3.hpp>
 #include <Glauber/GlauberGridThick.hpp>
 #include <Glauber/OneGlauberGrid.hpp>
 #include <Glauber/ROMEAGrid.hpp>
@@ -132,7 +132,7 @@ public:
   const Matrix<1,4> & getBarcontractzdown() const{return barcontractzdown;} /*!< bar spinor of the outgoing nucleon (spin down) contracted with the current, spatial component J^z along q */
   const Matrix<1,4> & getBarcontract() const{return barcontract;} /*!< contraction of the outgoing-nucleon bar spinor with the current (the last one computed) */
   const NucleonWeakOperator & getJ() const{return *J;} /*!< nucleon current operator of the current calculation */
-  TVector3 & getPm() {return pm;} /*!< [MeV] missing momentum of the current calculation */
+  nucqcd::Vector3 & getPm() {return pm;} /*!< [MeV] missing momentum of the current calculation */
   
 private:
   double prec; /*!< precision in the integrations */
@@ -149,7 +149,7 @@ private:
   Matrix<1,4> barcontractmindown; /*!< intermediate contraction of bar spinor with 4*4 current  */
   Matrix<1,4> barcontractplusdown; /*!< intermediate contraction of bar spinor with 4*4 current  */
   Matrix<1,4> barcontractzdown; /*!< intermediate contraction of bar spinor with 4*4 current  */
-  TVector3 pm; /*!< missing momentum */
+  nucqcd::Vector3 pm; /*!< missing momentum */
   std::string homedir; /*!< contains the share dir with all input */
   bool charged; /*!< neutral weak current [0] or charged [1] */
   bool usersigma; /*!< has the user set some screening to sigma */

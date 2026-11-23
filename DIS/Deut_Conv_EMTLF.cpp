@@ -48,8 +48,8 @@ void Deut_Conv_EMTLF::int_k3(numint::vector_z & res, double alpha1, double kperp
     double kperpprime=sqrt(kxprime*kxprime+kyprime*kyprime);
     double Ekprime = sqrt((nucqcd::mass_nucleon*nucqcd::mass_nucleon+kperpprime*kperpprime)/(alphaprime*(2.-alphaprime)));
     double kzprime = (alphaprime -1)*Ekprime;
-    TVector3 k_in(kperp*coskphi,kperp*sinkphi,kz);
-    TVector3 k_out(kxprime, kyprime, kzprime);
+    nucqcd::Vector3 k_in(kperp*coskphi,kperp*sinkphi,kz);
+    nucqcd::Vector3 k_out(kxprime, kyprime, kzprime);
     complex<double> p1R = (kperp*coskphi+kxprime)/2.+nucqcd::i_unit*(kperp*sinkphi+kyprime)/2.;
     complex<double> p1L = conj(p1R);
     if(k_out.Mag2()>1.E06) {return;}
@@ -127,8 +127,8 @@ void Deut_Conv_EMTLF::int_k3_real(numint::vector_d & res, double alpha1, double 
     double kperpprime=sqrt(kxprime*kxprime+kyprime*kyprime);
     double Ekprime = sqrt((nucqcd::mass_nucleon*nucqcd::mass_nucleon+kperpprime*kperpprime)/(alphaprime*(2.-alphaprime)));
     double kzprime = (alphaprime -1)*Ekprime;
-    TVector3 k_in(kperp*coskphi,kperp*sinkphi,kz);
-    TVector3 k_out(kxprime, kyprime, kzprime);
+    nucqcd::Vector3 k_in(kperp*coskphi,kperp*sinkphi,kz);
+    nucqcd::Vector3 k_out(kxprime, kyprime, kzprime);
     complex<double> p1R = (kperp*coskphi+kxprime)/2.+nucqcd::i_unit*(kperp*sinkphi+kyprime)/2.;
     complex<double> p1L = conj(p1R);
     if(k_out.Mag2()>1.E06) {return;}
@@ -311,7 +311,7 @@ vector< double > Deut_Conv_EMTLF::EMT_conv_real(const double t){
 }
 
 
-vector< complex<double> > Deut_Conv_EMTLF::lf_deut(const double Ek, const TVector3& k, const vector< complex<double> > &nonrelwf){
+vector< complex<double> > Deut_Conv_EMTLF::lf_deut(const double Ek, const nucqcd::Vector3& k, const vector< complex<double> > &nonrelwf){
     vector< complex<double> > wf_out(4,0.);
     wf_out[0]=((k[2]+Ek+nucqcd::mass_nucleon)*nonrelwf.at(0)+(-k[0]-nucqcd::i_unit*k[1])*nonrelwf.at(1))/sqrt(2.*(Ek+nucqcd::mass_nucleon)*(Ek+k[2]));
     wf_out[1]=((k[2]+Ek+nucqcd::mass_nucleon)*nonrelwf.at(1)+(k[0]-nucqcd::i_unit*k[1])*nonrelwf.at(0))/sqrt(2.*(Ek+nucqcd::mass_nucleon)*(Ek+k[2]));

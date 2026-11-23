@@ -256,14 +256,14 @@ double TGrossPWF::GetVSp(double p) const
   return vsp;
 }
 
-double TGrossPWF::GetUpoff(const TVector3& p) const{
+double TGrossPWF::GetUpoff(const nucqcd::Vector3& p) const{
  
   cerr << "Off-shell wave function not implemented in TGrossPWF wave function class" << endl;
   return 0.;
   
 }
 
-double TGrossPWF::GetWpoff1(const TVector3& p) const{
+double TGrossPWF::GetWpoff1(const nucqcd::Vector3& p) const{
  
   cerr << "Off-shell wave function not implemented in TGrossPWF wave function class" << endl;
   return 0.;

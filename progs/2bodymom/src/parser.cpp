@@ -1,5 +1,6 @@
 #include "parser.hpp"
 #include <Tools/Core/constants.hpp>
+#include <cstring>  // strcmp (came through the ROOT headers before)
 
 void EventParser::write_events(char* fname, std::vector< struct Event>& events) {
 	FILE* fp;
@@ -69,13 +70,13 @@ void EventParser::setattr(Event& e,char* member,void* value){
 	} else if (strcmp(member,"mass2") == 0){
 		e.mass2 = *(double*)    value;
 	} else if (strcmp(member,"q"    ) == 0){
-		e.q     = *(TVector3*) value;
+		e.q     = *(nucqcd::Vector3*) value;
 	} else if (strcmp(member,"k1"   ) == 0){
-		e.k1    = *(TVector3*) value;
+		e.k1    = *(nucqcd::Vector3*) value;
 	} else if (strcmp(member,"p1"   ) == 0){
-		e.p1    = *(TVector3*) value;
+		e.p1    = *(nucqcd::Vector3*) value;
 	} else if (strcmp(member,"p2"   ) == 0){
-		e.p2    = *(TVector3*) value;
+		e.p2    = *(nucqcd::Vector3*) value;
 	} else if (strcmp(member,"shellindex1") == 0) {
 		e.shellindex1 = *(int*) value;
 	} else if (strcmp(member,"shellindex2") == 0) {
@@ -102,10 +103,10 @@ void EventParser::read_events(char* fname, std::vector< struct Event>& events,Me
 				e.xB = tokens[1];
 				e.Q2 = tokens[2];
 				e.omega = tokens[3];
-				e.q = TVector3(tokens[4],tokens[5],tokens[6]);
-				e.k1 = TVector3(tokens[7],tokens[8],tokens[9]);
-				e.p1 = TVector3(tokens[10],tokens[11],tokens[12]);
-				e.p2 = TVector3(tokens[13],tokens[14],tokens[15]);
+				e.q = nucqcd::Vector3(tokens[4],tokens[5],tokens[6]);
+				e.k1 = nucqcd::Vector3(tokens[7],tokens[8],tokens[9]);
+				e.p1 = nucqcd::Vector3(tokens[10],tokens[11],tokens[12]);
+				e.p2 = nucqcd::Vector3(tokens[13],tokens[14],tokens[15]);
 				e.shellindex1 = (int) tokens[16];
 				e.shellindex2 = (int) tokens[17];
 

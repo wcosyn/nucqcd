@@ -7,7 +7,7 @@
 #include <Tools/WaveFunctions/TInterpolatingWavefunction.hpp>
 #include <Tools/Core/constants.hpp>
 
-#include <TVector3.h>
+#include <Tools/Core/Vector3.hpp>
 
 #include <cmath>
 #include <functional>
@@ -83,7 +83,7 @@ TEST_CASE("OldDeuteron wave functions are normalized", "[deuteron]") {
 TEST_CASE("DeuteronPState: spin structure against closed forms", "[deuteron]") {
   auto wf = make_wf("AV18");
   const double k = 100., theta = 1., phi = 2.;
-  const TVector3 p(k * std::sin(theta) * std::cos(phi), k * std::sin(theta) * std::sin(phi), k * std::cos(theta));
+  const nucqcd::Vector3 p(k * std::sin(theta) * std::cos(phi), k * std::sin(theta) * std::sin(phi), k * std::cos(theta));
   // M=0, both nucleon spins up: pure D-wave (m_l=-1), -W(k) 3/2 cos sin e^{-i phi}/sqrt(4 pi)   [wftest.cpp]
   const std::complex<double> expected =
       -wf->GetWp(k) * 1.5 * std::cos(theta) * std::sin(theta) * std::exp(std::complex<double>(0., -phi)) /
@@ -150,7 +150,7 @@ TEST_CASE("D-wave conventions: sign of w(r) and W(p), and the Bessel transform b
     }
     // DeuteronPState: the D wave enters with a minus sign, DeuteronRState with a plus sign
     // (M=0, both spins up is pure D wave with m_L=-1)
-    const TVector3 dir(std::sin(1.) * std::cos(2.), std::sin(1.) * std::sin(2.), std::cos(1.));
+    const nucqcd::Vector3 dir(std::sin(1.) * std::cos(2.), std::sin(1.) * std::sin(2.), std::cos(1.));
     const std::complex<double> Y2m1 = TDeuteron::Wavefunction::SphericalHarmonicCos(2, -1, std::cos(1.), 2.);
     const double cg = TDeuteron::Wavefunction::ClebschGordan(4, -2, 2, 2, 2, 0);
     CHECK(std::abs(wf->DeuteronPState(0, 1, 1, 150. * dir) - (-wf->GetWp(150.) * cg * Y2m1)) < 1e-12 * wf->GetWp(150.));
@@ -178,8 +178,8 @@ TEST_CASE("TInterpolatingWavefunction states have the TDeuteron conventions", "[
     interp.AddUr(i * 0.02, wf->GetUr(i * 0.02));
     interp.AddWr(i * 0.02, wf->GetWr(i * 0.02));
   }
-  const TVector3 dir(std::sin(1.) * std::cos(2.), std::sin(1.) * std::sin(2.), std::cos(1.));
-  const TVector3 p = 150. * dir, r = 2. * dir;  // on grid points of the tables, so no interpolation error
+  const nucqcd::Vector3 dir(std::sin(1.) * std::cos(2.), std::sin(1.) * std::sin(2.), std::cos(1.));
+  const nucqcd::Vector3 p = 150. * dir, r = 2. * dir;  // on grid points of the tables, so no interpolation error
   for (int M = -2; M <= 2; M += 2)
     for (int s1 = -1; s1 <= 1; s1 += 2)
       for (int s2 = -1; s2 <= 1; s2 += 2) {

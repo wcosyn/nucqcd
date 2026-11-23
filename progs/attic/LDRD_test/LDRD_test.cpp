@@ -19,12 +19,12 @@ int main(int argc, char *argv[])
   
   double Ein=12.E03; //[MeV] Incoming electron energy
   double thetain=PI-0.1; // [rad] angle of incoming beam with z-axis 
-  TVector3 vecpd(0.,0.,10.E03); //deuteron momentum [MeV]
-  TVector3 vecps=TVector3(100.,50.,30.); 
+  nucqcd::Vector3 vecpd(0.,0.,10.E03); //deuteron momentum [MeV]
+  nucqcd::Vector3 vecps=nucqcd::Vector3(100.,50.,30.); 
   vecps+=0.5*vecpd; //spectator momentum [MeV] 
-  TVector3 qvec=TVector3(0.,0.,10.E03); //qvector virtual photon
+  nucqcd::Vector3 qvec=nucqcd::Vector3(0.,0.,10.E03); //qvector virtual photon
   
-  TVector3 veckin(Ein*sin(thetain),0.,Ein*cos(thetain)); //incoming beam momentum vector
+  nucqcd::Vector3 veckin(Ein*sin(thetain),0.,Ein*cos(thetain)); //incoming beam momentum vector
   double Q2=0.1E06; //[MeV^2]
   
   
@@ -68,10 +68,10 @@ int main(int argc, char *argv[])
   cout << fsiVNAavg << " " << fsiVNAnoavg << endl << endl; 
   //He3 part
   
-  TVector3 sp1(0.,200.,0.);
-  TVector3 sp2(100.,-100.,100.);
-  TVector3 spcm=sp1+sp2;
-  TVector3 beam(5000.*cos(-1.),0.,5000.*sin(-1.));
+  nucqcd::Vector3 sp1(0.,200.,0.);
+  nucqcd::Vector3 sp2(100.,-100.,100.);
+  nucqcd::Vector3 spcm=sp1+sp2;
+  nucqcd::Vector3 beam(5000.*cos(-1.),0.,5000.*sin(-1.));
   //collinear kinematics, lab frame
   LightConeKin2to3 kinkin(nucqcd::mass_he3,2.E06,nucqcd::mass_p,nucqcd::mass_p,0.,4.E03,sp1,sp2,beam,spcm);
   string he3wf = "AV18"; // he3 wf name, see He3wf constructor documentation

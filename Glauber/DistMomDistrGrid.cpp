@@ -16,7 +16,7 @@ using namespace std;
 #include <Tools/Core/FourVector.hpp>
 #include <Tools/Core/Matrix.hpp>
 #include <Tools/Core/TSpinor.hpp>
-#include <TRotation.h>
+#include <Tools/Core/Rotation.hpp>
 #include <Glauber/TMFSpinor.hpp>
 
 DistMomDistrGrid::DistMomDistrGrid():
@@ -278,7 +278,7 @@ void DistMomDistrGrid::setPhiinterp(const double phi){
 }
 
 //interpolation functions
-double DistMomDistrGrid::getRhoGridFull_interpvec(int gridindex, const TVector3 &pvec){
+double DistMomDistrGrid::getRhoGridFull_interpvec(int gridindex, const nucqcd::Vector3 &pvec){
   return getRhoGridFull_interp3(gridindex, pvec.Mag(),pvec.CosTheta(),pvec.Phi());
 }
 
@@ -426,7 +426,7 @@ void DistMomDistrGrid::writeoutRhoCtGrid(ofstream &outfile){
 
 
 //calc both fsi and fsi+ct grid
-void DistMomDistrGrid::constructAllGrids(TRotation & rot){
+void DistMomDistrGrid::constructAllGrids(nucqcd::Rotation & rot){
   //fill the arrays!
   for(int i=0; i<=getPgrid(); i++){
     p_hit = float(i)/getInvPstep();
@@ -436,7 +436,7 @@ void DistMomDistrGrid::constructAllGrids(TRotation & rot){
       for(int k=0;k<=getPhigrid();k++){
 	phi_hit = 2.*PI*k/getPhigrid();
 	sincos(phi_hit,&sinphi_hit,&cosphi_hit);
-	pvec_hit= TVector3(p_hit*sintheta_hit*cosphi_hit,p_hit*sintheta_hit*sinphi_hit,p_hit*costheta_hit);
+	pvec_hit= nucqcd::Vector3(p_hit*sintheta_hit*cosphi_hit,p_hit*sintheta_hit*sinphi_hit,p_hit*costheta_hit);
 	pvec_hit=pvec_hit.Transform(rot);	
 	for(int l=0;l<number_of_Grids/2;l++) rhogrid[l][i][j][k]=rhoctgrid[l][i][j][k]=0.;
 	//symmetry for (-m,-ms)(m,ms), so only half needed, multiply everything by 2 in the end.
@@ -536,7 +536,7 @@ void DistMomDistrGrid::constructpwGrid(){
 }
 
 //calc both fsi and fsi+ct grid
-void DistMomDistrGrid::constructCtGrid(TRotation & rot){
+void DistMomDistrGrid::constructCtGrid(nucqcd::Rotation & rot){
   //fill the arrays!
   for(int i=0; i<=getPgrid(); i++){
     p_hit = float(i)/getInvPstep();
@@ -546,7 +546,7 @@ void DistMomDistrGrid::constructCtGrid(TRotation & rot){
       for(int k=0;k<=getPhigrid();k++){
 	phi_hit = 2.*PI*k/getPhigrid();
 	sincos(phi_hit,&sinphi_hit,&cosphi_hit);
-	pvec_hit= TVector3(p_hit*sintheta_hit*cosphi_hit,p_hit*sintheta_hit*sinphi_hit,p_hit*costheta_hit);	
+	pvec_hit= nucqcd::Vector3(p_hit*sintheta_hit*cosphi_hit,p_hit*sintheta_hit*sinphi_hit,p_hit*costheta_hit);	
 	pvec_hit=pvec_hit.Transform(rot);
 	for(int l=0;l<number_of_Grids/2;l++) rhoctgrid[l][i][j][k]=0.;
 	double absprec=1.E-12;
@@ -693,7 +693,7 @@ void DistMomDistrGrid::intRhoRpw(const double r, double *result, va_list ap){
 //   sincos(phi,&sinphi,&cosphi);
 //   
 //   TMFSpinor wave(*getPfsigrid()->getPnucleus(),getShellindex(),m,r,costheta,phi);
-//   complex<double> exp_pr=exp(-nucqcd::inv_hbarc*pvec_hit*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)*nucqcd::i_unit)
+//   complex<double> exp_pr=exp(-nucqcd::inv_hbarc*pvec_hit*nucqcd::Vector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)*nucqcd::i_unit)
 // 			  *(Upm_bar*wave);  
 // 
 //   for(int i=0;i<number_of_Grids;i++) results[i]=exp_pr*getPfsigrid()->getFsiGridN_interp1(i,phi);
@@ -711,7 +711,7 @@ void DistMomDistrGrid::intRhoRpw(const double r, double *result, va_list ap){
 //   TMFSpinor wave(*getPfsigrid()->getPnucleus(),getShellindex(),m,r,costheta,phi);
 //   
 //   
-//   complex<double> exp_pr=exp(-nucqcd::inv_hbarc*pvec_hit*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)*nucqcd::i_unit)
+//   complex<double> exp_pr=exp(-nucqcd::inv_hbarc*pvec_hit*nucqcd::Vector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)*nucqcd::i_unit)
 // 			  *(Upm_bar*wave);  
 // 
 //   for(int i=0;i<number_of_Grids/2;i++) results[i]=exp_pr*getPfsigrid()->getFsiGridN_interp1(i+number_of_Grids/2,phi);
@@ -719,7 +719,7 @@ void DistMomDistrGrid::intRhoRpw(const double r, double *result, va_list ap){
 // }
 
 
-void DistMomDistrGrid::fillGrids(TRotation & rot){
+void DistMomDistrGrid::fillGrids(nucqcd::Rotation & rot){
   setFilenames(dir);
   ifstream infile(rho_filename.c_str(),ios::in|ios::binary);
   //check if object has been created sometime earlier and read it in
@@ -745,7 +745,7 @@ void DistMomDistrGrid::fillGrids(TRotation & rot){
   readinOrConstructCtGrid(rot);
 }
 
-void DistMomDistrGrid::readinOrConstructCtGrid(TRotation & rot){
+void DistMomDistrGrid::readinOrConstructCtGrid(nucqcd::Rotation & rot){
   ifstream infile2(rhoct_filename.c_str(),ios::in|ios::binary);
   //check if object has been created sometime earlier and read it in
   if(infile2.is_open()){
@@ -767,8 +767,8 @@ void DistMomDistrGrid::readinOrConstructCtGrid(TRotation & rot){
 }
 
 
-void DistMomDistrGrid::updateGrids(AbstractFsiCTGrid *pfsi_grid, int shell, TRotation & rot){
-  TVector3 axis;
+void DistMomDistrGrid::updateGrids(AbstractFsiCTGrid *pfsi_grid, int shell, nucqcd::Rotation & rot){
+  nucqcd::Vector3 axis;
   rot.AngleAxis(thetarot,axis);
   thetarot*=-SIGN(axis[1]);
   if(!filledgrid){
@@ -806,7 +806,7 @@ void DistMomDistrGrid::klaas_distint(numint::vector_z &results, double r, double
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
   TMFSpinor wave(*grid.getPfsigrid()->getPnucleus(),grid.getShellindex(),m,r,costheta,phi);
-  complex<double> exp_pr=exp(-nucqcd::inv_hbarc*((grid.getPvec_hit())*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta))*nucqcd::i_unit)
+  complex<double> exp_pr=exp(-nucqcd::inv_hbarc*((grid.getPvec_hit())*nucqcd::Vector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta))*nucqcd::i_unit)
 			  *((grid.getUpm_bar())*wave);  
   for(int i=0;i<grid.number_of_Grids;i++) results[i]=exp_pr*grid.getPfsigrid()->getFsiGridN_interp3(i,r,costheta,phi);
   for(int i=0;i<grid.number_of_Grids;i++) results[i]*=r;
@@ -821,7 +821,7 @@ void DistMomDistrGrid::klaas_distint_ct(numint::vector_z &results, double r, dou
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
   TMFSpinor wave(*grid.getPfsigrid()->getPnucleus(),grid.getShellindex(),m,r,costheta,phi);
-  complex<double> exp_pr=exp(-nucqcd::inv_hbarc*((grid.getPvec_hit())*TVector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta))*nucqcd::i_unit)
+  complex<double> exp_pr=exp(-nucqcd::inv_hbarc*((grid.getPvec_hit())*nucqcd::Vector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta))*nucqcd::i_unit)
 			  *((grid.getUpm_bar())*wave);  
 
   for(int i=0;i<grid.number_of_Grids/2;i++) results[i]=exp_pr*
