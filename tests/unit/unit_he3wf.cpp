@@ -1,10 +1,11 @@
-// MePhys: He3 wave function (Tools/He3wf, a wrapper around Fortran code by Misak Sargsian, data from the
+// MePhys/DIS: He3 wave function (Tools/He3wf, a wrapper around Fortran code by Misak Sargsian, data from the
 // Bochum group): normalization, rotation invariance and antisymmetry.
 // Until 2026-11 He3wf::getWF fixed ms3 = mA - ms1 - ms2, which left out the D- and P-wave components
 // whose nucleon spins do not add up to mA: the norm was 0.971 for AV18 and the spin-summed density was
 // not rotation invariant (ROADMAP step 4, "He3 normalization").
 #include <test_support.hpp>
 
+#include <He3Cross.hpp>
 #include <He3wf.hpp>
 #include <constants.hpp>
 
@@ -96,4 +97,38 @@ TEST_CASE("He3wf AV18: spin-summed density rotation invariant, antisymmetric und
   }
   CHECK_THROWS_AS(wf.getWF(TVector3(), TVector3(), 1, 1, 3, 1, 1, 1), std::invalid_argument);
   CHECK_THROWS_AS(He3wf("AV19", nucqcd_test::share_dir() + "/he3"), std::invalid_argument);
+}
+
+TEST_CASE("He3Cross: spectator momentum distribution integrates to Z = 2 (struck proton) and N = 1 (struck neutron)",
+          "[he3]") {
+  // the factor A = 3 between the He3wf normalization (over all isospin arrangements) and the note's
+  // (per struck nucleon) was missing until 2026-11, giving 2/3 and 1/3
+  for (bool proton : {true, false}) {
+    He3Cross he3("AV18", nucqcd_test::share_dir(), "SLAC", proton);
+    const int np = 24, nc = 12;
+    const double a = 300.;
+    gsl_integration_glfixed_table *tp = gsl_integration_glfixed_table_alloc(np);
+    gsl_integration_glfixed_table *tc = gsl_integration_glfixed_table_alloc(nc);
+    double integral = 0.;
+    for (int i = 0; i < np; i++) {
+      double t, wt;
+      gsl_integration_glfixed_point(0., 1., i, &t, &wt, tp);
+      const double p12 = a * t / (1. - t), w12 = wt * a / ((1. - t) * (1. - t)) * p12 * p12;
+      for (int j = 0; j < np; j++) {
+        double u, wu;
+        gsl_integration_glfixed_point(0., 1., j, &u, &wu, tp);
+        const double p3 = a * u / (1. - u), w3 = wu * a / ((1. - u) * (1. - u)) * p3 * p3;
+        for (int k = 0; k < nc; k++) {
+          double c, wc;
+          gsl_integration_glfixed_point(-1., 1., k, &c, &wc, tc);
+          const TVector3 q12(p12 * std::sqrt(1. - c * c), 0., p12 * c), q3(0., 0., p3);
+          integral += 8. * PI * PI * w12 * w3 * wc * he3.getMomentumDistribution(q12 - 0.5 * q3, -q12 - 0.5 * q3);
+        }
+      }
+    }
+    gsl_integration_glfixed_table_free(tp);
+    gsl_integration_glfixed_table_free(tc);
+    CAPTURE(proton);
+    CHECK_THAT(integral, WithinRel(proton ? 2. : 1., 3e-3));
+  }
 }

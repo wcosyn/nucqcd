@@ -22,7 +22,7 @@ same PR.
 | 1 | Test suite | ✅ done (PR #2) |
 | 2 | Repo hygiene, including branches | ✅ done (PR #4) |
 | 3 | Rename the repository | ✅ done (PR #7, tagged-poldeut PRs #1 and #2) |
-| 4 | Bug fixes | 🔶 listed bugs fixed (PRs #8, #9, #12); found later and fixed: stale FSI+CT grid (#18), kinematics (#19, #20, #33), DoubleNModel/Pair (#21, then moved to the attic in #22), π⁻ Glauber parameters (#28), TDeuteron errors (#31), He3 spin sum (He3 normalization); open: He3Cross struck-nucleon counting |
+| 4 | Bug fixes | 🔶 listed bugs fixed (PRs #8, #9, #12); found later and fixed: stale FSI+CT grid (#18), kinematics (#19, #20, #33), DoubleNModel/Pair (#21, then moved to the attic in #22), π⁻ Glauber parameters (#28), TDeuteron errors (#31), He3 spin sum and factor A in `He3Cross` (He3 normalization) |
 | 5 | Low-risk modernization | ✅ done: `-fopenmp`, Fortran interop (#11), constants (#13, #14), grid cache (#15–#17), ownership (#23), exceptions (#24), Doxygen (#10, #25–#30, #32, #34–#39: no warnings left) |
 | 6 | Structural refactors | ⬜ |
 | 7 | Unbundle Cuba | ⬜ (can be done any time after step 2) |
@@ -143,11 +143,16 @@ one commit per bug; no `[known-bug]` tests remain.
   (spectators at 200 MeV), re-baselined; momentum-dependent elsewhere (larger at high momenta, where
   the D wave dominates). Not used for published results (the author). New test `unit_he3wf` (norm,
   proton/neutron split, rotation invariance, antisymmetry).
-- [ ] **He3Cross: counting of the struck nucleon (open question, found with the above).** With the
-  struck nucleon fixed as nucleon 3, `getDensity` integrates to 2/3 (proton) and 1/3 (neutron), not 1 as
-  its documentation said (now corrected). For a cross section on any of the identical nucleons this
-  would need a factor 3 (giving Z = 2 and N = 1); whether `getCross` (or the program using it) includes
-  that is to be checked against the formulas in the he3 note before He3 results are used.
+- [x] **He3Cross: factor A = 3 missing** (done 2026-11-22, found with the above). Checked against the
+  LDRD note "Tagged Deep Inelastic Scattering for general nucleus" (he3.tex, by the author; not in the
+  repository). The note normalizes the wave function to 1 for each struck nucleon (its optical-theorem
+  check gives Σ_N σ_hN), `He3wf` to 1 over all isospin arrangements (antisymmetric, isospin included),
+  so each arrangement carries 1/A: S = A Σ|Ψ|². With the spectators not identified (the author's
+  choice; for a struck proton the pn pair is then treated like the pp pair of a struck neutron,
+  (A−1)!Θ = 1), the spectator momentum distribution now integrates to Z = 2 (struck proton) and N = 1
+  (struck neutron); it gave 2/3 and 1/3. `getCross` otherwise matches the note's final formula. New
+  `He3Cross::getMomentumDistribution` (rest frame), tested in `unit_he3wf`. **Impact:** `He3Cross`
+  density and cross section ×3, re-baselined; not used for published results.
 - [x] **Stale FSI+CT grid after `updateGrids()` (found during step 5).** `AbstractFsiGrid::fillGrids`
   sets `filledallgrid` when it computes the grids, but does not clear it when it reads the FSI grid
   from the cache. If a grid object first computes a grid and then, in `updateGrids()` for new
