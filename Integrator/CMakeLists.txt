@@ -9,9 +9,6 @@ nucqcd_add_library(Integrator
     numint/quad_tr.cpp
     numint/vfubini.cpp
     adaptive/cubature.c)
-if(MPI_ENABLED)
-  target_link_libraries(Integrator PUBLIC MPI::MPI_CXX)
-endif()
 
 # ---- Cuba (bundled, autotools) -------------------------------------------------------------
 # Built as an external project into the build tree and exposed as the target 'cuba'

@@ -1,16 +1,11 @@
 # libToolsCore: constants, errors, string and math utilities, the grid cache, run bookkeeping
 # (RunLog), the Dirac/Lorentz algebra (FourVector, Matrix, GammaStructure, TLorentzQuaternion,
-# TSpinor), Moshinsky brackets (recmosh), and TMPI (with MPI_ENABLED).
+# TSpinor), and Moshinsky brackets (recmosh).
 
 # constants.hpp (physical constants and nucqcd::share_dir = <repo>/share) is generated in the source
 # directory, so that code compiled outside CMake can include it too; it is git-ignored.
 set(SHARE_DIR "${PROJECT_SOURCE_DIR}/share")
 configure_file(constants.hpp.in "${CMAKE_CURRENT_SOURCE_DIR}/constants.hpp")
-
-set(mpi_sources)
-if(MPI_ENABLED)
-  set(mpi_sources TMPI.cpp)
-endif()
 
 # Build information for nucqcd::RunLog: the configuration (configure time) and the git state of the
 # source tree (refreshed at every build by cmake/BuildInfo.cmake; the file only changes with the state)
@@ -54,14 +49,7 @@ nucqcd_add_library(ToolsCore
     TSpinor.cpp
     TLorentzQuaternion.cpp
     recmosh.cpp
-    ${mpi_sources}
   LINK root_libs GSL::gsl GSL::gslcblas)
-if(MPI_ENABLED)
-  target_link_libraries(ToolsCore PUBLIC MPI::MPI_CXX)
-  if(STATIC_BUILD)
-    target_link_libraries(ToolsCoreST PUBLIC MPI::MPI_CXX)
-  endif()
-endif()
 add_dependencies(ToolsCore nucqcd_git_info)
 if(STATIC_BUILD)
   add_dependencies(ToolsCoreST nucqcd_git_info)

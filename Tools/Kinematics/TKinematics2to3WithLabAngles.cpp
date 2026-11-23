@@ -37,7 +37,6 @@ separate solutions can be accessed with GetSolution(int).
 End_Html */
 ///////////////////////////////////////////////////////////////////////////
 
-// #include <Tools/Core/TMPI.hpp>
 #include <Tools/Kinematics/TKinematics2to3WithLabAngles.hpp>
 #include <Tools/Core/constants.hpp>
 #include <Tools/Core/MathUtil.hpp>
