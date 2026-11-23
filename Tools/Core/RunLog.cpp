@@ -27,15 +27,23 @@ std::string libraries() { return NUCQCD_LIBRARIES; }
 }  // namespace build_info
 
 namespace {
-// RunLogs that still have to write their end at exit() (exit does not run the destructors of main's locals)
-std::mutex registry_mutex;
-std::set<RunLog *> &registry() {
-  static std::set<RunLog *> logs;
-  return logs;
+// RunLogs that still have to write their end at exit() (exit does not run the destructors of main's locals).
+// The registry and its mutex are never destroyed: finish_at_exit runs during exit(), interleaved with the
+// destructors of static objects in reverse order of registration, and the atexit handler is registered
+// before a function-local static set would be constructed, so such a set would already be gone (seen as
+// a crash at exit() in builds without ROOT).
+struct Registry {
+  std::mutex mutex;
+  std::set<RunLog *> logs;
+};
+Registry &registry() {
+  static Registry *r = new Registry;  // intentionally leaked
+  return *r;
 }
 void finish_at_exit() {
-  std::lock_guard<std::mutex> lock(registry_mutex);
-  for (RunLog *log : registry()) log->finish();
+  Registry &r = registry();
+  std::lock_guard<std::mutex> lock(r.mutex);
+  for (RunLog *log : r.logs) log->finish();
 }
 
 std::string now_string() {
@@ -73,10 +81,11 @@ int RunLog::mpiRank() {
 RunLog::RunLog(int argc, char *argv[], std::vector<std::string> arg_names, std::ostream *stream)
     : out(mpiRank() == 0 ? (stream ? stream : &std::cout) : nullptr), start(std::chrono::steady_clock::now()) {
   {
-    std::lock_guard<std::mutex> lock(registry_mutex);
+    Registry &r = registry();
+    std::lock_guard<std::mutex> lock(r.mutex);
     static const bool registered = (std::atexit(finish_at_exit) == 0);
     (void)registered;
-    registry().insert(this);
+    r.logs.insert(this);
   }
   if (!out) return;
   std::ostream &o = *out;
@@ -114,8 +123,9 @@ void RunLog::finish() {
 
 RunLog::~RunLog() {
   finish();
-  std::lock_guard<std::mutex> lock(registry_mutex);
-  registry().erase(this);
+  Registry &r = registry();
+  std::lock_guard<std::mutex> lock(r.mutex);
+  r.logs.erase(this);
 }
 
 }  // namespace nucqcd
