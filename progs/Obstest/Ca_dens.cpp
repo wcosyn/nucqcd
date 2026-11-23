@@ -16,15 +16,17 @@ using namespace std;
 #include <TElectronKinematics.h>
 #include <Cross.hpp>
 #include <Utilfunctions.hpp>
+#include <RunLog.hpp>
+#include <vector>
 #include <NucleonEMOperator.hpp>
 
 //run ./observables [Q2 [MeV^2]] [omega] [missing momentum]
 int main(int argc, char *argv[])
 {
 
-  string arg_names[4]={"exec name", "nucleus shell","scattered electron angle [degrees]","scattered electron energy [MeV]"};
-  std::cout << "Called from file: " << __FILE__ << std::endl;
-  Bookkeep(argc,argv,arg_names);  
+  const std::vector<std::string> arg_names={"nucleus shell", "scattered electron angle [degrees]", "scattered electron energy [MeV]"};
+  nucqcd::RunLog runlog(argc, argv, arg_names);  // run bookkeeping as "# " lines (Tools/RunLog.hpp)
+  std::cout << "# compiled from file: " << __FILE__ << std::endl;
 
   double Ein=600.;
   double Eout=atof(argv[3]);

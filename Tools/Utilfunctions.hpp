@@ -15,15 +15,7 @@
 #include <sstream>
 #include <complex>
 
-/**
- * @brief function used to write basic bookkeeping output to the screen: time run, command line args, version of the code
- * Code for the function was chatGPT generated
- * 
- * @param argc number of command line args
- * @param argv array with command line args
- * @param arg_names string with what the command line args are
- */
-void Bookkeep(int argc, char* argv[], std::string* arg_names);
+// Bookkeep(argc, argv, arg_names) was replaced by nucqcd::RunLog (RunLog.hpp) in 2026-11.
 
 /*! interpolation of an array
  * \param array array to interpolate

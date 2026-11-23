@@ -23,9 +23,22 @@ make doc                  # Doxygen API docs -> doc/, warnings -> build/doxygen_
 - Cuba (`Integrator/Cuba` → symlink to `Cuba-4.2.1`) is built as a CMake `ExternalProject` with autotools into the build tree. It runs serially (`make -j1`) with `-std=gnu17`, because it does not compile as C23 under gcc ≥ 15. Link the INTERFACE target `cuba` to use it (provides `<Cuba/cuba.h>`, `libcuba.a` and the build dependency); `libcuba.a` is also installed into `lib/`.
 - ROOT is found through its own CMake config (`ROOTConfig.cmake`): source `thisroot.sh` (sets `ROOTSYS`), or it is taken from `/opt/root`. GSL and MPI use CMake's built-in find modules; only the PARTONS libraries (`ElementaryUtils`, `NumA++`, `PARTONS`) use find modules in `GPD_Partons/cmake/Modules`, and SFML its own config.
 
-## Roadmap
+## Roadmap and where to pick up
 
-`docs/ROADMAP.md` holds the ordered cleanup and modernization plan and its status. Read it before cleanup or refactoring work, and update its status in the same PR as the work. `docs/HISTORY.md` records where the code came from (SVN, UGent GitHub, github.com), its contributors, the archived branches, and which programs produced which results.
+`docs/ROADMAP.md` holds the ordered cleanup and modernization plan and its status. **To continue the work, start with its section "Where we are / next up"** (right after the status table): it says what was done last, the recommended next step, and the open choices. Read the ROADMAP before cleanup or refactoring work, and update its status (and that section) in the same PR as the work. `docs/HISTORY.md` records where the code came from (SVN, UGent GitHub, github.com), its contributors, the archived branches, and which programs produced which results.
+
+## Working with the author (agreed workflow)
+
+These rules were agreed in earlier sessions; they are kept here because Claude's memory does not move between computers.
+
+- **One branch and one PR per roadmap item or bug**, opened after the work is done and tested, with the ROADMAP updated in the same PR. A roadmap-only addition requested while a PR is open may go into that PR as a separate commit (say so in the PR description).
+- **Merge only when the author says "merge it" (or "merge"; "merge both" for two PRs).** Merge with `gh pr merge <N> --merge --delete-branch`; right after a push GitHub may report the PR as not mergeable yet, so poll `gh pr view <N> --json mergeable` until it is not `UNKNOWN`. `gh pr edit` fails on this repository (a GraphQL error about Projects classic); change a PR description with `gh api -X PATCH repos/wcosyn/nucqcd/pulls/<N> -F body=@file`.
+- **Physics value changes need the author's explicit OK.** State them in the PR (which values, by how much, why); "merge it" on such a PR is the OK. Never re-baseline regression references without understanding why they moved, and re-baseline only the entries that the change explains (restore unrelated ones, e.g. last-bit differences).
+- **Bugs found along the way** become ROADMAP items (also when nothing was affected: record that) and get their own PR unless the author says otherwise.
+- **Before a PR:** build everything (`make install -j8` with `BUILD_PROGS`, and `PARTONS_ENABLED` if installed), `ctest -LE slow`, and `ctest -L slow` for changes that can affect the Glauber code or constants; `make doc` must give no new warnings. PR descriptions must be accurate (test counts, what was and was not checked).
+- **Documentation:** Doxygen per class, with paper references where possible (marked for the author to confirm), and every inferred unit or convention flagged in the PR description; the code mixes MeV and GeV and rarely states conventions, and wrong inferred docs are worse than none.
+- **Files with CRLF line endings** (`Knockout/WeakQECross.cpp`, `Knockout/WeakQEHadronCurrent.cpp`, `progs/neutrinoQE/sdiff_Q2*.cpp`): keep them CRLF when editing with scripts (read and write in binary/newline-preserving mode).
+- **A new computer** needs ROOT, GSL and a Fortran compiler; for LHAPDF/PARTONS run `scripts/install_partons.sh`, which also installs the LHAPDF sets CT18LO, NNPDFpol11_100 and MSTW2008lo68cl (without them the LHAPDF and MSTW tests are skipped, and `"MSTW"` does not work).
 
 ## Tests
 

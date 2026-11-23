@@ -13,6 +13,8 @@ using namespace std;
 #include <NuclStructure.hpp>
 #include <NucleonStructure.hpp>
 #include <Utilfunctions.hpp>
+#include <RunLog.hpp>
+#include <vector>
 
 
 #include <TDeuteron.h>
@@ -54,14 +56,10 @@ void p_int(numint::vector_d & res, double pnorm, double costh, TDeuteron::Wavefu
 int main(int argc, char *argv[])
 {
 
-  string arg_names[5]={"exec name", 
-                            "Q^2 [GeV^2]", 
-                            "wave function",
-                            "nucleon structure function parametrization",
-                            "beam energy [GeV]"};
+  const std::vector<std::string> arg_names={"Q^2 [GeV^2]", "wave function", "nucleon structure function parametrization", "beam energy [GeV]"};
 
-  std::cout << "Compiled from file: " << __FILE__ << std::endl;
-  Bookkeep(argc,argv,arg_names);  
+  nucqcd::RunLog runlog(argc, argv, arg_names);  // run bookkeeping as "# " lines (Tools/RunLog.hpp)
+  std::cout << "# compiled from file: " << __FILE__ << std::endl;
 
 
 

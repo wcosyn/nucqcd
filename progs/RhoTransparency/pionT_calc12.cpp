@@ -5,6 +5,8 @@ using namespace std;
 
 #include <PionTCross.hpp>
 #include <Utilfunctions.hpp>
+#include <RunLog.hpp>
+#include <vector>
 #include <string>
 
 
@@ -12,13 +14,13 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 
-    string arg_names[5]={"exec name", "nucleus name","beam energy [GeV]","scattered energy [GeV]","scattered angle [deg]"};
+    const std::vector<std::string> arg_names={"nucleus name", "beam energy [GeV]", "scattered energy [GeV]", "scattered angle [deg]"};
     if(argc!=5){
         cout << "Usage: " << argv[0] << " <nucleus name> <beam energy [GeV]> <scattered energy [GeV]> <scattered angle [deg]>" << endl;
         return 1;
     }
-    std::cout << "Called from file: " << __FILE__ << std::endl;
-    Bookkeep(argc,argv,arg_names);  
+    nucqcd::RunLog runlog(argc, argv, arg_names);  // run bookkeeping as "# " lines (Tools/RunLog.hpp)
+    std::cout << "# compiled from file: " << __FILE__ << std::endl;
 
 
 

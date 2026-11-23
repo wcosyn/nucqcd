@@ -6,6 +6,8 @@
 #include <constants.hpp>
 #include <Deut_Conv_EMTLF.hpp>
 #include <Utilfunctions.hpp>
+#include <RunLog.hpp>
+#include <vector>
 
 using namespace std;
 
@@ -15,9 +17,9 @@ using namespace std;
  */
 int main(int argc, char** argv) {
 
-    std::cout << "Compiled from file: " << __FILE__ << std::endl;
-    string arg_names[1]={""};
-    Bookkeep(argc,argv,arg_names);  
+    const std::vector<std::string> arg_names={};
+    nucqcd::RunLog runlog(argc, argv, arg_names);  // run bookkeeping as "# " lines (Tools/RunLog.hpp)
+    std::cout << "# compiled from file: " << __FILE__ << std::endl;
 
     Deut_Conv_EMTLF test("AV18");
 

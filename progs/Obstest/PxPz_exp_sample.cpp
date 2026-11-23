@@ -23,21 +23,18 @@ using namespace std;
 #include <TElectronKinematics.h>
 #include <Cross.hpp>
 #include <Utilfunctions.hpp>
+#include <RunLog.hpp>
+#include <vector>
 #include <NucleonEMOperator.hpp>
 
 //run ./observables [Q2 [MeV^2]] [omega] [missing momentum]
 int main(int argc, char *argv[])
 {
 
-    string arg_names[6]={"exec name", 
-                                "nucleus", 
-                                "nucleus shell",
-                                "medium modifications ([0] no, [1] CQM, [2] QSM):",
-                                "with density output as well",
-                                "filename that has exp kinematics sample"};
+    const std::vector<std::string> arg_names={"nucleus", "nucleus shell", "medium modifications ([0] no, [1] CQM, [2] QSM)", "with density output as well", "filename that has exp kinematics sample"};
 
-    std::cout << "Compiled from file: " << __FILE__ << std::endl;
-    Bookkeep(argc,argv,arg_names);  
+    nucqcd::RunLog runlog(argc, argv, arg_names);  // run bookkeeping as "# " lines (Tools/RunLog.hpp)
+    std::cout << "# compiled from file: " << __FILE__ << std::endl;
 
     //double Ein=600.2;
     string nucleus_name=argv[1];//atoi(argv[6]);

@@ -9,6 +9,8 @@ using namespace std;
 #include <cmath>
 #include "constants.hpp"
 #include <Utilfunctions.hpp>
+#include <RunLog.hpp>
+#include <vector>
 
 #include <Deut_Conv_GPD_V.hpp>
 #include <GPD_V_Nucl_grid.hpp>
@@ -50,19 +52,10 @@ int main(int argc, char *argv[]){
     // cout << "xi " << xi << " t " << t << " model " << model << endl;
     // cout << -4.*nucqcd::mass_d*nucqcd::mass_d*xi*xi/(1-xi*xi)-t << endl;
 
- string arg_names[9]={"exec name:", 
-                            "deuteron wave function name [AV18, CD-Bonn, Paris, WJC1, WJC2]:",
-                            "xi []:", 
-                            "-t [GeV^2]:",
-                            "deuteron S-wave included [0/1]:",
-                            "deuteron D-wave included [0/1]:",
-                            "nucleon GPD H/Htilde included [0/1]:",
-                            "nucleon GPD E/Etilde included [0/1]:",
-                            "GPD model name [GPDMMS13, GPDVGG99, GPDGK16, GPDGK16Numerical]:"
-                            };
+ const std::vector<std::string> arg_names={"deuteron wave function name [AV18, CD-Bonn, Paris, WJC1, WJC2]", "xi []", "-t [GeV^2]", "deuteron S-wave included [0/1]", "deuteron D-wave included [0/1]", "nucleon GPD H/Htilde included [0/1]", "nucleon GPD E/Etilde included [0/1]", "GPD model name [GPDMMS13, GPDVGG99, GPDGK16, GPDGK16Numerical]"};
 
-  std::cout << "Compiled from file: " << __FILE__ << std::endl;
-  Bookkeep(argc,argv,arg_names);  
+  nucqcd::RunLog runlog(argc, argv, arg_names);  // run bookkeeping as "# " lines (Tools/RunLog.hpp)
+  std::cout << "# compiled from file: " << __FILE__ << std::endl;
 
     //QCoreApplication a(argc, argv);
     PARTONS::Partons* pPartons = 0;
