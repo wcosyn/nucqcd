@@ -5,7 +5,8 @@
 #include <cstdarg>
 #include <cstdlib>
 #include <cstring>
-#include <cassert>
+#include <stdexcept>
+#include "ErrorMessage.hpp"
 #include <constants.hpp>
 
 using namespace std;
@@ -44,84 +45,57 @@ extern"C"{
 
 
 
-He3wf::He3wf(std::string wf_name,std::string dir):mA_set(-1){
-  int usecdep=0;
-  if(abs(mA_set)!=1) { cerr << "invalid he3 spin value" << endl; assert(1==0);}
+namespace {
+/* m_A (twice) for which the Fortran code was last prepared (he3reset): it holds one wave function and
+ * one m_A for the whole program, shared by all He3wf objects */
+int fortran_mA = 0;
+
+void prepare(int mA) {
+  if (mA != fortran_mA) {
+    int usecdep = 0;
+    he3reset(&mA, &usecdep);
+    fortran_mA = mA;
+  }
+}
+}  // namespace
+
+He3wf::He3wf(std::string wf_name,std::string dir){
   string file;
   if(!wf_name.compare("AV18")) file="/he_3.av18.form";
   else if(!wf_name.compare("AV18-UIX")) file="/he_3.av18+urb-ix.jmax=6.esuche.cdep_app.fad.c.form";
   else if(!wf_name.compare("AV18-TML")) file="/he_3.av18+tml5156.jmax=6.esuche.cdep_app.fad.c.form";
   else if(!wf_name.compare("CDBonn")) file="/he_3.cdbonn.jmax=6.esuche.cdep_app.fad.form";
   else if(!wf_name.compare("CDBonn-TML")) file="/he_3.cdbonn+tml4784.jmax=6.esuche.cdep_app.fad.form";
-  else { cerr << "invalid name for he3 parametrisation function" << endl; assert(1==0);}
+  else throw std::invalid_argument(nucqcd::ErrorMessage() << "He3wf: invalid name for the he3 wave function: " << wf_name);
   nucqcd::to_c_string(he3filename,dir+file);
-  readhe3wave(&mA_set,&usecdep);
-  he3reset(&mA_set,&usecdep);
-  
-  return;
-
-}
-He3wf::He3wf():mA_set(-1){
+  int mA=-1, usecdep=0;
+  readhe3wave(&mA,&usecdep);
+  he3reset(&mA,&usecdep);
+  fortran_mA=mA;
 }
 
-He3wf::He3wf(const He3wf& rhs){
-  mA_set=-1;
-  int ex=0; he3reset(&mA_set,&ex);
+He3wf::He3wf(){
 }
 
-He3wf& He3wf::operator=(const He3wf& rhs){
-  if(this!=&rhs) { // avoid self-assignment
-    mA_set=-1;
-    int ex=0; he3reset(&mA_set,&ex); 
-  }
+He3wf::He3wf(const He3wf&){
+}
+
+He3wf& He3wf::operator=(const He3wf&){
   return *this;
-  
 }
 
-
-
-complex<double> He3wf::getWF(TVector3 &p1, TVector3 &p2, int ms1, int ms2, int mt1, int mt2, int mA){
-  //sanity checks
-  int ex=0; he3reset(&mA,&ex);
-  if(abs(mA)!=1) { cerr << "invalid he3 spin value" << endl; assert(1==0);}
-  if(mA!=mA_set) {mA_set=mA; int ex=0; he3reset(&mA,&ex);}
-  int ms3=mA_set-ms1-ms2;
-  int mt3=1-mt1-mt2;
-  if(abs(ms1)!=1||abs(ms2)!=1||abs(mt1)!=1||abs(mt2)!=1||abs(mt3)!=1) { 
-    cerr << "something wrong with the spins or isospins" << endl; 
-    assert(1==0);
-  }
-  if(abs(ms3)!=1) return 0.;
-  double p1x=p1.X()*nucqcd::inv_hbarc;
-  double p1y=p1.Y()*nucqcd::inv_hbarc;
-  double p1z=p1.Z()*nucqcd::inv_hbarc;
-  double p2x=p2.X()*nucqcd::inv_hbarc;
-  double p2y=p2.Y()*nucqcd::inv_hbarc;
-  double p2z=p2.Z()*nucqcd::inv_hbarc;  
-  double p3x=-p1x-p2x;
-  double p3y=-p1y-p2y;
-  double p3z=-p1z-p2z;
-  complex_ wfvalue1=gethe3wave(&p1x,&p1y,&p1z,&ms1,&mt1,
-			    &p2x,&p2y,&p2z,&ms2,&mt2,&ms3,&mt3);
-  complex_ wfvalue2=gethe3wave(&p2x,&p2y,&p2z,&ms2,&mt2,
-			    &p3x,&p3y,&p3z,&ms3,&mt3,&ms1,&mt1);
-  complex_ wfvalue3=gethe3wave(&p3x,&p3y,&p3z,&ms3,&mt3,
-			    &p1x,&p1y,&p1z,&ms1,&mt1,&ms2,&mt2);
-  return complex<double>((wfvalue1.dr+wfvalue2.dr+wfvalue3.dr)*pow(nucqcd::inv_hbarc,3.)
-			  ,(wfvalue1.di+wfvalue2.di+wfvalue3.di)*pow(nucqcd::inv_hbarc,3.));
+complex<double> He3wf::getWF(const TVector3 &p1, const TVector3 &p2, int ms1, int ms2, int ms3, int mt1, int mt2, int mA){
+  const double q1[3]={p1.X(),p1.Y(),p1.Z()}, q2[3]={p2.X(),p2.Y(),p2.Z()};
+  return getWF(q1,q2,ms1,ms2,ms3,mt1,mt2,mA);
 }
 
-complex<double> He3wf::getWF(double p1[3], double p2[3], int ms1, int ms2, int mt1, int mt2, int mA){
-  //sanity checks
-  if(abs(mA)!=1) { cerr << "invalid he3 spin value" << endl; assert(1==0);}
-  if(mA!=mA_set) {mA_set=mA; int ex=0; he3reset(&mA,&ex);}
-  int ms3=mA_set-ms1-ms2;
-  int mt3=1-mt1-mt2;
-  if(abs(ms1)!=1||abs(ms2)!=1||abs(ms3)!=1||abs(mt1)!=1||abs(mt2)!=1||abs(mt3)!=1) { 
-    cerr << "something wrong with the spins or isospins" << endl; 
-    assert(1==0);
-    
-  }
+complex<double> He3wf::getWF(const double p1[3], const double p2[3], int ms1, int ms2, int ms3, int mt1, int mt2, int mA){
+  if(abs(mA)!=1||abs(ms1)!=1||abs(ms2)!=1||abs(ms3)!=1||abs(mt1)!=1||abs(mt2)!=1)
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "He3wf::getWF: spin and isospin projections must be +-1 (twice the projection)");
+  int mt3=1-mt1-mt2;  // total isospin projection of He3 is +1/2
+  if(abs(mt3)!=1) return 0.;
+  prepare(mA);
+  // the Fortran code takes momenta in fm^-1 and returns fm^3
   double p1x=p1[0]*nucqcd::inv_hbarc;
   double p1y=p1[1]*nucqcd::inv_hbarc;
   double p1z=p1[2]*nucqcd::inv_hbarc;
@@ -131,6 +105,7 @@ complex<double> He3wf::getWF(double p1[3], double p2[3], int ms1, int ms2, int m
   double p3x=-p1x-p2x;
   double p3y=-p1y-p2y;
   double p3z=-p1z-p2z;
+  // the three Faddeev components: pair 12 + spectator 3, and the cyclic permutations
   complex_ wfvalue1=gethe3wave(&p1x,&p1y,&p1z,&ms1,&mt1,
 			    &p2x,&p2y,&p2z,&ms2,&mt2,&ms3,&mt3);
   complex_ wfvalue2=gethe3wave(&p2x,&p2y,&p2z,&ms2,&mt2,
@@ -139,5 +114,4 @@ complex<double> He3wf::getWF(double p1[3], double p2[3], int ms1, int ms2, int m
 			    &p1x,&p1y,&p1z,&ms1,&mt1,&ms2,&mt2);
   return complex<double>((wfvalue1.dr+wfvalue2.dr+wfvalue3.dr)*pow(nucqcd::inv_hbarc,3.)
 			  ,(wfvalue1.di+wfvalue2.di+wfvalue3.di)*pow(nucqcd::inv_hbarc,3.));
-  
 }

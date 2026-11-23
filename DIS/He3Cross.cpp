@@ -40,14 +40,16 @@ double He3Cross::getDensity(LightConeKin2to3 &kin){
   TVector3 sp2(kin.getSp2_mu()[1]-kin.getA_mu()[1]/3.,
 		kin.getSp2_mu()[2]-kin.getA_mu()[2]/3.,
 		kin.getSp2_mu()[3]-kin.getA_mu()[3]/3.);
-  for(int mA=-1;mA<=0;mA+=2){
-    for(int ms1=-1;ms1<=1;ms1+=2){
-      for(int ms2=-1;ms2<=1;ms2+=2){
+  // sum over the spins of all three nucleons (ms3, the struck one, independent of the others; until
+  // 2026-11 it was fixed to mA-ms1-ms2, which left out part of the D and P waves) and over the
+  // isospins of the spectators
+  const int mA=-1;  // the density summed over the nucleon spins is the same for mA = +1 and -1
+  for(int ms1=-1;ms1<=1;ms1+=2){
+    for(int ms2=-1;ms2<=1;ms2+=2){
+      for(int ms3=-1;ms3<=1;ms3+=2){
 	for(int mt1=(proton?-1:1);mt1<=1;mt1+=2){
 	  int mt2=1-mt1-(proton?1:-1);
-	  
-	  result+=norm(wavefunction.getWF(sp1,sp2,ms1,ms2,mt1,mt2,mA));		
-	  
+	  result+=norm(wavefunction.getWF(sp1,sp2,ms1,ms2,ms3,mt1,mt2,mA));
 	}
       }
     }
