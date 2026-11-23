@@ -1,6 +1,7 @@
 # libToolsCore: constants, errors, string and math utilities, the grid cache, run bookkeeping
 # (RunLog), the Dirac/Lorentz algebra (FourVector, Matrix, GammaStructure, TLorentzQuaternion,
-# TSpinor), and Moshinsky brackets (recmosh).
+# TSpinor), Moshinsky brackets (recmosh), and the ROOT-free vector and Lorentz classes (Vector3,
+# LorentzVector, Rotation, LorentzRotation; roadmap step 9, phase 4).
 
 # constants.hpp (physical constants and nucqcd::share_dir = <repo>/share) is generated in the source
 # directory, so that code compiled outside CMake can include it too; it is git-ignored.
@@ -36,6 +37,9 @@ set_property(SOURCE RunLog.cpp APPEND PROPERTY INCLUDE_DIRECTORIES "${NUCQCD_GEN
 
 # solve_3x3 has to round as ROOT's TDecompLU did (TYukawaPWF D-wave coefficients): no fused multiply-adds
 set_source_files_properties(MathUtil.cpp PROPERTIES COMPILE_OPTIONS -ffp-contract=off)
+# The vector and Lorentz classes reproduce ROOT's TVector3 & co. bitwise: the functions that ROOT
+# compiles into libPhysics (built without fused multiply-adds) are in these files, so no FMAs here either
+set_source_files_properties(Vector3.cpp LorentzVector.cpp Rotation.cpp PROPERTIES COMPILE_OPTIONS -ffp-contract=off)
 
 nucqcd_add_library(ToolsCore
   SOURCES
@@ -49,6 +53,9 @@ nucqcd_add_library(ToolsCore
     TSpinor.cpp
     TLorentzQuaternion.cpp
     recmosh.cpp
+    Vector3.cpp
+    LorentzVector.cpp
+    Rotation.cpp
   LINK root_libs GSL::gsl GSL::gslcblas)
 add_dependencies(ToolsCore nucqcd_git_info)
 if(STATIC_BUILD)
