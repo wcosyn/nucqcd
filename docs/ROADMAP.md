@@ -288,6 +288,32 @@ one commit per bug; no `[known-bug]` tests remain.
   `1/4 + 3/4 cos θq` instead of d²₀₀(θq) = `1/4 + 3/4 cos 2θq` (the integrand `res[10]` already used
   `cos 2θq`). Fixed in PR #5. Found while reviewing the archived `Alan` branch, which had the same fix.
 
+### Open leads (to investigate)
+
+- [ ] **Rho transparency: t- and z-integrated results disagree (added 2026-11-23, from the author's
+  memory of ~2012; details may be off).** The rho programs offer two ways to do the integrals, which
+  should agree but gave results differing by orders of magnitude, while the Glauber/plane-wave ratios
+  (the transparencies) were similar; the cause was never found. What the code and history show:
+  - The two options are the `torz` flag of `progs/RhoTransparency/rhoset.cpp` (argument 1; `rhoset`
+    is the program used for the actual calculations), which integrates either
+    `RhoTCross::getCrosst` over ν and t (t from -0.4 to -0.1 GeV²) or `RhoTCross::getCrossz` over ν
+    and z (0.9 to 1). `rhoset` can also do the integral with `rombergerN` (nested) or the 2D
+    adaptive `numint` integrator, and `RhoDeuteron` (`rhodint`) has the same t/z pair.
+  - The history (Sept.–Nov. 2012) records the problem: `374b867` "wrong mass I used in the fixed z
+    integrations"; `58fd5ea` "finally figured out jacobians in RhoDeuteron, but still difference
+    between z and t integrations, but goes like A....very puzzling"; `5fe7fae` "deuteron ... z and t
+    integrations giving similar results and similar to the t integrations on large nuclei. still
+    problem in the RhoTCross z integration, absolutely no idea now"; `67ae550` "corrected small error
+    in t integrated jacobian". No later commit says the RhoTCross z problem was solved.
+  - Lead (hypothesis, not checked): a difference that scales with A and cancels in the
+    Glauber/plane-wave ratio points at a factor common to both, such as the Jacobian dt/dz or a
+    flux/phase-space factor using the mass of the nucleus instead of the nucleon (or the reverse),
+    rather than at the FSI.
+  - Plan: run `rhoset` (and `rhodint` for the deuteron) with both options for one nucleus at a few
+    kinematics, compare plane-wave cross sections first, check the t↔z Jacobian in `RhoTCross`
+    analytically (and against `RhoDeuteron`, which was fixed), and check against a plane-wave case
+    that can be integrated independently. Any fix changes values and needs the author's OK.
+
 ## 5. Low-risk modernization
 
 - [x] **Constants:** `Tools/constants.hpp.in` defines `inline constexpr` variables in namespace
