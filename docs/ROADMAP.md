@@ -26,9 +26,10 @@ same PR.
 | 5 | Low-risk modernization | ✅ done: `-fopenmp`, Fortran interop (#11), constants (#13, #14), grid cache (#15–#17), ownership (#23), exceptions (#24), Doxygen (#10, #25–#30, #32, #34–#39: no warnings left) |
 | 6 | Structural refactors | ⬜ |
 | 7 | Unbundle Cuba | ⬜ (can be done any time after step 2) |
-| 8 | Repository README | ⬜ (last, after 9 and 10) |
-| 9 | Decouple from ROOT where possible | ⬜ (planned, phases below) |
-| 10 | LHAPDF interface for the nucleon structure functions | ⬜ |
+| 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
+| 9 | Decouple from ROOT where possible | 🔶 phases 1 (#44) and 2 (#45) done, 3–6 to do |
+| 10 | LHAPDF interface for the nucleon structure functions | ✅ done (#46); optional: MSTW through LHAPDF |
+| 11 | Run bookkeeping (provenance) for all programs | ⬜ (design first, then all programs) |
 
 ---
 
@@ -621,3 +622,43 @@ Add LHAPDF6 sets as a parametrization in `NucleonStructure` (and so in `NuclStru
 - [ ] Optionally, replace the bundled MSTW grid code (`mstwpdf.h/.cpp`, `share/mstw_grids`) by the
   LHAPDF set `MSTW2008lo68cl`, after checking that F2 agrees.
 
+## 11. Run bookkeeping (provenance) for all programs
+
+Some programs call `Bookkeep(argc, argv, arg_names)` (`Tools/Utilfunctions`) first thing in `main`, to
+record how a result was produced. Make this better, then use it in every program.
+
+**Current state** (2026-11-22): 8 of the 77 programs outside `progs/attic` call it (`poldeut`,
+`b1_calc`, `pionT_calc12`, `Ca_dens`, `PxPz_exp_sample`, ...). It prints the date and time, each
+argument next to a name from a string array, and the output of `git rev-parse --short HEAD`, run with
+`popen` in `nucqcd::share_dir` at run time. Shortcomings:
+- The git hash is that of the checkout when the program runs, not of the build. A binary built from
+  an older commit, or with uncommitted changes, reports the wrong code; "dirty" is never recorded; it
+  fails silently without git or when the share directory is not a checkout.
+- `arg_names` must have `argc` entries: with fewer (a program called with extra arguments) it reads
+  past the array (undefined behaviour).
+- The lines go to stdout without a comment marker, mixed with the data that most programs print to
+  stdout, so readers (gnuplot, numpy) have to skip them by hand.
+- Not recorded: host, working directory, build type and compiler flags, versions of ROOT, GSL, LHAPDF
+  (and the PDF sets used), relevant environment variables (`NUCQCD_GRID_DIR`), number of MPI ranks,
+  run time and exit status.
+
+1. [ ] **Design** (decide before the roll-out; candidate below):
+   - *Build-time information* in the binary: CMake generates a source file at build time (a custom
+     command, so it is refreshed at every build) with `git describe --always --dirty`, the commit date,
+     build type, compiler and flags, and the dependency versions. No git call at run time.
+   - *Run-time information*: e.g. `nucqcd::RunLog log(argc, argv);` as the first line of `main`, which
+     writes the full command line (quoted so it can be pasted back), date and time with time zone,
+     host, working directory, the environment variables that matter, the build information and, from
+     its destructor or `atexit`, the wall time. Every line starts with `# `, so data files stay
+     readable. Destination: stdout by default (where the data go), optionally stderr or a sidecar
+     file; with MPI only rank 0 writes.
+   - *Argument names*: optional (`RunLog log(argc, argv, {"Q2", "x", ...})`), checked against `argc`;
+     or programs move to a small argument parser with named options and a help text, which then also
+     supplies the names (larger change, could be its own item).
+   - Alternatives to weigh: a wrapper script that logs around the program (cannot know the build of
+     the binary), or a logging library such as spdlog (an extra dependency for little gain).
+   - A unit test for the formatting (comment marker, quoting) and for the build information (the
+     dirty flag appears when the tree has changes).
+2. [ ] **Roll-out**: replace `Bookkeep` by the outcome of 1 in the 8 programs, add it to all other
+   programs (not `progs/attic`), and remove `Bookkeep`. Check per program that its data output still
+   parses (commented header lines).
