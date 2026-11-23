@@ -1,6 +1,7 @@
 # Roadmap: cleanup and modernization of nucqcd
 
-This roadmap follows from an assessment of the repository done in November 2026. The steps are
+This roadmap follows from an assessment of the repository done in November 2026 (added in #3; status
+updates also in #40 and #43, otherwise with the work; `docs/HISTORY.md` came with #6). The steps are
 ordered so that every change is protected by the test suite (`tests/`, see `tests/README.md`). Work
 on one step per branch, run `ctest -LE slow` after each change, and update the status here in the
 same PR.
@@ -22,30 +23,30 @@ same PR.
 | 1 | Test suite | ✅ done (PR #2) |
 | 2 | Repo hygiene, including branches | ✅ done (PR #4) |
 | 3 | Rename the repository | ✅ done (PR #7, tagged-poldeut PRs #1 and #2) |
-| 4 | Bug fixes | ✅ done: listed bugs (PRs #8, #9, #12); found later: stale FSI+CT grid (#18), kinematics (#19, #20, #33), DoubleNModel/Pair (#21, then moved to the attic in #22), π⁻ Glauber parameters (#28), TDeuteron errors (#31), He3 spin sum (#47) and factor A in `He3Cross` (#48), `TMPI` not compiling with MPI-3 (fixed in the attic with step 6, "Retire MPI"), `RunLog` reading freed memory at `exit()`. New bugs found later are added here |
+| 4 | Bug fixes | ✅ done: listed bugs (PRs #8, #9, #12); found later: stale FSI+CT grid (#18), kinematics (#19, #20, #33), DoubleNModel/Pair (#21, then moved to the attic in #22), π⁻ Glauber parameters (#28), TDeuteron errors (#31), He3 spin sum (#47) and factor A in `He3Cross` (#48), `TMPI` not compiling with MPI-3 (fixed in the attic with step 6, "Retire MPI", #54), `RunLog` reading freed memory at `exit()` (#57). New bugs found later are added here |
 | 5 | Low-risk modernization | ✅ done: `-fopenmp`, Fortran interop (#11), constants (#13, #14), grid cache (#15–#17), ownership (#23), exceptions (#24), Doxygen (#10, #25–#30, #32, #34–#39: no warnings left) |
-| 6 | Structural refactors | 🔶 done: constants macros, `NuclStructure` merge, code layout items 1–3 (`Tools` split, prefixed includes, `.hpp`), `Model`/`Cross` renamed; MPI retired; to do: namespace, Glauber grids, model selection, integrators, long files |
+| 6 | Structural refactors | 🔶 done: constants macros (#41), `NuclStructure` merge (#42), code layout items 1–3 (`Tools` split #52, prefixed includes and `.hpp` #53), `Model`/`Cross` renamed (#53); MPI retired (#54); to do: namespace, Glauber grids, model selection, integrators, long files |
 | 7 | Unbundle Cuba and cubature | ⬜ (can be done any time after step 2) |
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
-| 9 | Decouple from ROOT where possible | 🔶 phases 1–4 done (#44, #45, #50, #55, 4b); the libraries include no ROOT header; 5 (build) and 6 (programs) to do |
+| 9 | Decouple from ROOT where possible | 🔶 phases 1–5 done (#44, #45, #50, #55, #56, #58): ROOT is optional, the libraries neither include nor link it; 6 (programs) to do |
 | 10 | LHAPDF interface for the nucleon structure functions | ✅ done (#46), including MSTW through LHAPDF |
-| 11 | Run bookkeeping (provenance) for all programs | 🔶 part 1 (design, `RunLog`) done; `Bookkeep` replaced in its 8 programs; `RunLog` in the other programs to do |
+| 11 | Run bookkeeping (provenance) for all programs | 🔶 part 1 (design, `RunLog`) done (#49); `Bookkeep` replaced in its 8 programs (#51); `RunLog` in the other programs to do |
 
 ## Where we are / next up
 
 *Updated 2026-11-23.*
 
-**Done recently** (PRs #44–#55 and the phase 4b PR): ROOT decoupling phases 1–3; step 10 (LHAPDF);
+**Done recently** (PRs #44–#57 and #58): ROOT decoupling phases 1–3; step 10 (LHAPDF);
 He3 fixes; step 11 part 1 (`RunLog`); step 6 code layout: `Tools` split into Core, Kinematics,
 WaveFunctions and StructureFunctions (#52), then includes as paths from the repository root, `.hpp`
 as the only extension, and `Model`/`Cross` renamed to `EMQEHadronCurrent`/`EMQECross` (#53); MPI
 retired (`TMPI` and `rhod`/`rhottest` to `progs/attic/mpi`, #54); ROOT phase 4: own vector and
-Lorentz types, bitwise equal to ROOT (#55), and all code converted to them.
+Lorentz types, bitwise equal to ROOT (#55), and all code converted to them (#56); `RunLog` exit
+handler fix (#57); ROOT phase 5: ROOT optional in the build (#58).
 
-**Recommended next step:** ROOT phase 5: the libraries include no ROOT header any more, so make
-ROOT optional in the build (libraries and most tests without ROOT; `unit_vectors` and the programs
-that need ROOT only when it is found), then phase 6 (programs). `namespace nucqcd` for the other
-classes (code layout item 4) can follow class by class.
+**Recommended next step:** ROOT phase 6, first part: make the `diDVCS*` event generators in
+`progs/GPD` ROOT-free (random numbers from `<random>`, the decay-angle sampling written out). The
+fits move to an external Minuit2 later.
 
 **After that:** step 11 part 2 (`RunLog` in the other ~69 programs, `// ` headers to `# `), together
 with ROOT phase 6 (programs).
@@ -289,7 +290,7 @@ one commit per bug; no `[known-bug]` tests remain.
   `1/4 + 3/4 cos θq` instead of d²₀₀(θq) = `1/4 + 3/4 cos 2θq` (the integrand `res[10]` already used
   `cos 2θq`). Fixed in PR #5. Found while reviewing the archived `Alan` branch, which had the same fix.
 
-- [x] **`RunLog`: invalid memory access at `exit()`** (found 2026-11-23 while making ROOT optional,
+- [x] **`RunLog`: invalid memory access at `exit()`** (#57; found 2026-11-23 while making ROOT optional,
   step 9 phase 5). The `atexit` handler that writes the end of a `RunLog` when a program calls
   `exit()` iterated a function-local static `std::set` that was already destroyed: the handler was
   registered before the set was first constructed, so the set's destructor ran first. Undefined
@@ -505,7 +506,7 @@ one commit per bug; no `[known-bug]` tests remain.
 
 Do these one at a time, running the full test suite (including `slow`) after each.
 
-- [x] **Constants macros:** all uses of the macro aliases (about 1700, in 143 files: libraries,
+- [x] **Constants macros** (#41)**:** all uses of the macro aliases (about 1700, in 143 files: libraries,
   programs, tests) are replaced by the `nucqcd::` names, and the aliases are removed from
   `constants.hpp.in`, including `HOMEDIR` (now `nucqcd::share_dir`). Only `PI` is left, a literal,
   until `numint` drops its own. Done with a script that skips string literals and keeps line
@@ -521,7 +522,7 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   stays (no general `include/`/`src/` split: that pays off for libraries installed for outside
   projects, which nucqcd's are not, and moving every file would cost the `git blame` history). What
   does not follow good practice, in this order:
-  1. ✅ **Split `Tools` (library `MePhys`)** (done 2026-11-23): the 36 headers plus Fortran are now
+  1. ✅ **Split `Tools` (library `MePhys`)** (done 2026-11-23, #52): the 36 headers plus Fortran are now
      four libraries, one per subdirectory (moved with `git mv`), each linking the ones before it:
      - `Tools/Core` (`libToolsCore`): `constants`, `ErrorMessage`, `FortranString`, `StringUtil`,
        `MathUtil`, `Utilfunctions`, `AuxFunction`, `GridCache`, `RunLog`, the Dirac/Lorentz algebra
@@ -547,7 +548,7 @@ Do these one at a time, running the full test suite (including `slow`) after eac
      list is a link error; the whole tree (programs and PARTONS included) builds with it. The include
      lines are unchanged (every library directory is still a public include directory); they change
      in item 2. Not tested: `MPI_ENABLED` (no MPI on the development machine).
-  2. ✅ **Prefixed includes, with the repository root as the include root** (done 2026-11-23).
+  2. ✅ **Prefixed includes, with the repository root as the include root** (done 2026-11-23, #53).
      Every library directory used to be a public include directory, so code wrote
      `#include <Matrix.h>`, `<constants.hpp>`: generic names that could collide with headers of ROOT,
      PARTONS or LHAPDF, with the layering invisible. Now `nucqcd_add_library` exports only the
@@ -562,7 +563,7 @@ Do these one at a time, running the full test suite (including `slow`) after eac
      `Integrator` now links the `cuba` target publicly. `cubature.c` includes its own header as
      `"cubature.h"`. Doxygen shows the include paths from the repository root
      (`STRIP_FROM_INC_PATH`).
-  3. ✅ **One header extension: `.hpp`** (done 2026-11-23, same PR): the 19 `.h` headers in Tools
+  3. ✅ **One header extension: `.hpp`** (done 2026-11-23, same PR, #53): the 19 `.h` headers in Tools
      were renamed with `git mv`, and their `\file` tags and mentions updated. Only the third-party
      `Integrator/adaptive/cubature.h` and Cuba keep `.h`.
   4. **Namespace `nucqcd`.** 64 of the library headers declare their classes in the global
@@ -600,14 +601,14 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   `cube_romb` in `Model.cpp:744` and `progs/momdistr/momdistr.cpp`. Then remove
   `Integrator/numint/cube_romb.cpp` (and `cube_tr`/`fubini`/`vfubini` if unused) and its tests in
   `unit_numint`, and simplify the `integrator` flag (an enum, see "Model selection" below).
-- [x] **Better names for `Model` and `Cross`** (done 2026-11-23, in the include PR): `Knockout/Model`
+- [x] **Better names for `Model` and `Cross`** (done 2026-11-23, in the include PR #53): `Knockout/Model`
   and `Knockout/Cross` are now `EMQEHadronCurrent` and `EMQECross` (files and classes, `git mv`),
   following `WeakQEHadronCurrent`/`WeakQECross` and `NucleonEMOperator`/`NucleonWeakOperator`; the
   class names were replaced in the 19 files that include them (library, programs including the
   attic, tests). Also fixed: the `\file` tag of `DQEinclusive.hpp` said `Cross.hpp`.
 - [ ] **Model selection:** use enums or factory registries instead of model-name strings (about 700
   string comparisons). A typo should fail at compile time, not with `exit()` at runtime.
-- [x] **Merge `NuclStructure` into `NucleonStructure`.** The parametrizations are now implemented
+- [x] **Merge `NuclStructure` into `NucleonStructure`** (#42). The parametrizations are now implemented
   once, in `NucleonStructure`; `NuclStructure` keeps its interface (about 20 programs,
   `DeuteronStructure`, `DeuteronCross`, `Poldeut` use it unchanged) and is a thin wrapper that stores
   the kinematics. `NuclStructure` takes x and W^2 independently (off-shell nucleons in
@@ -622,7 +623,7 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   its own F1 and is unchanged. Also fixed: `NucleonStructure::operator=` leaked its MSTW object. About
   500 duplicated lines removed. Tested in `reg_nucleon_structure` (F1 now compared for all
   parametrizations, and a new off-shell case).
-- [x] **Retire MPI (`TMPI`)** (done 2026-11-23, author's decision). `TMPI` (from strangecalc) only
+- [x] **Retire MPI (`TMPI`)** (done 2026-11-23, #54, author's decision). `TMPI` (from strangecalc) only
   distributed independent kinematic points over ranks (rank-strided loop plus `GatherResults`); it
   did not parallelize integrals. Its use in the libraries was removed in 2014 (commit `24fffe1`: "I
   don't use it anyway"); only `rhod` and `rhottest` (progs/RhoTransparency) still used it, and
@@ -776,7 +777,7 @@ standard) from everything that only computes cross sections.
    was rejected. The dead, commented-out `HashName` functions are removed. Tests: `unit_stringutil`,
    and mixed-case and empty-token format strings in `unit_kinematics`.
 4. [ ] **Three- and four-vectors and Lorentz transformations.** In two parts:
-   - [x] **4a: the types and their tests** (done 2026-11-23). `Tools/Core` has `nucqcd::Vector2`,
+   - [x] **4a: the types and their tests** (done 2026-11-23, #55). `Tools/Core` has `nucqcd::Vector2`,
      `Vector3` (`Vector3.hpp`), `LorentzVector` (`LorentzVector.hpp`), `Rotation` and
      `LorentzRotation` (`Rotation.hpp`), with the subset of ROOT's interface that nucqcd uses (an
      inventory of the method calls in libraries and programs) under the same names, so that the
@@ -800,7 +801,7 @@ standard) from everything that only computes cross sections.
      That also means the converted code cannot be guaranteed bitwise equal at every call site; the
      regression references are the check there (expected bitwise or within ~1e-14). The test needs
      ROOT and stays as long as ROOT is available.
-   - [x] **4b: convert the code** (done 2026-11-23). One scripted rename over the whole tree
+   - [x] **4b: convert the code** (done 2026-11-23, #56). One scripted rename over the whole tree
      (libraries, programs, tests; line endings kept): `TVector3`, `TVector2`, `TLorentzVector`,
      `TRotation`, `TLorentzRotation` → `nucqcd::Vector3`, `Vector2`, `LorentzVector`, `Rotation`,
      `LorentzRotation`, their ROOT includes → `Tools/Core/{Vector3,LorentzVector,Rotation}.hpp`,
@@ -821,13 +822,31 @@ standard) from everything that only computes cross sections.
      from their references on this machine on master too, at 1e-15: not from this change.) Cached
      Glauber grids stay valid (last-bit differences only). `namespace nucqcd` for the other classes
      (code layout item 4) is still to do.
-5. [ ] **Build system.** `find_package(ROOT)` becomes optional; the `root_libs` interface target is
-   linked only by programs that need it; the libraries and tests no longer link ROOT. The
-   `ROOTConfig`/`thisroot.sh` paragraph in CLAUDE.md and the README change accordingly.
-6. [ ] **Programs.** Fits: keep ROOT for them, or switch to standalone Minuit2 (available as its own
-   CMake project) if a ROOT-free build of those programs is wanted. Programs that write ROOT files or
-   histograms keep ROOT (or move to text output, or to the attic if unused). Mark in `progs/` which
-   programs need ROOT, and build them only when it is found.
+5. [x] **Build system** (done 2026-11-23, #58). ROOT is optional: `ROOT_ENABLED` (ON by default, like
+   `LHAPDF_ENABLED`: used when found), `find_package(ROOT ... QUIET COMPONENTS Minuit)` (Minuit2 is
+   not used by anything). The libraries no longer link ROOT (`ToolsCore` linked `root_libs`, and
+   through it everything else). Programs and tests that need ROOT list `root_libs` in their `LINK`;
+   `nucqcd_add_program(s)` and `nucqcd_add_test` skip them when ROOT is not found, and the
+   configuration lists them: the 9 fit programs (`TMinuit`/`TFitter`), the 5 `diDVCS*` event
+   generators (phase 6 removes ROOT from them) and `unit_vectors`. `wftest` included ROOT's
+   `TVector.h` without using it. `RunLog` reports the ROOT version only when ROOT was found.
+   `scripts/install_partons.sh` no longer needs ROOT for its test build. Checked: a build with
+   `-DROOT_ENABLED=no`, `BUILD_PROGS` and `PARTONS_ENABLED` builds everything else, no library
+   links ROOT (`readelf`), and the tests pass there too (after the `RunLog` fix, step 4).
+6. [ ] **Programs.** What is left of ROOT (inventory 2026-11-23):
+   - the `diDVCS*` event generators in `progs/GPD` (author's decision 2026-11-23: make them
+     ROOT-free): `TRandom3::Uniform` → `std::mt19937_64` with a fixed seed (reproducible, but a
+     different event sample than before; same distributions), `TF1::GetRandom` for the sin²θ and
+     cos²θ decay angles → inverse-CDF or accept-reject sampling, `TMath` → `<cmath>`, and in
+     `diDVCS_gen_gridonly` ROOT's vector types → `nucqcd::` ones. `TFile`, `TTree` and `TF2` are
+     included but unused (the events go to `cout`); `diDVCS` and `diDVCS_Q2` use no ROOT at all.
+   - the fits (`progs/F2_largex_fit`: `F2_fit`, `F2_bootstrap`, `EMC_fit`; `progs/deepsdis`:
+     `deepsfit`, `bonusscatterfit`, `bonusfit_rig`, `bonus_F2nfit(_sys|_allangles)`): they use the
+     old `TMinuit` through `TFitter`, plus `TMatrixT` for the covariance matrix. Author's decision:
+     later, with an external standalone Minuit2 build (its own CMake project). That means porting
+     them to Minuit2's interface (`ROOT::Minuit2::FCNBase`, `MnMigrad`/`MnHesse`/`MnMinos`), not just
+     relinking; until then they stay on ROOT.
+   - `RunLog` in the other programs and their `// ` headers (step 11 part 2) touch the same files.
 
 Phases 1 and 2 are independent and small; 3 and 4 can go in either order; 5 and 6 come last.
 
@@ -903,7 +922,7 @@ argument next to a name from a string array, and the output of `git rev-parse --
   (and the PDF sets used), relevant environment variables (`NUCQCD_GRID_DIR`), number of MPI ranks,
   run time and exit status.
 
-1. [x] **Design and implementation** (done 2026-11-22). Decided with the author: the log goes to
+1. [x] **Design and implementation** (done 2026-11-22, #49). Decided with the author: the log goes to
    **stdout** (where most programs write their data, so it stays in the data file), every line starts
    with **`# `** (skipped by gnuplot, numpy.loadtxt, pandas with comment='#'; some programs' own headers
    use `// `, to be aligned in the roll-out), and **argument names are an optional list** checked
@@ -919,7 +938,7 @@ argument next to a name from a string array, and the output of `git rev-parse --
    file only changes with the git state, so nothing is recompiled otherwise), plus the build type,
    compiler, flags and the ROOT, GSL and LHAPDF versions from the configuration. Tests: `unit_runlog`
    (marker, quoting, names, end written once, at `exit()` in a child process, MPI rank, build info).
-2. [ ] **Roll-out.** Done (2026-11-22): `Bookkeep` replaced by `RunLog` in the 8 programs that used it
+2. [ ] **Roll-out.** Done (2026-11-22, #51): `Bookkeep` replaced by `RunLog` in the 8 programs that used it
    (`poldeut`, `EMT_deut`, `b1_calc`, `pionT_calc12`, `Ca_dens`, `Nucl_dens_profile`,
    `PxPz_exp_sample`, `conv_V_test`; their "exec name" entries dropped, since `RunLog`'s names start at
    argv[1]; `poldeut` and `EMT_deut` had too few names and read past the array), and `Bookkeep`

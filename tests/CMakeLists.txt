@@ -47,6 +47,10 @@ function(nucqcd_add_test name)
   if(NOT ARG_TIMEOUT)
     set(ARG_TIMEOUT 300)
   endif()
+  if("root_libs" IN_LIST ARG_LINK AND NOT TARGET root_libs)
+    set_property(GLOBAL APPEND PROPERTY NUCQCD_SKIPPED_NO_ROOT ${name})
+    return()
+  endif()
   add_executable(${name} ${ARG_DIR}/${name}.cpp ${ARG_SOURCES})
   target_link_libraries(${name} PRIVATE nucqcd_test_support ${ARG_LINK})
   # link against the libraries in build/lib, not the installed copies in <repo>/lib
@@ -67,7 +71,7 @@ nucqcd_add_test(unit_lorentz_gamma   DIR unit LABEL unit LINK ToolsCore cuba)
 nucqcd_add_test(unit_deuteron_wf     DIR unit LABEL unit LINK ToolsWaveFunctions cuba)
 nucqcd_add_test(unit_kinematics      DIR unit LABEL unit LINK ToolsKinematics cuba)
 nucqcd_add_test(unit_mathutil        DIR unit LABEL unit LINK ToolsCore cuba)
-nucqcd_add_test(unit_vectors         DIR unit LABEL unit LINK ToolsCore cuba)  # compares with ROOT (needs ROOT)
+nucqcd_add_test(unit_vectors         DIR unit LABEL unit LINK ToolsCore cuba root_libs)  # compares with ROOT
 # Without fused multiply-adds, so that the inline functions (of ROOT's headers and of ours) are compared
 # by their formulas: with -march=native the compiler chooses FMAs per call site, which can differ in
 # the last bits between two identical inline functions.

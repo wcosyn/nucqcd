@@ -158,13 +158,10 @@ fi
 
 # ---- 7. test nucqcd ---------------------------------------------------------------------
 step "Test: configure nucqcd with PARTONS and build libGPD"
-if command -v root-config > /dev/null || [[ -x /opt/root/bin/root-config ]]; then
-  cmake -S "$REPO_DIR" -B "$WORK/nucqcd" -DPARTONS_ENABLED=yes > "$WORK/test.log" 2>&1 \
-    && cmake --build "$WORK/nucqcd" -j "$JOBS" --target GPD >> "$WORK/test.log" 2>&1 \
-    && echo "libGPD builds fine" \
-    || { tail -30 "$WORK/test.log"; echo "nucqcd test build FAILED"; exit 1; }
-else
-  echo "ROOT not found (no root-config on PATH or in /opt/root), skipping the nucqcd test"
-fi
+# (the libraries do not need ROOT since roadmap step 9 phase 5)
+cmake -S "$REPO_DIR" -B "$WORK/nucqcd" -DPARTONS_ENABLED=yes > "$WORK/test.log" 2>&1 \
+  && cmake --build "$WORK/nucqcd" -j "$JOBS" --target GPD >> "$WORK/test.log" 2>&1 \
+  && echo "libGPD builds fine" \
+  || { tail -30 "$WORK/test.log"; echo "nucqcd test build FAILED"; exit 1; }
 
 step "Done. PARTONS and its dependencies are installed in $PREFIX"

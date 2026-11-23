@@ -23,7 +23,10 @@ if(NUCQCD_BUILD_TYPE STREQUAL "Release")
 endif()
 string(STRIP "${NUCQCD_FLAGS_STRING}" NUCQCD_FLAGS_STRING)
 string(REGEX REPLACE " +" " " NUCQCD_FLAGS_STRING "${NUCQCD_FLAGS_STRING}")
-set(NUCQCD_LIBRARIES_STRING "ROOT ${ROOT_VERSION}, GSL ${GSL_VERSION}")
+set(NUCQCD_LIBRARIES_STRING "GSL ${GSL_VERSION}")
+if(ROOT_FOUND)
+  string(PREPEND NUCQCD_LIBRARIES_STRING "ROOT ${ROOT_VERSION}, ")  # (the libraries do not use it)
+endif()
 if(LHAPDF_FOUND)
   string(APPEND NUCQCD_LIBRARIES_STRING ", LHAPDF ${LHAPDF_VERSION}")
 endif()
@@ -56,7 +59,7 @@ nucqcd_add_library(ToolsCore
     Vector3.cpp
     LorentzVector.cpp
     Rotation.cpp
-  LINK root_libs GSL::gsl GSL::gslcblas)
+  LINK GSL::gsl GSL::gslcblas)
 add_dependencies(ToolsCore nucqcd_git_info)
 if(STATIC_BUILD)
   add_dependencies(ToolsCoreST nucqcd_git_info)
