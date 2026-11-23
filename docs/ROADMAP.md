@@ -28,7 +28,7 @@ same PR.
 | 6 | Structural refactors | 🔶 done: constants macros (#41), `NuclStructure` merge (#42), code layout items 1–3 (`Tools` split #52, prefixed includes and `.hpp` #53), `Model`/`Cross` renamed (#53); MPI retired (#54); to do: namespace, Glauber grids, model selection, integrators, long files |
 | 7 | Unbundle Cuba and cubature | ⬜ (can be done any time after step 2) |
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
-| 9 | Decouple from ROOT where possible | 🔶 phases 1–5 done (#44, #45, #50, #55, #56, PHASE5PR): ROOT is optional, the libraries neither include nor link it; 6 (programs) to do |
+| 9 | Decouple from ROOT where possible | 🔶 phases 1–5 done (#44, #45, #50, #55, #56, #58): ROOT is optional, the libraries neither include nor link it; 6 (programs) to do |
 | 10 | LHAPDF interface for the nucleon structure functions | ✅ done (#46), including MSTW through LHAPDF |
 | 11 | Run bookkeeping (provenance) for all programs | 🔶 part 1 (design, `RunLog`) done (#49); `Bookkeep` replaced in its 8 programs (#51); `RunLog` in the other programs to do |
 
@@ -36,13 +36,13 @@ same PR.
 
 *Updated 2026-11-23.*
 
-**Done recently** (PRs #44–#57 and PHASE5PR): ROOT decoupling phases 1–3; step 10 (LHAPDF);
+**Done recently** (PRs #44–#57 and #58): ROOT decoupling phases 1–3; step 10 (LHAPDF);
 He3 fixes; step 11 part 1 (`RunLog`); step 6 code layout: `Tools` split into Core, Kinematics,
 WaveFunctions and StructureFunctions (#52), then includes as paths from the repository root, `.hpp`
 as the only extension, and `Model`/`Cross` renamed to `EMQEHadronCurrent`/`EMQECross` (#53); MPI
 retired (`TMPI` and `rhod`/`rhottest` to `progs/attic/mpi`, #54); ROOT phase 4: own vector and
 Lorentz types, bitwise equal to ROOT (#55), and all code converted to them (#56); `RunLog` exit
-handler fix (#57); ROOT phase 5: ROOT optional in the build (PHASE5PR).
+handler fix (#57); ROOT phase 5: ROOT optional in the build (#58).
 
 **Recommended next step:** ROOT phase 6, first part: make the `diDVCS*` event generators in
 `progs/GPD` ROOT-free (random numbers from `<random>`, the decay-angle sampling written out). The
@@ -822,7 +822,7 @@ standard) from everything that only computes cross sections.
      from their references on this machine on master too, at 1e-15: not from this change.) Cached
      Glauber grids stay valid (last-bit differences only). `namespace nucqcd` for the other classes
      (code layout item 4) is still to do.
-5. [x] **Build system** (done 2026-11-23, PHASE5PR). ROOT is optional: `ROOT_ENABLED` (ON by default, like
+5. [x] **Build system** (done 2026-11-23, #58). ROOT is optional: `ROOT_ENABLED` (ON by default, like
    `LHAPDF_ENABLED`: used when found), `find_package(ROOT ... QUIET COMPONENTS Minuit)` (Minuit2 is
    not used by anything). The libraries no longer link ROOT (`ToolsCore` linked `root_libs`, and
    through it everything else). Programs and tests that need ROOT list `root_libs` in their `LINK`;
