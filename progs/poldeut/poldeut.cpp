@@ -10,6 +10,8 @@ using namespace std;
 #include <constants.hpp>
 #include <Poldeut.hpp>
 #include <Utilfunctions.hpp>
+#include <RunLog.hpp>
+#include <vector>
 #include <NuclStructure.hpp>
 
 int main(int argc, char *argv[])
@@ -41,9 +43,9 @@ int main(int argc, char *argv[])
 
 
 std::string wf = argv[1];
-std::string arg_names[1]={"wf name"};
-std::cout << "Compiled from file: " << __FILE__ << std::endl;
-Bookkeep(argc,argv,arg_names);  
+const std::vector<std::string> arg_names={"wf name"};
+nucqcd::RunLog runlog(argc, argv, arg_names);  // run bookkeeping as "# " lines (Tools/RunLog.hpp)
+std::cout << "# compiled from file: " << __FILE__ << std::endl;
 
 
 // //plotting lf deuteron densities

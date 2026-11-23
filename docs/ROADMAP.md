@@ -29,7 +29,31 @@ same PR.
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
 | 9 | Decouple from ROOT where possible | 🔶 phases 1 (#44), 2 (#45) and 3 done, 4–6 to do |
 | 10 | LHAPDF interface for the nucleon structure functions | ✅ done (#46), including MSTW through LHAPDF |
-| 11 | Run bookkeeping (provenance) for all programs | 🔶 part 1 (design, `RunLog`) done; part 2 (roll-out) to do |
+| 11 | Run bookkeeping (provenance) for all programs | 🔶 part 1 (design, `RunLog`) done; `Bookkeep` replaced in its 8 programs; `RunLog` in the other programs to do |
+
+## Where we are / next up
+
+*Updated 2026-11-22 (end of session; the next session continues on another computer).*
+
+**Done recently** (PRs #44–#51): ROOT decoupling phases 1–3 (dictionaries, small math, `TString`);
+step 10 (LHAPDF structure functions, explicit combinations such as `"CB+SLAC@9"`, MSTW through
+LHAPDF, bundled MSTW code removed); He3 fixed (spin sum in `He3wf`, factor A in `He3Cross`; values
+changed with the author's OK); step 11 part 1 (`nucqcd::RunLog`) and the replacement of `Bookkeep` by
+`RunLog` in the 8 programs that used it.
+
+**Recommended next step: step 6, the code layout** (see "Code layout" under step 6): first split
+`Tools` into Core, Kinematics, WaveFunctions and StructureFunctions (with `MePhys` kept as an
+INTERFACE target, so programs do not change), then in one PR prefixed includes from the repository
+root plus `.hpp` as the only extension. Doing this before ROOT phase 4 means phase 4 converts code
+that is already in its final libraries.
+
+**After that:** ROOT phase 4 (own vector and Lorentz types, ~700 uses; test every method against
+ROOT first), together with `namespace nucqcd` class by class; then step 11 part 2 (`RunLog` in the
+other ~69 programs, `// ` headers to `# `) together with ROOT phase 6 (programs), and ROOT phase 5
+(ROOT optional in the build).
+
+**Open choices for the author:** the PDG constants update (changes values); whether to unbundle Cuba
+(step 7); the README (step 8) comes last.
 
 ---
 
@@ -726,7 +750,10 @@ argument next to a name from a string array, and the output of `git rev-parse --
    file only changes with the git state, so nothing is recompiled otherwise), plus the build type,
    compiler, flags and the ROOT, GSL and LHAPDF versions from the configuration. Tests: `unit_runlog`
    (marker, quoting, names, end written once, at `exit()` in a child process, MPI rank, build info).
-2. [ ] **Roll-out**: replace `Bookkeep` by `RunLog` in the 8 programs, add it to all other programs
-   (not `progs/attic`), and remove `Bookkeep`. Check per program that its data output still parses
+2. [ ] **Roll-out.** Done (2026-11-22): `Bookkeep` replaced by `RunLog` in the 8 programs that used it
+   (`poldeut`, `EMT_deut`, `b1_calc`, `pionT_calc12`, `Ca_dens`, `Nucl_dens_profile`,
+   `PxPz_exp_sample`, `conv_V_test`; their "exec name" entries dropped, since `RunLog`'s names start at
+   argv[1]; `poldeut` and `EMT_deut` had too few names and read past the array), and `Bookkeep`
+   removed from `Utilfunctions`. To do: add `RunLog` to all other programs (not `progs/attic`). Check per program that its data output still parses
    (commented header lines); change the programs' own `// ` header lines to `# `. Can be combined with
    ROOT phase 6, which touches the programs too.
