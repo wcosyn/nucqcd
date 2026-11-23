@@ -25,7 +25,7 @@ same PR.
 | 4 | Bug fixes | ✅ done: listed bugs (PRs #8, #9, #12); found later: stale FSI+CT grid (#18), kinematics (#19, #20, #33), DoubleNModel/Pair (#21, then moved to the attic in #22), π⁻ Glauber parameters (#28), TDeuteron errors (#31), He3 spin sum (#47) and factor A in `He3Cross` (#48). New bugs found later are added here |
 | 5 | Low-risk modernization | ✅ done: `-fopenmp`, Fortran interop (#11), constants (#13, #14), grid cache (#15–#17), ownership (#23), exceptions (#24), Doxygen (#10, #25–#30, #32, #34–#39: no warnings left) |
 | 6 | Structural refactors | 🔶 constants macros and `NuclStructure` merge done; code layout: `Tools` split done, prefixed includes and `.hpp` next |
-| 7 | Unbundle Cuba | ⬜ (can be done any time after step 2) |
+| 7 | Unbundle Cuba and cubature | ⬜ (can be done any time after step 2) |
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
 | 9 | Decouple from ROOT where possible | 🔶 phases 1 (#44), 2 (#45) and 3 done, 4–6 to do |
 | 10 | LHAPDF interface for the nucleon structure functions | ✅ done (#46), including MSTW through LHAPDF |
@@ -53,7 +53,7 @@ ROOT first), together with `namespace nucqcd` class by class; then step 11 part 
 other ~69 programs, `// ` headers to `# `) together with ROOT phase 6 (programs), and ROOT phase 5
 (ROOT optional in the build).
 
-**Open choices for the author:** the PDG constants update (changes values); whether to unbundle Cuba
+**Open choices for the author:** new names for `Model`/`Cross` (step 6, best decided before the include PR); the PDG constants update (changes values); whether to unbundle Cuba
 (step 7); the README (step 8) comes last.
 
 ---
@@ -535,6 +535,32 @@ Do these one at a time, running the full test suite (including `slow`) after eac
      programs compiling in between.
 - [ ] **Glauber grid hierarchy:** deduplicate it. `GlauberGridThick` and `GlauberDecayGridThick` are
   largely copy-pasted, as are the {plain, Thick} × {CT, Decay} abstract classes.
+- [ ] **Speed of the Glauber grids (to investigate, added 2026-11-23).** From the author's experience,
+  grids for particles that do not all move along the z axis are slow to compute (cached afterwards,
+  but still). The `numint` integrators used there (`cube_adaptive`, `cube_romb`) are serial; only the
+  explicit `numint::cuhre/vegas/...` wrappers use Cuba, which forks workers on one node
+  (`CUBACORES`). First measure where the time goes, then compare: (a) filling the grid points in
+  parallel threads (each point is an independent integral, but the integrand reads the point from
+  members such as `r_hit`, so it has to be passed in explicitly first); (b) the vectorized
+  `hcubature_v` (see the cubature item under step 7), which hands over batches of points that can be
+  evaluated in threads; (c) Cuhre with `CUBACORES`. Best done together with the deduplication above.
+  (b) and (c) change values within the precision, so they need the author's OK.
+- [ ] **Remove the integrators `rombergerN` and `cube_romb` (added 2026-11-23, author's decision:
+  the adaptive integrators work better).** Most uses are selected by the `integrator` flag of the grid
+  and cross-section classes (0: `rombergerN` from `Tools/Core/Utilfunctions.hpp`, 1:
+  `numint::cube_romb`, 2: adaptive `cube_adaptive`; the tests use 2). Those branches can go once the
+  programs are checked for passing 0 or 1. Hard-coded uses have to be replaced, which changes values
+  (author's OK per class): `rombergerN` in `InclusiveCrossRes` (6), `RhoDeuteron` (8), `RhoTCross`
+  (4), `OneGlauberGrid` (4), `DistMomDistrGrid` (1) and the programs `rhodint`, `rhoset`;
+  `cube_romb` in `Model.cpp:744` and `progs/momdistr/momdistr.cpp`. Then remove
+  `Integrator/numint/cube_romb.cpp` (and `cube_tr`/`fubini`/`vfubini` if unused) and its tests in
+  `unit_numint`, and simplify the `integrator` flag (an enum, see "Model selection" below).
+- [ ] **Better names for `Model` and `Cross`** (Knockout, the A(e,e'N) amplitude and cross section;
+  author's request 2026-11-23). The names are too generic (also a collision risk without a
+  namespace). Name to be chosen by the author; following `WeakQEHadronCurrent`/`WeakQECross` and
+  `NucleonEMOperator`/`NucleonWeakOperator`, for example `EMQEHadronCurrent`/`EMQECross`. About 19
+  files outside the classes use them. Best done in the PR with the prefixed includes (code layout
+  items 2 and 3), when every include changes anyway.
 - [ ] **Model selection:** use enums or factory registries instead of model-name strings (about 700
   string comparisons). A typo should fail at compile time, not with `exit()` at runtime.
 - [x] **Merge `NuclStructure` into `NucleonStructure`.** The parametrizations are now implemented
@@ -564,7 +590,7 @@ Do these one at a time, running the full test suite (including `slow`) after eac
 - [ ] **Very long files and functions:** break them up, for example `Tools/Kinematics/TKinematics2to3.cpp`
   (6.8k lines, one function of about 1.3k lines) and `Glauber/NucleonEMOperator.cpp` (4.2k lines).
 
-## 7. Unbundle Cuba
+## 7. Unbundle Cuba (and cubature)
 
 This is a build-system change only, and the `unit_cuba` tests verify it.
 
@@ -580,6 +606,19 @@ This is a build-system change only, and the `unit_cuba` tests verify it.
 - [ ] Keep the `cuba` INTERFACE target name, so nothing that links against it changes. Pin Cuba 4.2.x,
   because the `numint` wrappers rely on the 4.2 API.
 - [ ] Optionally, install it into `~/.local` from `scripts/`, the way `scripts/install_partons.sh` does for PARTONS.
+
+- [ ] **cubature (`Integrator/adaptive`, added 2026-11-23).** The bundled `cubature.c` is Steven G.
+  Johnson's pre-1.0 `adapt_integrate` from October 2010, with a `minEval` argument that upstream does
+  not have (probably added locally before the import; no convergence before `minEval` evaluations; the code passes 1e2 to 1e4). Upstream
+  (github.com/stevengj/cubature) is now at 1.0.4: `adapt_integrate` became `hcubature`, plus
+  `pcubature` (p-adaptive Clenshaw-Curtis), a choice of error norm for vector integrands, `size_t`
+  limits, and a fix for a hang in `hcubature` for some integrands (1.0.4). Ubuntu packages it
+  (`libcubature-dev` 1.0.4), but without `minEval`. Plan: fetch the pinned 1.0.4 release as for Cuba
+  (CMake `FetchContent`/`ExternalProject`, SHA256) and keep the `minEval` change as a small patch
+  file; port `numint2adapt.hpp` (`cube_adaptive`) to `hcubature` with `ERROR_INDIVIDUAL`, which
+  should match the old convergence test. Run the regression and slow tests; any change in values
+  needs to be understood and OK'd by the author. Also consider `pcubature` for smooth integrands,
+  and `hcubature_v` for parallel evaluation (see "Speed of the Glauber grids", step 6).
 
 ## 8. Repository README
 
