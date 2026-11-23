@@ -43,7 +43,7 @@ replacement of `Bookkeep` by `RunLog` in the 8 programs that used it; step 6 cod
 `Tools` split into Core, Kinematics, WaveFunctions and StructureFunctions (`MePhys` kept as an
 INTERFACE target).
 
-**Recommended next step: step 6, code layout items 2 and 3, in one PR:** prefixed includes with the
+**Recommended next step: step 6, code layout items 2 and 3, in one PR (with the rename of `Model`/`Cross` to `EMQEHadronCurrent`/`EMQECross`):** prefixed includes with the
 repository root as include root (`#include <Tools/WaveFunctions/TDeuteron.hpp>`), and `.hpp` as the
 only header extension (`git mv` of the 19 `.h` files in Tools and the one in GPD_Partons). Scripted
 rewrite of the ~1250 `#include` lines.
@@ -53,7 +53,7 @@ ROOT first), together with `namespace nucqcd` class by class; then step 11 part 
 other ~69 programs, `// ` headers to `# `) together with ROOT phase 6 (programs), and ROOT phase 5
 (ROOT optional in the build).
 
-**Open choices for the author:** new names for `Model`/`Cross` (step 6, best decided before the include PR); the PDG constants update (changes values); whether to unbundle Cuba
+**Open choices for the author:** the PDG constants update (changes values); whether to unbundle Cuba
 (step 7); the README (step 8) comes last.
 
 ---
@@ -545,8 +545,16 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   `hcubature_v` (see the cubature item under step 7), which hands over batches of points that can be
   evaluated in threads; (c) Cuhre with `CUBACORES`. Best done together with the deduplication above.
   (b) and (c) change values within the precision, so they need the author's OK.
-- [ ] **Remove the integrators `rombergerN` and `cube_romb` (added 2026-11-23, author's decision:
-  the adaptive integrators work better).** Most uses are selected by the `integrator` flag of the grid
+- [ ] **Remove the integrators `rombergerN` and `cube_romb`?** (added 2026-11-23). The author
+  remembers the adaptive integrators doing better, especially for multidimensional integrands with
+  non-trivial boundaries or cuts inside the integrand. **Benchmark this first; remove only if it
+  holds.** Compare `rombergerN`, `cube_romb`, `cube_adaptive` (and Cuhre) on accuracy versus number of
+  evaluations and time: (1) test integrands with known values in 2 and 3 dimensions: smooth ones, ones
+  with a step or cut inside the domain, a non-rectangular domain mapped onto a box (as with the
+  impact-parameter and z integrations in the Glauber phases), and a peaked one; (2) real integrands:
+  a Glauber grid point for a particle along z and one off-axis, an A(e,e'p) amplitude from `Model`,
+  and an `InclusiveCrossRes` integral, each against a high-precision reference. Record the results
+  here (or in `docs/`), then decide. If they are removed: most uses are selected by the `integrator` flag of the grid
   and cross-section classes (0: `rombergerN` from `Tools/Core/Utilfunctions.hpp`, 1:
   `numint::cube_romb`, 2: adaptive `cube_adaptive`; the tests use 2). Those branches can go once the
   programs are checked for passing 0 or 1. Hard-coded uses have to be replaced, which changes values
@@ -557,8 +565,8 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   `unit_numint`, and simplify the `integrator` flag (an enum, see "Model selection" below).
 - [ ] **Better names for `Model` and `Cross`** (Knockout, the A(e,e'N) amplitude and cross section;
   author's request 2026-11-23). The names are too generic (also a collision risk without a
-  namespace). Name to be chosen by the author; following `WeakQEHadronCurrent`/`WeakQECross` and
-  `NucleonEMOperator`/`NucleonWeakOperator`, for example `EMQEHadronCurrent`/`EMQECross`. About 19
+  namespace). Agreed with the author (2026-11-23): `EMQEHadronCurrent`/`EMQECross`, following
+  `WeakQEHadronCurrent`/`WeakQECross` and `NucleonEMOperator`/`NucleonWeakOperator`. About 19
   files outside the classes use them. Best done in the PR with the prefixed includes (code layout
   items 2 and 3), when every include changes anyway.
 - [ ] **Model selection:** use enums or factory registries instead of model-name strings (about 700
