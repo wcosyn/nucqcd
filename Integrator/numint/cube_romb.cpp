@@ -70,13 +70,14 @@ inline void _cube_romb_step(const mdfunction<T,N> &f, cube_romb_work<T,N> &WORK,
   sum = s;
   axpy(-1.0,s,sum);
 
-  // total number of points in the sum
-  unsigned Ntot = 1;
+  // total number of points in the sum: 64 bit, since (2n+1)^N exceeds 2^32 already at refinement
+  // level 11 in 3D (and level 8 in 4D); with unsigned the loop ran over the wrong points (fixed 2026-11)
+  unsigned long long Ntot = 1;
   unsigned I[N];
   for (unsigned i = 0; i < N; ++i) Ntot *= 2*n+1; // n should be different from zero
 
-  for (unsigned idx = 0; idx < Ntot; ++idx) { // run over all points
-    unsigned itmp = idx;
+  for (unsigned long long idx = 0; idx < Ntot; ++idx) { // run over all points
+    unsigned long long itmp = idx;
     bool odd = false;
     for (unsigned i = 0; i < N; ++i) {
       I[i] = itmp % (2*n+1);
