@@ -46,7 +46,7 @@ handler fix (#57); ROOT phase 5: ROOT optional in the build (#58); phase 6: the 
 (#59).
 
 **Recommended next step:** the author's decision on the integrator benchmark (`docs/integrator_benchmark.md`,
-PRBENCH) and on #60; then: ROOT is now only needed for the fits (to move to an external Minuit2,
+#61) and on #60; then: ROOT is now only needed for the fits (to move to an external Minuit2,
 phase 6) and `unit_vectors`. Next: step 11 part 2 (`RunLog` in the other programs) or `namespace
 nucqcd` (code layout item 4); the open leads (rho t/z, Romberg benchmark, Glauber grid speed,
 PARTONS setup) and the license can be taken up any time.
@@ -605,7 +605,7 @@ Do these one at a time, running the full test suite (including `slow`) after eac
 - [ ] **Remove the integrators `rombergerN` and `cube_romb`?** (added 2026-11-23). The author
   remembers the adaptive integrators doing better, especially for multidimensional integrands with
   non-trivial boundaries or cuts inside the integrand. **Benchmark done 2026-11-23
-  (`docs/integrator_benchmark.md`, `progs/benchmark/integrators.cpp`, PRBENCH): the memory is not
+  (`docs/integrator_benchmark.md`, `progs/benchmark/integrators.cpp`, #61): the memory is not
   confirmed by these tests.** On integrands with a step or a kink inside the domain, `cube_adaptive`
   (and upstream `hcubature` 1.0.4) is the least reliable (stalls at `maxEval` with 1e-5 to 1.5e-3 and
   reports success; 1.0.4 even claims convergence on a kink), while the Romberg integrators converge,
