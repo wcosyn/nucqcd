@@ -45,7 +45,8 @@ Lorentz types, bitwise equal to ROOT (#55), and all code converted to them (#56)
 handler fix (#57); ROOT phase 5: ROOT optional in the build (#58); phase 6: the `diDVCS*` generators ROOT-free
 (#59).
 
-**Recommended next step:** ROOT is now only needed for the fits (to move to an external Minuit2,
+**Recommended next step:** the author's decision on the integrator benchmark (`docs/integrator_benchmark.md`,
+PRBENCH) and on #60; then: ROOT is now only needed for the fits (to move to an external Minuit2,
 phase 6) and `unit_vectors`. Next: step 11 part 2 (`RunLog` in the other programs) or `namespace
 nucqcd` (code layout item 4); the open leads (rho t/z, Romberg benchmark, Glauber grid speed,
 PARTONS setup) and the license can be taken up any time.
@@ -593,16 +594,32 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   `hcubature_v` (see the cubature item under step 7), which hands over batches of points that can be
   evaluated in threads; (c) Cuhre with `CUBACORES`. Best done together with the deduplication above.
   (b) and (c) change values within the precision, so they need the author's OK.
+  **Measured (2026-11-23, `docs/integrator_benchmark.md`):** a 12×6×3 carbon grid for a 1500 MeV proton
+  takes 0.4 s along z but 76 s off axis (θ = 0.5 rad) with `cube_adaptive` at 1e-3; off axis the
+  integrals run into the hard-coded cap of 2·10⁶ (5·10⁶ with CT) evaluations per grid point, so asking for
+  1e-5 or 1e-6 gives the same grid (accuracy ~1e-3) and a 100× larger cap did not finish in 2 hours.
+  So the off-axis cost is "every point hits the cap"; `cube_romb` at 1e-3 took 16 s there with similar
+  accuracy. Next: find out which part of the off-axis integrand is hard (the cut at the hit point, the
+  profile function's oscillations?), consider a better variable choice, `cube_romb` for these grids, or
+  parallel grid points.
 - [ ] **Remove the integrators `rombergerN` and `cube_romb`?** (added 2026-11-23). The author
   remembers the adaptive integrators doing better, especially for multidimensional integrands with
-  non-trivial boundaries or cuts inside the integrand. **Benchmark this first; remove only if it
-  holds.** Compare `rombergerN`, `cube_romb`, `cube_adaptive` (and Cuhre) on accuracy versus number of
+  non-trivial boundaries or cuts inside the integrand. **Benchmark done 2026-11-23
+  (`docs/integrator_benchmark.md`, `progs/benchmark/integrators.cpp`, PRBENCH): the memory is not
+  confirmed by these tests.** On integrands with a step or a kink inside the domain, `cube_adaptive`
+  (and upstream `hcubature` 1.0.4) is the least reliable (stalls at `maxEval` with 1e-5 to 1.5e-3 and
+  reports success; 1.0.4 even claims convergence on a kink), while the Romberg integrators converge,
+  at a high price. `cube_adaptive` is much faster on smooth integrands and peaks (1400× on the
+  along-z Glauber grid); `cube_romb` was faster on the off-axis grid at 1e-3 and is comparable on the
+  A(e,e'p) amplitudes. Cuhre misses narrow peaks at loose tolerance. **Recommendation: keep
+  `cube_romb` and `cube_adaptive`** (author's decision); `rombergerN` could still go case by case. The
+  benchmark plan was: compare `rombergerN`, `cube_romb`, `cube_adaptive` (and Cuhre) on accuracy versus number of
   evaluations and time: (1) test integrands with known values in 2 and 3 dimensions: smooth ones, ones
   with a step or cut inside the domain, a non-rectangular domain mapped onto a box (as with the
   impact-parameter and z integrations in the Glauber phases), and a peaked one; (2) real integrands:
   a Glauber grid point for a particle along z and one off-axis, an A(e,e'p) amplitude from `Model`,
-  and an `InclusiveCrossRes` integral, each against a high-precision reference. Record the results
-  here (or in `docs/`), then decide. If they are removed: most uses are selected by the `integrator` flag of the grid
+  and an `InclusiveCrossRes` integral (not done: it uses `rombergerN` only, without a flag), each
+  against a high-precision reference. If they are removed: most uses are selected by the `integrator` flag of the grid
   and cross-section classes (0: `rombergerN` from `Tools/Core/Utilfunctions.hpp`, 1:
   `numint::cube_romb`, 2: adaptive `cube_adaptive`; the tests use 2). Those branches can go once the
   programs are checked for passing 0 or 1. Hard-coded uses have to be replaced, which changes values
@@ -616,6 +633,15 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   following `WeakQEHadronCurrent`/`WeakQECross` and `NucleonEMOperator`/`NucleonWeakOperator`; the
   class names were replaced in the 19 files that include them (library, programs including the
   attic, tests). Also fixed: the `\file` tag of `DQEinclusive.hpp` said `Cross.hpp`.
+- [ ] **The requested precision often does not control the accuracy** (found with the integrator
+  benchmark, 2026-11-23). `cube_adaptive` returns 0 (success) when it stops at `maxEval`, and the
+  `numint` wrapper (`numint2adapt.hpp`) discards the error estimate, so callers never learn that the
+  precision was not reached. In practice the evaluation caps decide: `maxEval` of
+  `EMQECross::getDiffCross` (the 24-component amplitude integral always runs to it; the programs mostly
+  pass 2·10⁴, which gives 1e-5 to 1e-4 relative, see the benchmark), and the hard-coded 2·10⁶/5·10⁶ in
+  the Glauber grids (off-axis grids stop there at ~1e-3). To do: return or log the error estimate
+  and a "cap reached" flag from `cube_adaptive` (and check it, or at least warn, in the classes);
+  document what `prec` and `maxEval` mean for each class. No values change by reporting.
 - [ ] **Model selection:** use enums or factory registries instead of model-name strings (about 700
   string comparisons). A typo should fail at compile time, not with `exit()` at runtime.
 - [x] **Merge `NuclStructure` into `NucleonStructure`** (#42). The parametrizations are now implemented
@@ -682,6 +708,10 @@ This is a build-system change only, and the `unit_cuba` tests verify it.
   should match the old convergence test. Run the regression and slow tests; any change in values
   needs to be understood and OK'd by the author. Also consider `pcubature` for smooth integrands,
   and `hcubature_v` for parallel evaluation (see "Speed of the Glauber grids", step 6).
+  **Benchmark (2026-11-23, `docs/integrator_benchmark.md`):** 1.0.4's `hcubature` gives practically the
+  same results as the bundled code on smooth integrands, is not better on steps, and on a kink reports
+  convergence while wrong (estimated 1e-5, true 6e-4). So unbundling is a maintenance question, not an
+  accuracy gain; `pcubature` is excellent on smooth integrands but misses narrow peaks.
 
 ## 8. Repository README
 

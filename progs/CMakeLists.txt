@@ -17,4 +17,5 @@ if(PARTONS_ENABLED)
   add_subdirectory(GPD)            # transversity and vector GPDs (spin 1), diDVCS
 endif()
 add_subdirectory(F2_largex_fit)    # x > 1 nuclear F2 fit, cross-checks with Adam Freese
+add_subdirectory(benchmark)        # integrator benchmark (docs/integrator_benchmark.md)
 add_subdirectory(attic)            # old, one-off and personal programs, still built (see attic/CMakeLists.txt)
