@@ -12,6 +12,7 @@ nucqcd_add_library(ToolsWaveFunctions
     TCstPWF.cpp
     TInterpolatingWavefunction.cpp
     OldDeuteron.cpp
+    WaveFunctionModels.cpp
     He3wf.cpp
     # Fortran
     getwavemod_tm.f

@@ -11,6 +11,7 @@
 #define HE3WF_HPP
 
 #include <string>
+#include <Tools/WaveFunctions/WaveFunctionModels.hpp>
 #include <Tools/Core/Vector3.hpp>
 #include <complex>
 
@@ -39,6 +40,8 @@ public:
    * \throw std::invalid_argument for an unknown name
    */
   He3wf(std::string wf_name, std::string dir); 
+  /*! as He3wf(std::string, std::string), for a He3Model (see WaveFunctionModels.hpp) */
+  He3wf(He3Model model, std::string dir);
   He3wf(); /*!< Default Constructor*/
   He3wf(const He3wf&); /*!< Copy Constructor */
   He3wf& operator=(const He3wf&); /*!< assignment operator */

@@ -12,6 +12,8 @@
 #include <string>
 #include <cmath>
 #include <memory>
+#include <optional>
+#include <Tools/StructureFunctions/StructureFunctionModel.hpp>
 
 namespace nucqcd {
 
@@ -45,10 +47,13 @@ public:
    * "\<low\>+\<high\>" or "\<low\>+\<high\>@\<W2\>": the parametrization \<low\> up to W^2 = \<W2\> GeV^2 (default 9)
    * and \<high\> above it, e.g. "CB+SLAC" (what NuclStructure uses for "CB") or "CB+LHAPDF:CT18LO@4";
    * see the constructor with three arguments. <BR>
-   * \throw std::invalid_argument for a malformed "LHAPDF:" or combination name (other unknown names
-   * only throw when a structure function is asked for)
+   * \throw std::invalid_argument for an unknown name or a malformed "LHAPDF:" or combination name (until
+   * 2026-11 an unknown plain name only threw when a structure function was asked for)
    */
   NucleonStructure(const std::string name);
+  /*! Constructor for a plain parametrization, without a string that could be misspelled
+   * \param model the parametrization, see StructureFunctionModel */
+  explicit NucleonStructure(StructureFunctionModel model);
   /*! Constructor for LHAPDF sets with options (number of flavours, R, ...); getName() is
    * "LHAPDF:\<unpolarized set\>:\<polarized set\>"
    * \param options the sets and options, see nucqcd::LHAPDFOptions */
@@ -181,6 +186,7 @@ private:
   /*! F1 and F2 in the Christy & Bosted parametrization at Q^2 [MeV^2] and W^2 [MeV^2] (throws above W^2 = 25 GeV^2) */
   void getF_CB_W(double &F1, double &F2, const bool proton, const double Q2, const double Wsq) const;
   std::string name; /*!< name of the paramtetrization */
+  std::optional<StructureFunctionModel> model; ///< the plain parametrization; empty for LHAPDF sets and combinations
   std::string dir; /*!< share dir to read input files */
   std::shared_ptr<const nucqcd::LHAPDFStructure> lhapdf; ///< LHAPDF sets (shared, see LHAPDFStructure::get), or null
   std::unique_ptr<NucleonStructure> low;  ///< combination: parametrization for W^2 <= Wsq_switch, or null

@@ -10,6 +10,7 @@
 #define TDEUTERON_H
 
 #include <string>
+#include <Tools/WaveFunctions/WaveFunctionModels.hpp>
 #include <Tools/WaveFunctions/TWavefunctionImplementation.hpp>
 //#include <Tools/Kinematics/TKinematics2to3.hpp>
 #include <string>
@@ -107,6 +108,8 @@ class TDeuteron
     /*! creates the wave function with the given name (see the class description); the caller owns it
      * \return the wave function \throw std::invalid_argument for an unknown name */
     static Wavefunction *CreateWavefunction(const std::string& name);
+    /// as CreateWavefunction(const std::string&), for a model that is not a string that could be misspelled
+    static Wavefunction *CreateWavefunction(DeuteronModel model);
   
     double GetUr(double r) const { return fImplementation->GetUr(r); } ///< [fm^-1/2] reduced S wave u(r) \param r [fm]
     double GetWr(double r) const { return fImplementation->GetWr(r); } ///< [fm^-1/2] reduced D wave w(r), same sign as u(r) at large r \param r [fm]

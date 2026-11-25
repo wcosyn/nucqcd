@@ -11,8 +11,10 @@ namespace nucqcd {
 
 #define NORMFACTOR 11.4081948 //1/nucqcd::hbarc^{3/2}
 
-OldDeuteron::OldDeuteron(const std::string &wf_name){
-    if(!wf_name.compare("Paris")){
+OldDeuteron::OldDeuteron(const std::string &wf_name): OldDeuteron(parse_deuteron_model(wf_name)){}
+
+OldDeuteron::OldDeuteron(DeuteronModel model){
+    if(model==DeuteronModel::Paris){
         mass=vector<double>(13,0.);
         S_pre=vector<double>(13,0.);
         D_pre=vector<double>(13,0.);
@@ -58,7 +60,7 @@ OldDeuteron::OldDeuteron(const std::string &wf_name){
             *(-mass[10]*mass[10]*mass[11]*mass[11]*a+(mass[10]*mass[10]+mass[11]*mass[11])*b-cc);  
         norm=0.79788456/sqrt(4.*PI)*pow(nucqcd::inv_hbarc,3./2.);
     }
-    else if(!wf_name.compare("AV18")){
+    else if(model==DeuteronModel::AV18){
         mass=vector<double>(12,0.);
         S_pre=vector<double>(12,0.);
         D_pre=vector<double>(12,0.);
@@ -103,7 +105,7 @@ OldDeuteron::OldDeuteron(const std::string &wf_name){
         norm=1./sqrt(4.*PI)*pow(nucqcd::inv_hbarc,3./2.);
         
     }
-    else if(!wf_name.compare("CDBonn")){
+    else if(model==DeuteronModel::CDBonn){
         mass=vector<double>(11,0.);
         S_pre=vector<double>(11,0.);
         D_pre=vector<double>(11,0.);
@@ -147,7 +149,7 @@ OldDeuteron::OldDeuteron(const std::string &wf_name){
         norm=1./(sqrt(2.)*PI)*pow(nucqcd::inv_hbarc,3./2.);
     }
 
-    else if(!wf_name.compare("AV18b")){
+    else if(model==DeuteronModel::AV18b){
         mass=vector<double>(12,0.);
         S_pre=vector<double>(12,0.);
         D_pre=vector<double>(12,0.);
@@ -217,9 +219,9 @@ OldDeuteron::OldDeuteron(const std::string &wf_name){
         }
         norm=1./sqrt(4.*PI)*pow(nucqcd::inv_hbarc,3./2.);
     }
-    else{
-        cerr << " invalid deuteron wf name " << endl;
-        assert(1==0);
+    else{ // until 2026-11 this printed a message and asserted (nothing in a release build: empty parametrization)
+        throw std::invalid_argument(nucqcd::ErrorMessage() << "OldDeuteron: no parametrization for the deuteron wave function \""
+                                    << deuteron_model_name(model) << "\" (available: paris, av18, cdbonn, av18b)");
     }
     
 

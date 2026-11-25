@@ -5,6 +5,7 @@
 #include <complex>
 #include <vector>
 #include <Tools/Core/AuxFunction.hpp>
+#include <Tools/WaveFunctions/WaveFunctionModels.hpp>
 
 namespace nucqcd {
 
@@ -23,9 +24,16 @@ public:
 /**
  * @brief Construct a new Old Deuteron object
  * 
- * @param wf_name parmatrization.  Possibilities "Paris", "AV18", "CDBonn", "AV18b"
+ * @param wf_name parmatrization.  Possibilities "Paris", "AV18", "CDBonn", "AV18b" (case insensitive, see DeuteronModel)
+ * @throw std::invalid_argument for an unknown name or one without a parametrization here
  */
 OldDeuteron(const std::string &wf_name);
+
+/**
+ * @brief as OldDeuteron(const std::string&), for a DeuteronModel (Paris, AV18, CDBonn or AV18b)
+ * @throw std::invalid_argument for another model
+ */
+OldDeuteron(DeuteronModel model);
 
 /**
  * @brief computes non-relativistic deuteron wf at certain kinematics and spin states
