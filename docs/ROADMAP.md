@@ -25,7 +25,7 @@ same PR.
 | 3 | Rename the repository | ✅ done (PR #7, tagged-poldeut PRs #1 and #2) |
 | 4 | Bug fixes | ✅ done: listed bugs (PRs #8, #9, #12); found later: stale FSI+CT grid (#18), kinematics (#19, #20, #33), DoubleNModel/Pair (#21, then moved to the attic in #22), π⁻ Glauber parameters (#28), TDeuteron errors (#31), He3 spin sum (#47) and factor A in `He3Cross` (#48), `TMPI` not compiling with MPI-3 (fixed in the attic with step 6, "Retire MPI", #54), `RunLog` reading freed memory at `exit()` (#57), `cube_romb` overflow beyond 10 levels in 3D (#60). New bugs found later are added here |
 | 5 | Low-risk modernization | ✅ done: `-fopenmp`, Fortran interop (#11), constants (#13, #14), grid cache (#15–#17), ownership (#23), exceptions (#24), Doxygen (#10, #25–#30, #32, #34–#39: no warnings left) |
-| 6 | Structural refactors | 🔶 done: constants macros (#41), `NuclStructure` merge (#42), code layout items 1–4 (`Tools` split #52, prefixed includes and `.hpp` #53), `Model`/`Cross` renamed (#53); MPI retired (#54); namespace `nucqcd` (#65); integrator benchmark (#61, keep `cube_romb` and `cube_adaptive`), precision reporting (#62); CRLF to LF (#66); to do: Glauber grids, model selection, long files |
+| 6 | Structural refactors | 🔶 done: constants macros (#41), `NuclStructure` merge (#42), code layout items 1–4 (`Tools` split #52, prefixed includes and `.hpp` #53), `Model`/`Cross` renamed (#53); MPI retired (#54); namespace `nucqcd` (#65); integrator benchmark (#61, keep `cube_romb` and `cube_adaptive`), precision reporting (#62); CRLF to LF (#66); long files split (#70), integrator option 0 removed (#69); to do: Glauber grid dedup and speed, model selection, long functions |
 | 7 | Unbundle Cuba and cubature | 🔶 Cuba done (#67); cubature (a maintenance question only, see the benchmark) to do |
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
 | 9 | Decouple from ROOT where possible | 🔶 phases 1–5 done (#44, #45, #50, #55, #56, #58): ROOT is optional, the libraries neither include nor link it; 6: GPD generators ROOT-free (#59), fits (Minuit2) to do |
@@ -36,7 +36,7 @@ same PR.
 
 *Updated 2026-11-25.*
 
-**Done recently** (PRs #44–#67): ROOT decoupling phases 1–3; step 10 (LHAPDF);
+**Done recently** (PRs #44–#70): ROOT decoupling phases 1–3; step 10 (LHAPDF);
 He3 fixes; step 11 part 1 (`RunLog`); step 6 code layout: `Tools` split into Core, Kinematics,
 WaveFunctions and StructureFunctions (#52), then includes as paths from the repository root, `.hpp`
 as the only extension, and `Model`/`Cross` renamed to `EMQEHadronCurrent`/`EMQECross` (#53); MPI
@@ -46,7 +46,7 @@ handler fix (#57); ROOT phase 5: ROOT optional in the build (#58); phase 6: the 
 ROOT-free (#59); `cube_romb` overflow fix (#60); integrator benchmark (#61, `docs/integrator_benchmark.md`),
 after which the author decided to keep `cube_romb` and `cube_adaptive`; the precision reporting of
 `cube_adaptive` (#62); `RunLog` in all programs, step 11 done (#64); `namespace nucqcd` for all library
-code (#65); CRLF to LF in the C++ files, with a `.gitattributes` (#66); Cuba unbundled (#67).
+code (#65); CRLF to LF in the C++ files, with a `.gitattributes` (#66); Cuba unbundled (#67); Glauber grid safety net (#68); integrator option 0 removed (#69); the two longest files split (#70).
 
 **Options for the next step** (recommended order):
 1. ~~Report the integration precision~~ (done, #62; see "The requested precision often does not control the
@@ -58,7 +58,7 @@ code (#65); CRLF to LF in the C++ files, with a `.gitattributes` (#66); Cuba unb
    point hits the evaluation cap; `cube_romb` was 5× faster at 1e-3); value changes need the author's OK.
 5. **ROOT phase 6 (fits):** the Minuit fits on an external Minuit2, after which ROOT can go entirely.
 6. **Smaller items:** unbundle cubature (step 7, maintenance only; Cuba is done, #67), model-name strings to enums,
-   splitting the very long files, the PDG constants update (changes values).
+   the long functions (the files are split, #70), the PDG constants update (changes values).
 7. **Last:** the license decision (step 8), then the README (currently a stub).
 
 **Open choices for the author:** the license (step 8, see the item there); the PDG constants update (changes values); whether to unbundle cubature
@@ -736,8 +736,18 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   `<unistd.h>`. Fixed in the attic copy (`MPI_Type_create_struct`, same arguments); it now compiles
   and links with Open MPI 5.0 (not run). `RunLog` keeps its rank detection from the launcher's
   environment (also covers `srun` without MPI).
-- [ ] **Very long files and functions:** break them up, for example `Tools/Kinematics/TKinematics2to3.cpp`
-  (6.8k lines, one function of about 1.3k lines) and `Glauber/NucleonEMOperator.cpp` (4.2k lines).
+- [~] **Very long files and functions** (files split 2026-11-25, #70; functions not): the files were split
+  without touching any code (the functions were moved verbatim; all tests pass, references unchanged).
+  `Tools/Kinematics/TKinematics2to3.cpp` (6.5k lines) is now six files: `TKinematics2to3.cpp` (class
+  description, constructors, assignment, 580 lines), `_ReadFormatString`, `_Update`, `_Variables` (setting,
+  stepping and the `GetVar*` by name), `_Getters` (vectors, angles, CM quantities, `operator==`,
+  `GetVarByGetter`) and `_Frames` (boosts, rotations, bounds). `Glauber/NucleonEMOperator.cpp` (4.2k
+  lines) was 3.9k lines of in-medium form-factor tables: they moved to `NucleonEMOperatorTables.cpp`,
+  leaving 250 lines of code. Still to do: the long functions themselves, `TKinematics2to3::ReadFormatString`
+  (1.2k lines), `UpdateKinematics` (0.9k) and the three `GetVar*` by name (350 lines each, nearly the same
+  `if`/`else` chain over the variable names, so a table of name → getter would replace them), which need
+  more than moving code, and the 1.0-1.2k-line `GlauberGridThick.cpp`, `GlauberDecayGridThick.cpp`,
+  `GlauberGrid.cpp`, `DistMomDistrGrid.cpp` (with the grid dedup above).
 
 ## 7. Unbundle Cuba (and cubature)
 
