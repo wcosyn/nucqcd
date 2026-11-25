@@ -49,8 +49,7 @@ after which the author decided to keep `cube_romb` and `cube_adaptive`.
 **Options for the next step** (no PR is open; recommended order):
 1. ~~Report the integration precision~~ (done, #62; see "The requested precision often does not control the
    accuracy", step 6).
-2. **Step 11 part 2:** `RunLog` in the other ~62 programs outside the attic (9 of 71 have it), `// `
-   headers to `# `; mechanical, can be done in batches per `progs/` subdirectory.
+2. ~~Step 11 part 2~~ (done, #63; `RunLog` in all programs outside the attic).
 3. **`namespace nucqcd`** (code layout item 4), class by class, with compatibility `using` declarations.
 4. **Glauber grid work:** deduplicate the hierarchy, and investigate the off-axis grid speed (every
    point hits the evaluation cap; `cube_romb` was 5× faster at 1e-3); value changes need the author's OK.
