@@ -5,6 +5,7 @@
 #include <Integrator/numint/numint.hpp>
 
 #include <cmath>
+#include <sstream>
 #include <vector>
 
 using Catch::Matchers::WithinRel;
@@ -74,4 +75,37 @@ TEST_CASE("numint::cube_adaptive wrapper around the adaptive cubature", "[cubatu
   unsigned count = 0;
   numint::cube_adaptive(f, lower, upper, 1e-12, 1e-8, 100, 2000000, result, count, 0);
   CHECK_THAT(result[0], WithinRel(cubature_exact, 1e-7));
+}
+
+TEST_CASE("numint::cube_adaptive reports integrals that stop at maxEval", "[cubature][adaptive_stats]") {
+  numint::mdfunction<numint::vector_d, 3> f;
+  f.func = &cubature_integrand_md;
+  numint::array<double, 3> lower = {{0., -1., 0.}};
+  numint::array<double, 3> upper = {{1., 1., 2. * pi}};
+  auto &stats = numint::adaptive_stats();
+  stats.reset();
+  stats.warn = false;  // no stderr noise in the test log
+  std::vector<double> result(1, 0.);
+  unsigned count = 0;
+
+  // converges: counted, not capped
+  numint::cube_adaptive(f, lower, upper, 1e-12, 1e-6, 100, 2000000, result, count, 0);
+  CHECK(stats.calls == 1);
+  CHECK(stats.capped == 0);
+
+  // 1000 evaluations cannot give 1e-10: capped, with a large estimated error; return value stays 0
+  int code = numint::cube_adaptive(f, lower, upper, 1e-14, 1e-10, 100, 1000, result, count, 0);
+  CHECK(code == 0);
+  CHECK(stats.calls == 2);
+  CHECK(stats.capped == 1);
+  CHECK(stats.worst_rel_error > 1e-10);
+  CHECK(stats.max_eval_seen == 1000);
+
+  std::ostringstream out;
+  CHECK(numint::adaptive_report(out));
+  CHECK(out.str().find("# cube_adaptive: 2 integrals, 1 stopped at maxEval") == 0);
+  stats.reset();
+  stats.warn = true;
+  std::ostringstream none;
+  CHECK_FALSE(numint::adaptive_report(none));
 }
