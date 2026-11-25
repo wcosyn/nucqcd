@@ -328,6 +328,18 @@ class TKinematics2to3
   double         GetYNsystem_phiycm_deg_kS() const { return GetYNsystem_phiycm_deg(); } ///< GetYNsystem_phiycm_deg with the standard axis convention (argument-free wrapper, used by GetVarByGetter)
   double         GetYNsystem_phincm_deg_kS() const { return GetYNsystem_phincm_deg(); } ///< GetYNsystem_phincm_deg with the standard axis convention (argument-free wrapper, used by GetVarByGetter)
 
+  // Lookup of a getter by variable name (table in TKinematics2to3_VarNames.cpp)
+ private:
+  /// pointer to a getter that returns a double
+  typedef double (TKinematics2to3::*VarGetter)() const;
+  /*! The getter of the kinematic variable \p variable (case insensitive; "ynphincm" and "nyphincm" are the
+   * same variable), used by GetVar, GetVarArray, GetPhysicalVarArray and GetVarByGetter. The variable can
+   * be any one for which a getter is in the table, it need not be listed in the info of SetFormat.
+   * \param variable name of the variable, e.g. "pk", "thk_deg", "kyphikcm"
+   * \param caller name of the calling function, for the error message
+   * \throw std::invalid_argument if the variable is unknown */
+  static VarGetter FindVarGetter(const std::string &variable, const char *caller);
+
   // Data Members
   // ------------
  private:

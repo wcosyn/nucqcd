@@ -741,12 +741,20 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   `Tools/Kinematics/TKinematics2to3.cpp` (6.5k lines) is now six files: `TKinematics2to3.cpp` (class
   description, constructors, assignment, 580 lines), `_ReadFormatString`, `_Update`, `_Variables` (setting,
   stepping and the `GetVar*` by name), `_Getters` (vectors, angles, CM quantities, `operator==`,
-  `GetVarByGetter`) and `_Frames` (boosts, rotations, bounds). `Glauber/NucleonEMOperator.cpp` (4.2k
+  `GetVarByGetter`) and `_Frames` (boosts, rotations, bounds). **Update (#71):** the `GetVar*` by name are done, see below. `Glauber/NucleonEMOperator.cpp` (4.2k
   lines) was 3.9k lines of in-medium form-factor tables: they moved to `NucleonEMOperatorTables.cpp`,
-  leaving 250 lines of code. Still to do: the long functions themselves, `TKinematics2to3::ReadFormatString`
-  (1.2k lines), `UpdateKinematics` (0.9k) and the three `GetVar*` by name (350 lines each, nearly the same
-  `if`/`else` chain over the variable names, so a table of name → getter would replace them), which need
-  more than moving code, and the 1.0-1.2k-line `GlauberGridThick.cpp`, `GlauberDecayGridThick.cpp`,
+  leaving 250 lines of code. **`GetVar*` by name done (2026-11-25, #71):** `GetVar`, `GetVarArray`, `GetPhysicalVarArray` and
+  `GetVarByGetter` each had the same chain of 89 `if (varName == ...)` branches (152 names, with aliases
+  such as `ynphincm`/`nyphincm`). They now call `TKinematics2to3::FindVarGetter`, one table in
+  `TKinematics2to3_VarNames.cpp` (a private static member, since some getters are private); about 1330
+  lines less. Checked against the old code with a scratch program on all 152 names (`GetVar` in lower and
+  capitalized form, `GetVarArray`, `GetPhysicalVarArray` on a 5-step range): identical to the last digit;
+  new unit test in `unit_kinematics`. Two small behaviour changes: (1) **a typo in the table:** the
+  documented example `kyphikcm_deg` was spelled `kyhpikcm_deg`, so `GetVar("kyphikcm_deg")` threw
+  "unknown"; both spellings are accepted now (the old one as an alias); (2) the error message of
+  `GetPhysicalVarArray` named `GetVarArray` and now names itself. Still to do: the long functions
+  `TKinematics2to3::ReadFormatString` (1.2k lines) and `UpdateKinematics` (0.9k), which need more than
+  moving code, and the 1.0-1.2k-line `GlauberGridThick.cpp`, `GlauberDecayGridThick.cpp`,
   `GlauberGrid.cpp`, `DistMomDistrGrid.cpp` (with the grid dedup above).
 
 ## 7. Unbundle Cuba (and cubature)

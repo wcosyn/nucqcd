@@ -12,6 +12,7 @@ nucqcd_add_library(ToolsKinematics
     TKinematics2to3_Variables.cpp
     TKinematics2to3_Getters.cpp
     TKinematics2to3_Frames.cpp
+    TKinematics2to3_VarNames.cpp
     TKinematics2to3WithLabAngles.cpp
     TElectronKinematics.cpp
     TLeptonKinematics.cpp
