@@ -28,7 +28,7 @@ same PR.
 | 6 | Structural refactors | 🔶 done: constants macros (#41), `NuclStructure` merge (#42), code layout items 1–4 (`Tools` split #52, prefixed includes and `.hpp` #53), `Model`/`Cross` renamed (#53); MPI retired (#54); namespace `nucqcd` (#65); integrator benchmark (#61, keep `cube_romb` and `cube_adaptive`), precision reporting (#62); CRLF to LF (#66); long files split (#70), integrator option 0 removed (#69); model selection (#72); to do: Glauber grid dedup and speed, long functions |
 | 7 | Unbundle Cuba and cubature | 🔶 Cuba done (#67); cubature (a maintenance question only, see the benchmark) to do |
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
-| 9 | Decouple from ROOT where possible | 🔶 phases 1–5 done (#44, #45, #50, #55, #56, #58): ROOT is optional, the libraries neither include nor link it; 6: GPD generators ROOT-free (#59), fits (Minuit2) to do |
+| 9 | Decouple from ROOT where possible | ✅ done: phases 1–5 (#44, #45, #50, #55, #56, #58), phase 6: GPD generators (#59) and the fits on the standalone Minuit2 (#73). ROOT is only used by the test `unit_vectors` |
 | 10 | LHAPDF interface for the nucleon structure functions | ✅ done (#46), including MSTW through LHAPDF |
 | 11 | Run bookkeeping (provenance) for all programs | ✅ done: design and `RunLog` (#49), `Bookkeep` replaced in its 8 programs (#51), `RunLog` in all other non-attic programs (#64) |
 
@@ -36,7 +36,7 @@ same PR.
 
 *Updated 2026-11-25.*
 
-**Done recently** (PRs #44–#72): ROOT decoupling phases 1–3; step 10 (LHAPDF);
+**Done recently** (PRs #44–#73): ROOT decoupling phases 1–3; step 10 (LHAPDF);
 He3 fixes; step 11 part 1 (`RunLog`); step 6 code layout: `Tools` split into Core, Kinematics,
 WaveFunctions and StructureFunctions (#52), then includes as paths from the repository root, `.hpp`
 as the only extension, and `Model`/`Cross` renamed to `EMQEHadronCurrent`/`EMQECross` (#53); MPI
@@ -46,7 +46,7 @@ handler fix (#57); ROOT phase 5: ROOT optional in the build (#58); phase 6: the 
 ROOT-free (#59); `cube_romb` overflow fix (#60); integrator benchmark (#61, `docs/integrator_benchmark.md`),
 after which the author decided to keep `cube_romb` and `cube_adaptive`; the precision reporting of
 `cube_adaptive` (#62); `RunLog` in all programs, step 11 done (#64); `namespace nucqcd` for all library
-code (#65); CRLF to LF in the C++ files, with a `.gitattributes` (#66); Cuba unbundled (#67); Glauber grid safety net (#68); integrator option 0 removed (#69); the two longest files split (#70); `GetVar*` table (#71); model names as enumerations (#72).
+code (#65); CRLF to LF in the C++ files, with a `.gitattributes` (#66); Cuba unbundled (#67); Glauber grid safety net (#68); integrator option 0 removed (#69); the two longest files split (#70); `GetVar*` table (#71); model names as enumerations (#72); the fits on the standalone Minuit2 (#73).
 
 **Options for the next step** (recommended order):
 1. ~~Report the integration precision~~ (done, #62; see "The requested precision often does not control the
@@ -56,7 +56,7 @@ code (#65); CRLF to LF in the C++ files, with a `.gitattributes` (#66); Cuba unb
    ~~CRLF cleanup~~ (done, #66).
 4. **Glauber grid work:** deduplicate the hierarchy, and investigate the off-axis grid speed (every
    point hits the evaluation cap; `cube_romb` was 5× faster at 1e-3); value changes need the author's OK.
-5. **ROOT phase 6 (fits):** the Minuit fits on an external Minuit2, after which ROOT can go entirely.
+5. ~~ROOT phase 6 (fits)~~ (done, #73): ROOT is now only used by the test `unit_vectors`.
 6. **Smaller items:** unbundle cubature (step 7, maintenance only; Cuba is done, #67), the long functions (the files are split, #70), the PDG constants update (changes values).
 7. **Last:** the license decision (step 8), then the README (currently a stub).
 
@@ -1000,14 +1000,39 @@ standard) from everything that only computes cross sections.
      `TTree`, `TF2` were included but unused (the events go to `cout`); `diDVCS` and `diDVCS_Q2`
      only had the includes. Not run end to end: on this computer PARTONS stops with "Info file not
      found for PDF set 'UNDEFINED'" (see the PARTONS setup lead in step 4).
-   - [ ] the fits (`progs/F2_largex_fit`: `F2_fit`, `F2_bootstrap`, `EMC_fit`; `progs/deepsdis`:
-     `deepsfit`, `bonusscatterfit`, `bonusfit_rig`, `bonus_F2nfit(_sys|_allangles)`): they use the
-     old `TMinuit` through `TFitter`, plus `TMatrixT` for the covariance matrix. Author's decision:
-     later, with an external standalone Minuit2 build (its own CMake project). That means porting
-     them to Minuit2's interface (`ROOT::Minuit2::FCNBase`, `MnMigrad`/`MnHesse`/`MnMinos`), not just
-     relinking; until then they stay on ROOT.
+   - [x] **the fits** (done 2026-11-25, #73; `progs/F2_largex_fit`: `F2_fit`, `F2_bootstrap`, `EMC_fit`;
+     `progs/deepsdis`: `deepsfit`, `bonusscatterfit`, `bonusfit_rig`, `bonus_F2nfit(_sys|_allangles)`): they
+     used ROOT's `TMinuit` through `TFitter` (and peeked into TMinuit's status strings), plus `TMatrixT`
+     for a covariance matrix that was only printed. They now use the **standalone Minuit2** (the ROOT sources
+     of Minuit2 with their own CMake project, github.com/GooFit/Minuit2 tag v6-40-02 = ROOT 6.40.02,
+     LGPL-2.1, 6 s to build, static libraries): `cmake/Minuit2.cmake` uses an installed one
+     (`-DMINUIT2_ROOT`, `$MINUIT2_ROOT`, `~/.local`, the system; not ROOT's own libMinuit2, which needs
+     ROOT; `scripts/install_minuit2.sh`) or downloads and builds the pinned release (SHA256;
+     `-DMINUIT2_TARBALL`, `-DMINUIT2_DOWNLOAD`, `-DMINUIT2_ENABLED=no` skips the fits). Instead of
+     porting each program to Minuit2's interface (ten copies of the same ~150 lines), `Fitting/MinuitFitter.hpp`
+     (`nucqcd::MinuitFitter`) keeps the part of the `TFitter` interface they used (external parameter
+     numbers, limits `0,0` = none, the old `fcn(npar, gin, f, par, iflag)`, the commands `MIGRAD`, `SIMPLEX`,
+     `MINOS`, `SET PRINT`, `SET STR`, `SHO COV`, ...); the programs changed by a script (includes, the
+     creation of the fitter, `static_cast<TFitter*>(...)->GetMinuit()->fCstatu.CompareTo("CONVERGED ")` →
+     `Converged()`, the `fCovmes` tests → `CovarianceAccurate()` / `CovarianceForcedPosDef()`,
+     `TMatrixT` → `std::vector`, `TMath::Abs` → `std::abs`, `Int_t`/`Double_t`). No program links ROOT any
+     more. **Differences** (Minuit2 is a rewrite, not the same algorithm; see the header): `IMPROVE` does
+     nothing (no equivalent), `SET RAN` and `SET LIM` are ignored, a fixed parameter reports error 0 as in
+     TMinuit (Minuit2 reports its step size, which made the "fix parameters at their limits" loop of the
+     programs endless: found when the first test run wrote a 6 GB log). **Checked** against the ROOT binaries
+     on the same data: `EMC_fit` gives the same fit to every printed digit (FCN 88.1853, m1 = 0.103422,
+     error 1.92254e-3, identical data/fit table). `F2_fit stat noSLAC wHT xcut` finds the same parameter values
+     for the four parameters that stay free (1.00597, 1.8468, -6.96952, -0.08836), with parabolic errors
+     about 1.4 times larger; it differs in the status of the error matrix: Minuit2 calls it accurate, so
+     the program fixes the two parameters that sit at their limits (5 and 10), where the TMinuit run did not
+     (and with fixed parameters the summary lines at the end of these programs, which pass `nFreePars` values
+     to the FCN, evaluate garbage: the chi-square printed there, 173787, is not the fit's; a pre-existing flaw,
+     the fixed parameters are not in the array, not fixed here). **Not checked:** `deepsfit`,
+     `bonusscatterfit`, `bonusfit_rig`, `bonus_F2nfit*` and `F2_bootstrap` (they need the DEEPS and BONuS
+     data and take long; they compile and link) and `parabfit`, which was never in the CMake lists (it
+     compiles with the port). Not covered by tests: the fits are programs, `unit_minuit` is not written.
    - `RunLog` in the other programs and their `// ` headers (step 11 part 2) touch the same files.
-   With the generators done, ROOT is only needed for the fits and for `unit_vectors`.
+   With the generators and the fits done, ROOT is only needed for `unit_vectors` (its comparison with ROOT's vector classes).
 
 Phases 1 and 2 are independent and small; 3 and 4 can go in either order; 5 and 6 come last.
 

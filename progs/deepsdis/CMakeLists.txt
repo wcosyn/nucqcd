@@ -11,8 +11,8 @@ nucqcd_add_programs(LINK DIS MePhys PROGRAMS
   b1_calc_comp            # idem
   band_calc)
 
-# fits with ROOT's TMinuit: only built with ROOT
-nucqcd_add_programs(LINK DIS MePhys root_libs PROGRAMS
+# fits with Minuit2 (cmake/Minuit2.cmake)
+nucqcd_add_programs(LINK DIS MePhys minuit2_libs PROGRAMS
   deepsfit                # fit of the FSI parameters to the DEEPS data
   bonusscatterfit         # refit of the rescattering parameters, no sensible results (spectator momenta too low)
   bonusfit_rig            # writes out some of the data renormalization fit values

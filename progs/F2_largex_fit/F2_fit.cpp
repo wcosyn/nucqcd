@@ -2,12 +2,7 @@
 // takes two parameters: 1) prefix of filenames that have output of fits and data 2) include sys errors or not (1/0)
 //run for instance  <repo>/bin/F2_fit speedyevofitstat 0
 
-#include <TVirtualFitter.h>
-#include <TFitter.h>
-#include <TMatrixT.h>
-#include <TMinuit.h>
-// #include <TMath.h>
-
+#include <Fitting/MinuitFitter.hpp>
 #include <cstdlib>
 #include <cmath>
 #include <cstring>
@@ -48,7 +43,7 @@ extern "C"{
 
 void plotfit(double *par, string prefix); // generates output to plot
 void Process_Data(bool sys, bool SLAC, bool hixcut); //selects the data to fit to, only C12 and x>0.5
-void Fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag); //fit function
+void Fcn(int &npar, double *gin, double &f, double *par, int iflag); //fit function
 
 /**
  * @brief Computes the evolution of the F2 structure function, using the standard parametrization, which is assumed to have an initial scale of Q2i
@@ -134,7 +129,7 @@ int main(int argc, char *argv[])
   
   int fBound[] = {1,1,1,1,1,1};
 
-  TVirtualFitter *gMinuit = TVirtualFitter::Fitter ( 0, fNDim );
+  nucqcd::MinuitFitter *gMinuit = new nucqcd::MinuitFitter(fNDim);
 
   // Start values of parameters
   // If you have a starting individual, you can simply use 
@@ -149,11 +144,11 @@ int main(int argc, char *argv[])
 
  // Initialize TMinuit via generic fitter (Minuit)
   //TVirtualFitter::SetDefaultFitter("Minuit2"); // if you want to use minuit2
-  gMinuit->SetFCN (  (void (*)(Int_t &, Double_t *, Double_t &, Double_t *, Int_t))   &Fcn );  // which function to minimise
+  gMinuit->SetFCN (  (void (*)(int &, double *, double &, double *, int))   &Fcn );  // which function to minimise
 
   // ignore until ---------
-  Double_t arglist[fNDim]; // For interface to Minuit routines
-  Int_t ierflg = 0;  // ditto
+  double arglist[fNDim]; // For interface to Minuit routines
+  int ierflg = 0;  // ditto
 
   // Let Minuit produce minimal output...
   arglist[0] = 0;
@@ -165,7 +160,7 @@ int main(int argc, char *argv[])
   
   // If seed is given, set random seed.
   // This can be any integer between 10000 and 900000000.
-//     arglist[0] = (Double_t) fRandomseed; 
+//     arglist[0] = (double) fRandomseed; 
 //     while (arglist[0] >= 900000000)  arglist[0] -= 900000000; 
 //     while (arglist[0] <= 10000)  arglist[0] += 10000;
 //     gMinuit->ExecuteCommand ( "SET RAN", arglist, 1 );
@@ -211,9 +206,9 @@ int main(int argc, char *argv[])
   * START MINIMIZING *
   * **************** */
 
-  Double_t value, verr; // value of parameter and its error
-  Int_t nFreePars = gMinuit->GetNumberFreeParameters();// # of free parameters
-  Int_t someParsFixed = 0; // # of fixed parameters
+  double value, verr; // value of parameter and its error
+  int nFreePars = gMinuit->GetNumberFreeParameters();// # of free parameters
+  int someParsFixed = 0; // # of fixed parameters
 
   bool outerMinimizationLoop = true; /* Stay in outside loop untill this
 				     * flag is turned to false */
@@ -242,14 +237,12 @@ int main(int argc, char *argv[])
       arglist[0] = 10000;
       gMinuit->ExecuteCommand ( "MIGRAD", arglist, 1 );
       for ( int i = 0; i < 3 &&
-            static_cast<TFitter*> ( gMinuit->GetFitter() )->
-            GetMinuit()->fCstatu.CompareTo ( "CONVERGED " );
+            (!gMinuit->Converged());
             i++ )
         gMinuit->ExecuteCommand ( "MIGRAD", arglist, 1 );
 
       // When MIGRAD converged...
-      if ( !static_cast<TFitter*> ( gMinuit->GetFitter() )->
-           GetMinuit()->fCstatu.CompareTo ( "CONVERGED " ) )
+      if ( gMinuit->Converged() )
 {
         // ...try to IMPROVE the chi-squared
         arglist[0] = 10000;
@@ -267,8 +260,7 @@ int main(int argc, char *argv[])
         gMinuit->ExecuteCommand ( "SIMPLEX", arglist, 2 );
 
         // if SIMPLEX did not converge, we give up!
-        if ( static_cast<TFitter*> ( gMinuit->GetFitter() )->
-             GetMinuit()->fCstatu.CompareTo ( "CONVERGED " ) )
+        if ( (!gMinuit->Converged()) )
 {
           std::cout << endl
           << "**********************************************" << endl
@@ -289,12 +281,8 @@ int main(int argc, char *argv[])
     // is questionable to rely on the errors. Therefor we only trust
     // the errors when the status of the error matrix is set to
     // accurate or forced pos-def.
-    if ( !static_cast<TFitter*> ( gMinuit->GetFitter() )->GetMinuit()->
-         fCovmes[static_cast<TFitter*> ( gMinuit->GetFitter() )->
-                 GetMinuit()->fISW[1]].CompareTo ( "ERROR MATRIX ACCURATE " ) ||
-         !static_cast<TFitter*> ( gMinuit->GetFitter() )->GetMinuit()->
-         fCovmes[static_cast<TFitter*> ( gMinuit->GetFitter() )->
-                 GetMinuit()->fISW[1]].CompareTo ( "ERR MATRIX NOT POS-DEF" ) )
+    if ( gMinuit->CovarianceAccurate() ||
+         gMinuit->CovarianceForcedPosDef() )
 {
       for ( int i = 0 ; i < fNDim ; ++i )    // loop over parameters
 {
@@ -307,8 +295,8 @@ int main(int argc, char *argv[])
           // If the parameter is within half an error bar of one of
           // the limits, it should be fixed, as it may be that the
           // true minimum lies beyond the defined physical limit
-          if ( TMath::Abs ( value - fLo[i] ) < verr*0.5 || // half a sigma
-               TMath::Abs ( value - fHi[i] ) < verr*0.5 )
+          if ( std::abs ( value - fLo[i] ) < verr*0.5 || // half a sigma
+               std::abs ( value - fHi[i] ) < verr*0.5 )
 {
             gMinuit->FixParameter ( i );
             someParsFixed++;
@@ -347,14 +335,12 @@ int main(int argc, char *argv[])
   arglist[0] = 7000;
   gMinuit->ExecuteCommand("MIGRAD", arglist, 1);
   for(int i=0; i<4 &&
-  static_cast<TFitter*>(gMinuit->GetFitter())->
-  GetMinuit()->fCstatu.CompareTo("CONVERGED ");
+  (!gMinuit->Converged());
   i++)
   gMinuit->ExecuteCommand("MIGRAD", arglist, 1);
 
     // When MIGRAD does not converge... give up!
-  if (static_cast<TFitter*>(gMinuit->GetFitter())->
-  GetMinuit()->fCstatu.CompareTo("CONVERGED "))
+  if ((!gMinuit->Converged()))
 {
   std::cout << endl
   << "**********************************************" << endl
@@ -371,15 +357,15 @@ int main(int argc, char *argv[])
   // Extract the covariance matrix (method GetCovarianceMatrix only
   // returns a double*)
   nFreePars = gMinuit->GetNumberFreeParameters();
-  TMatrixT<double> matrix ( nFreePars, nFreePars );
+  std::vector<std::vector<double> > matrix(nFreePars, std::vector<double>(nFreePars));
 
   cout << "Covariance matrix" << endl;
   for ( int i = 0 ; i < nFreePars ; ++i )
 {
     for ( int j = 0 ; j < nFreePars ; ++j )
 {
-      matrix ( i, j ) = gMinuit->GetCovarianceMatrixElement ( i, j );
-      cout << matrix(i,j) << " ";
+      matrix[i][j] = gMinuit->GetCovarianceMatrixElement ( i, j );
+      cout << matrix[i][j] << " ";
 }
 cout << endl;
 }
@@ -493,7 +479,7 @@ void Process_Data(bool sys, bool SLAC, bool hixcut){
 
 
 //fit function
-void Fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag)
+void Fcn(int &npar, double *gin, double &f, double *par, int iflag)
 {
 
   f=0.;
