@@ -1,3 +1,4 @@
+#include <Tools/Core/IntegratorFlag.hpp>
 #include <cstdlib>
 #include <Tools/Core/ErrorMessage.hpp>
 #include <iostream>
@@ -49,7 +50,7 @@ cthgrid(cth_grid),
 phigrid(phi_grid),
 pfsigrid(pfsi_grid),
 prec(precision),
-integrator(integr),
+integrator(nucqcd::checked_integrator_flag(integr)),
 maxEval(max_Eval),
 thetarot(theta_rot),
 rhogrid(NULL),
@@ -454,17 +455,7 @@ void DistMomDistrGrid::constructAllGrids(nucqcd::Rotation & rot){
 	    int res=90;
 	    unsigned count=0;
 	    double deeserror=0.;
-	    if(integrator==0){
-// 	      complex<double> results[number_of_Grids];
-// 	      double restimate=0.,thestimate=0.,phiestimate=0.;
-// // 	      rombergerN(this,&DistMomDistrGrid::intRhoR,0.,getPfsigrid()->getPnucleus()->getRange(),number_of_Grids,
-// // 			results,getPrec(),3,7,&restimate,m,&thestimate, &phiestimate);
-// 	      for(int l=0;l<number_of_Grids/2;l++){
-// 		rhogrid[l][i][j][k]+=norm(results[l]);
-// 		rhoctgrid[l][i][j][k]+=norm(results[l+number_of_Grids/2]);
-// 	      }
-	    }
-	    else if(integrator==2||integrator==1){
+	    if (integrator==2||integrator==1){
 	      numint::array<double,3> lower = {{0.,-1.,0.}};
 	      numint::array<double,3> upper = {{getPfsigrid()->getPnucleus()->getRange(),1.,2.*PI}};
 	      DistMomDistrGrid::Ftor_one F;
@@ -565,19 +556,7 @@ void DistMomDistrGrid::constructCtGrid(nucqcd::Rotation & rot){
     	    int res=90;
 	    unsigned count=0;
 	    double deeserror=0.;
-	    if(integrator==0){
-// 	      complex<double> results[number_of_Grids/2];
-// 	      double restimate=0.,thestimate=0.,phiestimate=0.;
-// 	      rombergerN(this,&DistMomDistrGrid::intRhoR,0.,getPfsigrid()->getPnucleus()->getRange(),number_of_Grids/2,
-// 			results,getPrec(),3,7,&restimate,m,&thestimate, &phiestimate);
-// 	      for(int l=0;l<number_of_Grids/2;l++){
-// 		//cout << results[l] << endl;
-// 		rhoctgrid[l][i][j][k]+=norm(results[l]);
-// 	      if(l==0) cout << i << " " << j << " " << k << " " << m << " " << ms << " " << l << " " 
-// 	      << norm(results[l]) << " "<< norm(results[l+number_of_Grids/2]) << endl;
-// 	      }
-	    }
-	    else if(integrator==2||integrator==1){
+	    if (integrator==2||integrator==1){
 	      numint::array<double,3> lower = {{0.,-1.,0.}};
 	      numint::array<double,3> upper = {{getPfsigrid()->getPnucleus()->getRange(),1.,2.*PI}};
 	      DistMomDistrGrid::Ftor_one F;

@@ -625,13 +625,20 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   the adaptive-integration sampling (values within the precision, not bitwise). The dedup therefore needs
   a shared implementation parameterized on the number of variants, with the grids and file names left as
   they are; the test above must stay bitwise equal. Not started.
-  **Found on the way:** in the Glauber grids `integrator == 0` (the old `rombergerN`) is dead: the
-  `rombergerN` calls are commented out in `GlauberGrid`, `GlauberGridThick`, `GlauberDecayGridThick`
-  (and elsewhere), so the results stay at their initial 0 and the grids silently come out as "no FSI"
-  (1 − σ·0). A program that passes 0 on to these grids gets wrong grids without any message (not checked which
-  programs do). To fix: throw `std::invalid_argument` for `integrator == 0` in these
-  classes (or remove flag 0 together with `rombergerN`, see below). Nothing is known to be affected, since
-  the tests and the published runs use 2.
+  **Found on the way, fixed (2026-11-25, #69):** in the Glauber grids `integrator == 0` (the old
+  `rombergerN`) was dead: the `rombergerN` calls were commented out in `GlauberGrid`, `GlauberGridThick`,
+  `GlauberDecayGridThick` (and in `DistMomDistrGrid`, `EMQEHadronCurrent`, `RhoDeuteron`), so the results
+  stayed 0 and the grids silently came out as "no FSI" (1 − σ·0). Nothing known was affected: the tests and
+  the published runs use 2. **The option is removed** (author's decision): the `integrator == 0` branches
+  are gone from those classes and from the live ones in `OneGlauberGrid` and `RhoTCross`, and every
+  constructor with an `integrator` option (`AbstractFsiGrid` and so all grids, `DistMomDistrGrid`,
+  `EMQEHadronCurrent`, `WeakQEHadronCurrent`, `EMQECross`, `WeakQECross`, `RhoTCross`, `RhoDeuteron`,
+  `PionTCross`) now rejects anything but 1 (`numint::cube_romb`) and 2 (`numint::cube_adaptive`) with
+  `std::invalid_argument` (`nucqcd::checked_integrator_flag`, `Tools/Core/IntegratorFlag.hpp`). A program
+  that still passes 0 now fails at construction instead of giving wrong results or (in `OneGlauberGrid`,
+  `RhoTCross`) using `rombergerN`. Not touched: `DQEinclusive`, whose `integrator` argument is a different
+  switch (its case 0 is `cube_adaptive`), and the hard-coded `rombergerN` uses (next item). Tested in
+  `unit_errors`; all tests including `slow` pass with unchanged references.
 - [ ] **Speed of the Glauber grids (to investigate, added 2026-11-23).** From the author's experience,
   grids for particles that do not all move along the z axis are slow to compute (cached afterwards,
   but still). The `numint` integrators used there (`cube_adaptive`, `cube_romb`) are serial; only the
@@ -667,10 +674,9 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   impact-parameter and z integrations in the Glauber phases), and a peaked one; (2) real integrands:
   a Glauber grid point for a particle along z and one off-axis, an A(e,e'p) amplitude from `Model`,
   and an `InclusiveCrossRes` integral (not done: it uses `rombergerN` only, without a flag), each
-  against a high-precision reference. If they are removed: most uses are selected by the `integrator` flag of the grid
-  and cross-section classes (0: `rombergerN` from `Tools/Core/Utilfunctions.hpp`, 1:
-  `numint::cube_romb`, 2: adaptive `cube_adaptive`; the tests use 2). Those branches can go once the
-  programs are checked for passing 0 or 1. Hard-coded uses have to be replaced, which changes values
+  against a high-precision reference. If they are removed: the `integrator` flag of the grid
+  and cross-section classes no longer has the `rombergerN` option 0 (removed in #69, see "Glauber grid
+  hierarchy"; 1: `numint::cube_romb`, 2: `cube_adaptive`; the tests use 2). Hard-coded uses have to be replaced, which changes values
   (author's OK per class): `rombergerN` in `InclusiveCrossRes` (6), `RhoDeuteron` (8), `RhoTCross`
   (4), `OneGlauberGrid` (4), `DistMomDistrGrid` (1) and the programs `rhodint`, `rhoset`;
   `cube_romb` in `Model.cpp:744` and `progs/momdistr/momdistr.cpp`. Then remove

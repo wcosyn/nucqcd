@@ -1,3 +1,4 @@
+#include <Tools/Core/IntegratorFlag.hpp>
 #include <Knockout/EMQECross.hpp>
 #include <Tools/Core/ErrorMessage.hpp>
 
@@ -15,7 +16,7 @@ using namespace std;
 
 EMQECross::EMQECross(TElectronKinematics &elec, MeanFieldNucleusThick *pnucleus, double precision, int integr,
 	     string dir, bool user_sigma, double sigma_screening)
-:homedir(dir),electron(elec),pnucl(pnucleus),reacmodel(NULL), prec(precision),integrator(integr),
+:homedir(dir),electron(elec),pnucl(pnucleus),reacmodel(NULL), prec(precision),integrator(nucqcd::checked_integrator_flag(integr)),
 usersigma(user_sigma),sigmascreening(sigma_screening){
   
 }

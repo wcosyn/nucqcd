@@ -35,7 +35,7 @@ public:
     /*! Constructor
    * \param pnucleus pointer to a MF nucleus instance
    * \param prec precision you want in the integrations
-   * \param integrator which integrator (0:Wim's romberg fubini sort of thing, 1:Klaas thingy, 2:adaptive MIT thingy
+   * \param integrator which integrator (1:numint::cube_romb, 2:numint::cube_adaptive (0, the old rombergerN, was removed)
    * \param dir string that contains dir with all input, should be the ./share subdir of the project!
    * \param max_Eval max # of function evaluations in the coordinate integration
    * \param user_sigma does the user want to change sigma?

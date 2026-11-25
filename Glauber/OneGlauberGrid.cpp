@@ -65,12 +65,7 @@ void OneGlauberGrid::calcGlauberphasesBoth(const int i, const int j, const int k
       int res=90;
       unsigned count=0;
       double deeserror=0.;
-      if(integrator==0){
-	double restimate=0.,thetaestimate=0.,phiestimate=0.;
-	rombergerN(this, &OneGlauberGrid::intGlauberB,1.e-02,getPnucleus()->getRange()-getPrec(),2,results,getPrec(),3,10,&restimate,level,
-		  mm,&thetaestimate, &phiestimate); 
-      }
-      else if(integrator==1||integrator==2){
+      if (integrator==1||integrator==2){
 	numint::array<double,3> lower = {{1.E-06,getParticles()[0].getHitz(),0.}};
 	numint::array<double,3> upper = {{getPnucleus()->getRange(),getPnucleus()->getRange(),0.5*PI}};
 	OneGlauberGrid::Ftor_one F;
@@ -106,12 +101,7 @@ void OneGlauberGrid::calcGlauberphasesCt(const int i, const int j, const int k){
       int res=90;
       unsigned count=0;
       double deeserror=0.;
-      if(integrator==0){
-	double restimate=0.,thetaestimate=0.,phiestimate=0.;
-	rombergerN(this, &OneGlauberGrid::intGlauberBCT,1.e-06,getPnucleus()->getRange()-getPrec(),1,&results,getPrec(),3,8,&restimate,level,
-		  mm,&thetaestimate, &phiestimate); 
-      }
-      else if(integrator==1||integrator==2){
+      if (integrator==1||integrator==2){
 	numint::array<double,3> lower = {{1.E-06,getParticles()[0].getHitz(),0.}};
 	numint::array<double,3> upper = {{getPnucleus()->getRange(),getPnucleus()->getRange(),0.5*PI}};
 	OneGlauberGrid::Ftor_one F;

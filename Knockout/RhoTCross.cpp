@@ -1,3 +1,4 @@
+#include <Tools/Core/IntegratorFlag.hpp>
 #include <Knockout/RhoTCross.hpp>
 #include <Tools/Core/AuxFunction.hpp>
 #include <Tools/Core/Rotation.hpp>
@@ -19,7 +20,7 @@ userset(user_set),
 usersigma(user_sigma),
 nucleusthick(nucleus,dir),
 prec(precision),
-integrator(integr),
+integrator(nucqcd::checked_integrator_flag(integr)),
 abserror(1.E-012),
 maxEval(max_Eval),
 pdil(p_dil),
@@ -61,12 +62,7 @@ void RhoTCross::getCrosst(double *results, const double Ebeam, const double Q2, 
   
   int res=90;
   unsigned count=0;
-  if(integrator==0){
-    double pmestimate=0.,cthestimate=0.,phiestimate=0.;
-    rombergerN(this,&RhoTCross::intPmt,0.,pmax*1.E-03,nrofcross,
-		results,getPrec(),3,7,&pmestimate,Q2,nu,qvec,t,&cthestimate, &phiestimate);
-  }
-  else if(integrator==1||integrator==2){
+  if (integrator==1||integrator==2){
     numint::vector_d ret(nrofcross,0.);
     numint::array<double,3> lower = {{0.,-1.,0.}};
     numint::array<double,3> upper = {{pmax*1.E-03,1.,2.*PI}};
@@ -253,12 +249,7 @@ void RhoTCross::getCrossz(double *results, const double Ebeam,  const double Q2,
   
   int res=90;
   unsigned count=0;
-  if(integrator==0){
-    double pmestimate=0.,cthestimate=0.,phiestimate=0.;
-    rombergerN(this,&RhoTCross::intPmz,0.,pmax*1.E-03,nrofcross,
-		results,getPrec(),3,10,&pmestimate,Q2,nu,qvec,Erho,prho,&cthestimate, &phiestimate);
-  }
-  else if(integrator==1||integrator==2){
+  if (integrator==1||integrator==2){
     numint::vector_d ret(nrofcross,0.);
     numint::array<double,3> lower = {{0.,-1.,0.}};
     numint::array<double,3> upper = {{pmax*1.E-03,1.,2.*PI}};

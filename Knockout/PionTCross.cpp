@@ -1,3 +1,4 @@
+#include <Tools/Core/IntegratorFlag.hpp>
 #include <Knockout/PionTCross.hpp>
 #include <Tools/Core/AuxFunction.hpp>
 #include <Tools/Core/Rotation.hpp>
@@ -17,7 +18,7 @@ userset(user_set),
 usersigma(user_sigma),
 nucleusthick(nucleus,dir),
 prec(precision),
-integrator(integr),
+integrator(nucqcd::checked_integrator_flag(integr)),
 abserror(1.E-012),
 maxEval(max_Eval){
 

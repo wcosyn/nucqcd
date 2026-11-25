@@ -1,3 +1,4 @@
+#include <Tools/Core/IntegratorFlag.hpp>
 #include <Knockout/RhoDeuteron.hpp>
 #include <Tools/Core/AuxFunction.hpp>
 #include <Glauber/FastParticle.hpp>
@@ -16,7 +17,7 @@ pmax(p_max),
 nocuts(no_cuts),
 deuteron(name),
 prec(precision),
-integrator(integr),
+integrator(nucqcd::checked_integrator_flag(integr)),
 abserror(1.E-012),
 maxEval(max_Eval),
 fsi(FSI){
@@ -35,12 +36,7 @@ void RhoDeuteron::getCrosst(double *result, const double Ebeam, const double Q2,
 		     *((1.-fScatterAngle)/(1.+fScatterAngle)));
   int res=90;
   unsigned count=0;
-  if(integrator==0){
-    double pmestimate=0.,cthestimate=0.,phiestimate=0.;
-    // rombergerN(this,&RhoDeuteron::intPmt,0.,pmax*1.E-03,2,
-		// result,nucqcd::integration_prec,3,7,&pmestimate,Q2,nu,qvec,t,&cthestimate, &phiestimate);
-  }
-  else if(integrator==1||integrator==2){
+  if (integrator==1||integrator==2){
     numint::vector_d ret(2,0.);
     numint::array<double,3> lower = {{0.,-1.,0.}};
     numint::array<double,3> upper = {{pmax*1.E-03,1.,PI}};
@@ -219,12 +215,7 @@ void RhoDeuteron::getCrossz(double *result, const double Ebeam,  const double Q2
   double prho=sqrt(Erho*Erho-nucqcd::mass_rho*nucqcd::mass_rho*1.E-06);
   int res=90;
   unsigned count=0;
-  if(integrator==0){
-    double pmestimate=0.,cthestimate=0.,phiestimate=0.;
-    rombergerN(this,&RhoDeuteron::intPmz,0.,pmax*1.E-03,2,
-		result,nucqcd::integration_prec,3,7,&pmestimate,Q2,nu,qvec,Erho,prho,&cthestimate, &phiestimate);
-   }
-  else if(integrator==1||integrator==2){
+  if (integrator==1||integrator==2){
     numint::vector_d ret(2,0.);
     numint::array<double,3> lower = {{0.,-1.,0.}};
     numint::array<double,3> upper = {{pmax*1.E-03,1.,PI}};

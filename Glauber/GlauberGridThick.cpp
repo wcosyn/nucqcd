@@ -459,27 +459,7 @@ void GlauberGridThick::calcGlauberphasesBoth(const int i, const int j, const int
     unsigned count = 0;
     double deeserror = 0.;
     double src = getFsiCorrelator().getCorrGrid_interp(r_hit, costheta_hit, proton);
-    if (integrator == 0) {
-      double restimate = 0., thetaestimate = 0., phiestimate = 0.;
-      if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
-        double results[4] = { 0., 0., 0., 0. };
-//         rombergerN(this, &GlauberGridThick::intGlauberb_bound, 1.E-02, getPnucleusthick()->getRange(), 4, results,
-//                    getPrec(), 3, 10, &restimate, proton, &thetaestimate, &phiestimate);
-        fsi_grid[0][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * results[0];
-        fsi_grid[1][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * results[1] * src;
-        fsi_ct_grid[0][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * results[2];
-        fsi_ct_grid[1][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * results[3] * src;
-      }
-      else {
-        complex < double >results[4] = { 0., 0., 0., 0. };
-//         rombergerN(this, &GlauberGridThick::intGlauberR, 0., getPnucleusthick()->getRange(), 4, results, getPrec(), 3, 8, &restimate, proton, &thetaestimate, &phiestimate);
-        fsi_grid[0][proton][i][j][k] = results[0];
-        fsi_grid[1][proton][i][j][k] = results[1] * src;
-        fsi_ct_grid[0][proton][i][j][k] = results[2];
-        fsi_ct_grid[1][proton][i][j][k] = results[3] * src;
-      }
-    }
-    else if (integrator == 1 || integrator == 2) {
+    if (integrator == 1 || integrator == 2) {
       if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
         numint::array < double, 3 > lower = { {1.E-06, getParticles()[0].getHitz(), 0.} };
         numint::array < double, 3 > upper = { {getPnucleusthick()->getRange(), getPnucleusthick()->getRange(), 2. * PI} };
@@ -542,23 +522,7 @@ void GlauberGridThick::calcGlauberphasesCt(const int i, const int j, const int k
     unsigned count = 0;
     double deeserror = 0.;
     double src = getFsiCorrelator().getCorrGrid_interp(r_hit, costheta_hit, proton);
-    if (integrator == 0) {
-      double restimate = 0., thetaestimate = 0., phiestimate = 0.;
-      if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
-        double results[2] = { 0., 0. };
-//         rombergerN(this, &GlauberGridThick::intGlauberb_bound_ct, 1.E-02, getPnucleusthick()->getRange(), 2, results,
-//                    getPrec(), 3, 8, &restimate, proton, &thetaestimate, &phiestimate);
-        fsi_ct_grid[0][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * results[0];
-        fsi_ct_grid[1][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * results[1] * src;
-      }
-      else {
-        complex < double >results[2] = { 0., 0. };
-//         rombergerN(this, &GlauberGridThick::intGlauberRCT, 0., getPnucleusthick()->getRange(), 2, results, getPrec(), 3, 8, &restimate, proton, &thetaestimate, &phiestimate);
-        fsi_ct_grid[0][proton][i][j][k] = results[0];
-        fsi_ct_grid[1][proton][i][j][k] = results[1] * src;
-      }
-    }
-    else if (integrator == 1 || integrator == 2) {
+    if (integrator == 1 || integrator == 2) {
       if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
         numint::array < double, 3 > lower = { {1.E-06, getParticles()[0].getHitz(), 0.} };
         numint::array < double, 3 > upper = { {getPnucleusthick()->getRange(), getPnucleusthick()->getRange(), 2. * PI} };
@@ -618,27 +582,7 @@ void GlauberGridThick::calcGlauberphasesBoth(std::vector < std::complex < double
     unsigned count = 0;
     double deeserror = 0.;
     double src = getFsiCorrelator().getCorrGrid_interp(r_hit, costheta_hit, proton);
-    if (integrator == 0) {
-      double restimate = 0., thetaestimate = 0., phiestimate = 0.;
-      if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
-        double results[4] = { 0., 0., 0., 0. };
-//         rombergerN(this, &GlauberGridThick::intGlauberb_bound, 1.E-02, getPnucleusthick()->getRange(), 4, results,
-//                    getPrec(), 3, 10, &restimate, proton, &thetaestimate, &phiestimate);
-        (proton ? protonphases[0] : neutronphases[0]) = 1. - getParticles()[0].getScatterfront(proton) * results[0];
-        (proton ? protonphases[1] : neutronphases[1]) = 1. - getParticles()[0].getScatterfront(proton) * results[1] * src;
-        (proton ? protonphases[2] : neutronphases[2]) = 1. - getParticles()[0].getScatterfront(proton) * results[2];
-        (proton ? protonphases[3] : neutronphases[3]) = 1. - getParticles()[0].getScatterfront(proton) * results[3] * src;
-      }
-      else {
-        complex < double >results[4] = { 0., 0., 0., 0. };
-//         rombergerN(this, &GlauberGridThick::intGlauberR, 0., getPnucleusthick()->getRange(), 4, results, getPrec(), 3, 8, &restimate, proton, &thetaestimate, &phiestimate);
-        (proton ? protonphases[0] : neutronphases[0]) = results[0];
-        (proton ? protonphases[1] : neutronphases[1]) = results[1] * src;
-        (proton ? protonphases[2] : neutronphases[2]) = results[2];
-        (proton ? protonphases[3] : neutronphases[3]) = results[3] * src;
-      }
-    }
-    else if (integrator == 1 || integrator == 2) {
+    if (integrator == 1 || integrator == 2) {
       if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
         numint::array < double, 3 > lower = { {1.E-06, getParticles()[0].getHitz(), 0.} };
         numint::array < double, 3 > upper = { {getPnucleusthick()->getRange(), getPnucleusthick()->getRange(), 2. * PI} };
@@ -702,23 +646,7 @@ void GlauberGridThick::calcGlauberphasesCt(std::vector < std::complex < double >
     unsigned count = 0;
     double deeserror = 0.;
     double src = getFsiCorrelator().getCorrGrid_interp(r_hit, costheta_hit, proton);
-    if (integrator == 0) {
-      double restimate = 0., thetaestimate = 0., phiestimate = 0.;
-      if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
-        double results[2] = { 0., 0. };
-//         rombergerN(this, &GlauberGridThick::intGlauberb_bound_ct, 1.E-02, getPnucleusthick()->getRange(), 2, results,
-//                    getPrec(), 3, 8, &restimate, proton, &thetaestimate, &phiestimate);
-        (proton ? protonphases[0] : neutronphases[0]) = 1. - getParticles()[0].getScatterfront(proton) * results[0];
-        (proton ? protonphases[1] : neutronphases[1]) = 1. - getParticles()[0].getScatterfront(proton) * results[1] * src;
-      }
-      else {
-        complex < double >results[2] = { 0., 0. };
-//         rombergerN(this, &GlauberGridThick::intGlauberRCT, 0., getPnucleusthick()->getRange(), 2, results, getPrec(), 3, 8, &restimate, proton, &thetaestimate, &phiestimate);
-        (proton ? protonphases[0] : neutronphases[0]) = results[0];
-        (proton ? protonphases[1] : neutronphases[1]) = results[1] * src;
-      }
-    }
-    else if (integrator == 1 || integrator == 2) {
+    if (integrator == 1 || integrator == 2) {
       if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
         numint::array < double, 3 > lower = { {1.E-06, getParticles()[0].getHitz(), 0.} };
         numint::array < double, 3 > upper = { {getPnucleusthick()->getRange(), getPnucleusthick()->getRange(), 2. * PI} };

@@ -37,7 +37,7 @@ public:
    * \param phi_grid gridsizein phi
    * \param pfsi_grid pointer to a fsi/ct grid
    * \param precision precision you want in the integrations
-   * \param integr which integrator (0:Wim's romberg fubini sort of thing, 1:Klaas thingy, 2:adaptive MIT thingy
+   * \param integr which integrator (1:numint::cube_romb, 2:numint::cube_adaptive (0, the old rombergerN, was removed)
    * \param max_Eval max number of evaluations
    * \param theta_rot [rad] rotation angle that connects momentum frame with glauberframe
    * \param homedir std::string that contains dir with all input, should be the ./share subdir of the project!

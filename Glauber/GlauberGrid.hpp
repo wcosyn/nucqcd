@@ -39,7 +39,7 @@ public:
    * \param phi_grid gridsizein phi
    * \param pnucl pointer to an instance of MeanFieldNucleus
    * \param prec precision you want in the integrations
-   * \param integrator which integrator (0:Wim's romberg fubini sort of thing, 1:Klaas thingy, 2:adaptive MIT thingy
+   * \param integrator which integrator (1:numint::cube_romb, 2:numint::cube_adaptive (0, the old rombergerN, was removed)
    * \param dir std::string that contains dir with all input, should be the ./share subdir of the project!
    */
   GlauberGrid(const int r_grid, const int cth_grid, const int phi_grid, MeanFieldNucleus *pnucl, 

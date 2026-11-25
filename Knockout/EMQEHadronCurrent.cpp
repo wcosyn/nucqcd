@@ -1,3 +1,4 @@
+#include <Tools/Core/IntegratorFlag.hpp>
 #include <Knockout/EMQEHadronCurrent.hpp>
 #include <Tools/Core/ErrorMessage.hpp>
 #include <Glauber/TMFSpinor.hpp>
@@ -12,7 +13,7 @@ using namespace std;
 
 EMQEHadronCurrent::EMQEHadronCurrent(MeanFieldNucleusThick *pnucleus, double precision, int integr, string dir,
 	      int max_Eval, bool user_sigma, double sigma_screening)
-:pnucl(pnucleus), prec(precision), integrator(integr), homedir(dir), maxEval(max_Eval),
+:pnucl(pnucleus), prec(precision), integrator(nucqcd::checked_integrator_flag(integr)), homedir(dir), maxEval(max_Eval),
 usersigma(user_sigma), sigmascreening(sigma_screening),
 gridthick(GlauberGridThick(120,36,5,pnucleus,precision,2,dir)),
 onegrid(OneGlauberGrid(120,36,pnucleus,precision,2,dir)){
@@ -209,23 +210,7 @@ void EMQEHadronCurrent::getMatrixEl(TKinematics2to2 &tk, Matrix<2,3> & matrixel,
   
   int res=90;
   unsigned count=0;
-  if(integrator==0){
-//     complex<double> results[12];
-//     double restimate=0.,thestimate=0.,phiestimate=0.;
-//     rombergerN(this,&EMQEHadronCurrent::intJR12,0.,pnucl->getRange(),12,results,getPrec(),3,8,&restimate,pw,SRC,&thestimate, &phiestimate);
-//     //if(!pw) delete grid;
-//     if(CT){
-//       for(int j=0;j<2;++j){
-// 	for(int i=0;i<3;i++) matrixel(j,i)=results[j*6+2*i+1];
-//       }
-//     }
-//     else{
-//       for(int j=0;j<2;++j){
-// 	for(int i=0;i<3;i++) matrixel(j,i)=results[j*6+2*i];
-//       }
-//     }
-  }
-  else if(integrator==1||integrator==2){
+  if (integrator==1||integrator==2){
 
     numint::array<double,3> lower = {{0.,-1.,0.}};
     numint::array<double,3> upper = {{pnucl->getRange(),1.,2.*PI}};
@@ -312,15 +297,7 @@ void EMQEHadronCurrent::getAllMatrixElMult(TKinematics2to2 &tk, Matrix<2,3> *mat
       int res=90;
       unsigned count=0;
       int total=thick?5:3; //in thickness we need 5 diff FSI results, otherwise 3
-      if(integrator==0){
-// 	complex<double> results[total];
-// 	double restimate=0.,thestimate=0.,phiestimate=0.;
-// 	rombergerN(this,&EMQEHadronCurrent::intJR,0.,pnucl->getRange(),total,results,getPrec(),3,8,
-// 		   &restimate,total,&thestimate, &phiestimate);
-// 	for(int k=0;k<total;++k) matrixel[k](spinout,photopol) = results[k];
-// 	
-      }
-      else if(integrator==1||integrator==2){
+      if (integrator==1||integrator==2){
 
 	numint::array<double,3> lower = {{0.,-1.,0.}};
 	numint::array<double,3> upper = {{pnucl->getRange(),1.,2.*PI}};

@@ -33,7 +33,7 @@ public:
    * \param userset do we want to set sigma ourselves?
    * \param usersigma [mb] user chosen value of sigma_tot rho-nucleon scattering
    * \param precision precision you want in the integrations
-   * \param integrator which integrator (0:Wim's romberg fubini sort of thing, 1:Klaas thingy, 2:adaptive MIT thingy
+   * \param integrator which integrator (1:numint::cube_romb, 2:numint::cube_adaptive (0, the old rombergerN, was removed)
    * \param maxEval max # of function evaluations in the pm integration
    */
   PionTCross(const int nucleus, const double pmax, const std::string dir, 

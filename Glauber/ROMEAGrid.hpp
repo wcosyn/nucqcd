@@ -64,7 +64,7 @@ public:
    * \param phi_grid gridsizein phi
    * \param pnucl pointer to an instance of MeanFieldNucleus
    * \param prec precision you want in the integrations
-   * \param integrator which integrator (0:Wim's romberg fubini sort of thing, 1:Klaas thingy, 2:adaptive MIT thingy
+   * \param integrator which integrator (1:numint::cube_romb, 2:numint::cube_adaptive (0, the old rombergerN, was removed)
    * \param opticalfit  Different fits for the optical potential.  See paper Cooper et al. (Phys.Rev. C80 (2009) 034605) <BR>
    * FIT1:  (1) CA40-PB208 (P,P) 65-1040 MEV  FIT.1  <BR>
      FIT2: (2) CA40-PB208 (P,P) 65-1040 MEV  FIT.2  <BR>
