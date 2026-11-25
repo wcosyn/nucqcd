@@ -1,0 +1,7 @@
+# Default: text files are stored with LF line endings.
+* text=auto eol=lf
+# Third-party Fortran that came with CRLF line endings: keep as is, so that the original files stay recognizable.
+Glauber/global2009.f -text
+Tools/StructureFunctions/alekhin.f -text
+Tools/StructureFunctions/cteq.f -text
+docs/reference-code/nn_amplitudes/*.f -text
