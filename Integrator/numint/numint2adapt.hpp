@@ -25,6 +25,8 @@
 
 #include <Integrator/adaptive/cubature.h>
 
+#include <Integrator/numint/adaptive_stats.hpp>
+
 
 OPEN_NUMINT_NAMESPACE
 
@@ -87,8 +89,6 @@ inline void numint2ada(unsigned fdim, double *res, vector_z &a) {
   }
 }
 
-
-
 template <typename T, unsigned N>
 int cube_adaptive(const mdfunction<T,N> &f, const numint::array<double, N> &a,
                   const numint::array<double,N> &b, double epsabs, double epsrel, int minEval, int maxEval,
@@ -134,6 +134,8 @@ int cube_adaptive(const mdfunction<T,N> &f, const numint::array<double, N> &a,
                              maxEval,epsabs,epsrel,
                              val,err);
 
+
+  adaptive_record(fdim, val, err, epsabs, epsrel, maxEval);
 
   ada2numint(fdim,val,result);
 

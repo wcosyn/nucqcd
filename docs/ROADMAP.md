@@ -34,25 +34,30 @@ same PR.
 
 ## Where we are / next up
 
-*Updated 2026-11-23.*
+*Updated 2026-11-25.*
 
-**Done recently** (PRs #44–#58 and #59): ROOT decoupling phases 1–3; step 10 (LHAPDF);
+**Done recently** (PRs #44–#61): ROOT decoupling phases 1–3; step 10 (LHAPDF);
 He3 fixes; step 11 part 1 (`RunLog`); step 6 code layout: `Tools` split into Core, Kinematics,
 WaveFunctions and StructureFunctions (#52), then includes as paths from the repository root, `.hpp`
 as the only extension, and `Model`/`Cross` renamed to `EMQEHadronCurrent`/`EMQECross` (#53); MPI
 retired (`TMPI` and `rhod`/`rhottest` to `progs/attic/mpi`, #54); ROOT phase 4: own vector and
 Lorentz types, bitwise equal to ROOT (#55), and all code converted to them (#56); `RunLog` exit
-handler fix (#57); ROOT phase 5: ROOT optional in the build (#58); phase 6: the `diDVCS*` generators ROOT-free
-(#59).
+handler fix (#57); ROOT phase 5: ROOT optional in the build (#58); phase 6: the `diDVCS*` generators
+ROOT-free (#59); `cube_romb` overflow fix (#60); integrator benchmark (#61, `docs/integrator_benchmark.md`),
+after which the author decided to keep `cube_romb` and `cube_adaptive`.
 
-**Recommended next step:** the author's decision on the integrator benchmark (`docs/integrator_benchmark.md`,
-#61) and on #60; then: ROOT is now only needed for the fits (to move to an external Minuit2,
-phase 6) and `unit_vectors`. Next: step 11 part 2 (`RunLog` in the other programs) or `namespace
-nucqcd` (code layout item 4); the open leads (rho t/z, Romberg benchmark, Glauber grid speed,
-PARTONS setup) and the license can be taken up any time.
-
-**After that:** the fits on an external Minuit2 (phase 6), then ROOT can go entirely (`unit_vectors`
-keeps its comparison only while ROOT is available).
+**Options for the next step** (no PR is open; recommended order):
+1. ~~Report the integration precision~~ (done, #62; see "The requested precision often does not control the
+   accuracy", step 6).
+2. **Step 11 part 2:** `RunLog` in the other ~62 programs outside the attic (9 of 71 have it), `// `
+   headers to `# `; mechanical, can be done in batches per `progs/` subdirectory.
+3. **`namespace nucqcd`** (code layout item 4), class by class, with compatibility `using` declarations.
+4. **Glauber grid work:** deduplicate the hierarchy, and investigate the off-axis grid speed (every
+   point hits the evaluation cap; `cube_romb` was 5× faster at 1e-3); value changes need the author's OK.
+5. **ROOT phase 6 (fits):** the Minuit fits on an external Minuit2, after which ROOT can go entirely.
+6. **Smaller items:** unbundle Cuba/cubature (step 7, maintenance only), model-name strings to enums,
+   splitting the very long files, the PDG constants update (changes values).
+7. **Last:** the license decision (step 8), then the README (currently a stub).
 
 **Open choices for the author:** the license (step 8, see the item there); the PDG constants update (changes values); whether to unbundle Cuba
 (step 7); the README (step 8) comes last.
@@ -645,7 +650,7 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   following `WeakQEHadronCurrent`/`WeakQECross` and `NucleonEMOperator`/`NucleonWeakOperator`; the
   class names were replaced in the 19 files that include them (library, programs including the
   attic, tests). Also fixed: the `\file` tag of `DQEinclusive.hpp` said `Cross.hpp`.
-- [ ] **The requested precision often does not control the accuracy** (found with the integrator
+- [x] **The requested precision often does not control the accuracy** (reporting done 2026-11-25, #62; the caps themselves are unchanged) (found with the integrator
   benchmark, 2026-11-23). `cube_adaptive` returns 0 (success) when it stops at `maxEval`, and the
   `numint` wrapper (`numint2adapt.hpp`) discards the error estimate, so callers never learn that the
   precision was not reached. In practice the evaluation caps decide: `maxEval` of
@@ -653,7 +658,13 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   pass 2·10⁴, which gives 1e-5 to 1e-4 relative, see the benchmark), and the hard-coded 2·10⁶/5·10⁶ in
   the Glauber grids (off-axis grids stop there at ~1e-3). To do: return or log the error estimate
   and a "cap reached" flag from `cube_adaptive` (and check it, or at least warn, in the classes);
-  document what `prec` and `maxEval` mean for each class. No values change by reporting.
+  document what `prec` and `maxEval` mean for each class. No values change by reporting. **Done:** `cube_adaptive` checks the cubature error estimate against the request (the cubature
+  code's own test) and counts the calls that stopped without meeting it (`numint::adaptive_stats()`,
+  `Integrator/numint/adaptive_stats.hpp`); the return value is unchanged. The first such call prints a
+  warning to stderr (`adaptive_stats().warn = false` silences it), and `nucqcd::RunLog` writes
+  `# cube_adaptive: N integrals, M stopped at maxEval ... (worst estimated relative error ...)` before its
+  "finished" line when `cube_adaptive` was used. Tested in `unit_numint`. Still to do: per class,
+  document what `prec` and `maxEval` mean, and decide case by case whether to raise caps.
 - [ ] **Model selection:** use enums or factory registries instead of model-name strings (about 700
   string comparisons). A typo should fail at compile time, not with `exit()` at runtime.
 - [x] **Merge `NuclStructure` into `NucleonStructure`** (#42). The parametrizations are now implemented

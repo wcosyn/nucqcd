@@ -1,5 +1,7 @@
 #include <Tools/Core/RunLog.hpp>
 
+#include <Integrator/numint/adaptive_stats.hpp>
+
 #include "nucqcd_build_config.inc"  // NUCQCD_BUILD_TYPE, ... (generated at configure time)
 #include "nucqcd_git_info.inc"      // NUCQCD_GIT_DESCRIBE, NUCQCD_GIT_DATE (generated at build time)
 
@@ -118,6 +120,7 @@ void RunLog::finish() {
   const double seconds = std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count();
   std::ostringstream wall;
   wall << std::fixed << std::setprecision(1) << seconds;
+  numint::adaptive_report(*out, "# ");  // only if cube_adaptive was used
   *out << "# finished: " << now_string() << ", wall time " << wall.str() << " s" << std::endl;
 }
 
