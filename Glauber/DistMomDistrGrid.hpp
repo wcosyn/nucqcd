@@ -15,6 +15,9 @@
 #include <Tools/Core/Matrix.hpp>
 #include <Integrator/numint/numint.hpp>
 
+namespace nucqcd {
+
+
 //forward declaration
 class AbstractFsiCTGrid;
 
@@ -271,5 +274,8 @@ private:
   
   
 };
+
+}  // namespace nucqcd
+
 /** @} */
 #endif

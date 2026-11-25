@@ -17,6 +17,9 @@
 #include <Tools/WaveFunctions/TDeuteron.hpp>
 #include <Integrator/numint/numint.hpp>
 
+namespace nucqcd {
+
+
 
 /*! \brief A class that computes inclusive deuteron cross sections */
 class InclusiveCross{
@@ -552,6 +555,9 @@ private:
   
 };
 
+
+
+}  // namespace nucqcd
 
 /*! @} */
 #endif

@@ -100,6 +100,9 @@
 #include <cmath>
 #include <string>
 
+namespace nucqcd {
+
+
 /*! \brief Nucleon structure functions at fixed kinematics (Q^2, x and W^2, which may be off-shell)
  *
  * A thin wrapper around NucleonStructure: it stores the kinematics and the parametrization, and
@@ -175,5 +178,8 @@ private:
   double Wsq; /*!< [MeV^2] invariant mass squared W^2 */
   NucleonStructure structure; /*!< the parametrization */
 };
+
+}  // namespace nucqcd
+
 /*! @} */
 #endif

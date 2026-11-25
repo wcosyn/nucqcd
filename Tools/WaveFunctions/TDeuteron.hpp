@@ -17,9 +17,12 @@
 #include <complex>
 #include <Tools/Core/TSpinor.hpp>
 
+namespace nucqcd {
+
+
 // Forward declarations
 //class TStrangePolarization;
-namespace nucqcd { class LorentzVector; }
+class LorentzVector;
 
 /*! \brief Namespace-like class for the deuteron: wave functions and polarization states */
 class TDeuteron
@@ -244,6 +247,9 @@ class TDeuteron
   }; // class TDeuteron::Polarization
 
 }; // class TDeuteron
+
+
+}  // namespace nucqcd
 
 /** @} */
 #endif

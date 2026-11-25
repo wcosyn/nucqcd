@@ -7,6 +7,7 @@
 using namespace std;
 
 #include <Knockout/RhoTCross.hpp>
+using namespace nucqcd;
 
 #define NROFRES 9
 

@@ -15,6 +15,9 @@
 #include <sstream>
 #include <complex>
 
+namespace nucqcd {
+
+
 // Bookkeep(argc, argv, arg_names) was replaced by nucqcd::RunLog (RunLog.hpp) in 2026-11.
 
 /*! interpolation of an array
@@ -338,5 +341,8 @@ std::stringstream ss;
 ss << t;
 return ss.str();
 }
+
+}  // namespace nucqcd
+
 #endif
 

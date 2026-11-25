@@ -13,6 +13,9 @@
 #include <complex>
 #include <Tools/Core/Matrix.hpp>
 
+namespace nucqcd {
+
+
 // ********************************************************** //
 // First we define the gamma matrices (Dirac representation) //
 // ********************************************************** //
@@ -256,6 +259,9 @@ class GammaStructure
 
 /* The 4vector gamma_{mu} (GMU) containing 4 GammaStructures is defined in
  * ../FourVector/FourVector.hpp for nesting reasons */
+
+
+}  // namespace nucqcd
 
 /** @} */
 #endif

@@ -14,6 +14,9 @@
 #include <Glauber/AbstractFsiGrid.hpp>
 #include <Integrator/numint/numint.hpp>
 
+namespace nucqcd {
+
+
 /*! \brief A class for a ROMEA ISI/FSI grid, implementing the abstract AbstractFsiGrid class
  *
  * We use optical potential from the most recent global of Cooper, Hama (Phys.Rev. C80 (2009) 034605) <BR>
@@ -139,6 +142,9 @@ private:
 
 
 
+
+
+}  // namespace nucqcd
 
 /** @} */
 #endif

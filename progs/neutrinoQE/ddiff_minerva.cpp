@@ -26,6 +26,7 @@ using namespace std;
 //headers for integration 
 #include <Integrator/numint/numint.hpp>
 #include "fluxes.h"
+using namespace nucqcd;
 
   //integration struct
 struct Ftor {

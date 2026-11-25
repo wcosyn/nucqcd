@@ -16,6 +16,9 @@
 #include <iostream>
 #include <Glauber/MeanFieldNucleus.hpp>
 
+namespace nucqcd {
+
+
 /*! \brief A class for dirac spinor representing a mean-field wave function of a certain nucleon in a nucleus.
  * 
  * Careful!!!  We include a factor r in the definition here, so dimension is [fm^(-1/2)] <BR>
@@ -115,6 +118,9 @@ Matrix<4,1> operator*(const Matrix<4,4>& lhs, const TMFSpinor& rhs);
 std::complex<double> operator*(const Matrix<1,4>& lhs, const TMFSpinor& rhs);
 /*! multiplication of a 4*4 matrix (of the gamma structure kind) with a MF spinor */
 Matrix<4,1> operator*(const GammaStructure& lhs, const TMFSpinor& rhs);
+
+
+}  // namespace nucqcd
 
 /** @}*/
 #endif

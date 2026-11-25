@@ -28,6 +28,7 @@ using std::ofstream;
 #include <cmath>
 #include <sstream>
 #include <cassert>
+using namespace nucqcd;
 
 #define FORCE_POS_ENERGY_PROJ 1 // to check WIM's previous results set to True, otherwise set false
 

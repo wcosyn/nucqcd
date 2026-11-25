@@ -10,6 +10,7 @@ using namespace std;
 #include <DIS/He3Cross.hpp>
 #include <Tools/Kinematics/LightConeKin2to3.hpp>
 #include <Tools/Kinematics/LightConeKin2to2.hpp>
+using namespace nucqcd;
 
 
 

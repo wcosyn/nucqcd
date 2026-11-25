@@ -19,6 +19,7 @@ using namespace std;
 #include <Tools/Core/RunLog.hpp>
 #include <vector>
 #include <Glauber/NucleonEMOperator.hpp>
+using namespace nucqcd;
 
 //run ./observables [Q2 [MeV^2]] [omega] [missing momentum]
 int main(int argc, char *argv[])

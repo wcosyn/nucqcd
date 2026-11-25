@@ -11,6 +11,9 @@
 
 #include <Tools/Core/Vector3.hpp>
 
+namespace nucqcd {
+
+
 /*! \brief Interface of a deuteron wave function implementation (used by TDeuteron::Wavefunction)
  *
  * Radial functions with the conventions of TDeuteron::Wavefunction: reduced u, w (and the
@@ -68,6 +71,9 @@ class TWavefunctionImplementation
 
 
 };
+
+
+}  // namespace nucqcd
 
 /** @} */
 #endif

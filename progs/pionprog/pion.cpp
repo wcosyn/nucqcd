@@ -7,6 +7,7 @@
 using namespace std;
 
 #include <Glauber/FastParticle.hpp>
+using namespace nucqcd;
 int main(int argc, char *argv[])
 {
   nucqcd::RunLog runlog(argc, argv, {});

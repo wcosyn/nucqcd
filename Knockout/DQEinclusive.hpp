@@ -18,6 +18,9 @@
 #include <Tools/Core/GammaStructure.hpp> 
 #include <vector>
 
+namespace nucqcd {
+
+
 //forward declaration
 class FastParticle;
 
@@ -448,6 +451,9 @@ static void FSI_PVfirst_perp(numint::vector_d & res, double pz1, double pz2, dou
 };
 
 
+
+
+}  // namespace nucqcd
 
 /*! @} */
 #endif

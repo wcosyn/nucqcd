@@ -9,6 +9,9 @@
 #include <iterator>
 #include <Tools/Core/AuxFunction.hpp>
 
+namespace nucqcd {
+
+
 using namespace std;
 
 Deut_Conv_EMTLF::Deut_Conv_EMTLF(const string &wfname){
@@ -321,3 +324,6 @@ vector< complex<double> > Deut_Conv_EMTLF::lf_deut(const double Ek, const nucqcd
     return wf_out;
 
 }
+
+}  // namespace nucqcd
+

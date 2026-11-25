@@ -7,6 +7,7 @@
 #include <Glauber/FastParticle.hpp>
 #include <vector>
 #include <complex>
+using namespace nucqcd;
 
 void calculate_CX_probabilities(std::vector<struct Event>& events,MeanFieldNucleusThick& nuc,std::vector<double*>&,std::vector<double*>&);
 void calculate_CX_probabilities(struct Event&,MeanFieldNucleusThick&,double*,double*);

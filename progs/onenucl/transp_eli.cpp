@@ -12,6 +12,7 @@
 #include <sstream>
 #include <cassert>
 #include <cstdio>
+using namespace nucqcd;
 
 std::string getShareDir(){
     std::stringstream ss;

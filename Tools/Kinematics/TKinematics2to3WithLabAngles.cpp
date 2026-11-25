@@ -51,6 +51,9 @@ using std::cout; using std::cerr;
 #include <cstdio>
 #include <string>
 #include <vector>
+
+namespace nucqcd {
+
 using std::vector;
 
 
@@ -656,3 +659,6 @@ const TKinematics2to3& TKinematics2to3WithLabAngles::GetSolution(int solution) c
   }
   return *fSolutions[solution];
 }
+
+}  // namespace nucqcd
+

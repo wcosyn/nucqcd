@@ -7,6 +7,7 @@ using std::string;
 using std::cout;
 using std::endl;
 #include <Tools/Core/constants.hpp>
+using namespace nucqcd;
 
 int main()
 {

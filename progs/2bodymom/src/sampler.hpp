@@ -6,6 +6,7 @@
 #include <Glauber/MeanFieldNucleusThick.hpp>
 #include <cstdlib>
 #include <cstdio>
+using namespace nucqcd;
 
 /** This is a header containing declarations of different sampling routines.
  *  

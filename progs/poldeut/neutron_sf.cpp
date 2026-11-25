@@ -17,6 +17,7 @@
 #include <Tools/Core/constants.hpp>
 #include <Tools/Core/RunLog.hpp>
 #include <Tools/StructureFunctions/NucleonStructure.hpp>
+using namespace nucqcd;
 
 using namespace std;
 

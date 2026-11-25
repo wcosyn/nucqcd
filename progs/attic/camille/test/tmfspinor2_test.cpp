@@ -21,6 +21,7 @@ using std::cout;
 using std::endl;
 #include <Integrator/numint/numint.hpp>
 #include <iomanip>
+using namespace nucqcd;
 using std::setw;
 
 void printArray(MeanFieldNucleus&, const int*);

@@ -6,6 +6,9 @@
 #include <Tools/Core/Vector3.hpp>
 #include <cassert>
 
+namespace nucqcd {
+
+
 using namespace std;
 
 DeuteronCross::DeuteronCross(std::string name, bool proton, std::string struc_name,
@@ -596,3 +599,5 @@ double DeuteronCross::sigmaparam(double W_sq, double Q2){
   return (50.3+53*(sqrt(W_sq>5.76E06?5.76E06:W_sq)-nucqcd::mass_p)*1.E-03)
 	/(1.E-05*Q2)*nucqcd::inv_hbarc*nucqcd::inv_hbarc;
 }
+
+}  // namespace nucqcd

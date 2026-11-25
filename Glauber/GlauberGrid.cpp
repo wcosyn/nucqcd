@@ -11,6 +11,9 @@ using namespace std;
 #include <Tools/Core/Utilfunctions.hpp>
 #include <Tools/Core/AuxFunction.hpp>
 
+namespace nucqcd {
+
+
 //constructor, calls abstractfsigrid's constructor
 GlauberGrid::GlauberGrid(const int r_grid, const int cth_grid, const int phi_grid, MeanFieldNucleus * pnucl,
                          double prec, int integrator, string dir):AbstractFsiGrid(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir),
@@ -770,3 +773,6 @@ void GlauberGrid::klaas_one_bound_ct(numint::vector_z & results, double r, doubl
                  + power(grid.getPnucleus()->getWave_G(level, r), 2) * grid.getPnucleus()->getYkappacos(level, m, costheta));
   return;
 }
+
+}  // namespace nucqcd
+

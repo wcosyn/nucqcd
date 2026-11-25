@@ -10,6 +10,9 @@
 #include <complex>
 #include <Tools/WaveFunctions/TDeuteron.hpp>
 
+namespace nucqcd {
+
+
 using namespace std;
 
 
@@ -174,4 +177,7 @@ Matrix<4,1> operator*(const GammaStructure& lhs, const TMFSpinor& rhs)
 {
   return (Matrix<4,4>)lhs * (Matrix<4,1>)rhs;
 }
+
+}  // namespace nucqcd
+
 

@@ -11,7 +11,10 @@
 #include <GPD_Partons/TransGPD_set.hpp>
 
 #include <memory>
-namespace nucqcd { class LHAPDFStructure; }
+
+namespace nucqcd {
+
+class LHAPDFStructure;
 
 
 /**
@@ -111,6 +114,9 @@ TransGPD_set grid[201][101];
 
 
 };
+
+}  // namespace nucqcd
+
 
 
 #endif

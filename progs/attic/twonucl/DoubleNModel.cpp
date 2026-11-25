@@ -9,6 +9,7 @@
 #include <gsl/gsl_monte_plain.h>
 #include <gsl/gsl_monte_miser.h>
 #include <gsl/gsl_monte_vegas.h>
+using namespace nucqcd;
 
 using namespace std;
 

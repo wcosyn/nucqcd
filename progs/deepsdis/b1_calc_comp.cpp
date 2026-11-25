@@ -19,6 +19,7 @@ using namespace std;
 
 #include <Tools/WaveFunctions/TDeuteron.hpp>
 #include <Integrator/numint/numint.hpp>
+using namespace nucqcd;
 
 
 void k_int(numint::vector_d & res, double knorm, double kcosth, TDeuteron::Wavefunction *wfref,

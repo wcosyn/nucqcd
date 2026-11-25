@@ -19,6 +19,9 @@ using namespace std;
 #include <Tools/Core/Rotation.hpp>
 #include <Glauber/TMFSpinor.hpp>
 
+namespace nucqcd {
+
+
 DistMomDistrGrid::DistMomDistrGrid():
 pgrid(0),
 cthgrid(0),
@@ -830,6 +833,9 @@ void DistMomDistrGrid::klaas_distint_ct(numint::vector_z &results, double r, dou
   return;
 
 }
+
+}  // namespace nucqcd
+
 
 
 

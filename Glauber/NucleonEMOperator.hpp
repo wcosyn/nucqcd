@@ -13,6 +13,9 @@
 #include <Tools/Core/FourVector.hpp>
 #include <Tools/Core/GammaStructure.hpp>
 
+namespace nucqcd {
+
+
 class MeanFieldNucleusThick; //forward declaration
 
 /*! \brief A class that contains the EM coupling to the nucleon.
@@ -200,6 +203,9 @@ private:
   
   
 };
+
+
+}  // namespace nucqcd
 
 /** @} */
 #endif

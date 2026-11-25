@@ -1,6 +1,9 @@
 #ifndef DEUT_GPD_T_SET_HPP
 #define DEUT_GPD_T_SET_HPP
 
+namespace nucqcd {
+
+
 /**
  * @brief small class that holds deuteron (isosinglet) vector helicity amplitudes for a certain kinematics
  * 
@@ -70,6 +73,9 @@ double amp_0m; ///< helicity amplitude 0-
 double amp_mp; ///< helicity amplitude -+
 double amp_pm; ///< helicity amplitude +-
 };
+
+}  // namespace nucqcd
+
 
 
 #endif //TRNSGPD_SET_HPP

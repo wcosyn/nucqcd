@@ -18,6 +18,9 @@
 #include <Tools/WaveFunctions/TDeuteron.hpp>
 #include <Knockout/DeuteronMomDistr.hpp>
 
+namespace nucqcd {
+
+
 
 
 /*! \brief A class used to compute D(e,e'rho) cross sections & transparencies*/
@@ -199,5 +202,8 @@ private:
       double dummy, double Erho, double prho);
 
 };
+
+}  // namespace nucqcd
+
 /*! @} */
 #endif

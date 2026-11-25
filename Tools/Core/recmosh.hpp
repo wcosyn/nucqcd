@@ -19,6 +19,9 @@ using std::map;
 #include <array>
 
 #include <string>
+
+namespace nucqcd {
+
 using namespace std;
 
 /**
@@ -49,5 +52,8 @@ public:
 	double getCoefficient( int n, int l, int N, int Lambda, int L ); ///< Moshinsky bracket <(n l, N Lambda) L | (n1 l1, n2 l2) L> for the pair of this object
 // 	RecMosh(int n1, int l1, int n2, int l2, int n, int l, int N, int Lambda, int L, bool reversed);
 };
+
+}  // namespace nucqcd
+
 
 #endif // RECMOSH_H

@@ -17,6 +17,7 @@
 #include <Glauber/MeanFieldNucleusThick.hpp>
 #include <Tools/Kinematics/TKinematics2to3WithLabAngles.hpp>
 #include "DoubleNModel.hpp"
+using namespace nucqcd;
 
 /*! \brief A class used to compute A(e,e'NN) cross sections */
 class DoubleNCross{

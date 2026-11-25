@@ -3,6 +3,9 @@
 #include <Tools/Core/FourVector.hpp>
 #include <Tools/Core/Vector3.hpp>
 
+namespace nucqcd {
+
+
 using namespace std;
 
 He3Cross::He3Cross(std::string wfname, std::string inputdir, std::string strucname, bool proton_): 
@@ -66,3 +69,5 @@ double He3Cross::getCross(LightConeKin2to3 &kin){
   return 2.*pow(kin.getYA()*nucqcd::alpha_em/kin.getQ2(),2.)*getDensity(kin)*strucfunc.getStructureLC(kin)
       *nucqcd::hbarc*nucqcd::hbarc*1.E25;  //conversion from MeV-8 to nb/GeV-6
 }
+
+}  // namespace nucqcd

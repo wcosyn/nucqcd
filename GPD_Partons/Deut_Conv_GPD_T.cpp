@@ -6,6 +6,9 @@
 #include <Integrator/numint/numint.hpp>
 #include <Tools/Core/AuxFunction.hpp>
 
+namespace nucqcd {
+
+
 using namespace std;
 
 Deut_Conv_GPD_T::Deut_Conv_GPD_T(const string &pdf_name, const string &wfname):
@@ -604,3 +607,6 @@ Deut_GPD_T_set Deut_Conv_GPD_T::getDeut_GPD_T_set(const double x, const double x
     //cout << x << " " << index_i << " "<< frac_i << endl;
     return grid[int(index_i)]*(1.-frac_i)+grid[int(index_i)+1]*(frac_i);
 }
+
+}  // namespace nucqcd
+

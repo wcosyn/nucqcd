@@ -111,6 +111,9 @@
 #include <vector>
 #include <Tools/Core/Rotation.hpp>
 #include <Tools/Core/Vector3.hpp>
+
+namespace nucqcd {
+
 // #include <numtoa.h>
 using std::cout; using std::cerr;
 using std::vector;
@@ -6490,3 +6493,6 @@ TSpinor TKinematics2to3::RotateToNac(const TSpinor& spinor,
   // axis convention to the 'kN' axis convention.  
   return RotateSpinorToNac(axisConvention) * spinor;
 }
+
+}  // namespace nucqcd
+

@@ -32,6 +32,7 @@ using std::endl;
 #include <Tools/Core/constants.hpp>
 #include <DIS/DeuteronCross.hpp>
 #include "bonusdata.h"
+using namespace nucqcd;
 
 
 //double sigmainput=40.;

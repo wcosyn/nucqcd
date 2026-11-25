@@ -11,6 +11,9 @@ using namespace std;
 #include <Tools/Core/Utilfunctions.hpp>
 #include <Tools/Core/GridCache.hpp>
 
+namespace nucqcd {
+
+
 AbstractFsiGrid::AbstractFsiGrid(int r_grid, int cth_grid, int phi_grid, 
 				 MeanFieldNucleus *pnucl, double precision, int integr, std::string homedir):
 filledgrid(0),filledallgrid(0),dir(nucqcd::grid_cache_dir(homedir)),rgrid(r_grid),cthgrid(cth_grid),
@@ -316,3 +319,6 @@ void AbstractFsiGrid::updateGrids(){
 //     else cout << "fsi grid equal to the earlier one, doing nothing" << endl << fsi_filename << endl << old_fsi_filename << endl;
   }
 }
+
+}  // namespace nucqcd
+

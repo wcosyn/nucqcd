@@ -15,6 +15,9 @@
 #include <Tools/Core/constants.hpp>
 #include <Glauber/MeanFieldNucleus.hpp>
 
+namespace nucqcd {
+
+
 /*! \brief A Class for a nucleus with mean-field wave functions for the individual nucleons and densities. 
  * 
  * Inherited from MeanFieldNucleus.
@@ -68,5 +71,8 @@ private:
   
   
 };
+
+}  // namespace nucqcd
+
 /** @} */
 #endif

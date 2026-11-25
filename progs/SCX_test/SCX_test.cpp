@@ -2,6 +2,7 @@
 #include <Tools/Core/RunLog.hpp>
 #include <Glauber/FastParticle.hpp>
 #include <Glauber/MeanFieldNucleusThick.hpp>
+using namespace nucqcd;
 
 
 

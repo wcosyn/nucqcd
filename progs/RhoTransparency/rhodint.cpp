@@ -9,6 +9,7 @@ using namespace std;
 #include <Knockout/RhoDeuteron.hpp>
 #include <Tools/Core/Utilfunctions.hpp>
 #include <string>
+using namespace nucqcd;
 
 void tzint(double tz, double* result, va_list ap);
 void nuint(double nu, double* result, va_list ap);

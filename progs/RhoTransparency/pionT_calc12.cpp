@@ -8,6 +8,7 @@ using namespace std;
 #include <Tools/Core/RunLog.hpp>
 #include <vector>
 #include <string>
+using namespace nucqcd;
 
 
 

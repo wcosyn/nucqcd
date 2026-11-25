@@ -24,6 +24,7 @@
 #include <GPD_Partons/TwoVector_Deut.hpp>
 
 #include <locale.h>
+using namespace nucqcd;
 
 using namespace std;
 

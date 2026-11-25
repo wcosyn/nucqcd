@@ -10,6 +10,7 @@
 
 #include <cmath>
 #include <complex>
+using namespace nucqcd;
 
 using Catch::Matchers::WithinAbs;
 using Catch::Matchers::WithinRel;

@@ -12,6 +12,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+using namespace nucqcd;
 
 namespace {
 nucqcd_test::RefStore refs("reg_nucleon_structure");

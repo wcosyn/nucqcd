@@ -39,6 +39,7 @@ using namespace std;
 #include <Tools/Core/LorentzVector.hpp>
 #include <iostream>
 #include <fstream>
+using namespace nucqcd;
 
 double me=511e-6;
 double Mp=0.938272;

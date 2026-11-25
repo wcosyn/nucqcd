@@ -19,6 +19,9 @@
 #include <Tools/Kinematics/TKinematics2to2.hpp>
 #include <Knockout/WeakQEHadronCurrent.hpp>
 
+namespace nucqcd {
+
+
 class AbstractFsiGrid;
 
 /*! \brief A class WeakQECross, used to compute A(nu,lN) cross sections (CC and NC weak quasi-elastic knockout) */
@@ -182,5 +185,8 @@ private:
   WeakQEHadronCurrent *reacmodel; /*!< class object that computes the amplitudes */
 
 };
+}  // namespace nucqcd
+
 /** @} */  
+
 #endif

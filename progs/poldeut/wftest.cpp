@@ -23,6 +23,7 @@ using namespace std;
 #include <Tools/Core/RunLog.hpp>
 #include <Integrator/numint/numint.hpp>
 #include <Integrator/numint/numint2Cuba.hpp>
+using namespace nucqcd;
 
 //void int_3d(numint::vector_z &, double p, double costheta, double phi, TInterpolatingWavefunction &wf, nucqcd::Vector3 &pvec);
 void int_3d(numint::vector_z &, double p, double costheta, double phi, TDeuteron::Wavefunction &wf, nucqcd::Vector3 &pvec);

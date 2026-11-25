@@ -18,6 +18,9 @@
 #include <Tools/Core/LorentzVector.hpp>
 #include <Tools/Core/Rotation.hpp>
 
+namespace nucqcd {
+
+
 //-------------------------------------------------------------------------
 //---- Certain classes and functions need to be pre-declared
 //---- See C++ FAQ lite 35.16 as to why
@@ -509,6 +512,9 @@ const FourVector<GammaStructure> GMU(GammaStructure(0,0,1),
 
 
 
+
+
+}  // namespace nucqcd
 
 /** @} */
 #endif

@@ -11,6 +11,7 @@
 #include <Glauber/MeanFieldNucleusThick.hpp>
 #define SHAREDIR nucqcd::share_dir
 #include <iostream>
+using namespace nucqcd;
 extern "C" {
 	void* get_MeanFieldNucleus(int nuctype) { return new MeanFieldNucleus(nuctype,SHAREDIR); }
 	void del_MeanFieldNucleus(void* nuc)    { delete (MeanFieldNucleus*) nuc; }

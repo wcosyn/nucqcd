@@ -14,6 +14,7 @@
 using std::complex;
 #include <iostream>
 #include <cassert>
+using namespace nucqcd;
 
 /** A class to calculate charge exchange
  *  using the mean field approximation.

@@ -65,6 +65,9 @@
 #include <stdexcept>
 #include <string>
 
+namespace nucqcd {
+
+
 using std::sqrt;
 using std::cout;
 using std::cerr;
@@ -1751,3 +1754,6 @@ void TKinematics::Help()
        << "3) type doctor\n"
        << "4) press return\n";
 }
+
+}  // namespace nucqcd
+

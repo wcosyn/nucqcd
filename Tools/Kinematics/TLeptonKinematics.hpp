@@ -11,6 +11,9 @@
 
 #include <Tools/Core/FourVector.hpp>
 
+namespace nucqcd {
+
+
 // Forward declarations
 class TKinematics2to2;
 class TKinematics2to3;
@@ -104,5 +107,8 @@ class TLeptonKinematics
   
 
 }; 
+
+}  // namespace nucqcd
+
 /** @} */
 #endif 

@@ -10,6 +10,7 @@ using std::complex;
 #include <iostream>
 #include <cassert>
 #include <gsl/gsl_integration.h>
+using namespace nucqcd;
 
 /** A class to calculate charge exchange
  *  using the mean field approximation.

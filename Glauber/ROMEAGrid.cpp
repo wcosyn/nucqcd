@@ -11,6 +11,9 @@ using namespace std;
 #include <Tools/Core/Utilfunctions.hpp>
 #include <Tools/Core/AuxFunction.hpp>
 
+namespace nucqcd {
+
+
 //optical potentials from most recent Cooper, Hama parametrizations (Phys.Rev. C80 (2009) 034605)
 extern"C"{
     void global_(int *ifit,double *tplab, double *aa, double r[1000], double vv[1000], double wv[1000], 
@@ -291,4 +294,7 @@ void ROMEAGrid::klaas_one_bound(numint::vector_z & results, double z, ROMEAGrid 
     return;
   results[0]= interpolate(grid.getOpticalpotential()[it],r,grid.getOpticalstep(),grid.getOpticalsize(),0);
 }
+
+}  // namespace nucqcd
+
 

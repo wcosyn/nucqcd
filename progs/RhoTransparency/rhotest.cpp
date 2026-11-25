@@ -17,6 +17,7 @@ using namespace std;
 #include <Glauber/DistMomDistrGrid.hpp>
 #include <Glauber/TMFSpinor.hpp>
 #include <Tools/Core/Rotation.hpp>
+using namespace nucqcd;
 
 int main(int argc, char *argv[])
 {

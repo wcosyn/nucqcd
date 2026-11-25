@@ -14,8 +14,11 @@ namespace nucqcd { class Vector3; }
 
 #include <complex>
 
+namespace nucqcd {
+
+
 // Forward declarations
-namespace nucqcd { class Rotation; }
+class Rotation;
 
 /*! \brief Lorentz transformation (boosts and rotations) as a biquaternion Q = [Q0, Q1, Q2, Q3]
  *
@@ -76,6 +79,9 @@ void Decompose(double& theta, nucqcd::Vector3& axis, nucqcd::Vector3& boost) con
  
 
 }; // class TLorentzQuaternion
+
+
+}  // namespace nucqcd
 
 /** @} */
 #endif // LORENTZQUATERNION_H

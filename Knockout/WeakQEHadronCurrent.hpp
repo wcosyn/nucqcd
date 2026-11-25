@@ -25,6 +25,9 @@
 #include <string>
 #include <cstdarg>
 
+namespace nucqcd {
+
+
 
 
 /*! \brief A class WeakQEHadronCurrent, used to compute A(nu,lN) amplitudes */
@@ -248,5 +251,8 @@ private:
    
 
 };
+
+}  // namespace nucqcd
+
 /** @} */
 #endif

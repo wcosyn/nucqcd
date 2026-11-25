@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+using namespace nucqcd;
 
 TEST_CASE("StringUtil: lower case, case-insensitive comparison and search, split without empty tokens", "[string]") {
   CHECK(nucqcd::to_lower("QSquared:WLab") == "qsquared:wlab");

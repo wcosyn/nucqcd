@@ -5,6 +5,9 @@
 #include <cmath>
 #include <gsl/gsl_sf_dilog.h>
 
+namespace nucqcd {
+
+
 using namespace std;
 
 DiDVCS::DiDVCS(PARTONS::GPDService* pGPDService,
@@ -153,4 +156,7 @@ void DiDVCS::getCross_DiDVCS(vector<double> & results, const double scale, const
     return;
 
 }
+
+}  // namespace nucqcd
+
     

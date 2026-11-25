@@ -16,6 +16,9 @@
 #include <Integrator/numint/numint.hpp>
 #include <Tools/Kinematics/LightConeKin2to2.hpp>
 
+namespace nucqcd {
+
+
 /*! \brief Has methods to compute a ton of deuteron momentum distributions (distorted too)
  *
  * \note The distorted (FSI) distributions getMomDistrfsi(), getMomDistr_y_fsi(), getMomDistrfsiLC()
@@ -260,5 +263,8 @@ private:
   
   
 };
+
+}  // namespace nucqcd
+
 /** @} */
 #endif

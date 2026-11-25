@@ -15,6 +15,9 @@
 #include <Tools/StructureFunctions/DeuteronStructure.hpp>
 #include <Tools/WaveFunctions/TDeuteron.hpp>
 
+namespace nucqcd {
+
+
 
 //forward declaration
 class Resonance;
@@ -148,6 +151,9 @@ private:
    */  
   std::complex<double> scatter(double t, double Q2, size_t res1, size_t res2);
 };
+
+
+}  // namespace nucqcd
 
 /*! @} */
 #endif

@@ -14,6 +14,9 @@
 #include <Glauber/AbstractFsiCTDecayGridThick.hpp>
 #include <Integrator/numint/numint.hpp>
 
+namespace nucqcd {
+
+
 /*! \brief A class for a Glauber ISI/FSI grid using thickness approximation and including decay of fast particles,implements AbstractFsiCTDecayGridThick
  * 
  * Eight grids are actually calculated.  fsi_grid contains both the regular fsi grid as well as the grid that includes SRC.
@@ -248,5 +251,8 @@ private:
   void intGlauberPhi_bound_ct(const double phi, double *results, va_list ap);
 
 };
+
+}  // namespace nucqcd
+
 /** @} */
 #endif

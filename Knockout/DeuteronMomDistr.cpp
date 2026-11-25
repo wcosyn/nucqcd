@@ -6,6 +6,9 @@
 #include <cmath>
 #include <Tools/Core/Utilfunctions.hpp>
 #include <Tools/Core/AuxFunction.hpp>
+
+namespace nucqcd {
+
 using namespace std;
 
 // Settings of the 2D FSI integrals (cube_adaptive). With nucqcd::integration_prec (1e-4) and at most 2000 evaluations
@@ -891,3 +894,6 @@ double DeuteronMomDistr::getMomDistrfsi(nucqcd::Vector3 pvec, double nu, double 
 //   
 // }
 // 
+
+}  // namespace nucqcd
+

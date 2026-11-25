@@ -8,6 +8,7 @@ using namespace std;
 #include <Knockout/RhoDeuteron.hpp>
 #include "TMPI.hpp"
 #include <stdio.h>
+using namespace nucqcd;
 
 #define NROFRES 9
 

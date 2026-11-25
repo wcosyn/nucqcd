@@ -13,6 +13,7 @@ using namespace std;
 #include <Tools/Kinematics/TElectronKinematics.hpp>
 #include <Tools/StructureFunctions/NuclStructure.hpp>
 #include <DIS/InclusiveCross.hpp>
+using namespace nucqcd;
 
 // make inc
 // run ../../bin/inclusive Q2[GeV^2] deuteronwf nucleonstruct

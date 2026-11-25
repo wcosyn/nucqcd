@@ -15,6 +15,7 @@ using namespace std;
 #include <Tools/Core/Utilfunctions.hpp>
 #include <vector>
 #include <Integrator/numint/numint.hpp>
+using namespace nucqcd;
 
 
 void getBound(double &high, double &low, MeanFieldNucleusThick &nucleus, double Q2, double omega, int shell);

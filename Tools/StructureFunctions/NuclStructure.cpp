@@ -4,6 +4,9 @@
 
 #include <stdexcept>
 
+namespace nucqcd {
+
+
 namespace {
 double nucleon_mass(bool proton) { return proton ? nucqcd::mass_p : nucqcd::mass_n; }
 
@@ -48,3 +51,6 @@ double NuclStructure::getF2(){
   getF(F1,F2);
   return F2;
 }
+
+}  // namespace nucqcd
+

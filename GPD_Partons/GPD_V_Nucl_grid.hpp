@@ -14,6 +14,9 @@
 #include <partons/services/ObservableService.h>
 #include <partons/ServiceObjectRegistry.h>
 
+namespace nucqcd {
+
+
 
 
 
@@ -60,6 +63,9 @@ PARTONS::GPDService* pGPDService;
 PARTONS::GPDModule* pGPDModel;
 
 };
+
+}  // namespace nucqcd
+
 
 
 #endif

@@ -16,6 +16,7 @@ using namespace std;
 #include <Knockout/WeakQECross.hpp>
 #include <Tools/Kinematics/TLeptonKinematics.hpp>
 #include <Glauber/MeanFieldNucleusThick.hpp>
+using namespace nucqcd;
 
 
 int main(int argc, char *argv[]){

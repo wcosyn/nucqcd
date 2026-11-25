@@ -19,6 +19,9 @@
 #include <Glauber/FastParticle.hpp>
 #include <map>
 
+namespace nucqcd {
+
+
 // #define NROFRES 9 /*!< number of different cross sections calculated, 1 pw, 8 glaubers */
 
 
@@ -200,6 +203,9 @@ private:
   
   
 };
+
+
+}  // namespace nucqcd
 
 /*! @} */
 #endif

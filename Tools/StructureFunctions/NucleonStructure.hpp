@@ -12,7 +12,10 @@
 #include <string>
 #include <cmath>
 #include <memory>
-namespace nucqcd { class LHAPDFStructure; struct LHAPDFOptions; }
+
+namespace nucqcd {
+
+class LHAPDFStructure; struct LHAPDFOptions;
 
 /*! \brief A class for a variety of nucleon structure parametrizations: Christy & Bosted, SLAC (Bodek),
  * Alekhin (leading twist), parton-model F2 from CTEQ, HMRS, MSTW or any LHAPDF6 set, and combinations
@@ -290,5 +293,8 @@ double getF2_CTEQ(const bool proton, const double x, const double Q2) const;/*!<
 
   
 };
+
+}  // namespace nucqcd
+
 /*! @} */
 #endif

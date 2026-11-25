@@ -4,6 +4,9 @@
 #include <Glauber/TMFSpinor.hpp>
 #include <Tools/Core/AuxFunction.hpp>
 
+namespace nucqcd {
+
+
 using namespace std;
 
 
@@ -564,4 +567,7 @@ void WeakQEHadronCurrent::klaas_mult_amp(numint::vector_z & results, double r, d
 
   
 }
+
+}  // namespace nucqcd
+
   

@@ -12,6 +12,9 @@
 #include <stdexcept>
 #include <utility>
 
+namespace nucqcd {
+
+
 using namespace std;
 
 //nucleon structure parametrization from Christy & Bosted (fortran)
@@ -556,3 +559,5 @@ double NucleonStructure::getr1998(const double x, const double Q2){
     double xx=x;
     return r1998_(&xx,&q2gev);
 }
+
+}  // namespace nucqcd

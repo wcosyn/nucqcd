@@ -11,6 +11,9 @@
 #include <Glauber/NucleonWeakOperator.hpp>
 #include <Tools/Core/Utilfunctions.hpp>
 
+namespace nucqcd {
+
+
 using namespace std;
 
 WeakQECross::WeakQECross(TElectronKinematics *elec, MeanFieldNucleusThick *pnucleus, double precision, int integr,
@@ -706,5 +709,8 @@ double WeakQECross::getDiffWeakQECross(TKinematics2to2 &kin, int current, int th
 //   cross=vector<double>(5,0.);
 //   
 // }
+
+}  // namespace nucqcd
+
 
 

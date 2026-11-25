@@ -14,6 +14,9 @@
 #include <string>
 #include <Tools/Kinematics/LightConeKin2to2.hpp>
 
+namespace nucqcd {
+
+
 /*! \brief A class to compute a variety of deuteron structure functions */
 class DeuteronStructure{
 
@@ -174,5 +177,8 @@ private:
   std::string name; /*!< string that has the structure function parametrization name */
   double massi; /*!< mass of nucleon interacting with photon */
 };
+
+}  // namespace nucqcd
+
 /** @} */
 #endif

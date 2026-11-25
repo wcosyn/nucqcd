@@ -8,6 +8,7 @@ using namespace std;
 #include <Knockout/RhoTCross.hpp>
 #include "TMPI.hpp"
 #include <stdio.h>
+using namespace nucqcd;
 
 int main(int argc, char *argv[])
 {

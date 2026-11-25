@@ -26,6 +26,7 @@ using std::endl;
 #include <Tools/StructureFunctions/NuclStructure.hpp>
 #include "bonusdata.h"
 #include "bonusfits2.h"
+using namespace nucqcd;
 
 int main(int argc, char *argv[])
 {

@@ -13,6 +13,7 @@ using namespace std;
 #include <Tools/Kinematics/TElectronKinematics.hpp>
 #include <Tools/StructureFunctions/NuclStructure.hpp>
 #include <DIS/InclusiveCross.hpp>
+using namespace nucqcd;
 
 //continuum contribution with gaussian shape
 //make disinc

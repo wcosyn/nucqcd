@@ -14,6 +14,9 @@
 #include <complex>
 #include <cstdlib>
 
+namespace nucqcd {
+
+
 //-------------------------------------------------------------------------
 //---- Certain classes and functions need to be pre-declared
 //---- See C++ FAQ lite 35.16 as to why
@@ -627,6 +630,9 @@ std::ostream& operator<<(std::ostream& output, const Matrix<K,L>& matrix)
 }
 
 
+
+
+}  // namespace nucqcd
 
 /** @} */
 #endif

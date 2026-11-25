@@ -14,6 +14,9 @@
 #include <GPD_Partons/GPD_T_Nucl_grid.hpp>
 #include <GPD_Partons/Deut_GPD_T_set.hpp>
 
+namespace nucqcd {
+
+
 class TransGPD_set;
 /**
  * @brief Class implements transversity GPDs for the nucleon and deuteron (using convolution formalism) for now
@@ -211,5 +214,8 @@ Deut_GPD_T_set *grid;
 int grid_size;
 int model_set;
 };
+
+}  // namespace nucqcd
+
 
 #endif 

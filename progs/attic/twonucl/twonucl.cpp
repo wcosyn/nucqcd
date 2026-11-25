@@ -15,6 +15,7 @@ using namespace std;
 #include <Tools/Kinematics/TKinematics2to3.hpp>
 #include <Tools/Kinematics/TElectronKinematics.hpp>
 #include "DoubleNCross.hpp"
+using namespace nucqcd;
 
 
 int main(int argc, char *argv[])

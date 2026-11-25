@@ -36,6 +36,7 @@ using namespace std;
 #include <partons/modules/gpd/GPDVGG99.h>
 #include <partons/modules/gpd/GPDGK16.h>
 #include <partons/modules/gpd/GPDGK16Numerical.h>
+using namespace nucqcd;
 
 
 int main(int argc, char *argv[]){

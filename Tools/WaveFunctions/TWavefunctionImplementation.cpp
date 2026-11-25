@@ -36,6 +36,9 @@
 #include <Tools/WaveFunctions/TWavefunctionImplementation.hpp>
 #include <iostream>
 
+namespace nucqcd {
+
+
 using std::cout; using std::cerr; using std::endl;
 
 
@@ -102,5 +105,8 @@ double TWavefunctionImplementation::Radial_r(int l, double r) const
   
   return 0;
 }
+
+}  // namespace nucqcd
+
 
 

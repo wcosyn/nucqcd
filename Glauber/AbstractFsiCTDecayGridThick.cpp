@@ -8,6 +8,9 @@ using namespace std;
 #include <Tools/Core/constants.hpp>
 #include <Tools/Core/Utilfunctions.hpp>
 
+namespace nucqcd {
+
+
 AbstractFsiCTDecayGridThick::AbstractFsiCTDecayGridThick(int r_grid, int cth_grid, int phi_grid, MeanFieldNucleusThick *pnucl, 
 					      double prec, int integrator, string homedir):
 AbstractFsiGrid(r_grid,cth_grid,phi_grid,pnucl,prec,integrator,homedir),
@@ -67,3 +70,6 @@ complex<double> AbstractFsiCTDecayGridThick::getFsiSrcCtDecayGridFull_interp1(co
 void AbstractFsiCTDecayGridThick::setFilenames(string homedir){
   AbstractFsiCTDecayGrid::setFilenames(homedir+"Thick.");
 }
+
+}  // namespace nucqcd
+

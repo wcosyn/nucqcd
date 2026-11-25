@@ -24,6 +24,7 @@
 #include <GPD_Partons/TwoVector_Nucl.hpp>
 #include <GPD_Partons/Deut_Conv_GPD_T.hpp>
 #include <Tools/Core/constants.hpp>
+using namespace nucqcd;
 
 
 using namespace std;

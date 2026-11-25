@@ -1,6 +1,9 @@
 #include <Tools/Core/FourVector.hpp>
 #include <Tools/Core/LorentzVector.hpp>
 
+namespace nucqcd {
+
+
 
 //_____________________________________________________________________
 FourVector<double> ToFourVector(const nucqcd::LorentzVector& v)
@@ -13,3 +16,6 @@ nucqcd::LorentzVector ToLorentzVector(const FourVector<double>& v)
 {
   return nucqcd::LorentzVector(v[1],v[2],v[3],v[0]);
 }
+
+}  // namespace nucqcd
+

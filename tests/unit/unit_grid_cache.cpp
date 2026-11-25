@@ -11,6 +11,7 @@
 #include <stdexcept>
 #include <string>
 #include <unistd.h>
+using namespace nucqcd;
 
 namespace fs = std::filesystem;
 

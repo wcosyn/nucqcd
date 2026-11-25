@@ -12,6 +12,9 @@
 #include <Tools/Kinematics/TKinematics2to3.hpp>
 #include <fstream>
 
+namespace nucqcd {
+
+
 /*! \brief TKinematics2to3 with the lab momentum and angles of particle 1 and the lab angles of particle
  * 2 as input; the energy conservation then has 0, 1 or 2 solutions (GetSolution), the object itself
  * holds the first one (e.g. A(e,e'pN) with format "qsquared:wlab:pn:thn:thk:phik")
@@ -51,6 +54,9 @@ class TKinematics2to3WithLabAngles : public TKinematics2to3
 
   
 }; // class TKinematics2to3WithLabAngles
+
+
+}  // namespace nucqcd
 
 /** @} */
 #endif // TKINEMATICS2TO3WITHLABANGLES_H

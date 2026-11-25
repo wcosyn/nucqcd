@@ -3,6 +3,9 @@
 #include <cassert>
 #include <Tools/Core/constants.hpp>
 
+namespace nucqcd {
+
+
 using namespace std;
 
 
@@ -43,3 +46,6 @@ LightConeKin2to3& LightConeKin2to3::operator=(LightConeKin2to3 &rhs){
   return *this;
   
 }
+
+}  // namespace nucqcd
+

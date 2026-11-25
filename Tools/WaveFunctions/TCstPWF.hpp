@@ -11,6 +11,9 @@
 
 #include <Tools/WaveFunctions/TWavefunctionImplementation.hpp>
 
+namespace nucqcd {
+
+
 /*! \brief Covariant spectator theory (CST) deuteron wave function: S, D and the two P waves,
  * expanded in functions G with masses \f$ m_{z,i} = \alpha_z + (i-1) m^z_x \f$ for each wave z (see GetG)
  */
@@ -79,6 +82,9 @@ class TCstPWF : public TWavefunctionImplementation
   
 
 }; // class TCstPWF
+
+
+}  // namespace nucqcd
 
 /** @} */
 #endif // TCSTPWF_H

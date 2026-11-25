@@ -19,6 +19,9 @@
 #include <vector>
 #include <Tools/Core/Utilfunctions.hpp>
 
+namespace nucqcd {
+
+
 using namespace std;
 using std::cerr;
 
@@ -647,3 +650,6 @@ void TLeptonKinematics::GetLeptonVectors(const TKinematics2to2& kin, FourVector<
   k_out[0]=Eout; k_out[3]=kzprime;
   
 }
+
+}  // namespace nucqcd
+

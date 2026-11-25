@@ -6,6 +6,9 @@
 #include <Glauber/MeanFieldNucleusThick.hpp>
 #include <Tools/Core/Utilfunctions.hpp>
 
+namespace nucqcd {
+
+
 using namespace std;
 
 //constructor
@@ -127,5 +130,8 @@ double MeanFieldNucleusThick::getDensity(const double r, const double *density) 
   }
   return interpolate(density,r,getWF_r_step(),getWF_r_lines(),1); 
 }
+
+}  // namespace nucqcd
+
 
 

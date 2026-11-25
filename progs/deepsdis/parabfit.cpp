@@ -11,6 +11,7 @@
 #include <fstream>
 #include <string>
 #include <utility>
+using namespace nucqcd;
 
 using std::cerr;
 using std::cout;

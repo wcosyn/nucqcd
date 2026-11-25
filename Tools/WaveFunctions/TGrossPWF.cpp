@@ -58,6 +58,9 @@
 #include <Tools/Core/constants.hpp>
 #include <cmath>
 
+namespace nucqcd {
+
+
 using std::cout; using std::cerr; using std::endl;
 
 
@@ -406,3 +409,6 @@ double TGrossPWF::GetF(ESpace space, int L, int index, double q) const
 
   return f;
 }
+
+}  // namespace nucqcd
+

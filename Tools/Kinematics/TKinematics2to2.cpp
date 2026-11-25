@@ -26,6 +26,9 @@
 
 #include <Tools/Kinematics/TKinematics2to2.hpp>
 
+namespace nucqcd {
+
+
 
 //_____________________________________________________________________
 TKinematics2to2::TKinematics2to2(const char *name,const char *title,
@@ -61,3 +64,6 @@ void TKinematics2to2::SetMasses(double mN, double mK, double mY)
   SetMy(mY);
   UpdateKinematics();
 }
+
+}  // namespace nucqcd
+

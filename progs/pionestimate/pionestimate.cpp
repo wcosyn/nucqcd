@@ -18,6 +18,7 @@ using namespace std;
 #include <Knockout/EMQECross.hpp>
 #include <Tools/Core/Rotation.hpp>
 #include <Glauber/DistMomDistrGrid.hpp>
+using namespace nucqcd;
 
 //run ./pionest [nucleus] [one doublepion=0, two pions=1] 
 //estimates effect of taking collinear pions in rho transparency calculations

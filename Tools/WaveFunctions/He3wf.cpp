@@ -9,6 +9,9 @@
 #include <Tools/Core/ErrorMessage.hpp>
 #include <Tools/Core/constants.hpp>
 
+namespace nucqcd {
+
+
 using namespace std;
 
 
@@ -115,3 +118,6 @@ complex<double> He3wf::getWF(const double p1[3], const double p2[3], int ms1, in
   return complex<double>((wfvalue1.dr+wfvalue2.dr+wfvalue3.dr)*pow(nucqcd::inv_hbarc,3.)
 			  ,(wfvalue1.di+wfvalue2.di+wfvalue3.di)*pow(nucqcd::inv_hbarc,3.));
 }
+
+}  // namespace nucqcd
+

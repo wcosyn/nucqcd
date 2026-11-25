@@ -14,6 +14,7 @@ using std::cout;
 using std::endl;
 #include <Tools/Core/GammaStructure.hpp>
 #include <fstream>
+using namespace nucqcd;
 using std::ofstream;
 
 
