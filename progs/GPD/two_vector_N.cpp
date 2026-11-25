@@ -23,6 +23,7 @@
 
 #include <GPD_Partons/TwoVector_Nucl.hpp>
 #include <Tools/Core/constants.hpp>
+using namespace nucqcd;
 
 
 using namespace std;

@@ -16,6 +16,9 @@
 #include <vector>
 #include <cmath>
 
+namespace nucqcd {
+
+
 
 /*! \brief Kinematics of gamma(*) + N -> K + Y (2 -> 2), for a grid of independent variables
  *
@@ -228,6 +231,9 @@ class TKinematics
 
 };
 
+
+
+}  // namespace nucqcd
 
 /** @} */
 #endif

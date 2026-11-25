@@ -2,6 +2,9 @@
 #include <cassert>
 #include <iostream>
 
+namespace nucqcd {
+
+
 using namespace std;
 
 
@@ -72,3 +75,5 @@ double Deut_GPD_T_set::getAmp(int index) const{
     }
 
 }
+
+}  // namespace nucqcd

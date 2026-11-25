@@ -16,6 +16,7 @@ using namespace std;
 #include <Tools/Kinematics/TKinematics2to2.hpp>
 #include <Tools/Kinematics/TElectronKinematics.hpp>
 #include <Knockout/EMQECross.hpp>
+using namespace nucqcd;
 
 
 //run ./onenucl [Q2 [MeV^2]] [omega] [missing momentum]

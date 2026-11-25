@@ -24,6 +24,7 @@
 #include <complex>
 #include <memory>
 #include <type_traits>
+using namespace nucqcd;
 
 // grids own raw arrays: not copyable (and neither is EMQEHadronCurrent, which holds grids)
 static_assert(!std::is_copy_constructible_v<GlauberGrid> && !std::is_copy_assignable_v<GlauberGrid>);

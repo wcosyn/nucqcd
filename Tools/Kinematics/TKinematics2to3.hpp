@@ -18,8 +18,11 @@
 #include <Tools/Core/LorentzVector.hpp>
 #include <Tools/Core/Rotation.hpp>
 
+namespace nucqcd {
+
+
 // Forward declarations
-namespace nucqcd { class Vector3; }
+class Vector3;
 class TLorentzQuaternion;
 
 // Global functions for conversion 
@@ -532,6 +535,9 @@ class TKinematics2to3
 //   
 //   return rotated;
 // }
+
+
+}  // namespace nucqcd
 
 /** @} */
 #endif

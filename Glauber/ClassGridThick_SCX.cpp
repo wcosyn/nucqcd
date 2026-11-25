@@ -1,6 +1,9 @@
 #include <Glauber/ClassGridThick_SCX.hpp>
 #include <Tools/Core/GridCache.hpp>
 
+namespace nucqcd {
+
+
 /**
  * ClassGridThick_SCX constructor
  * @param densf      : Density function pointer. Takes b,z and returns density. 
@@ -211,3 +214,6 @@ void ClassGridThick_SCX::calcP(double b,double z,double& ret,double& err, double
 	/** DO THE INTEGRATION **/
 	gsl_integration_qag(&F, z, _rmax ,epsabs,epsrel,limit,key,w,&ret,&err); // integrate from z' to rmax
 }
+
+}  // namespace nucqcd
+

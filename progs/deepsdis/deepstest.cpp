@@ -17,6 +17,7 @@ using namespace std;
 #include <DIS/He3Cross.hpp>
 #include <Tools/Kinematics/LightConeKin2to3.hpp>
 #include <Tools/StructureFunctions/NuclStructure.hpp>
+using namespace nucqcd;
 
 int main(int argc, char *argv[])
 {

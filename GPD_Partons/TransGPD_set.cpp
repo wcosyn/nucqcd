@@ -2,6 +2,9 @@
 #include <cassert>
 #include <iostream>
 
+namespace nucqcd {
+
+
 using namespace std;
 
 double TransGPD_set::getHtildeT_singlet(const int model) const{
@@ -110,3 +113,6 @@ TransGPD_set TransGPD_set::operator*(const double sc) const{
 
     return result;
 }
+
+}  // namespace nucqcd
+

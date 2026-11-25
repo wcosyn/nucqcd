@@ -25,7 +25,7 @@ same PR.
 | 3 | Rename the repository | ✅ done (PR #7, tagged-poldeut PRs #1 and #2) |
 | 4 | Bug fixes | ✅ done: listed bugs (PRs #8, #9, #12); found later: stale FSI+CT grid (#18), kinematics (#19, #20, #33), DoubleNModel/Pair (#21, then moved to the attic in #22), π⁻ Glauber parameters (#28), TDeuteron errors (#31), He3 spin sum (#47) and factor A in `He3Cross` (#48), `TMPI` not compiling with MPI-3 (fixed in the attic with step 6, "Retire MPI", #54), `RunLog` reading freed memory at `exit()` (#57), `cube_romb` overflow beyond 10 levels in 3D (#60). New bugs found later are added here |
 | 5 | Low-risk modernization | ✅ done: `-fopenmp`, Fortran interop (#11), constants (#13, #14), grid cache (#15–#17), ownership (#23), exceptions (#24), Doxygen (#10, #25–#30, #32, #34–#39: no warnings left) |
-| 6 | Structural refactors | 🔶 done: constants macros (#41), `NuclStructure` merge (#42), code layout items 1–3 (`Tools` split #52, prefixed includes and `.hpp` #53), `Model`/`Cross` renamed (#53); MPI retired (#54); to do: namespace, Glauber grids, model selection, integrators, long files |
+| 6 | Structural refactors | 🔶 done: constants macros (#41), `NuclStructure` merge (#42), code layout items 1–4 (`Tools` split #52, prefixed includes and `.hpp` #53), `Model`/`Cross` renamed (#53); MPI retired (#54); to do: namespace, Glauber grids, model selection, integrators, long files |
 | 7 | Unbundle Cuba and cubature | ⬜ (can be done any time after step 2) |
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
 | 9 | Decouple from ROOT where possible | 🔶 phases 1–5 done (#44, #45, #50, #55, #56, #58): ROOT is optional, the libraries neither include nor link it; 6: GPD generators ROOT-free (#59), fits (Minuit2) to do |
@@ -50,7 +50,7 @@ after which the author decided to keep `cube_romb` and `cube_adaptive`.
 1. ~~Report the integration precision~~ (done, #62; see "The requested precision often does not control the
    accuracy", step 6).
 2. ~~Step 11 part 2~~ (done, #64; `RunLog` in all programs outside the attic).
-3. **`namespace nucqcd`** (code layout item 4), class by class, with compatibility `using` declarations.
+3. ~~`namespace nucqcd`~~ (done, #65).
 4. **Glauber grid work:** deduplicate the hierarchy, and investigate the off-axis grid speed (every
    point hits the evaluation cap; `cube_romb` was 5× faster at 1e-3); value changes need the author's OK.
 5. **ROOT phase 6 (fits):** the Minuit fits on an external Minuit2, after which ROOT can go entirely.
@@ -593,11 +593,19 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   3. ✅ **One header extension: `.hpp`** (done 2026-11-23, same PR, #53): the 19 `.h` headers in Tools
      were renamed with `git mv`, and their `\file` tags and mentions updated. Only the third-party
      `Integrator/adaptive/cubature.h` and Cuba keep `.h`.
-  4. **Namespace `nucqcd`.** 64 of the library headers declare their classes in the global
-     namespace (`Matrix`, `Model`, `Cross`, `Resonance`, `FastParticle`, ...), the same collision
-     risk at the symbol level. Add the namespace class by class, best together with ROOT phase 4,
-     which touches the same classes; `using` declarations in a compatibility header keep the
-     programs compiling in between.
+  4. [x] **Namespace `nucqcd`** (done 2026-11-25, #65). Instead of class by class, one scripted change:
+     the declarations and definitions in all headers and sources of `Tools/{Core,Kinematics,WaveFunctions,
+     StructureFunctions}`, `Glauber`, `Knockout`, `DIS` and `GPD_Partons` (147 files; the files that already
+     had a `namespace nucqcd` block were left alone) are wrapped in `namespace nucqcd { ... }` after their
+     includes, so classes, free functions (`interpolate`, `rombergerN`, ...), enums and typedefs are
+     `nucqcd::`-qualified. The 130 programs, tests and program-local headers that include a library header
+     got `using namespace nucqcd;` after their includes (the "compatibility" step: no program had to be
+     rewritten; new programs can qualify names or do the same). Forward declarations of library classes
+     are written `namespace nucqcd { class X; }`. Left alone: `Integrator` (own namespace `numint`), the
+     Fortran, the `extern "C"` declarations (C linkage has no namespaces), the macros, and the existing
+     explicit `nucqcd::` qualifications in the libraries (redundant now, harmless). No values change: all
+     tests including `slow` pass with unchanged references; `make doc` gives no warnings (the Doxygen groups
+     of `EMQECross.hpp` and `WeakQECross.hpp` had to be closed outside the namespace).
 - [ ] **Glauber grid hierarchy:** deduplicate it. `GlauberGridThick` and `GlauberDecayGridThick` are
   largely copy-pasted, as are the {plain, Thick} × {CT, Decay} abstract classes.
 - [ ] **Speed of the Glauber grids (to investigate, added 2026-11-23).** From the author's experience,

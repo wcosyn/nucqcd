@@ -58,6 +58,9 @@
 #include <array>
 #include <cmath>
 
+namespace nucqcd {
+
+
 using std::cout; using std::cerr; using std::endl;
 
 
@@ -381,3 +384,5 @@ double TYukawaPWF::GetVSr(double r) const
 double TYukawaPWF::getResidu() const{
   return fC[0]*sqrt(2.*fgHbarc)/nucqcd::pi; //MeV^1/2, coefficient that goes with p^2+m[0]^2, times 2 because of t/(p^2+m[0]^2) jacobian
 }
+
+}  // namespace nucqcd

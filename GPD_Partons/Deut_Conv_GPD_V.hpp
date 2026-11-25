@@ -21,6 +21,9 @@
 
 #include <Glauber/NucleonEMOperator.hpp>
 
+namespace nucqcd {
+
+
 /**
  * @brief Class implements vector GPDs for the nucleon and deuteron (using convolution formalism) for now
  * 
@@ -413,5 +416,8 @@ bool incE; ///< include GPD E
 unsigned int gpdmodel_id; ///< PARTONS gpd model class ID
 
 };
+
+}  // namespace nucqcd
+
 
 #endif 

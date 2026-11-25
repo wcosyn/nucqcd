@@ -11,6 +11,7 @@
 
 #include <stdexcept>
 #include <string>
+using namespace nucqcd;
 
 TEST_CASE("to_fortran_string pads with blanks and has no NUL", "[fortran]") {
   char buf[8];

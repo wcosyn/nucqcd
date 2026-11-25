@@ -24,6 +24,7 @@ using std::endl;
 using std::ofstream;
 #include <cassert>
 #include <Integrator/numint/numint.hpp>
+using namespace nucqcd;
 
 void printArray(MeanFieldNucleus&, const int*);
 void myIntegrandumFunction(double & res, const numint::array<double,3> &x, MeanFieldNucleus& nuc, int n, int m);

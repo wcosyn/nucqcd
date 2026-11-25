@@ -11,6 +11,9 @@
 
 #include <Tools/WaveFunctions/TWavefunctionImplementation.hpp>
 
+namespace nucqcd {
+
+
 /*! \brief Relativistic (Gross) deuteron wave function: S, D and the two P waves, parametrized with
  * functions f_{L,i} of masses \f$ m_{L,i} = \alpha_L + (i-1) m_0 \f$ (see GetF, GetG and GetK for the
  * expansion and the coefficients that impose the correct small-r behaviour)
@@ -77,6 +80,9 @@ class TGrossPWF : public TWavefunctionImplementation
 
 
 };
+
+
+}  // namespace nucqcd
 
 /** @} */
 #endif

@@ -9,6 +9,9 @@ using namespace std;
 #include <Tools/Core/constants.hpp>
 #include <Tools/Core/Utilfunctions.hpp>
 
+namespace nucqcd {
+
+
 AbstractFsiCTDecayGrid::AbstractFsiCTDecayGrid(int r_grid, int cth_grid, int phi_grid, MeanFieldNucleus *pnucl, 
 					       double prec, int integrator, string homedir):
 AbstractFsiGrid(r_grid,cth_grid,phi_grid,pnucl,prec,integrator,homedir),
@@ -66,4 +69,7 @@ void AbstractFsiCTDecayGrid::setFilenames(string homedir){
   fsi_ct_filename.insert(fsi_ct_filename.size()-4,(".Decay"+to_string(lround(getParticles()[0].getDecay_dil()))));
   fsi_filename.insert(fsi_filename.size()-4,(".Decay"+to_string(lround(getParticles()[0].getDecay_dil()))));
 }
+
+}  // namespace nucqcd
+
 

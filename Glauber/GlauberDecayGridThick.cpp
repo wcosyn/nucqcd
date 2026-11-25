@@ -11,6 +11,9 @@ using namespace std;
 #include <Tools/Core/Utilfunctions.hpp>
 #include <Tools/Core/AuxFunction.hpp>
 
+namespace nucqcd {
+
+
 //constructor, calls abstractfsigrid's constructor
 GlauberDecayGridThick::GlauberDecayGridThick(const int r_grid, const int cth_grid, const int phi_grid, MeanFieldNucleusThick * pnucl,
                                              double prec, int integrator, string dir):AbstractFsiGrid(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir),
@@ -1048,3 +1051,6 @@ void GlauberDecayGridThick::klaas_int_bound_ct(numint::vector_d & results, doubl
 //     * getFsiCorrelator().correlation(normr(r, costheta, sintheta, cosphi, sinphi, r_hit, costheta_hit, sintheta_hit, cosphi_hit, sinphi_hit));
 //   results[0] = exp(b * getParticles()[0].getHitbnorm() * cosphi / getParticles()[0].getBetasq(proton));
 // }
+
+}  // namespace nucqcd
+

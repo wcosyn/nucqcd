@@ -19,6 +19,7 @@ using namespace std;
 
 #include <Tools/WaveFunctions/TDeuteron.hpp>
 #include <Integrator/numint/numint.hpp>
+using namespace nucqcd;
 
 
 /*

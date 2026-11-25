@@ -3,6 +3,9 @@
 #include <Tools/Core/Rotation.hpp>
 #include <Tools/Core/Utilfunctions.hpp>
 
+namespace nucqcd {
+
+
 using namespace std;
 
 PionTCross::PionTCross(const int nucleus, const double p_max, const std::string dir,
@@ -202,3 +205,6 @@ double PionTCross::crosselectronfree(double t, double Q2, double W, double phipq
   else cout << "other corr needed" << endl;
   return 0.;
 }
+
+}  // namespace nucqcd
+

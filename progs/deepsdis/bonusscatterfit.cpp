@@ -27,6 +27,7 @@ using namespace std;
 #include <DIS/DeuteronCross.hpp>
 #include "bonusdata.h"
 #include "bonusfits.h"
+using namespace nucqcd;
 
 //double sigmainput=40.;
 // int phiavg=1;

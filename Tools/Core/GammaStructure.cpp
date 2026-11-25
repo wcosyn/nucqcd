@@ -21,6 +21,9 @@
 using std::cout; using std::cerr; using std::endl;
 using std::ostream;
 #include <complex>
+
+namespace nucqcd {
+
 using std::complex;
 
 //-------------------------------------------------------------------------
@@ -1062,5 +1065,8 @@ ostream& operator<<(ostream& output, const GammaStructure& gamma)
   
   return output;
 }
+
+}  // namespace nucqcd
+
 
 

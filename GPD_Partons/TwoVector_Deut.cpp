@@ -5,6 +5,9 @@
 #include <Integrator/numint/numint.hpp>
 #include <cmath>
 
+namespace nucqcd {
+
+
 using namespace std;
 
 TwoVector_Deut::TwoVector_Deut(PARTONS::GPDService* pGPDService,
@@ -121,3 +124,6 @@ void TwoVector_Deut::getCross_twovector(std::vector<double> & results, const dou
     return;
 
 }
+
+}  // namespace nucqcd
+

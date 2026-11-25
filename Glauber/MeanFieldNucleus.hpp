@@ -20,6 +20,9 @@
 
 #include <Tools/Core/constants.hpp>
 
+namespace nucqcd {
+
+
 /*! \brief A Class for a nucleus with mean-field wave functions for the individual nucleons
  * 
  * Contains all useful variables for the nucleus (A,Z,N,excitation energy of the levels, etc)
@@ -185,5 +188,8 @@ private:
   void constructThetaArray(); /*!< Construct the Y_kappa and Y_{-kappa} grids */
   
 };
+
+}  // namespace nucqcd
+
 /** @} */
 #endif

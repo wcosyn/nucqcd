@@ -14,6 +14,9 @@
 #include <Tools/Core/Vector3.hpp>
 #include <complex>
 
+namespace nucqcd {
+
+
 /*! \brief A class that returns the momentum space he3 wave function for a variety of parametrizations
  *
  * The wave function is the sum of the three Faddeev components (pair 12 with spectator 3 and its two
@@ -66,5 +69,8 @@ public:
    */
   std::complex<double> getWF(const double p1[3], const double p2[3], int ms1, int ms2, int ms3, int mt1, int mt2, int mA);
 };
+
+}  // namespace nucqcd
+
 /** @} */
 #endif

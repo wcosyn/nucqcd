@@ -43,6 +43,7 @@ using std::stringstream;
 #include <cassert>
 #include "event.hpp"
 #include <cstdlib>
+using namespace nucqcd;
 
 // some preprocessor directives
 

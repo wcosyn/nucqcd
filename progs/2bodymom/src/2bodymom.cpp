@@ -5,6 +5,7 @@
 #include "sampler.hpp"
 #include <cassert>
 #include <string>
+using namespace nucqcd;
 
 
 #define SCX_LEADING true  // leading particle for single particle SCX calculations

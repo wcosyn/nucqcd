@@ -20,6 +20,7 @@
 #include <sstream>
 #include <string>
 #include <utility>
+using namespace nucqcd;
 
 namespace {
 nucqcd_test::RefStore refs("reg_glauber_grid");

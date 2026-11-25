@@ -44,6 +44,7 @@
 #include <signal.h>
 #include <sys/wait.h>
 #include <unistd.h>
+using namespace nucqcd;
 
 namespace {
 

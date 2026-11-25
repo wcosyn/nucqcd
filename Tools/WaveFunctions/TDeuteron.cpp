@@ -31,6 +31,9 @@
 #include <cmath>
 #include <cstdlib>
 
+namespace nucqcd {
+
+
 
 
 using std::cout; using std::cerr; using std::strcmp;
@@ -2176,6 +2179,9 @@ TDeuteron::Wavefunction* TDeuteron::Wavefunction::CreateNijmegenWavefunction()
   
   return wf;
 }
+
+}  // namespace nucqcd
+
 
 
 

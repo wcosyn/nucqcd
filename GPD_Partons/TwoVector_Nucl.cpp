@@ -7,6 +7,9 @@
 
 #include <GPD_Partons/Deut_Conv_GPD_T.hpp>
 #include <GPD_Partons/Deut_Conv_GPD_V.hpp>
+
+namespace nucqcd {
+
 using namespace std;
 
 TwoVector_Nucl::TwoVector_Nucl(PARTONS::GPDService* pGPDService,
@@ -297,3 +300,6 @@ void TwoVector_Nucl::getCross_twovector_ds2(std::vector<double> & results, const
     return;
 
 }
+
+}  // namespace nucqcd
+

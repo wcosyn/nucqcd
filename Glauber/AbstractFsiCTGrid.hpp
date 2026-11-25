@@ -16,6 +16,9 @@
 #include <Glauber/MeanFieldNucleus.hpp>
 #include <Glauber/AbstractFsiGrid.hpp>
 
+namespace nucqcd {
+
+
 /*! \brief An abstract class for a ISI/FSI with also a grid for CT ISI/FSI
  * 
  * Typically an object that is inherited from this class is operated as follows.<BR>
@@ -75,5 +78,8 @@ private:
   virtual void readinFsiCtGrid(std::ifstream &infile)=0; /*!< read in only the fsi+ct grids, pure virtual! */
   virtual void writeoutFsiCtGrid(std::ofstream &outfile)=0; /*!< write out only the fsi+ct grids, pure virtual! */
 };
+
+}  // namespace nucqcd
+
 /** @} */
 #endif

@@ -27,6 +27,7 @@ using namespace std;
 #include <Glauber/OneGlauberGrid.hpp>
 #include <Glauber/TMFSpinor.hpp>
 #include <Tools/Core/AuxFunction.hpp>
+using namespace nucqcd;
 
 void getBound(double &high, double &low, MeanFieldNucleusThick &nucleus, double Q2, double omega, int shell);
 void adap_intpiCM(numint::vector_d &, double costhetapiCM, double phipiCM, MeanFieldNucleusThick *pNucleus, TElectronKinematics *elec,

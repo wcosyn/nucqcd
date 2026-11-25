@@ -14,6 +14,9 @@
 #include <Tools/Core/FourVector.hpp>
 #include <Tools/Kinematics/LightConeKin2to2.hpp>
 
+namespace nucqcd {
+
+
 /*! \brief A class that initializes all lightcone variables for a two body scattering process, 
  *written with DIS on he3 with two spectators in mind!
  */
@@ -59,5 +62,8 @@ private:
   FourVector<double> Sp1_mu;/*!< [MeV] fourvector spectator 1 */
   FourVector<double> Sp2_mu;/*!< [MeV] fourvector spectator 2 */
 };
+
+}  // namespace nucqcd
+
 /** @} */
 #endif

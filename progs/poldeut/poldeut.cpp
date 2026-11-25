@@ -13,6 +13,7 @@ using namespace std;
 #include <Tools/Core/RunLog.hpp>
 #include <vector>
 #include <Tools/StructureFunctions/NuclStructure.hpp>
+using namespace nucqcd;
 
 int main(int argc, char *argv[])
 {

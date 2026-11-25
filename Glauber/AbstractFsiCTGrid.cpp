@@ -10,6 +10,9 @@ using namespace std;
 #include <Tools/Core/Utilfunctions.hpp>
 #include <Tools/Core/GridCache.hpp>
 
+namespace nucqcd {
+
+
 AbstractFsiCTGrid::AbstractFsiCTGrid(int r_grid, int cth_grid, int phi_grid, MeanFieldNucleus *pnucl, 
 				     double prec, int integrator, string homedir):
 AbstractFsiGrid(r_grid,cth_grid,phi_grid,pnucl,prec,integrator,homedir),filledctgrid(0){
@@ -116,3 +119,6 @@ void AbstractFsiCTGrid::updateGrids(){
 //   else cout << "fsict grid equal to the earlier one, doing nothing" << endl << fsi_ct_filename << endl << old_fsi_ct_filename << endl;
   
 }
+
+}  // namespace nucqcd
+

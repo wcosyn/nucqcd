@@ -8,6 +8,9 @@
 #include <Glauber/TMFSpinor.hpp>
 #include <Tools/Core/AuxFunction.hpp>
 
+namespace nucqcd {
+
+
 using namespace std;
 
 EMQECross::EMQECross(TElectronKinematics &elec, MeanFieldNucleusThick *pnucleus, double precision, int integr,
@@ -702,3 +705,6 @@ vector<double>  EMQECross::printDensity_profile(const TKinematics2to2 &kin, cons
 
   return output;
 }
+
+}  // namespace nucqcd
+

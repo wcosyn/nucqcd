@@ -17,6 +17,9 @@
 #include <partons/modules/running_alpha_strong/RunningAlphaStrongStandard.h>
 #include <partons/services/GPDService.h>
 
+namespace nucqcd {
+
+
 /**
  * @brief Class implements two vector meson production cross section for the nucleon case, various cross sections: both incoming L and T (virtual) photon; both L and T rho meson
  * 
@@ -159,5 +162,8 @@ PARTONS::RunningAlphaStrongModule* pRunningAlphaStrongModule; ///< alpha_S from 
 
 GPD_T_Nucl_grid gpdTgrid;
 };
+
+}  // namespace nucqcd
+
 
 #endif

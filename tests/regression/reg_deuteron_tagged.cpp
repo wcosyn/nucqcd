@@ -10,6 +10,7 @@
 
 #include <cmath>
 #include <string>
+using namespace nucqcd;
 
 namespace {
 nucqcd_test::RefStore refs("reg_deuteron_tagged");

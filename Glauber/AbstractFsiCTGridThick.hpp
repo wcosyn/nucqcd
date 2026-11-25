@@ -16,6 +16,9 @@
 #include <Glauber/MeanFieldNucleusThick.hpp>
 #include <Glauber/FsiCorrelator.hpp>
 
+namespace nucqcd {
+
+
 /*! \brief An abstract class for a ISI/FSI grid using thickness approximation, including a CT grid and SRC grids
  * 
  * Typically an object that is inherited from this class is operated as follows.<BR>
@@ -64,5 +67,8 @@ public:
   virtual void setFilenames(std::string dir); 
 
 };
+
+}  // namespace nucqcd
+
 /** @} */
 #endif  

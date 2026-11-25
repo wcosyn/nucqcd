@@ -12,6 +12,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+using namespace nucqcd;
 
 namespace {
 nucqcd_test::RefStore refs("reg_eep_planewave");

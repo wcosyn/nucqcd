@@ -10,6 +10,7 @@
 #include <sstream>
 #include <cassert>
 #include <Glauber/MeanFieldNucleus.hpp>
+using namespace nucqcd;
 
 /** write and read in two nucleon knockout events **/
 namespace EventParser {

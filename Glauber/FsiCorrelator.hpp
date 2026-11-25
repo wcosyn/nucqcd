@@ -14,6 +14,9 @@
 
 #include <Glauber/MeanFieldNucleusThick.hpp>
 
+namespace nucqcd {
+
+
 /*! \brief A class for all things needed in correlated fsi/isi calculations
  * 
  * Contains a grid for the gamma function of a certain nucleus (normalization of conditional 2-b density). <BR>
@@ -118,5 +121,8 @@ private:
   void lnsrch(double *xold, double functionold, double *grad, double *step, double *functionnew,
 	    double stpmax, int *check, double *functionvalues);/*!< linesearch minimalizer */
 };
+
+}  // namespace nucqcd
+
 /** @} */
 #endif

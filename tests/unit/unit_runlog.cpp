@@ -14,6 +14,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+using namespace nucqcd;
 
 namespace {
 std::vector<std::string> lines(const std::string &s) {

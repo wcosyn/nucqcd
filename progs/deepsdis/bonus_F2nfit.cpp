@@ -25,6 +25,7 @@
 
 #include <DIS/DeuteronCross.hpp>
 #include <Tools/StructureFunctions/NuclStructure.hpp>
+using namespace nucqcd;
 
 using std::cerr;
 using std::cout;

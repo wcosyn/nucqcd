@@ -12,6 +12,7 @@ using namespace std;
 
 #include <GPD_Partons/Deut_Conv_GPD_T.hpp>
 #include <GPD_Partons/TransGPD_set.hpp>
+using namespace nucqcd;
 
 int main(int argc, char *argv[]) {
     nucqcd::RunLog runlog(argc, argv, {"chiral-odd GPD model", "deuteron wf", "-t [GeV^2]", "xi", "ERBL", "scale"});

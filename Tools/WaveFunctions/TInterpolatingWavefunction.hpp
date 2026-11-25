@@ -13,6 +13,9 @@
 #include <Tools/WaveFunctions/TWavefunctionImplementation.hpp>
 #include <complex>
 
+namespace nucqcd {
+
+
 /*! \brief Deuteron wave function interpolated linearly from tabulated values (e.g. Nijmegen III, or a
  * copy of another wave function on a grid, as in Poldeut and Deut_Conv_EMTLF)
  *
@@ -108,6 +111,9 @@ class TInterpolatingWavefunction : public TWavefunctionImplementation
   bool inclD; ///< [1] turn on D-wave [0] off
   
 };
+
+
+}  // namespace nucqcd
 
 /** @} */
 #endif

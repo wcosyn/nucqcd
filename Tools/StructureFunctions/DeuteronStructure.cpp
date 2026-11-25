@@ -7,6 +7,9 @@
 #include <Tools/StructureFunctions/DeuteronStructure.hpp>
 #include <Tools/StructureFunctions/NuclStructure.hpp>
 
+namespace nucqcd {
+
+
 
 using namespace std;
 
@@ -288,3 +291,6 @@ double DeuteronStructure::getInclStructure_off(TKinematics2to2 &kin, double Wsq,
   return FL+kin.GetQsquared()/(2.*kin.GetKlab()*kin.GetKlab())*kin.GetWlab()/massi*FT;
   
 }
+
+}  // namespace nucqcd
+

@@ -7,6 +7,9 @@
 #include <cassert>
 #include <Integrator/numint/numint.hpp>
 
+namespace nucqcd {
+
+
 
 using namespace std;
 
@@ -142,3 +145,6 @@ void GPD_T_Nucl_grid::getEbarTfront(const double x, double &EbarTdfront, double 
     EbarTufront=EbarTdfront/(1.-x)/5.05*6.83;
     return;
 }
+
+}  // namespace nucqcd
+

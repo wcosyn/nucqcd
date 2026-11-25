@@ -19,6 +19,9 @@
 #include <Glauber/FastParticle.hpp>
 #include <map>
 
+namespace nucqcd {
+
+
 
 /*! \brief A class used to compute A(e,e'rho) cross sections & transparencies*/
 class PionTCross{
@@ -120,6 +123,9 @@ private:
   
   
 };
+
+
+}  // namespace nucqcd
 
 /*! @} */
 #endif

@@ -10,7 +10,7 @@
 #ifndef TSPINOR_H
 #define TSPINOR_H
 
-class TLorentzQuaternion;
+namespace nucqcd { class TLorentzQuaternion; }
 namespace nucqcd { class LorentzRotation; }
 
 #include <Tools/Core/Matrix.hpp>
@@ -20,9 +20,12 @@ namespace nucqcd { class LorentzRotation; }
 #include <Tools/Core/Vector3.hpp>
 #include <iostream>
 
+namespace nucqcd {
+
+
 // Forward declarations
-namespace nucqcd { class LorentzVector; }
-namespace nucqcd { class Rotation; }
+class LorentzVector;
+class Rotation;
 
 /*! \brief Dirac spinor u(p,s) of a positive-energy spin-1/2 particle
  *
@@ -231,6 +234,9 @@ class THelicityVSpinor : public TSpinor
 Matrix<4,1> operator*(const Matrix<4,4>& lhs, const TSpinor& rhs); ///< 4x4 matrix times spinor
 std::complex<double> operator*(const Matrix<1,4>& lhs, const TSpinor& rhs); ///< row (e.g. a bar spinor) times spinor
 Matrix<4,1> operator*(const GammaStructure& lhs, const TSpinor& rhs); ///< gamma-matrix structure times spinor
+
+
+}  // namespace nucqcd
 
 /** @} */
 #endif // TSPINOR_H

@@ -10,6 +10,9 @@
 #include <Tools/Core/Utilfunctions.hpp>
 #include <Tools/WaveFunctions/TDeuteron.hpp>
 
+namespace nucqcd {
+
+
 using namespace std;
 
 const std::map<std::string,MeanFieldNucleus::Type> MeanFieldNucleus::TypeNames = MeanFieldNucleus::initTypeNames();
@@ -354,4 +357,7 @@ complex<double> MeanFieldNucleus::getWave_Phipart(const int m, const int spin, c
   // j, ms and m are inputted as 2*j, 2*ms and 2*m respectively
   return exp(nucqcd::i_unit*0.5*phi*double(m-spin));  
 }
+
+}  // namespace nucqcd
+
 

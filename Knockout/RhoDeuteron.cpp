@@ -2,6 +2,9 @@
 #include <Tools/Core/AuxFunction.hpp>
 #include <Glauber/FastParticle.hpp>
 #include <Tools/Core/Utilfunctions.hpp>
+
+namespace nucqcd {
+
 #define MASS_N (nucqcd::mass_p+nucqcd::mass_n)*0.5E-03
 
 using namespace std;
@@ -701,3 +704,5 @@ void RhoDeuteron::klaas_rhoD_z(numint::vector_d & results, double pm, double cos
   for(int i=0;i<2;i++) results[i]*=2.*pm*pm;
   
 }
+
+}  // namespace nucqcd

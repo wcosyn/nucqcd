@@ -5,6 +5,7 @@
 #include <Glauber/MeanFieldNucleusThick.hpp>
 #include "parser.hpp"
 #include "2bodymom.hpp"
+using namespace nucqcd;
 /*
 #ifndef SHAREDIR
 #define SHAREDIR "/home/camille/Code/share"

@@ -16,6 +16,9 @@
 
 #include <string>
 
+namespace nucqcd {
+
+
 /*! \brief A class that computes tagged spectator he3 cross sections
  *
  * Plane-wave (virtual nucleon) DIS on He3 with both spectator nucleons detected, following the LDRD note
@@ -72,5 +75,8 @@ private:
   bool proton; /*!< photon interacts with a proton [1] or a neutron [0] */
 
 };
+
+}  // namespace nucqcd
+
 /*! @} */
 #endif  

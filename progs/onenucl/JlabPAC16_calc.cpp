@@ -16,6 +16,7 @@ using namespace std;
 #include <Tools/Kinematics/TKinematics2to2.hpp>
 #include <Tools/Kinematics/TElectronKinematics.hpp>
 #include <Knockout/EMQECross.hpp>
+using namespace nucqcd;
 
 int main(int argc, char *argv[])
 {

@@ -25,6 +25,7 @@ using namespace std;
 #include <Tools/Kinematics/TLeptonKinematics.hpp>
 #include <Knockout/WeakQECross.hpp>
 #include <Tools/Core/Utilfunctions.hpp>
+using namespace nucqcd;
 
 //starts at E=25 MeV with a delta of 25 MeV
 const double MiniBooNE_antineut_flux_norm[] = {

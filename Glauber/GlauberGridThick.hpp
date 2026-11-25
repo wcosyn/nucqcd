@@ -16,6 +16,9 @@
 
 #include <Glauber/AbstractFsiCTGridThick.hpp>
 
+namespace nucqcd {
+
+
 /*! \brief An class for a Glauber ISI/FSI grid using thickness approximation,implements AbstractFsiCTGridThick
  * 
  * Four grids are actually calculated.  fsi_grid contains both the regular fsi grid as well as the grid that includes SRC.  
@@ -255,6 +258,9 @@ private:
   static void klaas_int_bound_ct(numint::vector_d &, double b, double z, double phi, GlauberGridThick & grid, int proton);
 
 };
+
+
+}  // namespace nucqcd
 
 /** @} */
 #endif

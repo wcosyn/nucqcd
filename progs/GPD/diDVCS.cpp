@@ -37,6 +37,7 @@ using namespace std;
 #include <Tools/Core/LorentzVector.hpp>
 #include <iostream>
 #include <fstream>
+using namespace nucqcd;
 
    /**
      * @brief list of possible GPD models

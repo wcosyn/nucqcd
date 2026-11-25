@@ -1,6 +1,9 @@
 #include <DIS/InclusiveCross.hpp>
 #include <Tools/Core/Utilfunctions.hpp>
 #include <Tools/Core/AuxFunction.hpp>
+
+namespace nucqcd {
+
 // #include <gsl/gsl_poly.h>
 
 using namespace std;
@@ -1163,5 +1166,8 @@ double InclusiveCross::get_prz_res(double pt2, double W_sq, double Q2, double nu
 complex<double> InclusiveCross::scatter(double t){
   return sigma*(nucqcd::i_unit+epsilon)*exp(beta*t/2.); 
 }
+
+}  // namespace nucqcd
+
 
 

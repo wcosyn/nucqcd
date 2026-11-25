@@ -7,6 +7,9 @@
 #include <Tools/WaveFunctions/TDeuteron.hpp>
 #include <Tools/Core/constants.hpp>
 
+namespace nucqcd {
+
+
 using namespace std;
 
 Poldeut::Poldeut(std::string wf_name, std::string struc_name):
@@ -346,3 +349,5 @@ void Poldeut::getLFdistributions_new(double alpha_p, double pt, double &P_U, dou
 
   return;
 }
+
+}  // namespace nucqcd

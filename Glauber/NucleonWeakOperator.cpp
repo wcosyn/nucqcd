@@ -1,6 +1,9 @@
 #include <Glauber/NucleonWeakOperator.hpp>
 #include <Tools/Core/ErrorMessage.hpp>
 
+namespace nucqcd {
+
+
 using namespace std;
 
 const FourVector<GammaStructure> NucleonWeakOperator::gamma_5mu=FourVector<GammaStructure>(GammaStructure(0.,0.,0.,0.,0.,0.,1.),
@@ -211,3 +214,6 @@ double NucleonWeakOperator::getGE_weak(const double r, const int medium, const M
 double NucleonWeakOperator::getGM_weak(const double r, const int medium, const MeanFieldNucleusThick &nucleus) const{
   return getF1_weak(r,medium,nucleus)+getF2_weak(r,medium,nucleus);
 }
+
+}  // namespace nucqcd
+

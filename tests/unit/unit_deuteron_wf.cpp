@@ -14,6 +14,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+using namespace nucqcd;
 
 using Catch::Matchers::WithinAbs;
 using Catch::Matchers::WithinRel;

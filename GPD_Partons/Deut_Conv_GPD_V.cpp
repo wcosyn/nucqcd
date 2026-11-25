@@ -12,6 +12,9 @@
 
 #include <gsl/gsl_integration.h>
 
+namespace nucqcd {
+
+
 using namespace std;
 
 Deut_Conv_GPD_V::Deut_Conv_GPD_V(PARTONS::GPDService* pGPDService, PARTONS::GPDModule* pGPDModel, const string &wfname, unsigned int id):
@@ -853,3 +856,6 @@ vector< complex<double> > Deut_Conv_GPD_V::getDeut_CFF_hel_V_set(const double xi
     
     return CFFs;
 }
+
+}  // namespace nucqcd
+

@@ -24,6 +24,7 @@ using namespace std;
 
 #include <Tools/Core/constants.hpp>
 #include <DIS/DeuteronCross.hpp>
+using namespace nucqcd;
 
 
 

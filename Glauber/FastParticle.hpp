@@ -14,6 +14,9 @@
 
 #include <Glauber/MeanFieldNucleus.hpp>
 
+namespace nucqcd {
+
+
 
 /*! \brief A Class for a fast particle ejected from a nucleus
  * 
@@ -351,6 +354,9 @@ private:
 
 
 
+
+
+}  // namespace nucqcd
 
 /** @} */
 #endif

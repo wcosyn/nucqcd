@@ -15,6 +15,7 @@ using namespace std;
 #include <Tools/Core/Utilfunctions.hpp>
 #include <vector>
 #include <Integrator/numint/numint.hpp>
+using namespace nucqcd;
 
 
 void intPm(const double pm, double *results, va_list ap);

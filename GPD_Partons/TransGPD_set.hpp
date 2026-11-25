@@ -1,6 +1,9 @@
 #ifndef TRANSGPD_SET_HPP
 #define TRANSGPD_SET_HPP
 
+namespace nucqcd {
+
+
 /**
  * @brief small class that holds the nucleon transversity gpds for a certain kinematics and has methods to get certain combinations of them
  * 
@@ -111,6 +114,9 @@ double EbarTd; ///< GPD \bar{E}_T=2\tilde{H}_T+E_T down quark
 double EbarTu; ///< GPD \bar{E}_T=2\tilde{H}_T+E_T up quark
 
 };
+
+}  // namespace nucqcd
+
 
 
 #endif //TRNSGPD_SET_HPP

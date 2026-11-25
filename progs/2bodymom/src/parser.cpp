@@ -1,6 +1,7 @@
 #include "parser.hpp"
 #include <Tools/Core/constants.hpp>
 #include <cstring>  // strcmp (came through the ROOT headers before)
+using namespace nucqcd;
 
 void EventParser::write_events(char* fname, std::vector< struct Event>& events) {
 	FILE* fp;

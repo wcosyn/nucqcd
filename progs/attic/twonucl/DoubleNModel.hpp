@@ -24,6 +24,7 @@
 
 #include <string>
 #include <cstdarg>
+using namespace nucqcd;
 
 
 /*! \brief A class used to compute A(e,e'NN) amplitudes, with possibility to include SRC in the wave funtions */

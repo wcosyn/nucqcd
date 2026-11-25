@@ -12,6 +12,7 @@ using namespace std;
 #include <vector>
 #include <Integrator/numint/numint.hpp>
 #include <gsl/gsl_sf_bessel.h>
+using namespace nucqcd;
 
 
 void adap_intr(numint::vector_z &, double r, MeanFieldNucleusThick *pNucleus, int shell, double p);

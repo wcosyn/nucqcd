@@ -14,6 +14,9 @@
 #include <Tools/Core/GammaStructure.hpp>
 #include <Glauber/NucleonEMOperator.hpp>
 
+namespace nucqcd {
+
+
 
 /*! \brief A class that contains the EM coupling to the nucleon.
  * Has Weak force form factors (charged and neutral current), medium modifications (CQM, QSM), 
@@ -172,6 +175,9 @@ private:
   
     
 };
+
+
+}  // namespace nucqcd
 
 /** @} */
 #endif

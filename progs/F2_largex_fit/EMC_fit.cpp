@@ -25,6 +25,7 @@ using namespace std;
 
 #include <Tools/Core/constants.hpp>
 #include <Tools/Core/RunLog.hpp>
+using namespace nucqcd;
 
 vector<double> EMC_data={-0.207,
 -0.326,

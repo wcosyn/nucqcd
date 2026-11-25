@@ -33,6 +33,7 @@ using std::ofstream;
 using std::stringstream;
 #include <iomanip>
 #include <cassert>
+using namespace nucqcd;
 
 
 #define SHAREDIR "/user/home/gent/vsc407/vsc40761/Code/share"

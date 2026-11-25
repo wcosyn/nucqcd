@@ -11,6 +11,9 @@
 #include <fstream>
 #include <string>
 
+namespace nucqcd {
+
+
 /** A class to calculate charge exchange
  *  using the mean field approximation.
  *  Using a semiclassical formalism (bye bye glauber)
@@ -64,6 +67,9 @@ class ClassGridThick_SCX {
 		std::vector<std::vector<double>> _errorGrid;  /**< integrator error estimations go here */
 		std::string _filename;  /**< input/output file for the grid (in the grid cache directory) */
 };
+
+}  // namespace nucqcd
+
 
 
 #endif // CLASS_GRIDTHICK_SCX_HPP

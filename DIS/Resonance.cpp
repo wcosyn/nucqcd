@@ -1,6 +1,9 @@
 #include <DIS/Resonance.hpp>
 #include <Tools/Core/constants.hpp>
 
+namespace nucqcd {
+
+
 using namespace std;
 
 Resonance::Resonance(double m, std::complex<double> coefficient, double s0, double slope,
@@ -59,6 +62,9 @@ double Resonance::getSigma(double Q2) const{
     return (getSigma0()+getSigmaslope()*((getMass()>2.4E03?2.4E03:getMass())-nucqcd::mass_p)/(1.E-03*Q2))/10*nucqcd::inv_hbarc*nucqcd::inv_hbarc;
 
 }
+
+}  // namespace nucqcd
+
 
 
 

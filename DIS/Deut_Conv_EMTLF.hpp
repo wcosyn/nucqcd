@@ -13,6 +13,9 @@
 #include <Integrator/numint/numint.hpp>
 #include <Tools/WaveFunctions/TInterpolatingWavefunction.hpp>
 
+namespace nucqcd {
+
+
 /**
  * @brief Class implements deuteron LF EMT densities, see draft paper with Adam
  *
@@ -207,5 +210,8 @@ TInterpolatingWavefunction wf; /*!< interpolation of wfref on a grid (0-1000 MeV
 
 
 };
+
+}  // namespace nucqcd
+
 
 #endif 

@@ -22,6 +22,9 @@
 #include <iostream>
 #include <complex>
 
+namespace nucqcd {
+
+
 using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1157,3 +1160,6 @@ Matrix<2,2> THelicitySpinor::RotationMatrix(const nucqcd::LorentzRotation& l,
 		     -exp(complex<double>(0.,-.5*(alpha-gamma)))*sin(beta/2.),
 		     exp(complex<double>(0.,.5*(alpha+gamma)))*cos(beta/2.));
 }
+
+}  // namespace nucqcd
+

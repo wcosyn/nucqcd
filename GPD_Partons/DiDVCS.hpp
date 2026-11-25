@@ -14,6 +14,9 @@
 #include <partons/modules/running_alpha_strong/RunningAlphaStrongStandard.h>
 #include <partons/services/GPDService.h>
 
+namespace nucqcd {
+
+
 /**
  * @brief Class implements diffractive DVCS amplitude and cross section, see Pire, Szymanowski, Wallon Phys.Rev.D 101 (2020) 7, 074005
  * 
@@ -98,5 +101,8 @@ PARTONS::GPDModule* pGPDModel; ///< GPD model from PARTONS
 PARTONS::RunningAlphaStrongModule* pRunningAlphaStrongModule; ///< alpha_S from PARTONS
 
 };
+
+}  // namespace nucqcd
+
 
 #endif

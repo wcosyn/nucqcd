@@ -11,6 +11,9 @@
 
 #include <Tools/WaveFunctions/TWavefunctionImplementation.hpp>
 
+namespace nucqcd {
+
+
 /*! \brief Non-relativistic deuteron wave function as a sum of N Yukawa terms with masses m_i
  *
  * \f$ u(r) = \sum_i C_i e^{-m_i r} \f$ and w(r) the corresponding D-wave sum with coefficients D_i
@@ -64,6 +67,9 @@ class TYukawaPWF : public TWavefunctionImplementation
 
 
 
+
+
+}  // namespace nucqcd
 
 /** @} */
 #endif

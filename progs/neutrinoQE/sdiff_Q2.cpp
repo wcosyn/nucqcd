@@ -34,6 +34,7 @@ using namespace std;
 #include <Integrator/numint/numint2Cuba.hpp>
 
 #include "fluxes.h"
+using namespace nucqcd;
 
 //const double massmu = 105.6583715;
 

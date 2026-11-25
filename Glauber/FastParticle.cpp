@@ -11,6 +11,9 @@ using namespace std;
 #include <cassert>
 #include <cmath>
 
+namespace nucqcd {
+
+
 using namespace std;
 
 FastParticle::FastParticle(const int type, const int inc, const double momentum,
@@ -992,4 +995,7 @@ const double FastParticle::epsn_array[] = { 0.220782, 0.39322, 0.489897, 0.52835
   -0.14955, -0.148755, -0.14794, -0.147104, -0.146248, -0.145373, -0.144479, -0.143565, -0.142632, -0.141681,
   -0.140711, -0.139723, -0.138717, -0.137694, -0.136653, -0.135594, -0.134519, -0.133427, -0.132319, -0.131194,
   -0.130053} ;
+
+}  // namespace nucqcd
+
   

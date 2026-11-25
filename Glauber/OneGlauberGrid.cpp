@@ -9,6 +9,9 @@ using namespace std;
 #include <Tools/Core/Utilfunctions.hpp>
 #include <Tools/Core/AuxFunction.hpp>
 
+namespace nucqcd {
+
+
 //constructor, calls glaubergrid's constructor
 OneGlauberGrid::OneGlauberGrid(const int r_grid, const int cth_grid, MeanFieldNucleus *pnucl, 
 			       double prec, int integrator, string dir):
@@ -277,6 +280,9 @@ void OneGlauberGrid::klaas_one_bound_ct(numint::vector_d & results, double b, do
   return;
   
 }
+
+}  // namespace nucqcd
+
 
 
 

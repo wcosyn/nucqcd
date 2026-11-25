@@ -12,6 +12,7 @@
 #include <Glauber/TMFSpinor.hpp>
 #include <Glauber/MeanFieldNucleusThick.hpp>
 #include <iostream>
+using namespace nucqcd;
 
 using std::string;
 using std::cout;

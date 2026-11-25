@@ -13,6 +13,9 @@
 #include <Glauber/AbstractFsiCTGrid.hpp>
 #include <Integrator/numint/numint.hpp>
 
+namespace nucqcd {
+
+
 /*! \brief A class for a RMSGA ISI/FSI grid, implementing the abstract AbstractFsiCTGrid class
  *
  * Typically an object that is an instance from this class is operated as follows.<BR>
@@ -158,6 +161,9 @@ private:
 
 
 
+
+
+}  // namespace nucqcd
 
 /** @} */
 #endif

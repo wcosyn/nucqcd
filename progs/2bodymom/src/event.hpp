@@ -6,6 +6,7 @@
 #include <string>
 using std::string;
 #include <sstream>
+using namespace nucqcd;
 using std::stringstream;
 
 /** A struct that will hold all kinematics

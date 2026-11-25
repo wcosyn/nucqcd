@@ -19,6 +19,7 @@ using namespace std;
 #include "bonusdata.h"
 #include "bonusfits2.h"
 #include "bonusfits.h"
+using namespace nucqcd;
 
 struct Ftor {
 

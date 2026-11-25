@@ -72,6 +72,9 @@
 #include <Tools/Core/constants.hpp>
 #include <cassert>
 #include <cmath>
+
+namespace nucqcd {
+
 using namespace std;
 
 
@@ -482,4 +485,7 @@ double TCstPWF::GetG(ESpace space, EWave wave, int term, double q) const
 
   return g;
 }
+
+}  // namespace nucqcd
+
 

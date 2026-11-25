@@ -29,6 +29,7 @@ using namespace std;
 #include <Tools/Core/RunLog.hpp>
 #include "fomin_data.hpp"
 #include "slac_data.hpp"
+using namespace nucqcd;
 
 vector<double> xi_data; //nachtmann
 vector<double> x_data; //bjorken x

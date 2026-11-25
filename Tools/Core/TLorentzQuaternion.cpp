@@ -15,6 +15,9 @@
 #include <cmath>
 #include <cassert>
 #include <iostream>
+
+namespace nucqcd {
+
 using std::complex;
 using std::sqrt;
 using std::cosh;
@@ -476,3 +479,6 @@ void TLorentzQuaternion::Decompose(double& theta, nucqcd::Vector3& axis,
   else 
     boost = nucqcd::Vector3(0.,0.,0.);
 }
+
+}  // namespace nucqcd
+

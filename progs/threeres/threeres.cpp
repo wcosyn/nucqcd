@@ -14,6 +14,7 @@ using namespace std;
 #include <Tools/StructureFunctions/NuclStructure.hpp>
 #include <DIS/InclusiveCrossRes.hpp>
 #include <DIS/Resonance.hpp>
+using namespace nucqcd;
 
 //args are 
 //1. symm (-1 asymm delta 0 symm delta 1 no delta)

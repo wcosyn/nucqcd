@@ -11,6 +11,7 @@ using namespace std;
 #include <Tools/Core/constants.hpp>
 #include <Tools/Kinematics/TElectronKinematics.hpp>
 #include <Knockout/DQEinclusive.hpp>
+using namespace nucqcd;
 
 // run ../bin/DQEinc Q2[GeV] wf ffparam x Ebeam[MeV] nopt
 

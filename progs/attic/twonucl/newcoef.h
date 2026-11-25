@@ -11,6 +11,7 @@ using std::fabs;
 #include <Tools/Core/recmosh.hpp>
 
 #include <gsl/gsl_sf_coupling.h>
+using namespace nucqcd;
 
 // INPUT:
 // 	- self explaining but

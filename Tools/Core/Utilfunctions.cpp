@@ -9,6 +9,9 @@ using namespace std;
 #include <Tools/Core/Utilfunctions.hpp>
 #include <Tools/Core/constants.hpp>
 
+namespace nucqcd {
+
+
 ////////////////////////////////////////
 //calculates points between whom      //  
 //the interpolation is performed.     //  
@@ -320,4 +323,7 @@ double Interp3d(double ***grid, double s, double t, double u,
 	+ t*(comps*grid[sindex][tindex+1][uindex+1]
 	+ s*grid[sindex+1][tindex+1][uindex+1]));
 }
+
+}  // namespace nucqcd
+
 

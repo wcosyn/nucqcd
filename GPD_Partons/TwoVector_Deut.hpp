@@ -17,6 +17,9 @@
 #include <partons/modules/running_alpha_strong/RunningAlphaStrongStandard.h>
 #include <partons/services/GPDService.h>
 
+namespace nucqcd {
+
+
 /**
  * @brief Class implements two vector meson production cross section for the deuteron case, various cross sections: both incoming L and T (virtual) photon; both L and T omega meson
  * 
@@ -134,5 +137,8 @@ Deut_Conv_GPD_V deut_vector_grid;
 Deut_Conv_GPD_T deut_tensor_grid;
 
 };
+
+}  // namespace nucqcd
+
 
 #endif

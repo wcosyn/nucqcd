@@ -25,6 +25,9 @@ using std::exit;
 #include <gsl/gsl_eigen.h>
 #include <gsl/gsl_blas.h>
 
+namespace nucqcd {
+
+
 /* Square root of a hermitian 2x2-matrix
  * This means taking square root of
  * eigenvalues and rotating this matrix
@@ -95,3 +98,6 @@ Matrix<2,2> sqrt(const Matrix<2,2>& inputMatrix)
 
   return root;
 }
+
+}  // namespace nucqcd
+

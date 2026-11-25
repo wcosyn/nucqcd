@@ -10,6 +10,7 @@ using namespace std;
 #include <Tools/Core/constants.hpp>
 #include <Tools/Core/RunLog.hpp>
 #include <DIS/Poldeut.hpp>
+using namespace nucqcd;
 
 
 int main(int argc, char *argv[])

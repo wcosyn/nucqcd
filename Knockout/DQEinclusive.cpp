@@ -9,6 +9,9 @@
 #include <cassert>
 #include <gsl/gsl_integration.h>
 
+namespace nucqcd {
+
+
 using namespace std;
 
 const FourVector<complex<double> >DQEinclusive::polVectorPlus=FourVector<complex<double> >(0., -1./sqrt(2.),  														complex<double>(0.,-1./sqrt(2.)),0.);
@@ -1267,3 +1270,6 @@ bool DQEinclusive::get_prz(vector<double> &sol, double pt, double Q2, double nu,
     return 1;
   }
 }
+
+}  // namespace nucqcd
+

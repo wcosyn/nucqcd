@@ -8,6 +8,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <vector>
+using namespace nucqcd;
 
 using Catch::Matchers::WithinAbs;
 

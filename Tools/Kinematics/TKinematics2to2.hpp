@@ -11,6 +11,9 @@
 
 #include <Tools/Kinematics/TKinematics.hpp>
 
+namespace nucqcd {
+
+
 /*! \brief TKinematics with the masses of N, K and Y set by the user (e.g. A(e,e'p) with N the target
  * nucleus, K the residual nucleus and Y the knocked-out nucleon) and three independent variables */
 class TKinematics2to2 : public TKinematics
@@ -34,6 +37,9 @@ class TKinematics2to2 : public TKinematics
     
 };
 
+
+
+}  // namespace nucqcd
 
 /** @} */
 #endif

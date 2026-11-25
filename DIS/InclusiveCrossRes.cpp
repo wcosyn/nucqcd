@@ -2,6 +2,9 @@
 #include <DIS/Resonance.hpp>
 #include <Tools/Core/AuxFunction.hpp>
 
+namespace nucqcd {
+
+
 using namespace std;
 
 InclusiveCrossRes::InclusiveCrossRes(bool proton, string strucname, string wavename, 
@@ -528,6 +531,9 @@ complex<double> InclusiveCrossRes::scatter(double t, double Q2, size_t res1, siz
   double epsilon = (getResonance_vec()[res1].getEpsilon()+getResonance_vec()[res2].getEpsilon())/2.;
   return getResonance_vec()[res1].getCoeff()*conj(getResonance_vec()[res2].getCoeff())*sigma*(nucqcd::i_unit+epsilon)*exp(beta*t/2.); 
 }
+
+}  // namespace nucqcd
+
 
 
 

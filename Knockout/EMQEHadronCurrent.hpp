@@ -24,6 +24,9 @@
 #include <string>
 #include <cstdarg>
 
+namespace nucqcd {
+
+
 
 
 /*! \brief A class EMQEHadronCurrent, used to compute A(e,e'N) amplitudes */
@@ -313,5 +316,8 @@ private:
   
 
 };
+
+}  // namespace nucqcd
+
 /** @} */
 #endif

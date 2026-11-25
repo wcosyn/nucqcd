@@ -13,6 +13,9 @@
 #include <Tools/Core/Vector3.hpp>
 #include <Tools/Core/FourVector.hpp>
 
+namespace nucqcd {
+
+
 /*! \brief A class that initializes all lightcone variables for a two body scattering process, 
  *written with DIS on a deuteron with spectator in mind!
  */
@@ -111,5 +114,8 @@ private:
   
   bool isCollinear; /*!< [0] general frame, [1] collinear frame*/
 };
+
+}  // namespace nucqcd
+
 /** @} */
 #endif

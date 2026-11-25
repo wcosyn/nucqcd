@@ -37,6 +37,9 @@
 #include <Tools/Kinematics/TKinematics2to2.hpp>
 #include <Knockout/EMQEHadronCurrent.hpp>
 
+namespace nucqcd {
+
+
 class AbstractFsiGrid;
 
 /*! \brief A class EMQECross, used to compute A(e,e'N) cross sections */
@@ -363,5 +366,8 @@ private:
 	      AbstractFsiGrid *grid, nucqcd::Vector3 &pm, Matrix<1,4> &spinordown, Matrix<1,4> &spinorup,
 	      std::complex<double>  **phid, double r, double costheta, int shell);
 };
+}  // namespace nucqcd
+
 /** @} */  
+
 #endif

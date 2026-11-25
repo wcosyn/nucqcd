@@ -40,6 +40,9 @@
 
 #include <string>
 
+namespace nucqcd {
+
+
 /*! \brief A class that computes tagged spectator deuteron cross sections */
 class DeuteronCross{
   
@@ -258,5 +261,8 @@ private:
   DeuteronStructure structure; /*!< object used to calculate the structure functions needed in semi-inclusive deuteron scattering */
 
 };
+
+}  // namespace nucqcd
+
 /*! @} */
 #endif

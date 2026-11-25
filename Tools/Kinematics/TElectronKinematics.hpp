@@ -10,6 +10,9 @@
 #define TELECTRONKINEMATICS_H
 
 #include <Tools/Core/FourVector.hpp>
+
+namespace nucqcd {
+
 // Forward declarations
 class TKinematics2to2;
 class TKinematics2to3;
@@ -85,6 +88,9 @@ class TElectronKinematics
 
 
 }; // class TElectronKinematics
+
+
+}  // namespace nucqcd
 
 /** @} */
 #endif // TELECTRONKINEMATICS_H

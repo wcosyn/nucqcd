@@ -16,6 +16,9 @@
 
 #include <string>
 
+namespace nucqcd {
+
+
 /*! \brief A class that computes tagged spectator deuteron cross sections
  *
  * \par D-wave convention of the light-front densities
@@ -161,5 +164,8 @@ private:
   
 
 };
+
+}  // namespace nucqcd
+
 /*! @} */
 #endif 

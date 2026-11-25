@@ -6,6 +6,9 @@ using namespace std;
 #include <Tools/Core/constants.hpp>
 #include <Tools/WaveFunctions/OldDeuteron.hpp>
 
+namespace nucqcd {
+
+
 #define NORMFACTOR 11.4081948 //1/nucqcd::hbarc^{3/2}
 
 OldDeuteron::OldDeuteron(const std::string &wf_name){
@@ -370,3 +373,5 @@ std::complex< double> OldDeuteron::deuteronwf(int dspin, int proton, int spinp, 
     complex<double> result = Ufront(dspin,spinp,spinn)*U(p) + W(p)*get_stensor(dspin,spinp,spinn,theta,phi)/sqrt(8.);
     return (proton? result:-result);
 }
+
+}  // namespace nucqcd

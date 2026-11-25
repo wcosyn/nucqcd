@@ -12,6 +12,7 @@
 #include <cmath>
 #include <stdexcept>
 #include <vector>
+using namespace nucqcd;
 
 using Catch::Matchers::WithinAbs;
 using Catch::Matchers::WithinRel;

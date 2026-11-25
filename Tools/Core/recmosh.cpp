@@ -1,4 +1,7 @@
 #include <Tools/Core/recmosh.hpp>
+
+namespace nucqcd {
+
 RecMosh::RecMosh(int n1, int l1, int n2, int l2, string path)
 	: n1(n1),
 	  l1(l1),
@@ -229,4 +232,7 @@ double RecMosh::A( int l1, int l, int l2, int Lambda, int x )
 	
 	
 }
+
+}  // namespace nucqcd
+
 

@@ -6,6 +6,7 @@
 #include "ClassGridThickNucleus_SCX.hpp"
 #include <Glauber/FastParticle.hpp>
 #include "event.hpp"
+using namespace nucqcd;
 #ifndef SHAREDIR
 #define SHAREDIR "/home/ccolle/Code/share"
 #endif

@@ -13,6 +13,9 @@
 #include <Glauber/GlauberGrid.hpp>
 #include <Integrator/numint/numint.hpp>
 
+namespace nucqcd {
+
+
 /*! \brief A class for a RMSGA ISI/FSI grid with one particle, exploiting the symmetry
  * 
  * The only ejected particle is oriented along the z-axis.  So care has to be taken when integrating back over 
@@ -138,6 +141,9 @@ private:
 // 
 
 
+
+
+}  // namespace nucqcd
 
 /** @} */
 #endif

@@ -12,6 +12,7 @@
 #include <iostream>
 #include <Glauber/FastParticle.hpp>
 #include <Glauber/GlauberGridThick.hpp>
+using namespace nucqcd;
 
 using std::string;
 using std::cout;

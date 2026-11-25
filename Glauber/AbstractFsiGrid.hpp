@@ -52,6 +52,9 @@
 #include <Glauber/FastParticle.hpp>
 #include <Glauber/MeanFieldNucleus.hpp>
 
+namespace nucqcd {
+
+
 /*! \brief An abstract class for a ISI/FSI grid
  * 
  * Contains all necessary functions to operate a general fsi grid. Has a pointer to a nucleus for which the fsi grid is.  
@@ -251,5 +254,8 @@ private:
   
   
 };
+
+}  // namespace nucqcd
+
 /*! @} */
 #endif

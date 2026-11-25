@@ -20,6 +20,7 @@
 #include <iostream>
 #include <random>
 #include <string>
+using namespace nucqcd;
 
 namespace event_random {
 

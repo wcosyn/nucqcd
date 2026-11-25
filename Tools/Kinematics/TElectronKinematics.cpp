@@ -15,6 +15,9 @@
 #include <iostream>
 #include <cassert>
 #include <cmath>
+
+namespace nucqcd {
+
 using std::cerr;
 
 ///////////////////////////////////////////////////////////////////////////
@@ -435,4 +438,7 @@ void TElectronKinematics::GetLeptonVectors(const TKinematics2to2& kin, FourVecto
   k_out[0]=Eout; k_out[3]=kzprime;
   
 }
+
+}  // namespace nucqcd
+
 

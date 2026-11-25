@@ -11,6 +11,9 @@
 
 #include <complex>
 
+namespace nucqcd {
+
+
 /*! \brief A class for a certain resonance with scattering parameters and others
  *
  * Used for the produced hadronic states X in the final-state interactions of DIS on the deuteron:
@@ -68,6 +71,9 @@ private:
   std::complex<double> coeff; /*!< coefficient with which the resonance gets weighted in the DIS amplitude */  
   
 };
+
+
+}  // namespace nucqcd
 
 /*! @} */
 #endif

@@ -6,6 +6,9 @@
 #include <vector>
 #include <Tools/Core/AuxFunction.hpp>
 
+namespace nucqcd {
+
+
 /*! \brief Older implementation of the non-relativistic deuteron wave function (Paris, AV18, CD-Bonn, AV18b)
  *
  * deuteronwf gives the same amplitudes as TDeuteron::Wavefunction::DeuteronPState (with nucleon 1 the
@@ -86,3 +89,6 @@ std::complex<double> get_stensor(int dspin, int spinp, int spinn, double theta, 
 
 
 };
+
+}  // namespace nucqcd
+

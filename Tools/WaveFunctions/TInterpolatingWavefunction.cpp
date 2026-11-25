@@ -31,6 +31,9 @@
 #include <iostream>
 #include <Tools/WaveFunctions/TDeuteron.hpp>
 
+namespace nucqcd {
+
+
 using std::cout; using std::cerr; using std::endl;
 using std::map; using std::pair;
 
@@ -603,3 +606,6 @@ std::complex<double> TInterpolatingWavefunction::DeuteronRState(int deuteronPol,
 
   return state;
 }
+
+}  // namespace nucqcd
+

@@ -20,6 +20,7 @@ using namespace std;
 #include <DIS/DeuteronCross.hpp>
 #include "bonusdata.h"
 #include "bonusfits.h"
+using namespace nucqcd;
 
 
 double get_normfit_bonus(int beamindex, int Qindex, int Windex, int psindex, int offshell, bool lc);

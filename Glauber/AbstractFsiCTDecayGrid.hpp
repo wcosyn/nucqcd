@@ -16,6 +16,9 @@
 #include <Glauber/MeanFieldNucleus.hpp>
 #include <Glauber/AbstractFsiCTGrid.hpp>
 
+namespace nucqcd {
+
+
 /*! \brief An abstract class for a ISI/FSI with also a grid for CT ISI/FSI and/or Decay properties
  * 
  * Typically an object that is inherited from this class is operated as follows.<BR>
@@ -77,5 +80,8 @@ protected:
 
   
 };
+
+}  // namespace nucqcd
+
 /** @} */
 #endif

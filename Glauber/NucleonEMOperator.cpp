@@ -1,6 +1,9 @@
 #include <Glauber/NucleonEMOperator.hpp>
 #include <Tools/Core/ErrorMessage.hpp>
 #include <Glauber/MeanFieldNucleusThick.hpp>
+
+namespace nucqcd {
+
 using namespace std;
 
 const FourVector<GammaStructure> NucleonEMOperator::gamma_mu=FourVector<GammaStructure>(GammaStructure(0.,0.,1.),
@@ -4167,3 +4170,6 @@ const double NucleonEMOperator::CQSMGM[61][16] =
 1.01538269854}
 }
 ;
+
+}  // namespace nucqcd
+

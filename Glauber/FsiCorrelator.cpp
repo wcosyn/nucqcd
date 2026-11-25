@@ -9,6 +9,9 @@
 #include <Tools/Core/Utilfunctions.hpp>
 #include <Tools/Core/GridCache.hpp>
 #include <Tools/Core/AuxFunction.hpp>
+
+namespace nucqcd {
+
 using namespace std;
 
 #define TOTALGRIDPNTS (getCorr_rgrid())*(getCorr_cthgrid())
@@ -607,5 +610,8 @@ void FsiCorrelator::lnsrch(double *xold, double functionold, double *grad, doubl
     alam=(tmplam>0.1*alam? tmplam : 0.1*alam);
   }
 }
+
+}  // namespace nucqcd
+
 
 
