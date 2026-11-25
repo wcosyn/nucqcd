@@ -26,7 +26,7 @@ same PR.
 | 4 | Bug fixes | ✅ done: listed bugs (PRs #8, #9, #12); found later: stale FSI+CT grid (#18), kinematics (#19, #20, #33), DoubleNModel/Pair (#21, then moved to the attic in #22), π⁻ Glauber parameters (#28), TDeuteron errors (#31), He3 spin sum (#47) and factor A in `He3Cross` (#48), `TMPI` not compiling with MPI-3 (fixed in the attic with step 6, "Retire MPI", #54), `RunLog` reading freed memory at `exit()` (#57), `cube_romb` overflow beyond 10 levels in 3D (#60). New bugs found later are added here |
 | 5 | Low-risk modernization | ✅ done: `-fopenmp`, Fortran interop (#11), constants (#13, #14), grid cache (#15–#17), ownership (#23), exceptions (#24), Doxygen (#10, #25–#30, #32, #34–#39: no warnings left) |
 | 6 | Structural refactors | 🔶 done: constants macros (#41), `NuclStructure` merge (#42), code layout items 1–4 (`Tools` split #52, prefixed includes and `.hpp` #53), `Model`/`Cross` renamed (#53); MPI retired (#54); namespace `nucqcd` (#65); integrator benchmark (#61, keep `cube_romb` and `cube_adaptive`), precision reporting (#62); CRLF to LF (#66); to do: Glauber grids, model selection, long files |
-| 7 | Unbundle Cuba and cubature | ⬜ (can be done any time after step 2) |
+| 7 | Unbundle Cuba and cubature | 🔶 Cuba done (#67); cubature (a maintenance question only, see the benchmark) to do |
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
 | 9 | Decouple from ROOT where possible | 🔶 phases 1–5 done (#44, #45, #50, #55, #56, #58): ROOT is optional, the libraries neither include nor link it; 6: GPD generators ROOT-free (#59), fits (Minuit2) to do |
 | 10 | LHAPDF interface for the nucleon structure functions | ✅ done (#46), including MSTW through LHAPDF |
@@ -36,7 +36,7 @@ same PR.
 
 *Updated 2026-11-25.*
 
-**Done recently** (PRs #44–#66): ROOT decoupling phases 1–3; step 10 (LHAPDF);
+**Done recently** (PRs #44–#67): ROOT decoupling phases 1–3; step 10 (LHAPDF);
 He3 fixes; step 11 part 1 (`RunLog`); step 6 code layout: `Tools` split into Core, Kinematics,
 WaveFunctions and StructureFunctions (#52), then includes as paths from the repository root, `.hpp`
 as the only extension, and `Model`/`Cross` renamed to `EMQEHadronCurrent`/`EMQECross` (#53); MPI
@@ -46,7 +46,7 @@ handler fix (#57); ROOT phase 5: ROOT optional in the build (#58); phase 6: the 
 ROOT-free (#59); `cube_romb` overflow fix (#60); integrator benchmark (#61, `docs/integrator_benchmark.md`),
 after which the author decided to keep `cube_romb` and `cube_adaptive`; the precision reporting of
 `cube_adaptive` (#62); `RunLog` in all programs, step 11 done (#64); `namespace nucqcd` for all library
-code (#65); CRLF to LF in the C++ files, with a `.gitattributes` (#66).
+code (#65); CRLF to LF in the C++ files, with a `.gitattributes` (#66); Cuba unbundled (#67).
 
 **Options for the next step** (recommended order):
 1. ~~Report the integration precision~~ (done, #62; see "The requested precision often does not control the
@@ -57,11 +57,11 @@ code (#65); CRLF to LF in the C++ files, with a `.gitattributes` (#66).
 4. **Glauber grid work:** deduplicate the hierarchy, and investigate the off-axis grid speed (every
    point hits the evaluation cap; `cube_romb` was 5× faster at 1e-3); value changes need the author's OK.
 5. **ROOT phase 6 (fits):** the Minuit fits on an external Minuit2, after which ROOT can go entirely.
-6. **Smaller items:** unbundle Cuba/cubature (step 7, maintenance only), model-name strings to enums,
+6. **Smaller items:** unbundle cubature (step 7, maintenance only; Cuba is done, #67), model-name strings to enums,
    splitting the very long files, the PDG constants update (changes values).
 7. **Last:** the license decision (step 8), then the README (currently a stub).
 
-**Open choices for the author:** the license (step 8, see the item there); the PDG constants update (changes values); whether to unbundle Cuba
+**Open choices for the author:** the license (step 8, see the item there); the PDG constants update (changes values); whether to unbundle cubature
 (step 7); the README (step 8) comes last.
 
 ---
@@ -716,18 +716,28 @@ Do these one at a time, running the full test suite (including `slow`) after eac
 
 This is a build-system change only, and the `unit_cuba` tests verify it.
 
-- [ ] Remove `Integrator/Cuba-4.2.1` and the `Integrator/Cuba` symlink. They are 75 of the 97 files in `Integrator/`.
-- [ ] CMake first looks for an installed Cuba (in `CUBA_ROOT`, `~/.local` or the system). If none is
-  found, it downloads the release tarball via `ExternalProject` (URL and SHA256 pinned) and builds
-  it with the current workarounds (`-std=gnu17`, serial `make`).
-- [ ] The bundled Cuba 4.2.1 carries a patch to `src/suave/Fluct.c` (`MaxL` → `MinL`, step 4). The
-  latest release, 4.2.2, still has the bug (checked 2026-11-21), so keep the patch as a file in the repo
-  and apply it in the `ExternalProject` (`PATCH_COMMAND`) and in any install script. A system Cuba
-  cannot be patched; consider reporting the bug upstream.
-  `unit_cuba` tests Suave with a small flatness, so it catches this.
-- [ ] Keep the `cuba` INTERFACE target name, so nothing that links against it changes. Pin Cuba 4.2.x,
-  because the `numint` wrappers rely on the 4.2 API.
-- [ ] Optionally, install it into `~/.local` from `scripts/`, the way `scripts/install_partons.sh` does for PARTONS.
+- [x] **Cuba unbundled** (done 2026-11-25, #67). `Integrator/Cuba-4.2.1` and the `Integrator/Cuba`
+  symlink (74 files) are removed. `Integrator/CMakeLists.txt`:
+  - uses an installed Cuba if it finds one (`-DCUBA_ROOT`, `$CUBA_ROOT`, `~/.local`, the system), with
+    `<Cuba/cuba.h>` provided from `<build>/Integrator/cuba-include`; it says when that Cuba is not in
+    `~/.local` (a system package cannot carry our patch);
+  - otherwise downloads Cuba **4.2.1** (SHA256 pinned; `-DCUBA_TARBALL=<file>` for machines without
+    network, `-DCUBA_DOWNLOAD=yes` to ignore an installed one), applies the patch and builds it in the
+    build tree with the same flags as before (`-std=gnu17`, serial `make`);
+  - keeps the `cuba` INTERFACE target, so nothing that links it changed.
+  4.2.1 was kept, not 4.2.2, so the code is the bundled one except for our patch (no values change); the
+  numint wrappers need the 4.2 API.
+- [x] **The patch** is `cmake/patches/cuba-4.2.1-nucqcd.patch` (`MaxL` → `MinL` in `src/suave/Fluct.c`,
+  step 4, still in 4.2.2 (checked 2026-11-21), and the `lib:` target of `makefile.in` without the headers
+  dependency, a local change the bundle also had). It was made by diffing the bundle against the
+  pristine tarball: those two were the only differences (apart from the demo output and objects).
+  `unit_cuba` tests Suave with a small flatness. Reporting the bug upstream is still to do.
+- [x] **`scripts/install_cuba.sh [prefix] [tarball]`** installs the patched 4.2.1 (with `-fPIC`) into
+  `~/.local` or another prefix, as `install_partons.sh` does for PARTONS.
+- Tested: configure and build from scratch with the download, and with `scripts/install_cuba.sh` into a
+  scratch prefix plus `-DCUBA_ROOT`: `unit_cuba` and `unit_numint` pass in both; the main build with the
+  download passes all tests including `slow` (unchanged references). Not tested: a system Cuba package
+  (none installed here), and a build without network access other than through `CUBA_TARBALL`.
 
 - [ ] **cubature (`Integrator/adaptive`, added 2026-11-23).** The bundled `cubature.c` is Steven G.
   Johnson's pre-1.0 `adapt_integrate` from October 2010, with a `minEval` argument that upstream does

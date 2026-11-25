@@ -1,0 +1,30 @@
+nucqcd patches for Cuba 4.2.1 (https://feynarts.de/cuba/), apply with `patch -p1` in the Cuba source
+directory (done by Integrator/CMakeLists.txt and scripts/install_cuba.sh):
+
+1. src/suave/Fluct.c: the fluctuation was capped with MaxL instead of MinL (a bug in Cuba itself, still
+   there in 4.2.2): Suave crashed ("buffer overflow detected") with flatness < 1 and returned wrong
+   values with fail = 1 for flatness 1-5.
+2. makefile.in: `make lib` does not depend on the headers (they are not needed for the library).
+
+--- a/makefile.in
++++ b/makefile.in
+@@ -39,7 +39,7 @@
+ 
+ all: lib demos $(MATH_DEFAULT) $(TOOLS_DEFAULT)
+ 
+-lib: $(LIB) $(HEADERS)
++lib: $(LIB)
+ 
+ demos: demo-c$(EXE) $(DEMO_FORTRAN_DEFAULT)
+ 
+--- a/src/suave/Fluct.c
++++ b/src/suave/Fluct.c
+@@ -63,7 +63,7 @@
+     for( dim = 0; dim < t->ndim; ++dim ) {
+       Var *v = &var[2*dim + (*x++ >= .5*(b[dim].lower + b[dim].upper))];
+       crealL f = v->fluct + ft;
+-      v->fluct = MaxL(f, REALL_MAX/2);
++      v->fluct = MinL(f, REALL_MAX/2);
+       ++v->n;
+     }
+   }
