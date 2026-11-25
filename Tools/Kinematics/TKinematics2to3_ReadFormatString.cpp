@@ -382,6 +382,15 @@ void TKinematics2to3::ReadFormatString(const char *format)
     throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
 	 << "I cannot solve kinematics with these variables.");
   }
+  else if( fKinSolution[0] == '1' && !(fE1Var && fTh1Var && fEVar && fTh2Var && fPhi2Var) ) {
+    // Scenario 1 needs all of its variables: the energy of the system (fEVar), the energy and the angle of
+    // the particle on the x axis (fE1Var, fTh1Var) and the angles of the second particle (fTh2Var, fPhi2Var).
+    // Until 2026-11 a missing one (a variable given twice, or two energies and no angle, ...) was a null
+    // pointer that UpdateKinematics dereferenced: a segmentation fault.
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "ERROR in TKinematics2to3::ReadFormatString(const char*): "
+	 << "Format string is not sane! (Variables are missing: it needs an energy of the system, the energy and the "
+	 << "polar angle of the first particle and the polar and azimuthal angle of the second one.)");
+  }
   else if( fKinSolution[0] == '1' && fKinSolution[2] == 'L' )
     cerr << "WARNING in TKinematics2to3::ReadFormatString(const char*): "
 	 << "CAVEAT: risk of running into multiple solutions.\n"
