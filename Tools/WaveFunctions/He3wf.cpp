@@ -62,14 +62,18 @@ void prepare(int mA) {
 }
 }  // namespace
 
-He3wf::He3wf(std::string wf_name,std::string dir){
+He3wf::He3wf(std::string wf_name,std::string dir): He3wf(parse_he3_model(wf_name),dir){}
+
+He3wf::He3wf(He3Model model,std::string dir){
   string file;
-  if(!wf_name.compare("AV18")) file="/he_3.av18.form";
-  else if(!wf_name.compare("AV18-UIX")) file="/he_3.av18+urb-ix.jmax=6.esuche.cdep_app.fad.c.form";
-  else if(!wf_name.compare("AV18-TML")) file="/he_3.av18+tml5156.jmax=6.esuche.cdep_app.fad.c.form";
-  else if(!wf_name.compare("CDBonn")) file="/he_3.cdbonn.jmax=6.esuche.cdep_app.fad.form";
-  else if(!wf_name.compare("CDBonn-TML")) file="/he_3.cdbonn+tml4784.jmax=6.esuche.cdep_app.fad.form";
-  else throw std::invalid_argument(nucqcd::ErrorMessage() << "He3wf: invalid name for the he3 wave function: " << wf_name);
+  switch(model){
+    case He3Model::AV18:       file="/he_3.av18.form"; break;
+    case He3Model::AV18_UIX:   file="/he_3.av18+urb-ix.jmax=6.esuche.cdep_app.fad.c.form"; break;
+    case He3Model::AV18_TML:   file="/he_3.av18+tml5156.jmax=6.esuche.cdep_app.fad.c.form"; break;
+    case He3Model::CDBonn:     file="/he_3.cdbonn.jmax=6.esuche.cdep_app.fad.form"; break;
+    case He3Model::CDBonn_TML: file="/he_3.cdbonn+tml4784.jmax=6.esuche.cdep_app.fad.form"; break;
+  }
+  if(file.empty()) throw std::invalid_argument("He3wf: invalid He3Model");
   nucqcd::to_c_string(he3filename,dir+file);
   int mA=-1, usecdep=0;
   readhe3wave(&mA,&usecdep);

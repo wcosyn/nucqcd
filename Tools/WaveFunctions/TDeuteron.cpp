@@ -751,43 +751,27 @@ TDeuteron::Wavefunction* TDeuteron::Wavefunction::CreateTestWavefunction()
 //_____________________________________________________________________
 TDeuteron::Wavefunction* TDeuteron::Wavefunction::CreateWavefunction(const std::string& name)
 {
-  // known types are * CDBonn           (cdbonn)
-  //                 * Paris            (paris)
-  //                 * Nijmegen III     (nijm3)
-  //                 * Gross IIb        (grossIIb)
-  //                 * Gross #lambda=.4 (grossL4)
-  //                 * Gross WJC-1      (grossWJC1)
-  //                 * Gross WJC-2      (grossWJC2)
+  // known types are listed in WaveFunctionModels.hpp (DeuteronModel); an unknown name throws there
+  return CreateWavefunction(parse_deuteron_model(name));
+}
 
-  Wavefunction *wf=0;
-
-  if(nucqcd::iequals(name,"cdbonn"))
-    wf = CreateCDBonnWavefunction();
-  else if(nucqcd::iequals(name,"cdbonn87"))
-    wf = CreateCDBonn87Wavefunction();
-  else if(nucqcd::iequals(name,"paris"))
-    wf = CreateParisWavefunction();
-  else if(nucqcd::iequals(name,"av18"))
-    wf = CreateAV18Wavefunction();
-  else if(nucqcd::iequals(name,"av18b"))
-    wf = CreateAV18bWavefunction();
-  else if(nucqcd::iequals(name,"nijm3"))
-    wf = CreateNijmegenWavefunction();
-  else if(nucqcd::iequals(name,"grossiib"))
-    wf = CreateGrossIIbWavefunction();
-  else if(nucqcd::iequals(name,"grossl4"))
-    wf = CreateGrossL4Wavefunction();
-  else if(nucqcd::iequals(name,"grosswjc1"))
-    wf = CreateGrossWJC1Wavefunction();
-  else if(nucqcd::iequals(name,"grosswjc2"))
-    wf = CreateGrossWJC2Wavefunction();
-  else if(nucqcd::iequals(name,"test"))
-    wf = CreateTestWavefunction();
-  else
-    throw std::invalid_argument(nucqcd::ErrorMessage() << "TDeuteron::Wavefunction::CreateWavefunction: unknown wave function \""
-                                << name << "\" (known: cdbonn, cdbonn87, paris, av18, av18b, nijm3, grossiib, grossl4, grosswjc1, grosswjc2, test)");
-  
-  return wf;
+//_____________________________________________________________________
+TDeuteron::Wavefunction* TDeuteron::Wavefunction::CreateWavefunction(DeuteronModel model)
+{
+  switch(model) {
+    case DeuteronModel::CDBonn:    return CreateCDBonnWavefunction();
+    case DeuteronModel::CDBonn87:  return CreateCDBonn87Wavefunction();
+    case DeuteronModel::Paris:     return CreateParisWavefunction();
+    case DeuteronModel::AV18:      return CreateAV18Wavefunction();
+    case DeuteronModel::AV18b:     return CreateAV18bWavefunction();
+    case DeuteronModel::Nijmegen3: return CreateNijmegenWavefunction();
+    case DeuteronModel::GrossIIb:  return CreateGrossIIbWavefunction();
+    case DeuteronModel::GrossL4:   return CreateGrossL4Wavefunction();
+    case DeuteronModel::GrossWJC1: return CreateGrossWJC1Wavefunction();
+    case DeuteronModel::GrossWJC2: return CreateGrossWJC2Wavefunction();
+    case DeuteronModel::Test:      return CreateTestWavefunction();
+  }
+  throw std::invalid_argument("TDeuteron::Wavefunction::CreateWavefunction: invalid DeuteronModel");
 }
 
 //_____________________________________________________________________

@@ -150,7 +150,10 @@ name(nm),dir(nucqcd::share_dir){
     options.unpolarized = "MSTW2008lo68cl";
     lhapdf = nucqcd::LHAPDFStructure::get(options);
   }
+  else model = nucqcd::parse_structure_function_model(name); // throws for an unknown name
 }
+
+NucleonStructure::NucleonStructure(StructureFunctionModel m): NucleonStructure(nucqcd::structure_function_model_name(m)){}
 
 NucleonStructure::NucleonStructure(const nucqcd::LHAPDFOptions &options):
 name(lhapdf_name(options)),dir(nucqcd::share_dir),lhapdf(nucqcd::LHAPDFStructure::get(options)){}
@@ -163,7 +166,7 @@ low(std::make_unique<NucleonStructure>(lowname)),high(std::make_unique<NucleonSt
 NucleonStructure::~NucleonStructure() = default;
 
 NucleonStructure::NucleonStructure(const NucleonStructure& rhs):
-name(rhs.name),dir(rhs.dir),lhapdf(rhs.lhapdf),
+name(rhs.name),model(rhs.model),dir(rhs.dir),lhapdf(rhs.lhapdf),
 low(rhs.low? std::make_unique<NucleonStructure>(*rhs.low) : nullptr),
 high(rhs.high? std::make_unique<NucleonStructure>(*rhs.high) : nullptr),Wsq_switch(rhs.Wsq_switch){}
 
@@ -171,6 +174,7 @@ NucleonStructure& NucleonStructure::operator=(const NucleonStructure& rhs){
   if(this!=&rhs) { // avoid self-assignment
     NucleonStructure copy(rhs);
     std::swap(name,copy.name);
+    std::swap(model,copy.model);
     std::swap(dir,copy.dir);
     std::swap(lhapdf,copy.lhapdf);
     std::swap(low,copy.low);
@@ -187,7 +191,7 @@ std::string NucleonStructure::getName(double Wsq) const{
 
 bool NucleonStructure::isF2Fit(double Wsq) const{
   if(low) return (Wsq > Wsq_switch ? high : low)->isF2Fit(Wsq);
-  return !name.compare("SLAC");
+  return model && *model==StructureFunctionModel::SLAC;
 }
 
 double NucleonStructure::getG1(const bool proton, const double x, const double Q2) const{
@@ -337,12 +341,14 @@ void NucleonStructure::getF_xQ(double &F1, double &F2,const bool proton, const d
 void NucleonStructure::getF_xQW(double &F1, double &F2,const bool proton, const double x, const double Q2, const double Wsq) const{
   if(low) (Wsq > Wsq_switch ? high : low)->getF_xQW(F1,F2,proton,x,Q2,Wsq);
   else if(lhapdf) lhapdf->getF(F1,F2,proton,x,Q2);
-  else if(!name.compare("SLAC")) getF_SLAC_W(F1,F2,proton,x,Q2,Wsq);
-  else if(!name.compare("Alekhin")) getF_Alekhin(F1,F2,proton,x,Q2);
-  else if(!name.compare("CB")) getF_CB_W(F1,F2,proton,Q2,Wsq);
-  else if(!name.compare("CTEQ")) getF_CTEQ(F1,F2,proton,x,Q2);
-  else if(!name.compare("HMRS")) getF_HMRS(F1,F2,proton,x,Q2);
-  else { throw std::invalid_argument(nucqcd::ErrorMessage() << "invalid name for structure function" );}
+  else switch(*model){ // set in the constructor for everything but combinations and LHAPDF sets
+    case StructureFunctionModel::SLAC: getF_SLAC_W(F1,F2,proton,x,Q2,Wsq); break;
+    case StructureFunctionModel::Alekhin: getF_Alekhin(F1,F2,proton,x,Q2); break;
+    case StructureFunctionModel::CB: getF_CB_W(F1,F2,proton,Q2,Wsq); break;
+    case StructureFunctionModel::CTEQ: getF_CTEQ(F1,F2,proton,x,Q2); break;
+    case StructureFunctionModel::HMRS: getF_HMRS(F1,F2,proton,x,Q2); break;
+    case StructureFunctionModel::MSTW: throw std::logic_error(nucqcd::ErrorMessage() << "NucleonStructure: MSTW goes through LHAPDF" );
+  }
   return;
 }
 
