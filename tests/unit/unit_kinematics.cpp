@@ -206,3 +206,15 @@ TEST_CASE("TKinematics2to3: format strings that make no sense are refused", "[ki
   // the variables of the second particle given in the lab frame together with a CM angle
   CHECK_THROWS_WITH(make(TKinematics2to3::kN, "qsquared:wlab:pn:thn:thk:kyphikcm"), ContainsSubstring("Format string is not sane!"));
 }
+
+TEST_CASE("TKinematics2to3: a format string without all variables of its scenario is refused (was a segmentation fault)", "[kinematics]") {
+  // until 2026-11 these were accepted and UpdateKinematics dereferenced a null pointer: Q^2 twice, two
+  // energies and no angle, ... (found by trying 900k format strings; each crashed)
+  auto make = [](TKinematics2to3::EAxisConvention ac, const char *format) {
+    return TKinematics2to3("", "", 1, ac, format, 2.e5, 1800., 300., 0.5, 0.5, 0.5);
+  };
+  for (const auto &c : {std::make_pair(TKinematics2to3::kN, "qsquared:ey:ykcosthycm:wlab:ykphiycm:en"),
+                        std::make_pair(TKinematics2to3::kY, "qsquared:qsquared:ey:wkn:nkphikcm:tgk"),
+                        std::make_pair(TKinematics2to3::kN, "costhn:kyphiycm:qsquared:qsquared:tgy:wtot")})
+    CHECK_THROWS_WITH(make(c.first, c.second), ContainsSubstring("Format string is not sane!") && ContainsSubstring("Variables are missing"));
+}

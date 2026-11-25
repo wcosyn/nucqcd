@@ -808,12 +808,14 @@ Do these one at a time, running the full test suite (including `slow`) after eac
     the last digit. New tests in `unit_kinematics`: events rebuilt from a CM-angle format string and from a
     Mandelstam one, and the refusals (duplicates, conflicts, unknown names, no Q^2, the azimuth that is zero by
     definition).
-  - **Found on the way, not fixed (own PR, author's decision):** (1) a format string that does not give
+  - **Found on the way (1 fixed in #75, 2 not):** (1) a format string that does not give
     scenario 1 all of its variables (e.g. `qsquared` twice, or two energies and no angle) is accepted and
     `UpdateKinematics` then dereferences a null `fE1Var`/`fTh1Var`/`fTh2Var`/`fPhi2Var`: a segmentation
-    fault (63 of 900k fuzzed strings, e.g. `qsquared:ey:ykcosthycm:wlab:ykphiycm:en` for kN); it should
-    throw "Format string is not sane!" in `ReadFormatString`, after the loop, when the variables of the
-    chosen scenario are missing. (2) Quirks kept as they were: `pn` with an axis convention other than kN
+    fault (63 of 900k fuzzed strings, e.g. `qsquared:ey:ykcosthycm:wlab:ykphiycm:en` for kN); **fixed (2026-11-25, #75):** `ReadFormatString` now throws "Format string is not sane!" when the
+    variables of scenario 1 are missing (after the loop, so the other messages are unchanged); tried on
+    the same 900k strings: the 63 crashes became exceptions and nothing else changed; tested in
+    `unit_kinematics`. (A string that gives no scenario at all, `fKinSolution[0] == '-'`, is still accepted and
+    leaves the vectors at zero: no crash, not changed.) (2) Quirks kept as they were: `pn` with an axis convention other than kN
     stores `fEn` (not `fPn`) with the name `P` (`pk` and `py` store their own); the checks in the CM-angle
     branches compare `fKinSolution[0] == 2` (the number, never true) instead of `'2'`.
   Still to do: the 1.0-1.2k-line `GlauberGridThick.cpp`, `GlauberDecayGridThick.cpp`, `GlauberGrid.cpp`,
