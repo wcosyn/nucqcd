@@ -15,7 +15,7 @@
 #include <Tools/Core/Matrix.hpp>
 #include <Glauber/MeanFieldNucleusThick.hpp>
 #include <Tools/StructureFunctions/NucleonStructure.hpp>
-#include <Tools/Kinematics/TKinematics2to3.hpp>
+#include <Tools/Kinematics/Kinematics2to3.hpp>
 #include <Tools/Core/constants.hpp>
 
 #include <stdexcept>
@@ -36,7 +36,7 @@ TEST_CASE("invalid options throw std::invalid_argument", "[errors]") {
   double F1 = 0., F2 = 0.;
   CHECK_THROWS_AS(NucleonStructure("nonsense").getF_xQ(F1, F2, true, 0.3, 2.e06), std::invalid_argument);
   CHECK_THROWS_AS(FastParticle(77, 0, 1000., 0., 0., 1., 0., 1., 1., dir), std::invalid_argument);
-  CHECK_THROWS_AS(TKinematics2to3("", "", 1, TKinematics2to3::kK, "qsquared:wlab:pk", 1.e06, 600., 300., 0.5, 0.5, 0.5),
+  CHECK_THROWS_AS(Kinematics2to3("", "", 1, Kinematics2to3::kK, "qsquared:wlab:pk", 1.e06, 600., 300., 0.5, 0.5, 0.5),
                   std::invalid_argument);
 }
 

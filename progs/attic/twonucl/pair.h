@@ -25,7 +25,7 @@ using std::vector;
 
 using namespace std;
 
-#include <Tools/WaveFunctions/TDeuteron.hpp>
+#include <Tools/WaveFunctions/Deuteron.hpp>
 using namespace nucqcd;
 
 class Pair
@@ -83,7 +83,7 @@ private:
 	int A;
 	bool coeflistmade;
 	double nu;
-	TDeuteron::Wavefunction *deuteronwf;
+	Deuteron::Wavefunction *deuteronwf;
 	void makecoeflist();
 	double uncorrelatedradialwf(int n, int l, double r) const;
 	double radialwf( int n, int l, int la, int S, int j, int T, double r) const;

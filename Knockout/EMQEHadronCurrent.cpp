@@ -1,7 +1,7 @@
 #include <Tools/Core/IntegratorFlag.hpp>
 #include <Knockout/EMQEHadronCurrent.hpp>
 #include <Tools/Core/ErrorMessage.hpp>
-#include <Glauber/TMFSpinor.hpp>
+#include <Glauber/MeanFieldSpinor.hpp>
 #include <Tools/Core/AuxFunction.hpp>
 
 namespace nucqcd {
@@ -24,7 +24,7 @@ EMQEHadronCurrent::~EMQEHadronCurrent(){
   
 }
 
-complex<double> EMQEHadronCurrent::getFreeMatrixEl(TKinematics2to2 &tk, int current, int spinin, int spinout, int photonpol){
+complex<double> EMQEHadronCurrent::getFreeMatrixEl(Kinematics2to2 &tk, int current, int spinin, int spinout, int photonpol){
   //to translate the 2to2kinematics language to our particles:
   //p is A
   //hyperon Y is fast final nucleon
@@ -68,17 +68,17 @@ complex<double> EMQEHadronCurrent::getFreeMatrixEl(TKinematics2to2 &tk, int curr
   delete J;
   //contract everything
   if(spinout==-1){
-    if(spinin==-1) return TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kUnity))*Jcontr*
-		      TSpinor(Pin,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kUnity);
-    else if(spinin==1) return TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kUnity))*Jcontr*
-		      TSpinor(Pin,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity);
+    if(spinin==-1) return Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kUnity))*Jcontr*
+		      Spinor(Pin,tk.GetHyperonMass(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kUnity);
+    else if(spinin==1) return Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kUnity))*Jcontr*
+		      Spinor(Pin,tk.GetHyperonMass(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kUnity);
     else {throw std::invalid_argument(nucqcd::ErrorMessage() << "invalid spinin " << spinin );}
   }
   else if(spinout==1){
-    if(spinin==-1) return TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity))*Jcontr*
-		      TSpinor(Pin,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kUnity);
-    else if(spinin==1) return TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity))*Jcontr*
-		      TSpinor(Pin,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity);
+    if(spinin==-1) return Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kUnity))*Jcontr*
+		      Spinor(Pin,tk.GetHyperonMass(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kUnity);
+    else if(spinin==1) return Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kUnity))*Jcontr*
+		      Spinor(Pin,tk.GetHyperonMass(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kUnity);
     else {throw std::invalid_argument(nucqcd::ErrorMessage() << "invalid spinin " << spinin );}
   }
   else {throw std::invalid_argument(nucqcd::ErrorMessage() << "invalid spinout " << spinout );}
@@ -86,7 +86,7 @@ complex<double> EMQEHadronCurrent::getFreeMatrixEl(TKinematics2to2 &tk, int curr
 }
 
 
-// complex<double> EMQEHadronCurrent::getMatrixEl(TKinematics2to2 &tk, int spinout, int photonpol, int shellindex, 
+// complex<double> EMQEHadronCurrent::getMatrixEl(Kinematics2to2 &tk, int spinout, int photonpol, int shellindex, 
 // 				   int m, int CT, int pw, int current, int SRC, int thick){
 // 
 //   //to translate the 2to2kinematics language to our particles:
@@ -140,8 +140,8 @@ complex<double> EMQEHadronCurrent::getFreeMatrixEl(TKinematics2to2 &tk, int curr
 //   else if(photonpol==1) Jcontr=J->getCC(current, q, pi, pf)*polVectorPlus;
 // //   else if(photonpol==2) Jcontr=J->getCC(current, q, pi, pf)*polVectorX;
 //   else{ cerr << "invalid photon pol" << endl;  exit(1); }
-//   if(spinout==-1) barcontract = TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kUnity))*Jcontr;
-//   else if(spinout==1) barcontract = TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity))*Jcontr;
+//   if(spinout==-1) barcontract = Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kUnity))*Jcontr;
+//   else if(spinout==1) barcontract = Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kUnity))*Jcontr;
 //   else{ cerr << "invalid nucl pol" << endl;  exit(1); }
 //   
 //   complex<double> results[2];
@@ -155,7 +155,7 @@ complex<double> EMQEHadronCurrent::getFreeMatrixEl(TKinematics2to2 &tk, int curr
 // }
 
 
-void EMQEHadronCurrent::getMatrixEl(TKinematics2to2 &tk, Matrix<2,3> & matrixel, int shellindex, 
+void EMQEHadronCurrent::getMatrixEl(Kinematics2to2 &tk, Matrix<2,3> & matrixel, int shellindex, 
 			int m, int CT, int pw, int current, int SRC, int thick, double lc_mod, double nkt_mod){
 
   //to translate the 2to2kinematics language to our particles:
@@ -201,12 +201,12 @@ void EMQEHadronCurrent::getMatrixEl(TKinematics2to2 &tk, Matrix<2,3> & matrixel,
   Jcontr0 = J->getCC(current, q, pi, pf, 0.,0,*pnucl)*polVector0;
   Jcontrmin= J->getCC(current, q, pi, pf, 0.,0,*pnucl)*polVectorMin;
   Jcontrplus=J->getCC(current, q, pi, pf, 0.,0,*pnucl)*polVectorPlus;
-  barcontract0down = TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kUnity))*Jcontr0;
-  barcontract0up = TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity))*Jcontr0;
-  barcontractmindown = TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kUnity))*Jcontrmin;
-  barcontractminup = TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity))*Jcontrmin;
-  barcontractplusdown = TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kUnity))*Jcontrplus;
-  barcontractplusup = TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity))*Jcontrplus;
+  barcontract0down = Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kUnity))*Jcontr0;
+  barcontract0up = Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kUnity))*Jcontr0;
+  barcontractmindown = Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kUnity))*Jcontrmin;
+  barcontractminup = Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kUnity))*Jcontrmin;
+  barcontractplusdown = Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kUnity))*Jcontrplus;
+  barcontractplusup = Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kUnity))*Jcontrplus;
   
   int res=90;
   unsigned count=0;
@@ -245,7 +245,7 @@ void EMQEHadronCurrent::getMatrixEl(TKinematics2to2 &tk, Matrix<2,3> & matrixel,
   delete J;
 }
 
-void EMQEHadronCurrent::getAllMatrixElMult(TKinematics2to2 &tk, Matrix<2,3> *matrixel, int shellindex, int m, 
+void EMQEHadronCurrent::getAllMatrixElMult(Kinematics2to2 &tk, Matrix<2,3> *matrixel, int shellindex, int m, 
 			       int current, int thick, double lc_mod, double nkt_mod){
   //to translate the 2to2kinematics language to our particles:
   //p is A
@@ -292,8 +292,8 @@ void EMQEHadronCurrent::getAllMatrixElMult(TKinematics2to2 &tk, Matrix<2,3> *mat
       if(photopol==1) Jcontr= J->getCC(current, q, pi, pf, 0.,0,*pnucl)*polVectorMin;
       if(photopol==2) Jcontr=J->getCC(current, q, pi, pf, 0.,0,*pnucl)*polVectorPlus;
       //spinors with quantization axis along z-axis correspond to the helicity spinors here!!!
-      if(spinout==0) barcontract = TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kUnity))*Jcontr;
-      else if(spinout==1) barcontract = TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity))*Jcontr;
+      if(spinout==0) barcontract = Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kUnity))*Jcontr;
+      else if(spinout==1) barcontract = Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kUnity))*Jcontr;
       int res=90;
       unsigned count=0;
       int total=thick?5:3; //in thickness we need 5 diff FSI results, otherwise 3
@@ -325,7 +325,7 @@ void EMQEHadronCurrent::getAllMatrixElMult(TKinematics2to2 &tk, Matrix<2,3> *mat
 }
 
 
-void EMQEHadronCurrent::getAllMatrixEl(TKinematics2to2 &tk, Matrix<2,3> *matrixel, int shellindex, int m, 
+void EMQEHadronCurrent::getAllMatrixEl(Kinematics2to2 &tk, Matrix<2,3> *matrixel, int shellindex, int m, 
                 int current, int thick, int medium, double lc_mod, double nkt_mod){
   //to translate the 2to2kinematics language to our particles:
   //p is A
@@ -371,8 +371,8 @@ void EMQEHadronCurrent::getAllMatrixEl(TKinematics2to2 &tk, Matrix<2,3> *matrixe
     Jcontr0 = J->getCC(current, q, pi, pf, 0.,0,*pnucl)*polVector0;
     Jcontrmin= J->getCC(current, q, pi, pf, 0.,0,*pnucl)*polVectorMin;
     Jcontrplus=J->getCC(current, q, pi, pf, 0.,0,*pnucl)*polVectorPlus;
-    Matrix<1,4> spindown=TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kUnity));
-    Matrix<1,4> spinup=TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity));
+    Matrix<1,4> spindown=Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kUnity));
+    Matrix<1,4> spinup=Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kUnity));
     barcontract0down = spindown*Jcontr0;
     barcontract0up = spinup*Jcontr0;
     barcontractmindown = spindown*Jcontrmin;
@@ -456,10 +456,10 @@ void EMQEHadronCurrent::getAllMatrixEl(TKinematics2to2 &tk, Matrix<2,3> *matrixe
       F.model = this;
       F.thick = thick;
       F.total = total;
-      F.spindown=TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),
-				      TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kUnity));
-      F.spinup=TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),
-				    TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity));
+      F.spindown=Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),
+				      Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kUnity));
+      F.spinup=Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),
+				    Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kUnity));
       F.medium=medium;
       F.current=current;
       F.q=q;
@@ -551,7 +551,7 @@ void EMQEHadronCurrent::getAllMatrixEl(TKinematics2to2 &tk, Matrix<2,3> *matrixe
 //   double cosphi,sinphi;
 //   sincos(phi,&sinphi,&cosphi);
 //   
-//   results[total-1]= barcontract*TMFSpinor(*pnucl,shell,mm,r,costheta,phi)*
+//   results[total-1]= barcontract*MeanFieldSpinor(*pnucl,shell,mm,r,costheta,phi)*
 //     exp(-nucqcd::inv_hbarc*pm*nucqcd::Vector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)*nucqcd::i_unit);
 //   for(int i=0;i<total-1;++i) results[i]=results[total-1]*gridthick.getFsiGridN_interp1(i,phi);
 //   
@@ -567,7 +567,7 @@ void EMQEHadronCurrent::getAllMatrixEl(TKinematics2to2 &tk, Matrix<2,3> *matrixe
 //   double sintheta = va_arg(ap,double);
 //   double cosphi,sinphi;
 //   sincos(phi,&sinphi,&cosphi);
-//   TMFSpinor wave(*pnucl,shell,mm,r,costheta,phi);
+//   MeanFieldSpinor wave(*pnucl,shell,mm,r,costheta,phi);
 //   complex<double> exp_pr=exp(-nucqcd::inv_hbarc*pm*nucqcd::Vector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)*nucqcd::i_unit);
 //   results[1]=results[0]= barcontract0down*wave*exp_pr;
 //   results[2]=results[3]= barcontractmindown*wave*exp_pr;
@@ -605,7 +605,7 @@ void EMQEHadronCurrent::klaas_one_amp(numint::vector_z & results, double r, doub
   
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
-  TMFSpinor wave(*(model.getPnucleus()),model.getShell(),model.getM(),r,costheta,phi);
+  MeanFieldSpinor wave(*(model.getPnucleus()),model.getShell(),model.getM(),r,costheta,phi);
   complex<double> exp_pr=exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(model.getPm()*nucqcd::Vector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
   results[1]=results[0]= exp_pr*(model.getBarcontract0down()*wave);
   results[2]=results[3]= exp_pr*(model.getBarcontractmindown()*wave);
@@ -647,7 +647,7 @@ void EMQEHadronCurrent::klaas_all_amp(numint::vector_z & results, double r, doub
   
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
-  TMFSpinor wave(*(model.getPnucleus()),model.getShell(),model.getM(),r,costheta,phi);
+  MeanFieldSpinor wave(*(model.getPnucleus()),model.getShell(),model.getM(),r,costheta,phi);
   complex<double> exp_pr=r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(model.getPm()*nucqcd::Vector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
   results[0*total_grid]= exp_pr*(model.getBarcontract0down()*wave);
   results[1*total_grid]= exp_pr*(model.getBarcontractmindown()*wave);
@@ -682,7 +682,7 @@ void EMQEHadronCurrent::klaas_all_amp_medium(numint::vector_z & results, double 
   
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
-  TMFSpinor wave(*(model.getPnucleus()),model.getShell(),model.getM(),r,costheta,phi);
+  MeanFieldSpinor wave(*(model.getPnucleus()),model.getShell(),model.getM(),r,costheta,phi);
   //includes phase space r
   complex<double> exp_pr=r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(model.getPm()*nucqcd::Vector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
   results[0*total]= exp_pr*(spindown*Jcontr0*wave);
@@ -737,7 +737,7 @@ void EMQEHadronCurrent::klaas_all_angular(numint::vector_z & results, double cos
   
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
-  TMFSpinor wave(*(model.getPnucleus()),model.getShell(),model.getM(),r,costheta,phi);
+  MeanFieldSpinor wave(*(model.getPnucleus()),model.getShell(),model.getM(),r,costheta,phi);
   complex<double> exp_pr=exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(model.getPm()*nucqcd::Vector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
   results[0*total]= exp_pr*(model.getBarcontract0down()*wave);
   results[1*total]= exp_pr*(model.getBarcontractmindown()*wave);
@@ -765,7 +765,7 @@ void EMQEHadronCurrent::klaas_mult_amp(numint::vector_z & results, double r, dou
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
   results[total-1]= r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(model.getPm()*nucqcd::Vector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)))
-	      *(model.getBarcontract()*TMFSpinor(*(model.getPnucleus()),model.getShell(),model.getM(),r,costheta,phi));
+	      *(model.getBarcontract()*MeanFieldSpinor(*(model.getPnucleus()),model.getShell(),model.getM(),r,costheta,phi));
   for(int i=0;i<total-1;++i) results[i]=results[total-1]*model.getThickGrid()->getFsiGridN_interp3(i,r,costheta,phi);
   return;
 

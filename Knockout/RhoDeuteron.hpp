@@ -11,11 +11,11 @@
 
 
 #include <Glauber/MeanFieldNucleusThick.hpp>
-// #include <Tools/Kinematics/TKinematics2to2.hpp>
+// #include <Tools/Kinematics/Kinematics2to2.hpp>
 #include <Glauber/DistMomDistrGrid.hpp>
 #include <Glauber/GlauberDecayGridThick.hpp>
 #include <Glauber/FastParticle.hpp>
-#include <Tools/WaveFunctions/TDeuteron.hpp>
+#include <Tools/WaveFunctions/Deuteron.hpp>
 #include <Knockout/DeuteronMomDistr.hpp>
 
 namespace nucqcd {
@@ -27,7 +27,7 @@ namespace nucqcd {
 class RhoDeuteron{
 public:
   /*! Constructor
-   * \param wavefunction D wave function name, see TDeuteron
+   * \param wavefunction D wave function name, see Deuteron
    * \param p_max [MeV] maximum missing momentum in integrations 
    * \param no_cuts apply the experimental cuts in t or z or not 
    * \param integr which integrator (1:numint::cube_romb, 2:numint::cube_adaptive (0, the old rombergerN, was removed)
@@ -87,7 +87,7 @@ private:
    * \return cross section []
    */
   double calcCross_coh(nucqcd::Vector3 &pDvec);
-  //   TKinematics2to2 *pkin;
+  //   Kinematics2to2 *pkin;
   /*! function that gets integrated over pm, all different fsi outputs, incoherent cross section fixed t
    * \param pm [MeV] radial coordinate
    * \param results  result: contains the cross section 

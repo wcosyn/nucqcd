@@ -3,7 +3,7 @@
 #include <test_support.hpp>
 
 #include <DIS/InclusiveCross.hpp>
-#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/Kinematics/ElectronKinematics.hpp>
 
 #include <memory>
 #include <sstream>
@@ -16,7 +16,7 @@ nucqcd_test::RefStore refs("reg_inclusive_dis");
 }
 
 TEST_CASE("Inclusive F2D: plane wave and FSI (resonance model)", "[inclusive]") {
-  std::unique_ptr<TElectronKinematics> elec(TElectronKinematics::CreateWithBeamEnergy(5000.));
+  std::unique_ptr<ElectronKinematics> elec(ElectronKinematics::CreateWithBeamEnergy(5000.));
   std::vector<double> res = {1.232E03, 1.5E03, 1.75E03};
   const double Q2 = 2.e06;
   for (int proton = 0; proton <= 1; proton++) {
@@ -38,7 +38,7 @@ TEST_CASE("Inclusive F2D: plane wave and FSI (resonance model)", "[inclusive]") 
 }
 
 TEST_CASE("Inclusive tensor asymmetry Azz (plane wave)", "[inclusive]") {
-  std::unique_ptr<TElectronKinematics> elec(TElectronKinematics::CreateWithBeamEnergy(11000.));
+  std::unique_ptr<ElectronKinematics> elec(ElectronKinematics::CreateWithBeamEnergy(11000.));
   std::vector<double> res = {1.232E03, 1.5E03, 1.75E03};
   for (int proton = 0; proton <= 1; proton++) {
     InclusiveCross dinc(proton, "CB", "AV18", *elec, res, 3);

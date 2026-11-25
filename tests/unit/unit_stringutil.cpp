@@ -2,7 +2,7 @@
 #include <test_support.hpp>
 
 #include <Tools/Core/StringUtil.hpp>
-#include <Tools/WaveFunctions/TDeuteron.hpp>
+#include <Tools/WaveFunctions/Deuteron.hpp>
 
 #include <memory>
 #include <string>
@@ -22,9 +22,9 @@ TEST_CASE("StringUtil: lower case, case-insensitive comparison and search, split
   CHECK(nucqcd::split("abc", ':') == std::vector<std::string>{"abc"});
 }
 
-TEST_CASE("TDeuteron wave-function names are case insensitive", "[string]") {
-  std::unique_ptr<TDeuteron::Wavefunction> a(TDeuteron::Wavefunction::CreateWavefunction("AV18"));
-  std::unique_ptr<TDeuteron::Wavefunction> b(TDeuteron::Wavefunction::CreateWavefunction("av18"));
+TEST_CASE("Deuteron wave-function names are case insensitive", "[string]") {
+  std::unique_ptr<Deuteron::Wavefunction> a(Deuteron::Wavefunction::CreateWavefunction("AV18"));
+  std::unique_ptr<Deuteron::Wavefunction> b(Deuteron::Wavefunction::CreateWavefunction("av18"));
   CHECK(a->GetUp(100.) == b->GetUp(100.));
   CHECK(std::string(a->GetName()) == "AV18");
 }

@@ -9,8 +9,8 @@ using namespace std;
 
 #include <Tools/Core/constants.hpp>
 #include <Tools/Core/RunLog.hpp>
-#include <Tools/Kinematics/TKinematics2to2.hpp>
-#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/Kinematics/Kinematics2to2.hpp>
+#include <Tools/Kinematics/ElectronKinematics.hpp>
 #include <Tools/StructureFunctions/NuclStructure.hpp>
 #include <DIS/InclusiveCross.hpp>
 using namespace nucqcd;
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     double width2 = atof(argv[6]);
     double width3 = atof(argv[7]);
     
-    TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ein);
+    ElectronKinematics *elec = ElectronKinematics::CreateWithBeamEnergy(Ein);
     std::vector<double> resonances;
     std::vector<double> widths;
     resonances.push_back(2.025E03);

@@ -11,8 +11,8 @@ namespace {
 double nucleon_mass(bool proton) { return proton ? nucqcd::mass_p : nucqcd::mass_n; }
 
 /* the kinematics (Q^2, x, W^2) from two of them, with the on-shell relation W^2 = Q^2(1/x-1) + M^2 */
-struct Kinematics { double Q2, x, Wsq; };
-Kinematics on_shell(bool proton, double var1, double var2, int switchvar) {
+struct OnShellPoint { double Q2, x, Wsq; };
+OnShellPoint on_shell(bool proton, double var1, double var2, int switchvar) {
   const double mass = nucleon_mass(proton);
   switch (switchvar) {
     case 0: return {var1, var2, var1 * (1. / var2 - 1.) + mass * mass};

@@ -2,8 +2,8 @@
 using std::cout;
 using std::endl;
 
-#include <Glauber/TMFSpinor.hpp>
-#include <Tools/Core/TSpinor.hpp>
+#include <Glauber/MeanFieldSpinor.hpp>
+#include <Tools/Core/Spinor.hpp>
 #include <Tools/Core/FourVector.hpp>
 #include <Tools/Core/constants.hpp>
 #include <Glauber/MeanFieldNucleus.hpp>
@@ -39,7 +39,7 @@ int main()
 				phi_dat << r << "\t" << phi << "\t" << theta;
 				for (int m=-Carbon.getJ_array()[shellindex]; m <= Carbon.getJ_array()[shellindex]; m+=2)
 				{
-					TMFSpinor phi1 = TMFSpinor(Carbon,shellindex,m,r,cos(theta),phi);
+					MeanFieldSpinor phi1 = MeanFieldSpinor(Carbon,shellindex,m,r,cos(theta),phi);
 					Matrix<1,4> phi1Bar = phi1.H(); // hermitian conjugate
 					std::complex<double> phisq = phi1Bar*phi1;
 					phi_dat << "\t" << phisq.real();

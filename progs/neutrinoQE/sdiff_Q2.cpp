@@ -24,9 +24,9 @@ using namespace std;
 
 #include <Glauber/MeanFieldNucleusThick.hpp>
 #include <Tools/Core/constants.hpp>
-#include <Tools/Kinematics/TKinematics2to2.hpp>
-#include <Tools/Kinematics/TElectronKinematics.hpp>
-#include <Tools/Kinematics/TLeptonKinematics.hpp>
+#include <Tools/Kinematics/Kinematics2to2.hpp>
+#include <Tools/Kinematics/ElectronKinematics.hpp>
+#include <Tools/Kinematics/LeptonKinematics.hpp>
 #include <Knockout/WeakQECross.hpp>
 #include <Tools/Core/Utilfunctions.hpp>
 //headers for integration 
@@ -116,11 +116,11 @@ void int_RFG(numint::vector_d &, double omega,double E_out, string lepton_id, do
 
 
 //determine boundaries of kinematics
-double getBound(double &high, double &low, MeanFieldNucleusThick &nucleus, TLeptonKinematics &lepton,
+double getBound(double &high, double &low, MeanFieldNucleusThick &nucleus, LeptonKinematics &lepton,
 	      double E_in, double E_out, double costhetamu, int shell, double max_initial_nucl_mom, double min_final_nucl_mom);
-double getMin(double &high, double &low, MeanFieldNucleusThick &nucleus, TLeptonKinematics &lepton,
+double getMin(double &high, double &low, MeanFieldNucleusThick &nucleus, LeptonKinematics &lepton,
 	      double Q2, double omega, int shell, double max_initial_nucl_mom);
-double getMax(double &high, double &low, MeanFieldNucleusThick &nucleus, TLeptonKinematics &lepton,
+double getMax(double &high, double &low, MeanFieldNucleusThick &nucleus, LeptonKinematics &lepton,
 	      double Q2, double omega, int shell, double max_initial_nucl_mom);
 
 // integration over missing momentum + over T_mu(=E_out+C)
@@ -193,15 +193,15 @@ int main(int argc, char *argv[])
   double leptonmass=0.;
   int flav=999;
   if(!lepton_id.compare("electron")){
-    leptonmass=TLeptonKinematics::masse;
+    leptonmass=LeptonKinematics::masse;
     flav=0;
   } 
   else if (!lepton_id.compare("muon")){
-    leptonmass=TLeptonKinematics::massmu;
+    leptonmass=LeptonKinematics::massmu;
     flav=1;
   } 
   else if (!lepton_id.compare("tau")){
-    leptonmass=TLeptonKinematics::masstau;
+    leptonmass=LeptonKinematics::masstau;
     flav=2;
   } 
   else {cerr << "invalid lepton name chosen" << endl << "Choose either electron, muon or tau" << endl; assert(1==0);}
@@ -253,7 +253,7 @@ int main(int argc, char *argv[])
         double E_in=E_in_low+(E_in_hi-E_in_low)*1.E-02*i;
         double costhetamu=(-Q2-leptonmass*leptonmass+2.*E_in*E_out)/(2.*E_in*p_out);
         double omega=E_in-E_out;
-        TLeptonKinematics *lepton=TLeptonKinematics::CreateWithBeamEnergy(static_cast<TLeptonKinematics::Lepton>(flav),E_in);
+        LeptonKinematics *lepton=LeptonKinematics::CreateWithBeamEnergy(static_cast<LeptonKinematics::Lepton>(flav),E_in);
         //RFG bit
         double qvec = sqrt(Q2+omega*omega);
         double lambda=omega/2./sqrt(nucqcd::mass_p*nucqcd::mass_n);
@@ -435,15 +435,15 @@ void adap_intPm(numint::vector_d & results, double omega, double costhetacm, dou
   double leptonmass=0.;
   int flav=999;
   if(!lepton_id.compare("electron")){
-    leptonmass=TLeptonKinematics::masse;
+    leptonmass=LeptonKinematics::masse;
     flav=0;
   } 
   else if (!lepton_id.compare("muon")){
-    leptonmass=TLeptonKinematics::massmu;
+    leptonmass=LeptonKinematics::massmu;
     flav=1;
   } 
   else if (!lepton_id.compare("tau")){
-    leptonmass=TLeptonKinematics::masstau;
+    leptonmass=LeptonKinematics::masstau;
     flav=2;
   } 
   else {cerr << "invalid lepton name chosen" << endl << "Choose either electron, muon or tau" << endl; assert(1==0);}
@@ -453,13 +453,13 @@ void adap_intPm(numint::vector_d & results, double omega, double costhetacm, dou
   if(/*E_in>maxbeam||E_in<minbeam*/E_out<0.) { return;}
   if(abs(costhetamu)<=1. /*&& omega>0*/) {
       
-    TLeptonKinematics *lepton = TLeptonKinematics::CreateWithBeamEnergy(static_cast<TLeptonKinematics::Lepton>(flav),E_in);
+    LeptonKinematics *lepton = LeptonKinematics::CreateWithBeamEnergy(static_cast<LeptonKinematics::Lepton>(flav),E_in);
     WeakQECross pobs(lepton,&nucleus,prec,integrator,homedir,charged,1.03E03,screening,enable_romea);  
     
 
     for(int shell=0;shell<nucleus.getTotalLevels();shell++) {
       if(costhetacm<cthmax[shell]){
-        TKinematics2to2 kin("","",nucleus.getMassA(),
+        Kinematics2to2 kin("","",nucleus.getMassA(),
           (shell<nucleus.getPLevels()? nucleus.getMassA_min_proton(): nucleus.getMassA_min_neutron())
           +nucleus.getExcitation()[shell],
           shell<nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,costhetacm);
@@ -514,13 +514,13 @@ void int_hydr(numint::vector_d & results, double E_out,
   results=numint::vector_d(2,0.);  
   double leptonmass=0.;
   if(!lepton_id.compare("electron")){
-    leptonmass=TLeptonKinematics::masse;
+    leptonmass=LeptonKinematics::masse;
   } 
   else if (!lepton_id.compare("muon")){
-    leptonmass=TLeptonKinematics::massmu;
+    leptonmass=LeptonKinematics::massmu;
   } 
   else if (!lepton_id.compare("tau")){
-    leptonmass=TLeptonKinematics::masstau;
+    leptonmass=LeptonKinematics::masstau;
   } 
  //   if(abs(costhetamu)>1.) {/*cout << "costheta" << endl;*/ cout << E_out << " " << result[0] << " " << result[1] << endl; return;}
   double E_in_n=(Q2+nucqcd::mass_p*nucqcd::mass_p-nucqcd::mass_n*nucqcd::mass_n)/2./nucqcd::mass_n+E_out;
@@ -558,13 +558,13 @@ void int_RFG(numint::vector_d & results, double omega,double E_out, string lepto
   results=numint::vector_d(2,0.);  
   double leptonmass=0.;
   if(!lepton_id.compare("electron")){
-    leptonmass=TLeptonKinematics::masse;
+    leptonmass=LeptonKinematics::masse;
   } 
   else if (!lepton_id.compare("muon")){
-    leptonmass=TLeptonKinematics::massmu;
+    leptonmass=LeptonKinematics::massmu;
   } 
   else if (!lepton_id.compare("tau")){
-    leptonmass=TLeptonKinematics::masstau;
+    leptonmass=LeptonKinematics::masstau;
   } 
   double E_in=omega+E_out;
   if(E_in>maxbeam)  {return;}
@@ -603,7 +603,7 @@ void int_RFG(numint::vector_d & results, double omega,double E_out, string lepto
 
 
 
-double getBound(double &high, double &low, MeanFieldNucleusThick &nucleus, TLeptonKinematics &lepton,
+double getBound(double &high, double &low, MeanFieldNucleusThick &nucleus, LeptonKinematics &lepton,
 	      double E_in, double E_out, double costhetamu, int shell, double max_initial_nucl_mom, double min_final_nucl_mom){
   
   double omega=E_in-E_out;
@@ -612,7 +612,7 @@ double getBound(double &high, double &low, MeanFieldNucleusThick &nucleus, TLept
   double tempmin=max_initial_nucl_mom;
   double costhmin=-1.;
   for(int i=0;i<=100;i++){ //loop over all com angles to find com scattering angle where initial nucl momentum is minimal
-    TKinematics2to2 kin("","",nucleus.getMassA(),
+    Kinematics2to2 kin("","",nucleus.getMassA(),
 			(shell<nucleus.getPLevels()? nucleus.getMassA_min_proton(): nucleus.getMassA_min_neutron())
 			+nucleus.getExcitation()[shell],
 			shell<nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,-1.+i*0.02);
@@ -624,14 +624,14 @@ double getBound(double &high, double &low, MeanFieldNucleusThick &nucleus, TLept
 //   cout << costhmin << " " << tempmin << endl;
   //if it is below the limit we consider, we find the interval in angles where it is below
   if(tempmin<max_initial_nucl_mom){
-    TKinematics2to2 kin1("","",nucleus.getMassA(),
+    Kinematics2to2 kin1("","",nucleus.getMassA(),
 			(shell<nucleus.getPLevels()? nucleus.getMassA_min_proton(): nucleus.getMassA_min_neutron())
 			+nucleus.getExcitation()[shell],
 			shell<nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,1.);
     high=1;
     if(kin1.GetPklab()>max_initial_nucl_mom) high=getMax(high,temptemp,nucleus,lepton,Q2,omega,shell,max_initial_nucl_mom);
     temptemp=costhmin;
-    TKinematics2to2 kinmin1("","",nucleus.getMassA(),
+    Kinematics2to2 kinmin1("","",nucleus.getMassA(),
 			(shell<nucleus.getPLevels()? nucleus.getMassA_min_proton(): nucleus.getMassA_min_neutron())
 			+nucleus.getExcitation()[shell],
 			shell<nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,-1.);
@@ -643,10 +643,10 @@ double getBound(double &high, double &low, MeanFieldNucleusThick &nucleus, TLept
 }
 
 //recursive function to find min costheta value so that initial nucleon momentum is low enough
-double getMin(double &high, double &low, MeanFieldNucleusThick &nucleus, TLeptonKinematics &lepton,
+double getMin(double &high, double &low, MeanFieldNucleusThick &nucleus, LeptonKinematics &lepton,
 	      double Q2, double omega, int shell, double max_initial_nucl_mom){
   
-  TKinematics2to2 kin("","",nucleus.getMassA(),
+  Kinematics2to2 kin("","",nucleus.getMassA(),
 		      (shell<nucleus.getPLevels()? nucleus.getMassA_min_proton(): nucleus.getMassA_min_neutron())
 		      +nucleus.getExcitation()[shell],
 		      shell<nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,(high+low)/2.);
@@ -659,10 +659,10 @@ double getMin(double &high, double &low, MeanFieldNucleusThick &nucleus, TLepton
 }
 
 //recursive function to find max costheta value so that initial nucleon momentum is low enough
-double getMax(double &high, double &low, MeanFieldNucleusThick &nucleus, TLeptonKinematics &lepton,
+double getMax(double &high, double &low, MeanFieldNucleusThick &nucleus, LeptonKinematics &lepton,
 	      double Q2, double omega, int shell, double max_initial_nucl_mom){
   
-  TKinematics2to2 kin("","",nucleus.getMassA(),
+  Kinematics2to2 kin("","",nucleus.getMassA(),
 		      (shell<nucleus.getPLevels()? nucleus.getMassA_min_proton(): nucleus.getMassA_min_neutron())
 		      +nucleus.getExcitation()[shell],
 		      shell<nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,(high+low)/2.);

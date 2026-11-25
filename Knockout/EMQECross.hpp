@@ -32,9 +32,9 @@
 #define CROSS_HPP
 
 #include <vector>
-#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/Kinematics/ElectronKinematics.hpp>
 #include <Glauber/MeanFieldNucleusThick.hpp>
-#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/Kinematics/Kinematics2to2.hpp>
 #include <Knockout/EMQEHadronCurrent.hpp>
 
 namespace nucqcd {
@@ -54,7 +54,7 @@ public:
    * \param user_sigma does the user want to introduce a (anti)screening on sigma
    * \param sigmascreening [%] how much do you want to change the sigma value
    */
-  EMQECross(TElectronKinematics &elec, MeanFieldNucleusThick *pnucl, 
+  EMQECross(ElectronKinematics &elec, MeanFieldNucleusThick *pnucl, 
 	double prec, int integrator, std::string dir, bool user_sigma, double sigmascreening=0.);
   ~EMQECross(); /*!< Destructor */
   /*! Computes the differential A(e,e'N) cross section for certain kinematics and a certain shell of the nucleus
@@ -73,7 +73,7 @@ public:
    * \param nkt_mod [] modification of initial CT sigma value
    * \return differential cross section [fm^2 /MeV/sr^2]
    */
-  double getDiffCross(TKinematics2to2 &kin, int current, int thick, int SRC, int CT, int pw, int shellindex, 
+  double getDiffCross(Kinematics2to2 &kin, int current, int thick, int SRC, int CT, int pw, int shellindex, 
 		      double phi, int maxEval, bool lab, bool phiavg, double lc_mod, double nkt_mod);
   /*! Computes the differential A(e,e'N) cross section for certain kinematics and a certain shell of the nucleus
    * \param cross vector with the different cross sections <BR>
@@ -95,7 +95,7 @@ public:
    * \param lc_mod [] modification of coherence length in CT 
    * \param nkt_mod [] modification of initial CT sigma value
   */
-  void getAllDiffCross(std::vector<double> &cross, TKinematics2to2 &kin, int current, 
+  void getAllDiffCross(std::vector<double> &cross, Kinematics2to2 &kin, int current, 
 		       int shellindex, int thick, double phi, int maxEval, bool lab, bool phiavg, double lc_mod, double nkt_mod);
 
   /*! Computes observables for the A(e,e'N) reaction for certain kinematics and a certain shell of the nucleus.
@@ -127,7 +127,7 @@ public:
    * \param lc_mod [] modification of coherence length in CT 
    * \param nkt_mod [] modification of initial CT sigma value
    */
-  void getAllObs_tnl(std::vector<double> &obs, TKinematics2to2 &kin, int current, 
+  void getAllObs_tnl(std::vector<double> &obs, Kinematics2to2 &kin, int current, 
 			     int shellindex, int thick, int medium, double phi, int maxEval, bool lab, double lc_mod, double nkt_mod);
 
   /*! Computes observables for the A(e,e'N) reaction for certain kinematics and a certain shell of the nucleus.
@@ -153,7 +153,7 @@ public:
    * \param lc_mod [] modification of coherence length in CT 
    * \param nkt_mod [] modification of initial CT sigma value
    */
-  void getAllObs_xyz(std::vector<double> &obs, TKinematics2to2 &kin, int current, 
+  void getAllObs_xyz(std::vector<double> &obs, Kinematics2to2 &kin, int current, 
 			     int shellindex, int thick, int medium, double phi, int maxEval, bool lab, double lc_mod, double nkt_mod);
   
   /*! Computes the off-shell (e,e'p) cross section for certain kinematics <BR>
@@ -164,7 +164,7 @@ public:
    * \param maxEval max # of evaluations in integrations
    * \return differential cross section [dimensionless]
    */  
-  double getElCross(TKinematics2to2 &kin, int current, double phi, int maxEval);
+  double getElCross(Kinematics2to2 &kin, int current, double phi, int maxEval);
   /*! Computes \f$\delta(r) [fm^2]\f$ like defined in our density papers
    * \param[out] densr different densities [fm^-1] <BR>
    *  [0]: RMSGA <BR>
@@ -179,7 +179,7 @@ public:
    * \param r [fm] argument of \f$\delta(r)\f$ 
    * \param maxEval max # of evaluations in integrations
    */
-  void getDensr(std::vector<double> &densr, const TKinematics2to2 &kin, const int shellindex, 
+  void getDensr(std::vector<double> &densr, const Kinematics2to2 &kin, const int shellindex, 
 		const int thick, const double r, const int maxEval);
   /*! Computes \f$\delta(r,\cos{\theta}) [fm^2]\f$ like defined in our density papers
    * \param[out] densr different densities [fm^-1] <BR>
@@ -196,7 +196,7 @@ public:
    * \param costheta argument of \f$\delta\f$ 
    * \param maxEval max # of evaluations in integrations
    */
-  void getDensr_ctheta(std::vector<double> &densr, const TKinematics2to2 &kin, const int shellindex, 
+  void getDensr_ctheta(std::vector<double> &densr, const Kinematics2to2 &kin, const int shellindex, 
 		const int thick, const double r, const double costheta, const int maxEval);
   
   /*! Computes \f$\phi_D(\vec{p}_m) [fm^{3/2}]\f$ like defined in our density papers
@@ -214,13 +214,13 @@ public:
    * \param thick do you want thickness in the Glauber FSI or not?
    * \param maxEval max # of evaluations in integrations
    */
-  void getPhid(std::vector< std::complex<double> > &phid, const TKinematics2to2 &kin, const int shellindex, const int m,
+  void getPhid(std::vector< std::complex<double> > &phid, const Kinematics2to2 &kin, const int shellindex, const int m,
 		const int ms, const int thick, const int maxEval);
   
   double getPrec() const{return prec;} /*!< precision of the integrations */
   double getSigmascreening() const{return sigmascreening;} /*!< [%] screening of sigma */
   bool getUsersigma() const{return usersigma;} /*!< has the user set sigma? */
-  TElectronKinematics * getElectron() {return &electron;} /*!< pointer to electron kinematics object */
+  ElectronKinematics * getElectron() {return &electron;} /*!< pointer to electron kinematics object */
   MeanFieldNucleusThick * getPnucl() const{return pnucl;}  /*!< pointer to nucleus object */
   
   /*! Prints a density profile for certain kinematics.
@@ -234,14 +234,14 @@ public:
    * \param thick do you want thickness in the Glauber FSI or not?
    * \param maxEval max # of evaluations in integrations
    */
-  std::vector<double> printDensity_profile(const TKinematics2to2 &kin, const int shellindex, 
+  std::vector<double> printDensity_profile(const Kinematics2to2 &kin, const int shellindex, 
 		const int thick, const int maxEval);
   
 private:
   std::string homedir; /*!< Contains dir with all input */
   double prec; /*!< precision you want in the integrations */
   double integrator; /*!< choice of integrator */
-  TElectronKinematics electron; /*!< electron kinematics */
+  ElectronKinematics electron; /*!< electron kinematics */
   MeanFieldNucleusThick *pnucl; /*!< pointer to nucleus */
   double kinfactors[6]; /*!< electron kinematic factors, get multiplied with response functions */
   double response[5][9]; /*!< response functions, from the hadronic tensor */

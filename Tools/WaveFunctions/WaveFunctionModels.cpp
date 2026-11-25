@@ -50,7 +50,7 @@ DeuteronModel parse_deuteron_model(const std::string &name) {
     if (nucqcd::iequals(name, e.name)) return e.model;
   std::string known;
   for (const auto &e : deuteron_table) known += (known.empty() ? "" : ", ") + std::string(e.name);
-  throw std::invalid_argument(nucqcd::ErrorMessage() << "TDeuteron::Wavefunction::CreateWavefunction: unknown wave function \"" << name
+  throw std::invalid_argument(nucqcd::ErrorMessage() << "Deuteron::Wavefunction::CreateWavefunction: unknown wave function \"" << name
                                                      << "\" (known: " << known << ")");
 }
 

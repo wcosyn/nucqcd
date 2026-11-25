@@ -1,0 +1,242 @@
+/*! \file Spinor.hpp
+ * \brief Dirac spinors (Spinor, VSpinor), helicity spinors (HelicitySpinor, HelicityVSpinor),
+ * spin polarization states and Lorentz transformations in spinor space
+ * \author Pieter Vancraeyveld (pieter.vancraeyveld@ugent.be), work started on August 10, 2009
+ *
+ * \addtogroup MePhys
+ * @{
+ */
+
+#ifndef SPINOR_H
+#define SPINOR_H
+
+namespace nucqcd { class LorentzQuaternion; }
+namespace nucqcd { class LorentzRotation; }
+
+#include <Tools/Core/Matrix.hpp>
+#include <Tools/Core/FourVector.hpp>
+#include <complex>
+#include <Tools/Core/GammaStructure.hpp>
+#include <Tools/Core/Vector3.hpp>
+#include <iostream>
+
+namespace nucqcd {
+
+
+// Forward declarations
+class LorentzVector;
+class Rotation;
+
+/*! \brief Dirac spinor u(p,s) of a positive-energy spin-1/2 particle
+ *
+ * Conventions of Bjorken & Drell and Gross (eq. (A.15) of Gross, Relativistic Quantum Mechanics and
+ * Field Theory), in the Dirac representation:
+ * \f[ u(\vec p,s) = \sqrt{E+m} \begin{pmatrix} \chi^s \\ \frac{\vec\sigma\cdot\vec p}{E+m}\chi^s \end{pmatrix},
+ *     \qquad E = \sqrt{\vec p^{\,2}+m^2}, \f]
+ * normalized as \f$ \bar u u = 2m \f$ (kDoubleMass, the default) or \f$ \bar u u = 1 \f$ (kUnity). Only
+ * the three-momentum is used: the energy is always the on-shell one. The two-component spinor
+ * \f$ \chi^s \f$ has spin projection s along the quantization axis of the Polarization, see
+ * Polarization::GetPauliSpinor. The negative-energy spinor v is VSpinor; helicity spinors are
+ * HelicitySpinor and HelicityVSpinor.
+ */
+class Spinor
+{
+ public:
+  // forward declarations
+  class Polarization;
+
+  /*! normalization of the spinors */
+  enum Normalization { kUnity=1,     ///< Bar(U)U = 1
+		       kDoubleMass=2 ///< Bar(U)U = 2M
+  };
+
+ protected:
+  Spinor(double px,double py,double pz,double mass, const Polarization&, Normalization,int energyState); ///< constructor for positive (energyState > 0) or negative (< 0) energy solutions, used by VSpinor; momentum (px,py,pz) [MeV], mass [MeV]
+ public:
+  Spinor(const nucqcd::LorentzVector&, double mass, const Polarization&, Normalization=kDoubleMass); ///< constructor: four-momentum [MeV] (only its spatial part is used), mass [MeV], polarization, normalization
+  Spinor(const FourVector<double>&, double mass, const Polarization&, Normalization=kDoubleMass); ///< as the nucqcd::LorentzVector constructor
+  Spinor(const Spinor&); ///< copy constructor
+  virtual ~Spinor(); ///< destructor
+  Spinor& operator=(const Spinor&); ///< assignment
+  virtual Spinor* Clone(const char* ="") const; ///< virtual copy constructor
+
+  operator const Matrix<4,1>&() const { return *fComponent; } ///< the four components as a 4x1 matrix
+  /// outer product of the spinor (4x1) with a 1xK matrix
+  template<int K>
+    Matrix<4,K> operator*(const Matrix<1,K>& rhs) { return (Matrix<4,1>)(*this) * rhs; }
+  
+  /// prints the components
+  friend 
+    std::ostream& operator<<(std::ostream&, const Spinor&);
+  
+  static Matrix<1,4> Bar(const Spinor&); ///< Dirac adjoint \f$ \bar u = u^\dagger \gamma^0 \f$
+  static const FourVector< Matrix<2,2> > kSigmaPauli; ///< four-vector of Pauli matrices (1, sigma_x, sigma_y, sigma_z)
+  
+ protected:
+  void InitializeSpinor(double px,double py,double pz,double mass,const Polarization&, Normalization,int energyState); ///< fills the components, see the class description
+  
+ protected:
+  /// the four components of the spinor
+  Matrix<4,1> *fComponent; //! a spinor is a 4-component vector
+ private:
+
+  
+  /*! \brief Spin polarization state of a spin-1/2 particle: spin up or down along the quantization
+   * axis with polar angle theta and azimuthal angle phi (the z axis by default in most of the code) */
+ public:
+  class Polarization
+  {
+  public:
+    /*! spin projection +1/2 (kUp) or -1/2 (kDown) along the quantization axis */
+    enum State { kUp=1,
+		 kDown=-1 };
+
+  public:   
+    Polarization(double,double,State); ///< constructor: theta [rad], phi [rad] of the quantization axis, and the state
+    Polarization(const Polarization&); ///< copy constructor
+    virtual ~Polarization(); ///< destructor
+    Polarization& operator=(const Polarization&); ///< assignment
+
+    bool operator==(const Polarization&); ///< same axis and state
+    bool operator!=(const Polarization& pol) { return !((*this)==pol); } ///< not the same axis and state
+    bool operator==(State polarizationState); ///< same state
+    bool operator!=(State polarizationState) { return !((*this)==polarizationState); } ///< different state
+    operator int() const; ///< twice the spin projection (+1 or -1)
+    operator State() const; ///< the state
+
+    void SetTheta(double theta); ///< sets the polar angle of the quantization axis [rad]
+    void SetPhi(double phi); ///< sets the azimuthal angle of the quantization axis [rad]
+    void SetState(State polState) { fPolarizationState=polState; } ///< sets the state
+
+    Polarization& operator++(); ///< raises the state to kUp
+    Polarization& operator--(); ///< lowers the state to kDown
+
+    Polarization Inverse() const; ///< a copy with the opposite state
+    Polarization& Invert(); ///< flips the state
+
+    Matrix<2,1> GetPauliSpinor(int eSolution=1) const; ///< two-component spinor: for particles (eSolution > 0) \f$ \chi^{+1/2} = (\cos\frac\theta2, e^{i\phi}\sin\frac\theta2) \f$, \f$ \chi^{-1/2} = (-e^{-i\phi}\sin\frac\theta2, \cos\frac\theta2) \f$; for antiparticles (eSolution < 0) \f$ \eta^s = \chi^{-s} \f$
+
+  private:
+    double            fTheta; ///< [rad] polar angle of the quantization axis
+    double            fPhi; ///< [rad] azimuthal angle of the quantization axis
+    State fPolarizationState; ///< spin state
+
+
+  }; // class Spinor::Polarization
+
+  /*! \brief Lorentz transformation (boosts and rotations) in spinor space, S(Lambda) as a 4x4 GammaStructure */
+ public:
+  class LorentzRotation
+  {
+  public:
+    LorentzRotation(); ///< unity
+    LorentzRotation(const nucqcd::Rotation&); ///< pure rotation
+    LorentzRotation(const nucqcd::Vector3&); ///< pure boost with velocity beta
+    LorentzRotation(double betaX, double betaY, double betaZ); ///< pure boost with velocity (betaX, betaY, betaZ)
+
+    // Const Cast to GammaStructure
+    operator const GammaStructure&() const { return fTransformation; } ///< the transformation matrix
+
+    // Cast to GammaStructure
+    operator GammaStructure&() { return fTransformation; } ///< the transformation matrix
+
+        /// prints the transformation matrix
+    friend 
+      std::ostream& operator<<(std::ostream&, const LorentzRotation&);
+
+    LorentzRotation& Boost(const nucqcd::Vector3& boostVector) { return Transform(LorentzRotation(boostVector)); } ///< followed by a boost with velocity boostVector
+    LorentzRotation& Boost(double betaX, double betaY, double betaZ) { return Transform(LorentzRotation(betaX,betaY,betaZ)); } ///< followed by a boost with velocity (betaX, betaY, betaZ)
+    LorentzRotation  Inverse() const; ///< inverse transformation
+    LorentzRotation& Invert(); ///< inverts the transformation
+    Spinor          operator*(const Spinor&) const; ///< transforms a spinor
+    LorentzRotation  operator*(const LorentzRotation&) const; ///< compound transformation
+    LorentzRotation& operator*=(const LorentzRotation&); ///< compound transformation
+    GammaStructure   operator*(const GammaStructure&) const; ///< product with a 4x4 matrix
+    LorentzRotation& Rotate(double angle, const nucqcd::Vector3& axis); ///< followed by a rotation over angle [rad] around axis
+    LorentzRotation& Rotate(double angle, const nucqcd::Vector3* axis) { return Rotate(angle,*axis); } ///< followed by a rotation over angle [rad] around axis
+    LorentzRotation& RotateX(double angle) { return Rotate(angle,nucqcd::Vector3(1.,0.,0.)); } ///< followed by a rotation around the x axis [rad]
+    LorentzRotation& RotateY(double angle) { return Rotate(angle,nucqcd::Vector3(0.,1.,0.)); } ///< followed by a rotation around the y axis [rad]
+    LorentzRotation& RotateZ(double angle) { return Rotate(angle,nucqcd::Vector3(0.,0.,1.)); } ///< followed by a rotation around the z axis [rad]
+    LorentzRotation& Transform(const LorentzRotation&); ///< a.Transform(b) sets a = b*a
+
+  protected:
+    void SetBoost(double betaX, double betaY, double betaZ); ///< sets a pure boost, \f$ S = \cosh\frac\xi2 + \sinh\frac\xi2\, \hat\beta_i\gamma^0\gamma^i \f$ with rapidity xi
+    void SetRotation(double thetaX, double thetaY, double thetaZ); ///< sets a pure rotation over the angle vector (thetaX, thetaY, thetaZ) [rad]
+		     
+  private:
+    GammaStructure fTransformation; ///< transformation matrix
+
+
+  }; // class Spinor::LorentzRotation  
+
+}; // class Spinor
+
+/*! \brief Dirac spinor v(p,s) of a negative-energy solution (antiparticle), with
+ * \f$ v = \sqrt{E+m}\,(\frac{\vec\sigma\cdot\vec p}{E+m}\eta^s, \eta^s) \f$ and \f$ \eta^s = \chi^{-s} \f$, see Spinor */
+class VSpinor : public Spinor
+{
+ public:
+  VSpinor(const nucqcd::LorentzVector&, double mass, const Polarization&, Normalization=kDoubleMass); ///< constructor, see Spinor
+  VSpinor(const FourVector<double>&, double mass, const Polarization&, Normalization=kDoubleMass); ///< constructor, see Spinor
+  VSpinor(const VSpinor&); ///< copy constructor
+  virtual ~VSpinor(); ///< destructor
+  VSpinor& operator=(const VSpinor&); ///< assignment
+  virtual VSpinor* Clone(const char* ="") const; ///< virtual copy constructor
+
+
+}; // class VSpinor
+
+/*! \brief Helicity spinor of a positive-energy spin-1/2 particle (spin along its momentum), with the
+ * helicity transformation and Wick rotations of E. Leader, Spin in Particle Physics (sections 1.2.2 and 2.1) */
+class HelicitySpinor : public Spinor
+{
+ public:
+  HelicitySpinor(const nucqcd::LorentzVector&, double mass, const Polarization::State&, Normalization=kDoubleMass); ///< constructor: four-momentum [MeV], mass [MeV], helicity state, normalization
+  HelicitySpinor(const FourVector<double>&, double mass, const Polarization::State&, Normalization=kDoubleMass); ///< as the nucqcd::LorentzVector constructor
+  HelicitySpinor(const HelicitySpinor&); ///< copy constructor
+  virtual ~HelicitySpinor(); ///< destructor
+  HelicitySpinor& operator=(const HelicitySpinor&); ///< assignment
+  virtual HelicitySpinor* Clone(const char* ="") const; ///< virtual copy constructor
+
+  static nucqcd::LorentzRotation HelicityTransformation(const nucqcd::LorentzVector&); ///< helicity transformation \f$ h(p) = r_z(\phi) r_y(\theta) l_z(|\vec p|/p^0) \f$ (Leader, section 1.2.2)
+  static Spinor::LorentzRotation HelicitySpinorTransformation(const nucqcd::LorentzVector&); ///< helicity transformation h(p) in spinor space
+  static LorentzQuaternion HelicityQuaternionTransformation(const nucqcd::LorentzVector&); ///< helicity transformation h(p) as a quaternion
+  static nucqcd::LorentzRotation WickRotation(const nucqcd::LorentzRotation&, const nucqcd::LorentzVector&); ///< Wick helicity rotation \f$ r(l,p) = h(lp)^{-1}\, l\, h(p) \f$ (Leader, eq. (2.1.7)); l acts on four-vectors, not on the frame
+  static LorentzQuaternion WickRotation(const LorentzQuaternion&, const nucqcd::LorentzVector&); ///< Wick helicity rotation, quaternion version
+  static void WickRotationEulerAngles(const nucqcd::LorentzRotation&, const nucqcd::LorentzVector&,double& alpha, double& beta, double& gamma); ///< Euler angles (alpha, beta, gamma), Y convention of nucqcd::Rotation, of the Wick helicity rotation
+  static Matrix<2,2> RotationMatrix(const nucqcd::LorentzRotation&, const nucqcd::LorentzVector&); ///< spin-1/2 Wigner matrix of the Wick helicity rotation: \f$ U(l)|p,\lambda\rangle = \sum_{\lambda'} M_{\lambda\lambda'}|lp,\lambda'\rangle \f$
+  static Matrix<2,2> RotationMatrix(const LorentzQuaternion&, const nucqcd::LorentzVector&); ///< as above, quaternion version
+
+ private:
+  void ToHelicitySpinor(const Polarization::State&, const double phi); ///< rotates the Pauli spinors of the Spinor constructor to the helicity basis
+
+
+}; // class HelicitySpinor
+
+/*! \brief Helicity spinor of a negative-energy solution (antiparticle), see HelicitySpinor and VSpinor */
+class HelicityVSpinor : public Spinor
+{
+ public:
+  HelicityVSpinor(const nucqcd::LorentzVector&, double mass, const Polarization::State&, Normalization=kDoubleMass); ///< constructor, see HelicitySpinor
+  HelicityVSpinor(const FourVector<double>&, double mass, const Polarization::State&, Normalization=kDoubleMass); ///< constructor, see HelicitySpinor
+  HelicityVSpinor(const HelicityVSpinor&); ///< copy constructor
+  virtual ~HelicityVSpinor(); ///< destructor
+  HelicityVSpinor& operator=(const HelicityVSpinor&); ///< assignment
+  virtual HelicityVSpinor* Clone(const char* ="") const; ///< virtual copy constructor
+
+ private:
+  void ToHelicityVSpinor(const Polarization::State&, const double phi); ///< rotates the Pauli spinors to the helicity basis
+
+
+}; // class HelicityVSpinor
+
+//______________________________________________________________________________
+Matrix<4,1> operator*(const Matrix<4,4>& lhs, const Spinor& rhs); ///< 4x4 matrix times spinor
+std::complex<double> operator*(const Matrix<1,4>& lhs, const Spinor& rhs); ///< row (e.g. a bar spinor) times spinor
+Matrix<4,1> operator*(const GammaStructure& lhs, const Spinor& rhs); ///< gamma-matrix structure times spinor
+
+
+}  // namespace nucqcd
+
+/** @} */
+#endif // SPINOR_H

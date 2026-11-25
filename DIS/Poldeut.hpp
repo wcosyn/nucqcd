@@ -11,8 +11,8 @@
 #ifndef POLDEUT_HPP
 #define POLDEUT_HPP
 
-#include <Tools/WaveFunctions/TDeuteron.hpp>
-#include <Tools/WaveFunctions/TInterpolatingWavefunction.hpp>
+#include <Tools/WaveFunctions/Deuteron.hpp>
+#include <Tools/WaveFunctions/InterpolatingWavefunction.hpp>
 
 #include <string>
 
@@ -23,11 +23,11 @@ namespace nucqcd {
  *
  * \par D-wave convention of the light-front densities
  * The light-front radial functions are \f$ f_0 = U(k)\sqrt{E_k/4\pi} \f$ and
- * \f$ f_2 = W(k)\sqrt{E_k/4\pi} \f$, with U and W taken directly from TDeuteron::Wavefunction
- * (GetUp, GetWp; W(k) > 0 at low k, see the TDeuteron::Wavefunction conventions), i.e. the wave
+ * \f$ f_2 = W(k)\sqrt{E_k/4\pi} \f$, with U and W taken directly from Deuteron::Wavefunction
+ * (GetUp, GetWp; W(k) > 0 at low k, see the Deuteron::Wavefunction conventions), i.e. the wave
  * function \f$ [f_0 - f_2 S_{12}(\hat k)/\sqrt 8]\,\chi_{1M} \f$ up to normalization. The closed-form
  * densities (getLFdistributions, getLFdistributions_new) use the same D-wave sign convention as
- * TDeuteron::Wavefunction::DeuteronPState: for example the tensor term of getLFdistributions equals
+ * Deuteron::Wavefunction::DeuteronPState: for example the tensor term of getLFdistributions equals
  * \f$ \frac{E_k}{2-\alpha_p}\,(\rho_{+1}+\rho_{-1}-2\rho_0)/6 \f$, with
  * \f$ \rho_M = \sum_{m_1 m_2} |\psi^M_{m_1 m_2}(\vec k)|^2 \f$ from DeuteronPState (checked numerically
  * for AV18, Paris and CD-Bonn; flipping the sign of W does not reproduce it).
@@ -37,7 +37,7 @@ class Poldeut{
 public:
     
     /*! Constructor
-   * \param wfname Deuteron wave function name, see TDeuteron constructor for possibilities ["AV18", "Paris", etc.]
+   * \param wfname Deuteron wave function name, see Deuteron constructor for possibilities ["AV18", "Paris", etc.]
    * \param strucname which structure function parametrization ["CB"=Christy-Bosted (SLAC above W^2 = 9 GeV^2), "SLAC", "Alekhin", or any other name of NuclStructure: "CTEQ", "MSTW", "LHAPDF:<set>", combinations such as "CB+LHAPDF:CT18LO@4"], see NuclStructure 
    */
   Poldeut(std::string wfname, std::string strucname);
@@ -122,9 +122,9 @@ double calc_dsigma_unpol(const double x, const double Q2, const double s, const 
 
 private:
   std::string strucname; /*!< structure function parametrization */
-  std::string wfname; /*!< name of deuteron wf parametrization, see TDeuteron for possibilities */
-  TDeuteron::Wavefunction *wfref; /*!< contains instance of deuteron wave function*/
-  TInterpolatingWavefunction wf; /*!< array of the wave function that gets interpolated */
+  std::string wfname; /*!< name of deuteron wf parametrization, see Deuteron for possibilities */
+  Deuteron::Wavefunction *wfref; /*!< contains instance of deuteron wave function*/
+  InterpolatingWavefunction wf; /*!< array of the wave function that gets interpolated */
   bool s_wave; /*!< include deuteron s wave */
   bool d_wave; /*!< include deuteron d wave */
   bool melosh; /*!< include effect of melosh rotation */

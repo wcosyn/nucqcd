@@ -9,8 +9,8 @@ using namespace std;
 
 #include <Glauber/MeanFieldNucleusThick.hpp>
 #include <Tools/Core/constants.hpp>
-#include <Tools/Kinematics/TKinematics2to2.hpp>
-#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/Kinematics/Kinematics2to2.hpp>
+#include <Tools/Kinematics/ElectronKinematics.hpp>
 #include <Knockout/EMQECross.hpp>
 #include <Tools/Core/Utilfunctions.hpp>
 #include <vector>
@@ -21,7 +21,7 @@ using namespace nucqcd;
 void intPm(const double pm, double *results, va_list ap);
 void intcosth(const double costh, double *results, va_list ap);
 void getBound(double &high, double &low, MeanFieldNucleusThick &nucleus, double Q2, double omega, int shell);
-void adap_intPm(numint::vector_d &, double costhetacm,EMQECross* pObs, MeanFieldNucleusThick *pNucleus, TElectronKinematics *elec,
+void adap_intPm(numint::vector_d &, double costhetacm,EMQECross* pObs, MeanFieldNucleusThick *pNucleus, ElectronKinematics *elec,
 		double Q2, double omega, int current, double *cthmax);
 
 
@@ -56,8 +56,8 @@ int main(int argc, char *argv[])
   //cout << Ein-omega << endl;
   
   MeanFieldNucleusThick Nucleus(atoi(argv[1]),homedir);
-  //TKinematics2to2 kin("","",.getMassA(),Carbon.getMassA_min_proton(),nucqcd::mass_p,"qsquared:wlab:pklab",atof(argv[1]),atof(argv[2]),atof(argv[3]));
-  TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ein);
+  //Kinematics2to2 kin("","",.getMassA(),Carbon.getMassA_min_proton(),nucqcd::mass_p,"qsquared:wlab:pklab",atof(argv[1]),atof(argv[2]),atof(argv[3]));
+  ElectronKinematics *elec = ElectronKinematics::CreateWithBeamEnergy(Ein);
   EMQECross obs(*elec,&Nucleus,prec, 2, homedir, userset, screening);
 
 //   double k=sqrt(Q2+omega*omega);
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 //     cout << Q2*1.E-06 << " " << Q2/(2.*nucqcd::mass_p*omega) << endl;
 //     double thetap=0.;
 //     for(int shell=0;shell<Nucleus.getPLevels();shell++) {
-//       TKinematics2to2 kin("","",Nucleus.getMassA(),
+//       Kinematics2to2 kin("","",Nucleus.getMassA(),
 // 			  Nucleus.getMassA_min_proton()+Nucleus.getExcitation()[shell],
 // 			  nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,-1.);
 //           cout << kin.IsPhysical() << " " << shell << " " << kin.GetCosthklab() << " " 
@@ -124,12 +124,12 @@ int main(int argc, char *argv[])
     }
     EMQECross *pObs;
     MeanFieldNucleusThick *pNucleus;
-    TElectronKinematics *elec;
+    ElectronKinematics *elec;
     double Q2;
     double omega;
     int current;
     double *cthmax;
-    void (*f)(numint::vector_d &, double pm,EMQECross* pObs, MeanFieldNucleusThick *pNucleus, TElectronKinematics *elec,
+    void (*f)(numint::vector_d &, double pm,EMQECross* pObs, MeanFieldNucleusThick *pNucleus, ElectronKinematics *elec,
 	  double Q2, double omega, int current, double *cthmax);
 
   };
@@ -188,13 +188,13 @@ int main(int argc, char *argv[])
   return 0;
 }
 
-void adap_intPm(numint::vector_d & results, double costhetacm,EMQECross* pObs, MeanFieldNucleusThick *pNucleus, TElectronKinematics *elec,
+void adap_intPm(numint::vector_d & results, double costhetacm,EMQECross* pObs, MeanFieldNucleusThick *pNucleus, ElectronKinematics *elec,
 		double Q2, double omega, int current, double *cthmax){
 		  
   results=numint::vector_d(2*pNucleus->getTotalLevels()+4,0.);
   for(int shell=0;shell<pNucleus->getPLevels();shell++) {
     if(costhetacm<cthmax[shell]){
-      TKinematics2to2 kin("","",pNucleus->getMassA(),
+      Kinematics2to2 kin("","",pNucleus->getMassA(),
         pNucleus->getMassA_min_proton()+pNucleus->getExcitation()[shell],
         nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,costhetacm);
       double pm=kin.GetPklab();
@@ -218,7 +218,7 @@ void adap_intPm(numint::vector_d & results, double costhetacm,EMQECross* pObs, M
 
   for(int shell=pNucleus->getPLevels();shell<pNucleus->getTotalLevels();shell++) {
     if(costhetacm<cthmax[shell]){
-      TKinematics2to2 kin("","",pNucleus->getMassA(),
+      Kinematics2to2 kin("","",pNucleus->getMassA(),
         pNucleus->getMassA_min_neutron()+pNucleus->getExcitation()[shell],
         nucqcd::mass_n,"qsquared:wlab:costhkcm",Q2,omega,costhetacm);
       double pm=kin.GetPklab();
@@ -246,7 +246,7 @@ void adap_intPm(numint::vector_d & results, double costhetacm,EMQECross* pObs, M
 
 void intPm(const double costhcm, double *results, va_list ap){
   EMQECross* p_obs = va_arg(ap,EMQECross*);
-  TElectronKinematics* elec = va_arg(ap,TElectronKinematics*);
+  ElectronKinematics* elec = va_arg(ap,ElectronKinematics*);
   MeanFieldNucleusThick* pnucleus = va_arg(ap,MeanFieldNucleusThick*);
   double Q2 = va_arg(ap,double);
   double omega = va_arg(ap,double);
@@ -258,7 +258,7 @@ void intPm(const double costhcm, double *results, va_list ap){
 //     return;
 //   }
   
-  TKinematics2to2 kin("","",pnucleus->getMassA(),
+  Kinematics2to2 kin("","",pnucleus->getMassA(),
 		      pnucleus->getMassA_min_proton()+pnucleus->getExcitation()[shell],
 		      nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,costhcm);
   double pm=kin.GetPklab();
@@ -275,7 +275,7 @@ void intPm(const double costhcm, double *results, va_list ap){
 }
 
 void getBound(double &high, double &low, MeanFieldNucleusThick &nucleus, double Q2, double omega, int shell){
-  TKinematics2to2 kin("","",nucleus.getMassA(),
+  Kinematics2to2 kin("","",nucleus.getMassA(),
 		      (shell<nucleus.getPLevels()? nucleus.getMassA_min_proton(): nucleus.getMassA_min_neutron())+nucleus.getExcitation()[shell],
 		      nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,(high+low)/2.);
   double pm=kin.GetPklab();

@@ -4,7 +4,7 @@
 
 using namespace std;
 
- DoubleNCross::DoubleNCross(TElectronKinematics &elec, MeanFieldNucleusThick *pnucleus, 
+ DoubleNCross::DoubleNCross(ElectronKinematics &elec, MeanFieldNucleusThick *pnucleus, 
 			    double precision, int integr, string dir)
 :homedir(dir),electron(elec),pnucl(pnucleus),reacmodel(NULL),prec(precision),integrator(integr){
   
@@ -15,7 +15,7 @@ using namespace std;
 
 
 
-double DoubleNCross::getDiffCross(const TKinematics2to3 &kin, bool SRC, bool CT, bool pw, 
+double DoubleNCross::getDiffCross(const Kinematics2to3 &kin, bool SRC, bool CT, bool pw, 
 				  bool corr, int shellindex1, int shellindex2,double phi){
   int particletype1=(shellindex1 < pnucl->getPLevels()? 0:1);
   int particletype2=(shellindex2 < pnucl->getPLevels()? 0:1);

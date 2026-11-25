@@ -3,10 +3,10 @@
 #include <Tools/Core/ErrorMessage.hpp>
 
 #include <cmath>
-#include <Tools/Core/TSpinor.hpp>
+#include <Tools/Core/Spinor.hpp>
 #include <Glauber/OneGlauberGrid.hpp>
 #include <Glauber/GlauberGridThick.hpp>
-#include <Glauber/TMFSpinor.hpp>
+#include <Glauber/MeanFieldSpinor.hpp>
 #include <Tools/Core/AuxFunction.hpp>
 
 namespace nucqcd {
@@ -14,7 +14,7 @@ namespace nucqcd {
 
 using namespace std;
 
-EMQECross::EMQECross(TElectronKinematics &elec, MeanFieldNucleusThick *pnucleus, double precision, int integr,
+EMQECross::EMQECross(ElectronKinematics &elec, MeanFieldNucleusThick *pnucleus, double precision, int integr,
 	     string dir, bool user_sigma, double sigma_screening)
 :homedir(dir),electron(elec),pnucl(pnucleus),reacmodel(NULL), prec(precision),integrator(nucqcd::checked_integrator_flag(integr)),
 usersigma(user_sigma),sigmascreening(sigma_screening){
@@ -24,7 +24,7 @@ EMQECross::~EMQECross(){
   
 }
 
-double EMQECross::getElCross(TKinematics2to2 &kin, int current, double phi, int maxEval){
+double EMQECross::getElCross(Kinematics2to2 &kin, int current, double phi, int maxEval){
   //electron kinematics 
   double Q2=kin.GetQsquared();
   double qvec=kin.GetKlab();
@@ -69,7 +69,7 @@ double EMQECross::getElCross(TKinematics2to2 &kin, int current, double phi, int 
 }
 
 
-double EMQECross::getDiffCross(TKinematics2to2 &kin, int current, int thick, int SRC, int CT, int pw, int shellindex, 
+double EMQECross::getDiffCross(Kinematics2to2 &kin, int current, int thick, int SRC, int CT, int pw, int shellindex, 
 			   double phi, int maxEval, bool lab, bool phiavg, double lc_mod, double nkt_mod){
   
   //electron kinematics
@@ -127,7 +127,7 @@ double EMQECross::getDiffCross(TKinematics2to2 &kin, int current, int thick, int
   
 }
 
-void  EMQECross::getAllDiffCross(std::vector<double> &cross, TKinematics2to2 &kin, int current, 
+void  EMQECross::getAllDiffCross(std::vector<double> &cross, Kinematics2to2 &kin, int current, 
 			     int shellindex, int thick, double phi, int maxEval, bool lab, bool phiavg, double lc_mod, double nkt_mod){
   
   cross=vector<double>(5,0.);
@@ -184,7 +184,7 @@ void  EMQECross::getAllDiffCross(std::vector<double> &cross, TKinematics2to2 &ki
 }
 
 
-void  EMQECross::getAllObs_tnl(std::vector<double> &obs, TKinematics2to2 &kin, int current, 
+void  EMQECross::getAllObs_tnl(std::vector<double> &obs, Kinematics2to2 &kin, int current, 
 			     int shellindex, int thick, int medium, double phi, int maxEval, bool lab, double lc_mod, double nkt_mod){
   
 
@@ -323,7 +323,7 @@ void  EMQECross::getAllObs_tnl(std::vector<double> &obs, TKinematics2to2 &kin, i
   
   for(int i=0;i<total_grid;++i) 
     for(int j=0;j<6;++j) 
-      for(int k=0;k<4;++k) responsespin[i][j][k] = Trace(responsematrix[i][j]*TSpinor::kSigmaPauli[k]);
+      for(int k=0;k<4;++k) responsespin[i][j][k] = Trace(responsematrix[i][j]*Spinor::kSigmaPauli[k]);
   
   for(int i=0;i<total_grid;i++) delete [] responsematrix[i];
   delete[] responsematrix;
@@ -359,7 +359,7 @@ void  EMQECross::getAllObs_tnl(std::vector<double> &obs, TKinematics2to2 &kin, i
 
 }
 
-void  EMQECross::getAllObs_xyz(std::vector<double> &obs, TKinematics2to2 &kin, int current, 
+void  EMQECross::getAllObs_xyz(std::vector<double> &obs, Kinematics2to2 &kin, int current, 
 			     int shellindex, int thick, int medium, double phi, int maxEval, bool lab, double lc_mod, double nkt_mod){
   getAllObs_tnl(obs,kin,current,shellindex,thick,medium,phi,maxEval,lab, lc_mod, nkt_mod);
   int total=thick?5:3;
@@ -388,7 +388,7 @@ void  EMQECross::getAllObs_xyz(std::vector<double> &obs, TKinematics2to2 &kin, i
 
 }
 			       
-void EMQECross::getDensr(std::vector<double> &densr, const TKinematics2to2 &tk, const int shellindex, 
+void EMQECross::getDensr(std::vector<double> &densr, const Kinematics2to2 &tk, const int shellindex, 
 		const int thick, const double r, const int maxEval){
   //to translate the 2to2kinematics language to our particles:
   //p is A
@@ -412,8 +412,8 @@ void EMQECross::getDensr(std::vector<double> &densr, const TKinematics2to2 &tk, 
   FourVector<double> pf(sqrt(tk.GetHyperonMass()*tk.GetHyperonMass()+tk.GetPYlab()*tk.GetPYlab()),0.,0.,tk.GetPYlab());
   nucqcd::Vector3 pm(-q[1],0.,pf[3]-q[3]);
   Matrix<1,4> spinoroutup, spinoroutdown;
-  spinoroutdown=TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kUnity));
-  spinoroutup=TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity)); 
+  spinoroutdown=Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kUnity));
+  spinoroutup=Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kUnity)); 
 
   int res=90;
   unsigned count=0;
@@ -469,7 +469,7 @@ void EMQECross::klaas_densr(numint::vector_d & results, double costheta, double 
   //includes phase space!
   complex<double> exp_pr=r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(pm*nucqcd::Vector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
   for(int m=1;m<=cross.getPnucl()->getJ_array()[shellindex];m+=2){
-    TMFSpinor wave(*(cross.getPnucl()),shellindex,m,r,costheta,phi);
+    MeanFieldSpinor wave(*(cross.getPnucl()),shellindex,m,r,costheta,phi);
     grid->clearKnockout();
     grid->addKnockout(shellindex,m);    
     for(int i=0;i<total;i++){
@@ -482,7 +482,7 @@ void EMQECross::klaas_densr(numint::vector_d & results, double costheta, double 
   }
 }
 
-void EMQECross::getDensr_ctheta(std::vector<double> &densr, const TKinematics2to2 &tk, const int shellindex, 
+void EMQECross::getDensr_ctheta(std::vector<double> &densr, const Kinematics2to2 &tk, const int shellindex, 
 		const int thick, const double r, const double denscostheta, const int maxEval){
   
   //to translate the 2to2kinematics language to our particles:
@@ -507,8 +507,8 @@ void EMQECross::getDensr_ctheta(std::vector<double> &densr, const TKinematics2to
   FourVector<double> pf(sqrt(tk.GetHyperonMass()*tk.GetHyperonMass()+tk.GetPYlab()*tk.GetPYlab()),0.,0.,tk.GetPYlab());
   nucqcd::Vector3 pm(-q[1],0.,pf[3]-q[3]);
   Matrix<1,4> spinoroutup, spinoroutdown;
-  spinoroutdown=TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kUnity));
-  spinoroutup=TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity)); 
+  spinoroutdown=Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kUnity));
+  spinoroutup=Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kUnity)); 
 
   int res=90;
   unsigned count=0;
@@ -565,7 +565,7 @@ void EMQECross::klaas_densr_ctheta(numint::vector_d & results, double phi, EMQEC
   //includes phase space!
   complex<double> exp_pr=r*sintheta*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(pm*nucqcd::Vector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
   for(int m=1;m<=cross.getPnucl()->getJ_array()[shellindex];m+=2){
-    TMFSpinor wave(*(cross.getPnucl()),shellindex,m,r,costheta,phi);
+    MeanFieldSpinor wave(*(cross.getPnucl()),shellindex,m,r,costheta,phi);
     grid->clearKnockout();
     grid->addKnockout(shellindex,m);    
     for(int i=0;i<total;i++){
@@ -578,7 +578,7 @@ void EMQECross::klaas_densr_ctheta(numint::vector_d & results, double phi, EMQEC
   }
 }
 
-void EMQECross::getPhid(std::vector<complex<double> > &phid, const TKinematics2to2 &tk, const int shellindex, const int m,
+void EMQECross::getPhid(std::vector<complex<double> > &phid, const Kinematics2to2 &tk, const int shellindex, const int m,
 		const int ms, const int thick, const int maxEval){
   //to translate the 2to2kinematics language to our particles:
   //p is A
@@ -604,8 +604,8 @@ void EMQECross::getPhid(std::vector<complex<double> > &phid, const TKinematics2t
   FourVector<double> pf(sqrt(tk.GetHyperonMass()*tk.GetHyperonMass()+tk.GetPYlab()*tk.GetPYlab()),0.,0.,tk.GetPYlab());
   nucqcd::Vector3 pm(-q[1],0.,pf[3]-q[3]);
   Matrix<1,4> spinorout;
-  if(ms==-1) spinorout=TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kUnity));
-  else spinorout=TSpinor::Bar(TSpinor(pf,tk.GetHyperonMass(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity)); 
+  if(ms==-1) spinorout=Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kUnity));
+  else spinorout=Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kUnity)); 
 
   int res=90;
   unsigned count=0;
@@ -644,7 +644,7 @@ void EMQECross::klaas_phid(numint::vector_z & results, double r, double costheta
   
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
-  TMFSpinor wave(*(cross.getPnucl()),shell,m,r,costheta,phi);
+  MeanFieldSpinor wave(*(cross.getPnucl()),shell,m,r,costheta,phi);
   //includes phase space!
   complex<double> exp_pr=r*exp(-nucqcd::i_unit*nucqcd::inv_hbarc*(pm*nucqcd::Vector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)));
   results[0]= exp_pr*(spinor*wave);
@@ -655,7 +655,7 @@ void EMQECross::klaas_phid(numint::vector_z & results, double r, double costheta
 }
 
 
-vector<double>  EMQECross::printDensity_profile(const TKinematics2to2 &kin, const int shellindex, 
+vector<double>  EMQECross::printDensity_profile(const Kinematics2to2 &kin, const int shellindex, 
 		const int thick, const int maxEval){
   vector<double> output(6,0.);
   vector<double > densr;

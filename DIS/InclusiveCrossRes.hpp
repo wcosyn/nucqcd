@@ -11,9 +11,9 @@
 
 #include <string>
 #include <memory>
-#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/Kinematics/ElectronKinematics.hpp>
 #include <Tools/StructureFunctions/DeuteronStructure.hpp>
-#include <Tools/WaveFunctions/TDeuteron.hpp>
+#include <Tools/WaveFunctions/Deuteron.hpp>
 
 namespace nucqcd {
 
@@ -33,9 +33,9 @@ class InclusiveCrossRes{
   
 public:
     /*! Constructor
-   * \param elec Electron kinematics, see TElectronKinematics
+   * \param elec Electron kinematics, see ElectronKinematics
      * \param proton photon interacting with proton [1] or neutron [0]
-   * \param wavename Deuteron wave function name, see TDeuteron
+   * \param wavename Deuteron wave function name, see Deuteron
    * \param strucname which structure function parametrization ["CB"=Christy-Bosted (SLAC above W^2 = 9 GeV^2, see NuclStructure), "SLAC", "Alekhin", or any other name of NuclStructure: "CTEQ", "MSTW", "LHAPDF:<set>", combinations such as "CB+LHAPDF:CT18LO@4"], see NuclStructure
    * \param symm parameter that controls symmetric or not rescatterings in the FSI
    * \param offshell which offshell parametrization do you want to use? <BR>
@@ -48,7 +48,7 @@ public:
    * \param kin_choice affects parts of phase space of spectator that are included, too high spectator momenta are excluded
    * because of energy conservation, provides smooth transition between resonance tresholds
    */  
-  InclusiveCrossRes(bool proton, std::string strucname, std::string wavename, TElectronKinematics &elec, 
+  InclusiveCrossRes(bool proton, std::string strucname, std::string wavename, ElectronKinematics &elec, 
 		    int symm, int offshell, bool fixprop, int kin_choice);
     /*! Calculates the plane-wave inclusive cross section without any prefactors, just the deuteron structure functions time
    * momentum distribution
@@ -97,8 +97,8 @@ private:
 
   
 
-  std::unique_ptr<TDeuteron::Wavefunction> wf; /*!< pointer to deuteron wave funtion, see TDeuteron */
-  TElectronKinematics electron; /*!< electron kinematis, see TElectronKinematics */
+  std::unique_ptr<Deuteron::Wavefunction> wf; /*!< pointer to deuteron wave funtion, see Deuteron */
+  ElectronKinematics electron; /*!< electron kinematis, see ElectronKinematics */
   DeuteronStructure structure;  /*!< deuteron structure functions object, see DeuteronStructure */
 
   std::vector<Resonance> resonance_vec; /*!< vector that contains Resonance instances, used in the FSI amplitude */
@@ -122,13 +122,13 @@ private:
   void int_costheta_incl_fsi(double costheta, double *result, va_list ap);
   /*! integrand over the transverse momentum of the rescattering loop
    * \param qt [MeV] transverse momentum transferred in the rescattering \param[out] results integrand for the two FSI formulas of calc_F2DincFSI
-   * \param ap the two kinematics objects (TKinematics2to2*), the deuteron wave function components
+   * \param ap the two kinematics objects (Kinematics2to2*), the deuteron wave function components
    * (complex<double>*), the indices of the two resonances (size_t), and a pointer to the estimate for
    * the inner azimuthal integration */
   void int_qt(double qt, double *results, va_list ap);
   /*! integrand over the azimuthal angle of the transverse momentum of the rescattering loop
    * \param qphi [rad] azimuthal angle \param[out] results integrand for the two FSI formulas of calc_F2DincFSI
-   * \param ap qt [MeV], the two kinematics objects (TKinematics2to2*), the deuteron wave function
+   * \param ap qt [MeV], the two kinematics objects (Kinematics2to2*), the deuteron wave function
    * components (complex<double>*), the indices of the two resonances (size_t) */
   void int_qphi(double qphi, double *results, va_list ap); 
   /*! recursive method to find the pole in the fsi integration, longitudinal part,
@@ -136,12 +136,12 @@ private:
    * \param pt [MeV] final transverse spectator momentum
    * \param Er [MeV] final spectator on-shell energy
    * \param pkin kinematics object containing the gamma+D->X+N kinematics <BR>
-   * in TKinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
+   * in Kinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
    * \param first which resonance comes first in the amplitude
    * \param res1 index of the initial resonance
    * \param res2 index of the resonance after rescattering
    */  
-  void get_prz(double pt, double Er, TKinematics2to2 *pkin, int first, size_t res1, size_t res2);
+  void get_prz(double pt, double Er, Kinematics2to2 *pkin, int first, size_t res1, size_t res2);
  /*! gives you the scatter amplitude of the final-state interaction
    * \param t [MeV^2] momentum transfer squared
    * \param Q2 [MeV^2] Q^2 of the virtual photon

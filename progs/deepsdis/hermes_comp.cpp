@@ -12,7 +12,7 @@ using namespace std;
 #include <Tools/StructureFunctions/NuclStructure.hpp>
 #include <Tools/StructureFunctions/NucleonStructure.hpp>
 
-#include <Tools/WaveFunctions/TDeuteron.hpp>
+#include <Tools/WaveFunctions/Deuteron.hpp>
 #include <Integrator/numint/numint.hpp>
 using namespace nucqcd;
 

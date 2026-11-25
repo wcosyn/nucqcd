@@ -16,9 +16,9 @@ using namespace std;
 #include <Tools/Core/AuxFunction.hpp>
 #include <Tools/Core/FourVector.hpp>
 #include <Tools/Core/Matrix.hpp>
-#include <Tools/Core/TSpinor.hpp>
+#include <Tools/Core/Spinor.hpp>
 #include <Tools/Core/Rotation.hpp>
-#include <Glauber/TMFSpinor.hpp>
+#include <Glauber/MeanFieldSpinor.hpp>
 
 namespace nucqcd {
 
@@ -450,8 +450,8 @@ void DistMomDistrGrid::constructAllGrids(nucqcd::Rotation & rot){
 	  getPfsigrid()->addKnockout(getShellindex(),m);
 	  for(int ms=0;ms<=1;ms++){
 	    FourVector<double> pf(sqrt(p_hit*p_hit+mass*mass),pvec_hit.X(),pvec_hit.Y(),pvec_hit.Z());
-	    if(ms) Upm_bar=TSpinor::Bar(TSpinor(pf,mass,TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kUnity));
-	    else Upm_bar=TSpinor::Bar(TSpinor(pf,mass,TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity));
+	    if(ms) Upm_bar=Spinor::Bar(Spinor(pf,mass,Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kUnity));
+	    else Upm_bar=Spinor::Bar(Spinor(pf,mass,Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kUnity));
 	    int res=90;
 	    unsigned count=0;
 	    double deeserror=0.;
@@ -550,8 +550,8 @@ void DistMomDistrGrid::constructCtGrid(nucqcd::Rotation & rot){
 	  getPfsigrid()->addKnockout(getShellindex(),m);
 	  for(int ms=0;ms<=1;ms++){
 	    FourVector<double> pf(sqrt(p_hit*p_hit+mass*mass),pvec_hit.X(),pvec_hit.Y(),pvec_hit.Z());
-	    if(ms) Upm_bar=TSpinor::Bar(TSpinor(pf,mass,TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kUnity));
-	    else Upm_bar=TSpinor::Bar(TSpinor(pf,mass,TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kUnity));
+	    if(ms) Upm_bar=Spinor::Bar(Spinor(pf,mass,Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kUnity));
+	    else Upm_bar=Spinor::Bar(Spinor(pf,mass,Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kUnity));
 	    
     	    int res=90;
 	    unsigned count=0;
@@ -674,7 +674,7 @@ void DistMomDistrGrid::intRhoRpw(const double r, double *result, va_list ap){
 //   double cosphi,sinphi;
 //   sincos(phi,&sinphi,&cosphi);
 //   
-//   TMFSpinor wave(*getPfsigrid()->getPnucleus(),getShellindex(),m,r,costheta,phi);
+//   MeanFieldSpinor wave(*getPfsigrid()->getPnucleus(),getShellindex(),m,r,costheta,phi);
 //   complex<double> exp_pr=exp(-nucqcd::inv_hbarc*pvec_hit*nucqcd::Vector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)*nucqcd::i_unit)
 // 			  *(Upm_bar*wave);  
 // 
@@ -690,7 +690,7 @@ void DistMomDistrGrid::intRhoRpw(const double r, double *result, va_list ap){
 //   double sintheta = va_arg(ap,double);
 //   double cosphi,sinphi;
 //   sincos(phi,&sinphi,&cosphi);
-//   TMFSpinor wave(*getPfsigrid()->getPnucleus(),getShellindex(),m,r,costheta,phi);
+//   MeanFieldSpinor wave(*getPfsigrid()->getPnucleus(),getShellindex(),m,r,costheta,phi);
 //   
 //   
 //   complex<double> exp_pr=exp(-nucqcd::inv_hbarc*pvec_hit*nucqcd::Vector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta)*nucqcd::i_unit)
@@ -787,7 +787,7 @@ void DistMomDistrGrid::klaas_distint(numint::vector_z &results, double r, double
   double sintheta=sqrt(1.-costheta*costheta);
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
-  TMFSpinor wave(*grid.getPfsigrid()->getPnucleus(),grid.getShellindex(),m,r,costheta,phi);
+  MeanFieldSpinor wave(*grid.getPfsigrid()->getPnucleus(),grid.getShellindex(),m,r,costheta,phi);
   complex<double> exp_pr=exp(-nucqcd::inv_hbarc*((grid.getPvec_hit())*nucqcd::Vector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta))*nucqcd::i_unit)
 			  *((grid.getUpm_bar())*wave);  
   for(int i=0;i<grid.number_of_Grids;i++) results[i]=exp_pr*grid.getPfsigrid()->getFsiGridN_interp3(i,r,costheta,phi);
@@ -802,7 +802,7 @@ void DistMomDistrGrid::klaas_distint_ct(numint::vector_z &results, double r, dou
   double sintheta=sqrt(1.-costheta*costheta);
   double cosphi,sinphi;
   sincos(phi,&sinphi,&cosphi);
-  TMFSpinor wave(*grid.getPfsigrid()->getPnucleus(),grid.getShellindex(),m,r,costheta,phi);
+  MeanFieldSpinor wave(*grid.getPfsigrid()->getPnucleus(),grid.getShellindex(),m,r,costheta,phi);
   complex<double> exp_pr=exp(-nucqcd::inv_hbarc*((grid.getPvec_hit())*nucqcd::Vector3(r*sintheta*cosphi,r*sintheta*sinphi,r*costheta))*nucqcd::i_unit)
 			  *((grid.getUpm_bar())*wave);  
 

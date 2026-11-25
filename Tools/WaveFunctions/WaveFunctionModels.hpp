@@ -1,7 +1,7 @@
 /*! \file WaveFunctionModels.hpp
  * \brief The wave function parametrizations that can be chosen by name, as enumerations
  *
- * Deuteron (TDeuteron, OldDeuteron) and He3 (He3wf) wave functions are chosen by a name, which programs
+ * Deuteron (Deuteron, OldDeuteron) and He3 (He3wf) wave functions are chosen by a name, which programs
  * read from their command line. The names are parsed in one place, here, into the enumerations; the
  * classes then switch on the enumeration (the compiler warns about a missing case). An unknown name is an
  * std::invalid_argument that lists the valid names, thrown where the name is parsed. The classes keep
@@ -16,7 +16,7 @@
 
 namespace nucqcd {
 
-/*! \brief Deuteron wave function parametrizations (TDeuteron::Wavefunction::CreateWavefunction) */
+/*! \brief Deuteron wave function parametrizations (Deuteron::Wavefunction::CreateWavefunction) */
 enum class DeuteronModel {
   CDBonn,     ///< "cdbonn": CD-Bonn
   CDBonn87,   ///< "cdbonn87"

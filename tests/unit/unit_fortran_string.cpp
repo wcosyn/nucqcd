@@ -6,7 +6,7 @@
 
 #include <Tools/Core/FortranString.hpp>
 #include <Tools/WaveFunctions/He3wf.hpp>
-#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/Kinematics/Kinematics2to2.hpp>
 #include <Tools/Core/constants.hpp>
 
 #include <stdexcept>
@@ -38,9 +38,9 @@ TEST_CASE("He3wf rejects a data directory too long for the Fortran file name buf
   CHECK_THROWS_AS(He3wf("AV18", longdir), std::length_error);
 }
 
-TEST_CASE("TKinematics rejects a format string longer than its 100-character buffer", "[fortran]") {
+TEST_CASE("Kinematics rejects a format string longer than its 100-character buffer", "[fortran]") {
   std::string format = "qsquared:wlab:pklab";
   while (format.size() < 100) format += ":pklab";
-  CHECK_THROWS_AS(TKinematics2to2("", "", nucqcd::mass_d, nucqcd::mass_p, nucqcd::mass_n, format.c_str(), 1.e06, 600., 150.),
+  CHECK_THROWS_AS(Kinematics2to2("", "", nucqcd::mass_d, nucqcd::mass_p, nucqcd::mass_n, format.c_str(), 1.e06, 600., 150.),
                   std::length_error);
 }

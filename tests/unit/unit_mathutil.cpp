@@ -2,8 +2,8 @@
 // (roadmap step 9, phase 2). The reference values (hex floats) were computed with ROOT 6.40:
 // ROOT::Math::Polynomial(a,b,c).FindRealRoots() and TDecompLU (tolerance 1e-16) followed by Solve.
 // Before the switch both replacements were also compared with ROOT on millions of random inputs (no
-// difference), and the deuteron wave functions and TKinematics2to3(WithLabAngles) were bitwise the same
-// (solve_3x3 gives the TYukawaPWF D-wave coefficients; their values are pinned by reg_deuteron_wf).
+// difference), and the deuteron wave functions and Kinematics2to3(WithLabAngles) were bitwise the same
+// (solve_3x3 gives the YukawaWavefunction D-wave coefficients; their values are pinned by reg_deuteron_wf).
 #include <test_support.hpp>
 
 #include <Tools/Core/MathUtil.hpp>
@@ -40,7 +40,7 @@ TEST_CASE("quadratic_real_roots: bitwise equal to ROOT::Math::Polynomial::FindRe
 }
 
 TEST_CASE("solve_3x3: bitwise equal to ROOT's TDecompLU", "[mathutil]") {
-  // matrices of the TYukawaPWF boundary conditions {1/m_i^2, 1, m_i^2} for three masses m_i
+  // matrices of the YukawaWavefunction boundary conditions {1/m_i^2, 1, m_i^2} for three masses m_i
   struct Case { std::array<double, 9> a; std::array<double, 3> b, x; };
   const Case cases[] = {
       {{0x1.b609b0ca8719bp-8, 0x1.03c1695dbe564p-7, 0x1.390306b4eb91bp-7, 0x1p+0, 0x1p+0, 0x1p+0, 0x1.2b39ac075a0a4p+7,

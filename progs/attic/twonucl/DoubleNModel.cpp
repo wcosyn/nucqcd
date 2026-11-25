@@ -1,6 +1,6 @@
 #include "DoubleNModel.hpp"
-#include <Tools/Core/TSpinor.hpp>
-#include <Glauber/TMFSpinor.hpp>
+#include <Tools/Core/Spinor.hpp>
+#include <Glauber/MeanFieldSpinor.hpp>
 #include <Tools/Core/Utilfunctions.hpp>
 
 #include <stdlib.h>
@@ -28,7 +28,7 @@ DoubleNModel::~DoubleNModel(){
 }
 
 
-complex<double> DoubleNModel::getMatrixEl(const TKinematics2to3 &tk, int spinout1, int spinout2, int photonpol, 
+complex<double> DoubleNModel::getMatrixEl(const Kinematics2to3 &tk, int spinout1, int spinout2, int photonpol, 
 				   int shellindex1, int shellindex2, int two_m1, int two_m2){
 
   static FourVector<complex<double> > polVectorPlus(0.,
@@ -82,17 +82,17 @@ complex<double> DoubleNModel::getMatrixEl(const TKinematics2to3 &tk, int spinout
     gridf2->addKnockout(shellindex1,two_m1);
     gridf2->addKnockout(shellindex2,two_m2);
   }
-  THelicitySpinor out1(tk.GetN4(),tk.GetMn(),(spinout1==-1?TSpinor::Polarization::kDown:TSpinor::Polarization::kUp));
-  THelicitySpinor out2(tk.GetK4(),tk.GetMk(),(spinout2==-1?TSpinor::Polarization::kDown:TSpinor::Polarization::kUp));
-  THelicitySpinor interm1down(tk.GetN4()-tk.GetG4(),tk.GetMn(),TSpinor::Polarization::kUp);
-  THelicitySpinor interm1up(tk.GetN4()-tk.GetG4(),tk.GetMn(),TSpinor::Polarization::kDown);
-  THelicitySpinor interm2down(tk.GetK4()-tk.GetG4(),tk.GetMk(),TSpinor::Polarization::kUp);
-  THelicitySpinor interm2up(tk.GetK4()-tk.GetG4(),tk.GetMk(),TSpinor::Polarization::kDown);
+  HelicitySpinor out1(tk.GetN4(),tk.GetMn(),(spinout1==-1?Spinor::Polarization::kDown:Spinor::Polarization::kUp));
+  HelicitySpinor out2(tk.GetK4(),tk.GetMk(),(spinout2==-1?Spinor::Polarization::kDown:Spinor::Polarization::kUp));
+  HelicitySpinor interm1down(tk.GetN4()-tk.GetG4(),tk.GetMn(),Spinor::Polarization::kUp);
+  HelicitySpinor interm1up(tk.GetN4()-tk.GetG4(),tk.GetMn(),Spinor::Polarization::kDown);
+  HelicitySpinor interm2down(tk.GetK4()-tk.GetG4(),tk.GetMk(),Spinor::Polarization::kUp);
+  HelicitySpinor interm2up(tk.GetK4()-tk.GetG4(),tk.GetMk(),Spinor::Polarization::kDown);
   
-  J1contrdown = TSpinor::Bar(out1)*Jcontr1*interm1down;
-  J1contrup = TSpinor::Bar(out1)*Jcontr1*interm1up;
-  J2contrdown = TSpinor::Bar(out2)*Jcontr2*interm2down;
-  J2contrup = TSpinor::Bar(out2)*Jcontr2*interm2up;
+  J1contrdown = Spinor::Bar(out1)*Jcontr1*interm1down;
+  J1contrup = Spinor::Bar(out1)*Jcontr1*interm1up;
+  J2contrdown = Spinor::Bar(out2)*Jcontr2*interm2down;
+  J2contrup = Spinor::Bar(out2)*Jcontr2*interm2up;
   
   pair1up = new Pair("paris",homedir, pnucl->getA(),
 		      pnucl->getN_array()[shellindex1],

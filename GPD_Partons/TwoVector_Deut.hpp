@@ -6,10 +6,10 @@
 #include <iostream>
 #include <cstdarg>
 #include <cstdlib>
-#include <Tools/WaveFunctions/TDeuteron.hpp>
+#include <Tools/WaveFunctions/Deuteron.hpp>
 #include <complex>
 #include <Integrator/numint/numint.hpp>
-#include <Tools/WaveFunctions/TInterpolatingWavefunction.hpp>
+#include <Tools/WaveFunctions/InterpolatingWavefunction.hpp>
 #include <GPD_Partons/Deut_Conv_GPD_V.hpp>
 #include <GPD_Partons/Deut_Conv_GPD_T.hpp>
 

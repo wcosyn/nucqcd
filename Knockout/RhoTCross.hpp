@@ -13,7 +13,7 @@
 #include <memory>
 #include <vector>
 #include <Glauber/MeanFieldNucleusThick.hpp>
-// #include <Tools/Kinematics/TKinematics2to2.hpp>
+// #include <Tools/Kinematics/Kinematics2to2.hpp>
 #include <Glauber/DistMomDistrGrid.hpp>
 #include <Glauber/GlauberDecayGridThick.hpp>
 #include <Glauber/FastParticle.hpp>
@@ -101,7 +101,7 @@ private:
   MeanFieldNucleusThick nucleusthick; /*!< nucleus instance */
   std::map<double,DistMomDistrGrid> distgridmap; /*!< map used to store distorted momentum distributions */
   std::vector<std::unique_ptr<GlauberDecayGridThick>> pfsigrid; /*!< array of Glauber FSI grid, one for each shell level */
-//   TKinematics2to2 *pkin;
+//   Kinematics2to2 *pkin;
 //  FastParticle *prho;
   /*! function that gets integrated over pm, all different fsi outputs / fixed t calculations
    * \param pm [MeV] radial coordinate

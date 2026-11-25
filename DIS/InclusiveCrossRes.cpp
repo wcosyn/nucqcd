@@ -8,7 +8,7 @@ namespace nucqcd {
 using namespace std;
 
 InclusiveCrossRes::InclusiveCrossRes(bool proton, string strucname, string wavename, 
-				     TElectronKinematics &elec, int sym, int offshell, bool fixpropp, int k_c)
+				     ElectronKinematics &elec, int sym, int offshell, bool fixpropp, int k_c)
 :massi(proton? nucqcd::mass_p:nucqcd::mass_n),
 massr(proton? nucqcd::mass_n:nucqcd::mass_p),
 symm(sym),
@@ -20,7 +20,7 @@ offshellset(offshell),
 electron(elec),
 structure(elec,proton,strucname){
 
-  wf.reset(TDeuteron::Wavefunction::CreateWavefunction(wavename));
+  wf.reset(Deuteron::Wavefunction::CreateWavefunction(wavename));
   
 }
 
@@ -67,7 +67,7 @@ void InclusiveCrossRes::int_costheta_incl(double costheta, double *result, va_li
   double qvec=sqrt(Q2+pow(Q2/(2.*massi*x),2.));
   double nu=Q2/(2.*massi*x);
   double Wx=sqrt(nucqcd::mass_d*nucqcd::mass_d-Q2+massr*massr+2.*nucqcd::mass_d*(nu-Er)-2.*nu*Er+2.*qvec*prnorm*costheta);
-  TKinematics2to2 kin("","",nucqcd::mass_d,massr,Wx,"qsquared:wlab:pklab",Q2,nu,prnorm);
+  Kinematics2to2 kin("","",nucqcd::mass_d,massr,Wx,"qsquared:wlab:pklab",Q2,nu,prnorm);
   double structfactor=structure.getInclStructure(kin,nucqcd::mass_d-Er);
   if(structfactor==0.) {*result=0.; return; }
   //no phi integration, symmetry is already used in getInclStructure()
@@ -145,14 +145,14 @@ void InclusiveCrossRes::int_costheta_incl_fsi(double costheta, double *results, 
   double qvec=sqrt(Q2+pow(Q2/(2.*massi*x),2.));
   double nu=Q2/(2.*massi*x);
   Wxprime2=nucqcd::mass_d*nucqcd::mass_d-Q2+massr*massr+2.*nucqcd::mass_d*(nu-Er)-2.*nu*Er+2.*qvec*prnorm*costheta;
-  TKinematics2to2 *kin1=NULL,*kin2=NULL;
+  Kinematics2to2 *kin1=NULL,*kin2=NULL;
 //   if(fixprop) {
-//     kin1 = new TKinematics2to2("","",nucqcd::mass_d,massr,sqrt(getResonance_vec()[res1].getMass2()),"qsquared:wlab:pklab",Q2,nu,prnorm);
-//     kin2 = new TKinematics2to2("","",nucqcd::mass_d,massr,sqrt(getResonance_vec()[res2].getMass2()),"qsquared:wlab:pklab",Q2,nu,prnorm);
+//     kin1 = new Kinematics2to2("","",nucqcd::mass_d,massr,sqrt(getResonance_vec()[res1].getMass2()),"qsquared:wlab:pklab",Q2,nu,prnorm);
+//     kin2 = new Kinematics2to2("","",nucqcd::mass_d,massr,sqrt(getResonance_vec()[res2].getMass2()),"qsquared:wlab:pklab",Q2,nu,prnorm);
 //   }
 //   else {
-    kin1= new TKinematics2to2("","",nucqcd::mass_d,massr,sqrt(Wxprime2),"qsquared:wlab:pklab",Q2,nu,prnorm);
-    kin2 = new TKinematics2to2("","",nucqcd::mass_d,massr,sqrt(Wxprime2),"qsquared:wlab:pklab",Q2,nu,prnorm);
+    kin1= new Kinematics2to2("","",nucqcd::mass_d,massr,sqrt(Wxprime2),"qsquared:wlab:pklab",Q2,nu,prnorm);
+    kin2 = new Kinematics2to2("","",nucqcd::mass_d,massr,sqrt(Wxprime2),"qsquared:wlab:pklab",Q2,nu,prnorm);
 //   }
   double structfactor1=structure.getInclStructure(*kin1,nucqcd::mass_d-Er);
   double structfactor2=structure.getInclStructure(*kin2,nucqcd::mass_d-Er);
@@ -180,8 +180,8 @@ void InclusiveCrossRes::int_costheta_incl_fsi(double costheta, double *results, 
 
 void InclusiveCrossRes::int_qt(double qt, double *results, va_list ap){
 
-  TKinematics2to2 *pkin1 = va_arg(ap, TKinematics2to2*);
-  TKinematics2to2 *pkin2 = va_arg(ap, TKinematics2to2*);
+  Kinematics2to2 *pkin1 = va_arg(ap, Kinematics2to2*);
+  Kinematics2to2 *pkin2 = va_arg(ap, Kinematics2to2*);
   complex<double>* wave = va_arg(ap,complex<double>*);
   size_t res1 = va_arg(ap, size_t);
   size_t res2 = va_arg(ap, size_t);
@@ -199,8 +199,8 @@ void InclusiveCrossRes::int_qt(double qt, double *results, va_list ap){
 void InclusiveCrossRes::int_qphi(double qphi, double *results, va_list ap){
 
   double qt = va_arg(ap,double);
-  TKinematics2to2 *pkin1 = va_arg(ap, TKinematics2to2*);
-  TKinematics2to2 *pkin2 = va_arg(ap, TKinematics2to2*);
+  Kinematics2to2 *pkin1 = va_arg(ap, Kinematics2to2*);
+  Kinematics2to2 *pkin2 = va_arg(ap, Kinematics2to2*);
   complex<double>* wave = va_arg(ap,complex<double>*);
   size_t res1 = va_arg(ap, size_t);
   size_t res2 = va_arg(ap, size_t);
@@ -459,7 +459,7 @@ void InclusiveCrossRes::int_qphi(double qphi, double *results, va_list ap){
 }
 
 
-void InclusiveCrossRes::get_prz(double pt2, double Er, TKinematics2to2 *pkin, int first, size_t res1, size_t res2){
+void InclusiveCrossRes::get_prz(double pt2, double Er, Kinematics2to2 *pkin, int first, size_t res1, size_t res2){
 
   if(fixprop){
     przprime=0.;

@@ -13,8 +13,8 @@
 using namespace std;
 
 #include <Tools/Core/constants.hpp>
-#include <Tools/Kinematics/TKinematics2to2.hpp>
-#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/Kinematics/Kinematics2to2.hpp>
+#include <Tools/Kinematics/ElectronKinematics.hpp>
 #include <Tools/StructureFunctions/DeuteronStructure.hpp>
 #include <Knockout/DeuteronMomDistr.hpp>
 #include <DIS/DeuteronCross.hpp>

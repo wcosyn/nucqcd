@@ -12,7 +12,7 @@ namespace nucqcd {
 
 /*! \brief Older implementation of the non-relativistic deuteron wave function (Paris, AV18, CD-Bonn, AV18b)
  *
- * deuteronwf gives the same amplitudes as TDeuteron::Wavefunction::DeuteronPState (with nucleon 1 the
+ * deuteronwf gives the same amplitudes as Deuteron::Wavefunction::DeuteronPState (with nucleon 1 the
  * proton; checked numerically for AV18). The radial functions absorb factors: U = U_TDeuteron/sqrt(4 pi)
  * and W = -W_TDeuteron/sqrt(4 pi), so the wave function is written as U + W S12/sqrt(8), and
  * \f$ 4\pi\int p^2 (U^2+W^2)\,dp = 1 \f$.

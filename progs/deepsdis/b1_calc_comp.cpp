@@ -17,12 +17,12 @@ using namespace std;
 #include <Tools/StructureFunctions/NuclStructure.hpp>
 #include <Tools/StructureFunctions/NucleonStructure.hpp>
 
-#include <Tools/WaveFunctions/TDeuteron.hpp>
+#include <Tools/WaveFunctions/Deuteron.hpp>
 #include <Integrator/numint/numint.hpp>
 using namespace nucqcd;
 
 
-void k_int(numint::vector_d & res, double knorm, double kcosth, TDeuteron::Wavefunction *wfref,
+void k_int(numint::vector_d & res, double knorm, double kcosth, Deuteron::Wavefunction *wfref,
           double Q2, double x, double nu, double qvec, double gamma, double eps, double thetaq, NucleonStructure &strp);
 
 
@@ -36,8 +36,8 @@ int main(int argc, char *argv[])
   for(int i=1;i<=100;i++){
     double x=1./100.*i;
     
-    TDeuteron::Wavefunction *wfref;
-    wfref = TDeuteron::Wavefunction::CreateWavefunction(wf);
+    Deuteron::Wavefunction *wfref;
+    wfref = Deuteron::Wavefunction::CreateWavefunction(wf);
   //   for(int i=1;i<100;i++){
   //     double x=0.01*i;
   //     NuclStructure s1(1,Q2,x,0,"SLAC");
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
         Ftor_b1 &p = * (Ftor_b1 *) param;
         p.f(ret,x[0],x[1], p.wfref,p.Q2,p.x,p.nu,p.qvec,p.gamma,p.eps,p.thetaq,p.strp);
       }
-      TDeuteron::Wavefunction *wfref;
+      Deuteron::Wavefunction *wfref;
       double Q2;
       double x;
       double nu;
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
       
       
       
-      void (*f)(numint::vector_d & res, double knorm, double kcosth, TDeuteron::Wavefunction *wfref,
+      void (*f)(numint::vector_d & res, double knorm, double kcosth, Deuteron::Wavefunction *wfref,
                 double Q2, double x, double nu, double qvec, double gamma, double eps, double thetaq, NucleonStructure &strp);
     };
     
@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
   
 }
 
-void k_int(numint::vector_d & res, double knorm, double costh, TDeuteron::Wavefunction *wfref,
+void k_int(numint::vector_d & res, double knorm, double costh, Deuteron::Wavefunction *wfref,
 	      double Q2, double x, double nu, double qvec, double gamma, double eps, double thetaq,
               NucleonStructure &strp){
     

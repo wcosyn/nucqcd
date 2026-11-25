@@ -17,7 +17,7 @@
 #include <Tools/Core/FourVector.hpp>
 #include <Glauber/MeanFieldNucleusThick.hpp>
 #include <Glauber/GlauberGridThick.hpp>
-#include <Tools/Kinematics/TKinematics2to3WithLabAngles.hpp>
+#include <Tools/Kinematics/Kinematics2to3WithLabAngles.hpp>
 #include <Glauber/NucleonEMOperator.hpp>
 #include <Tools/Core/Vector3.hpp>
 #include "pair.h"
@@ -57,7 +57,7 @@ public:
    * \param m2 m_j of second ejected nucleon (times TWO!!!)
    * \return matrix element [fm^3]
    */
-  std::complex<double> getMatrixEl(const TKinematics2to3 &tk,int spin1, int spin2, int photonpol, 
+  std::complex<double> getMatrixEl(const Kinematics2to3 &tk,int spin1, int spin2, int photonpol, 
 			      int shellindex1, int shellindex2, int m1, int m2);
   
   /*! helper function for the MC integration, returns the function that gets integrated matrix element in r space

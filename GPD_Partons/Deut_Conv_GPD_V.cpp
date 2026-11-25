@@ -22,7 +22,7 @@ pGPDService(pGPDService),pGPDModel(pGPDModel),chiraleven_grid(pGPDService, pGPDM
 {
 
 
-    wfref = TDeuteron::Wavefunction::CreateWavefunction(wfname);
+    wfref = Deuteron::Wavefunction::CreateWavefunction(wfname);
     for(int i=0;i<=1000;i++){
         wf.AddUp(i,wfref->GetUp(i));
         wf.AddWp(i,wfref->GetWp(i));

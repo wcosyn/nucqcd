@@ -8,7 +8,7 @@
 #include <Glauber/MeanFieldNucleus.hpp>
 // #include "MeanFieldNucleusWrapper.hpp"
 #include <Tools/Core/Utilfunctions.hpp>
-#include <Tools/WaveFunctions/TDeuteron.hpp>
+#include <Tools/WaveFunctions/Deuteron.hpp>
 
 namespace nucqcd {
 
@@ -304,8 +304,8 @@ void MeanFieldNucleus::constructThetaArray(){
 	Yminkappa[i][j][k]=0.;
 	Ykappa[i][j][k]=0.;
 	for(int ms=-1;ms<=1;ms+=2){
-	  Yminkappa[i][j][k]+=pow(TDeuteron::Wavefunction::ClebschGordan(2*l_array[i],m-ms,1,ms, j_array[i],m)*Spher_Harm(l_array[i], (m-ms)/2, float(k)/float((GRIDP-1)/2)-1.),2);
-	  Ykappa[i][j][k]+=pow(TDeuteron::Wavefunction::ClebschGordan(2*lbar_array[i],m-ms,1,ms, j_array[i],m)*Spher_Harm(lbar_array[i], (m-ms)/2, float(k)/float((GRIDP-1)/2)-1.),2);
+	  Yminkappa[i][j][k]+=pow(Deuteron::Wavefunction::ClebschGordan(2*l_array[i],m-ms,1,ms, j_array[i],m)*Spher_Harm(l_array[i], (m-ms)/2, float(k)/float((GRIDP-1)/2)-1.),2);
+	  Ykappa[i][j][k]+=pow(Deuteron::Wavefunction::ClebschGordan(2*lbar_array[i],m-ms,1,ms, j_array[i],m)*Spher_Harm(lbar_array[i], (m-ms)/2, float(k)/float((GRIDP-1)/2)-1.),2);
 	}
       }
     }
@@ -320,10 +320,10 @@ void MeanFieldNucleus::getWaveFunction(complex<double> *wave, const int shellind
   double Fr=getWave_F(shellindex,r);
   complex<double> spinup=getWave_Phipart(m,1,phi);
   complex<double> spindown=getWave_Phipart(m,-1,phi);
-  wave[0]=nucqcd::i_unit*Gr*spinup*TDeuteron::Wavefunction::ClebschGordan(2*l_array[shellindex],m-1,1,1, j_array[shellindex],m)*Spher_Harm(l_array[shellindex], (m-1)/2, costheta);
-  wave[1]=nucqcd::i_unit*Gr*spindown*TDeuteron::Wavefunction::ClebschGordan(2*l_array[shellindex],m+1,1,-1, j_array[shellindex],m)*Spher_Harm(l_array[shellindex], (m+1)/2, costheta);
-  wave[2]=-Fr*spinup*TDeuteron::Wavefunction::ClebschGordan(2*lbar_array[shellindex],m-1,1,1, j_array[shellindex],m)*Spher_Harm(lbar_array[shellindex], (m-1)/2, costheta);
-  wave[3]=-Fr*spindown*TDeuteron::Wavefunction::ClebschGordan(2*lbar_array[shellindex],m+1,1,-1, j_array[shellindex],m)*Spher_Harm(lbar_array[shellindex], (m+1)/2, costheta);
+  wave[0]=nucqcd::i_unit*Gr*spinup*Deuteron::Wavefunction::ClebschGordan(2*l_array[shellindex],m-1,1,1, j_array[shellindex],m)*Spher_Harm(l_array[shellindex], (m-1)/2, costheta);
+  wave[1]=nucqcd::i_unit*Gr*spindown*Deuteron::Wavefunction::ClebschGordan(2*l_array[shellindex],m+1,1,-1, j_array[shellindex],m)*Spher_Harm(l_array[shellindex], (m+1)/2, costheta);
+  wave[2]=-Fr*spinup*Deuteron::Wavefunction::ClebschGordan(2*lbar_array[shellindex],m-1,1,1, j_array[shellindex],m)*Spher_Harm(lbar_array[shellindex], (m-1)/2, costheta);
+  wave[3]=-Fr*spindown*Deuteron::Wavefunction::ClebschGordan(2*lbar_array[shellindex],m+1,1,-1, j_array[shellindex],m)*Spher_Harm(lbar_array[shellindex], (m+1)/2, costheta);
 }
 
 

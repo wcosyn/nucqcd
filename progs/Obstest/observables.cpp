@@ -14,8 +14,8 @@ using namespace std;
 #include <Glauber/GlauberGrid.hpp>
 #include <Glauber/OneGlauberGrid.hpp>
 #include <Glauber/GlauberGridThick.hpp>
-#include <Tools/Kinematics/TKinematics2to2.hpp>
-#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/Kinematics/Kinematics2to2.hpp>
+#include <Tools/Kinematics/ElectronKinematics.hpp>
 #include <Knockout/EMQECross.hpp>
 #include <Tools/Core/Utilfunctions.hpp>
 #include <Glauber/NucleonEMOperator.hpp>
@@ -41,8 +41,8 @@ int main(int argc, char *argv[])
 //   string homedir="/home/wim/Code/share";
 // 
 //   MeanFieldNucleusThick Carbon(nucleus,homedir);
-//   TKinematics2to2 kin("","",Carbon.getMassA(),Carbon.getMassA_min_proton(),nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
-//   TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ein);
+//   Kinematics2to2 kin("","",Carbon.getMassA(),Carbon.getMassA_min_proton(),nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
+//   ElectronKinematics *elec = ElectronKinematics::CreateWithBeamEnergy(Ein);
 //   EMQECross obs(*elec,&Carbon,prec,integrator,homedir,screening,scr);
 //   double free=obs.getElCross(kin,2,PI)*nucqcd::hbarc*nucqcd::hbarc;
 //   vector<double> cross;
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
   
   string homedir=nucqcd::share_dir;
   MeanFieldNucleusThick Carbon(nucleus,homedir);
-  TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ein);
+  ElectronKinematics *elec = ElectronKinematics::CreateWithBeamEnergy(Ein);
   
   double qvec=sqrt(Ein*Ein+Eout*Eout-2.*Ein*Eout*cos(thetae));
   double Q2=qvec*qvec-omega*omega;
@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
     double pm=i*5.;
   
   
-    TKinematics2to2 kin("","",Carbon.getMassA(),Carbon.getMassA_min_proton()+Carbon.getExcitation()[shell]
+    Kinematics2to2 kin("","",Carbon.getMassA(),Carbon.getMassA_min_proton()+Carbon.getExcitation()[shell]
 		,nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
     if(kin.IsPhysical()&&kin.GetPYlab()<801.6&&kin.GetPYlab()>534.4){
         EMQECross obs(*elec,&Carbon,prec,integrator,homedir,screening,scr);

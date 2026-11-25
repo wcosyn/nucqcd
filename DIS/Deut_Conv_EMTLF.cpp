@@ -17,7 +17,7 @@ using namespace std;
 Deut_Conv_EMTLF::Deut_Conv_EMTLF(const string &wfname){
 
 
-    wfref.reset(TDeuteron::Wavefunction::CreateWavefunction(wfname));
+    wfref.reset(Deuteron::Wavefunction::CreateWavefunction(wfname));
     for(int i=0;i<=1000;i++){
         wf.AddUp(i,wfref->GetUp(i));
         wf.AddWp(i,wfref->GetWp(i));

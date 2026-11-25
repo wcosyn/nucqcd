@@ -4,9 +4,9 @@
 #include <test_support.hpp>
 
 #include <Glauber/MeanFieldNucleusThick.hpp>
-#include <Tools/Kinematics/TElectronKinematics.hpp>
-#include <Tools/Kinematics/TKinematics2to2.hpp>
-#include <Tools/Kinematics/TLeptonKinematics.hpp>
+#include <Tools/Kinematics/ElectronKinematics.hpp>
+#include <Tools/Kinematics/Kinematics2to2.hpp>
+#include <Tools/Kinematics/LeptonKinematics.hpp>
 #include <Knockout/WeakQECross.hpp>
 #include <Tools/Core/constants.hpp>
 
@@ -37,11 +37,11 @@ TEST_CASE("Elementary charged-current QE cross sections", "[weakqe]") {
 TEST_CASE("Nuclear plane-wave charged-current QE on carbon", "[weakqe]") {
   const std::string dir = nucqcd_test::share_dir();
   MeanFieldNucleusThick carbon(MeanFieldNucleus::C, dir);
-  std::unique_ptr<TLeptonKinematics> muon(TLeptonKinematics::CreateWithBeamEnergy(TLeptonKinematics::muon, 1500.));
+  std::unique_ptr<LeptonKinematics> muon(LeptonKinematics::CreateWithBeamEnergy(LeptonKinematics::muon, 1500.));
   WeakQECross cc(muon.get(), &carbon, 1.E-05, 2, dir, true, M_A, false, false);
   for (double pm : {50., 200.}) {
     // proton shells: antineutrino CC knocks out a neutron
-    TKinematics2to2 kin("", "", carbon.getMassA(), carbon.getMassA_min_proton(), nucqcd::mass_n, "qsquared:wlab:pklab", 0.5E06,
+    Kinematics2to2 kin("", "", carbon.getMassA(), carbon.getMassA_min_proton(), nucqcd::mass_n, "qsquared:wlab:pklab", 0.5E06,
                         350., pm);
     for (int shell = 0; shell < carbon.getPLevels(); shell++) {
       std::ostringstream key;
@@ -60,9 +60,9 @@ TEST_CASE("Nuclear plane-wave charged-current QE on carbon", "[weakqe]") {
 TEST_CASE("Nuclear plane-wave neutral-current QE on carbon", "[weakqe]") {
   const std::string dir = nucqcd_test::share_dir();
   MeanFieldNucleusThick carbon(MeanFieldNucleus::C, dir);
-  std::unique_ptr<TElectronKinematics> elec(TElectronKinematics::CreateWithBeamEnergy(1500.));
+  std::unique_ptr<ElectronKinematics> elec(ElectronKinematics::CreateWithBeamEnergy(1500.));
   WeakQECross nc(elec.get(), &carbon, 1.E-05, 2, dir, false, M_A, false, false);
-  TKinematics2to2 kin("", "", carbon.getMassA(), carbon.getMassA_min_proton(), nucqcd::mass_p, "qsquared:wlab:pklab", 0.5E06,
+  Kinematics2to2 kin("", "", carbon.getMassA(), carbon.getMassA_min_proton(), nucqcd::mass_p, "qsquared:wlab:pklab", 0.5E06,
                       350., 50.);
   for (int shell = 0; shell < carbon.getPLevels(); shell++) {
     std::ostringstream key;

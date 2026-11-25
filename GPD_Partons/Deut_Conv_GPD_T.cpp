@@ -15,7 +15,7 @@ Deut_Conv_GPD_T::Deut_Conv_GPD_T(const string &pdf_name, const string &wfname):
 chiralodd_grid(pdf_name){
 
 
-    wfref = TDeuteron::Wavefunction::CreateWavefunction(wfname);
+    wfref = Deuteron::Wavefunction::CreateWavefunction(wfname);
     for(int i=0;i<=1000;i++){
         wf.AddUp(i,wfref->GetUp(i));
         wf.AddWp(i,wfref->GetWp(i));

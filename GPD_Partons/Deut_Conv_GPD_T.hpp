@@ -7,10 +7,10 @@
 #include <iostream>
 #include <cstdarg>
 #include <cstdlib>
-#include <Tools/WaveFunctions/TDeuteron.hpp>
+#include <Tools/WaveFunctions/Deuteron.hpp>
 #include <complex>
 #include <Integrator/numint/numint.hpp>
-#include <Tools/WaveFunctions/TInterpolatingWavefunction.hpp>
+#include <Tools/WaveFunctions/InterpolatingWavefunction.hpp>
 #include <GPD_Partons/GPD_T_Nucl_grid.hpp>
 #include <GPD_Partons/Deut_GPD_T_set.hpp>
 
@@ -30,7 +30,7 @@ public:
  * @brief constructor
  * 
  * @param pdf_name pdf parametrization name used for the forward limit ("MSTW" or "LHAPDF:<set>", see GPD_T_Nucl_grid)
- * @param wfname deuteron wave function parametrization name, see TDeuteron for possibilities
+ * @param wfname deuteron wave function parametrization name, see Deuteron for possibilities
  */
 Deut_Conv_GPD_T(const std::string &pdf_name, const std::string &wfname);
 
@@ -92,7 +92,7 @@ static std::vector< std::complex<double> > lf_deut(const double Ek, const nucqcd
  */
 std::vector< std::complex<double> > gpd_conv(const double xi, const double x, const double t, const double scale, const int model);
 
-TInterpolatingWavefunction * getWf(){ return &wf;} ///< return deuteron wf object
+InterpolatingWavefunction * getWf(){ return &wf;} ///< return deuteron wf object
 
 /**
  * @brief Get a Deut_GPD_V_set object containing deuteron vector helicity amplitudes
@@ -201,8 +201,8 @@ std::complex<double >test(double x, double xi, double t, int pold_in, int pold_o
 
 
 
-TDeuteron::Wavefunction *wfref; /*!< contains instance of deuteron wave function*/
-TInterpolatingWavefunction wf;
+Deuteron::Wavefunction *wfref; /*!< contains instance of deuteron wave function*/
+InterpolatingWavefunction wf;
 GPD_T_Nucl_grid chiralodd_grid; ///< object that allows to interpolate or get chiral odd nucleon GPDs
 
 double t_grid; ///< [GeV^2] momentum transfer sq value the grid has

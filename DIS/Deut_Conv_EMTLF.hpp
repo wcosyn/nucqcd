@@ -8,10 +8,10 @@
 #include <iostream>
 #include <cstdarg>
 #include <cstdlib>
-#include <Tools/WaveFunctions/TDeuteron.hpp>
+#include <Tools/WaveFunctions/Deuteron.hpp>
 #include <complex>
 #include <Integrator/numint/numint.hpp>
-#include <Tools/WaveFunctions/TInterpolatingWavefunction.hpp>
+#include <Tools/WaveFunctions/InterpolatingWavefunction.hpp>
 
 namespace nucqcd {
 
@@ -19,11 +19,11 @@ namespace nucqcd {
 /**
  * @brief Class implements deuteron LF EMT densities, see draft paper with Adam
  *
- * The light-front deuteron wave function is built from TInterpolatingWavefunction::DeuteronPState of
- * the interpolated copy wf (same conventions as TDeuteron::Wavefunction::DeuteronPState, tested in
- * unit_deuteron_wf) with a Melosh rotation of the active nucleon (lf_deut), so it has the TDeuteron
+ * The light-front deuteron wave function is built from InterpolatingWavefunction::DeuteronPState of
+ * the interpolated copy wf (same conventions as Deuteron::Wavefunction::DeuteronPState, tested in
+ * unit_deuteron_wf) with a Melosh rotation of the active nucleon (lf_deut), so it has the Deuteron
  * conventions: D wave with a minus sign, \f$ (-i)^2 W(k) \f$, with W(k) > 0 at
- * low k (see TDeuteron::Wavefunction).
+ * low k (see Deuteron::Wavefunction).
  */
 class Deut_Conv_EMTLF{
 
@@ -32,7 +32,7 @@ public:
 /**
  * @brief constructor
  * 
- * @param wfname deuteron wave function parametrization name, see TDeuteron for possibilities
+ * @param wfname deuteron wave function parametrization name, see Deuteron for possibilities
  */
 Deut_Conv_EMTLF(const std::string &wfname);
 
@@ -71,7 +71,7 @@ std::vector< std::complex<double> > EMT_conv(const double t);
  */
 std::vector< double > EMT_conv_real(const double t);
 
-TInterpolatingWavefunction * getWf(){ return &wf;} ///< return deuteron wf object
+InterpolatingWavefunction * getWf(){ return &wf;} ///< return deuteron wf object
 
 
 /**
@@ -205,8 +205,8 @@ static std::vector< std::complex<double> > getGFF_nucl(const int sigma_in, const
                         const double alpha_1, const std::complex<double> p1R, const std::complex<double> p1L, const double t,
                         const double GFF_A, const double GFF_J, const double GFF_D);
 
-std::unique_ptr<TDeuteron::Wavefunction> wfref; /*!< contains instance of deuteron wave function*/
-TInterpolatingWavefunction wf; /*!< interpolation of wfref on a grid (0-1000 MeV in p, 0-20 fm in r), used in the integrands */
+std::unique_ptr<Deuteron::Wavefunction> wfref; /*!< contains instance of deuteron wave function*/
+InterpolatingWavefunction wf; /*!< interpolation of wfref on a grid (0-1000 MeV in p, 0-20 fm in r), used in the integrands */
 
 
 };

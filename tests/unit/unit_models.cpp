@@ -7,7 +7,7 @@
 
 #include <Tools/StructureFunctions/NucleonStructure.hpp>
 #include <Tools/WaveFunctions/OldDeuteron.hpp>
-#include <Tools/WaveFunctions/TDeuteron.hpp>
+#include <Tools/WaveFunctions/Deuteron.hpp>
 #include <Tools/WaveFunctions/WaveFunctionModels.hpp>
 
 #include <memory>
@@ -31,10 +31,10 @@ TEST_CASE("DeuteronModel: names round trip, case insensitive, unknown names list
                                                                            "grossiib, grossl4, grosswjc1, grosswjc2, test"));
 }
 
-TEST_CASE("TDeuteron factory: the name and the enumeration give the same wave function", "[models]") {
+TEST_CASE("Deuteron factory: the name and the enumeration give the same wave function", "[models]") {
   for (DeuteronModel m : deuteron_models()) {
-    std::unique_ptr<TDeuteron::Wavefunction> by_name(TDeuteron::Wavefunction::CreateWavefunction(deuteron_model_name(m)));
-    std::unique_ptr<TDeuteron::Wavefunction> by_model(TDeuteron::Wavefunction::CreateWavefunction(m));
+    std::unique_ptr<Deuteron::Wavefunction> by_name(Deuteron::Wavefunction::CreateWavefunction(deuteron_model_name(m)));
+    std::unique_ptr<Deuteron::Wavefunction> by_model(Deuteron::Wavefunction::CreateWavefunction(m));
     REQUIRE(by_name);
     REQUIRE(by_model);
     CHECK(std::string(by_name->GetName()) == by_model->GetName());

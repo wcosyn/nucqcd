@@ -12,9 +12,9 @@
 
 #include <string>
 #include <memory>
-#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/Kinematics/ElectronKinematics.hpp>
 #include <Tools/StructureFunctions/DeuteronStructure.hpp>
-#include <Tools/WaveFunctions/TDeuteron.hpp>
+#include <Tools/WaveFunctions/Deuteron.hpp>
 #include <Integrator/numint/numint.hpp>
 
 namespace nucqcd {
@@ -26,9 +26,9 @@ class InclusiveCross{
   
 public:
     /*! Constructor
-   * \param [in] elec Electron kinematics, see TElectronKinematics
+   * \param [in] elec Electron kinematics, see ElectronKinematics
    * \param proton photon interacting with proton [1] or neutron [0]
-   * \param wavename Deuteron wave function name, see TDeuteron
+   * \param wavename Deuteron wave function name, see Deuteron
    * \param strucname which structure function parametrization ["CB"=Christy-Bosted (SLAC above W^2 = 9 GeV^2, see NuclStructure), "SLAC", "Alekhin", or any other name of NuclStructure: "CTEQ", "MSTW", "LHAPDF:<set>", combinations such as "CB+LHAPDF:CT18LO@4"], see NuclStructure
    * \param [in] res [MeV] vector that contains resonance masses used in FSI
    * \param offshell which offshell parametrization do you want to use? <BR>
@@ -43,7 +43,7 @@ public:
    * \param betaoffin [GeV^-2] eikonal parameter, off-shell slope parameter of particle in final-state with spectator
    * \param lambdain [GeV^2] cutoff parameter for off-shell part
    */
-  InclusiveCross(bool proton, std::string strucname, std::string wavename, TElectronKinematics &elec,
+  InclusiveCross(bool proton, std::string strucname, std::string wavename, ElectronKinematics &elec,
 		 std::vector<double> & res, int offshell, 
 		 double sigmain=40.,double betain=8., double epsilonin=-0.5, double betaoffin=8., double lambdain=1.2);
   /*! Calculates the plane-wave inclusive cross on-shell section without any prefactors, just the deuteron structure functions time
@@ -195,7 +195,7 @@ public:
   
   
   void setOffshell(const int offshell){offshellset=offshell;} /*!< set offshell parametrization */
-  TDeuteron::Wavefunction* getDeutwf() const{return wf.get();} /*!< get instance to deuteron wave function */
+  Deuteron::Wavefunction* getDeutwf() const{return wf.get();} /*!< get instance to deuteron wave function */
   /*! set resonance value
    * \param it index of resonance
    * \param value [MeV] resonance mass 
@@ -225,8 +225,8 @@ private:
    */
   int offshellset;
 
-  std::unique_ptr<TDeuteron::Wavefunction> wf; /*!< pointer to deuteron wave funtion, see TDeuteron */
-  TElectronKinematics electron; /*!< electron kinematis, see TElectronKinematics */
+  std::unique_ptr<Deuteron::Wavefunction> wf; /*!< pointer to deuteron wave funtion, see Deuteron */
+  ElectronKinematics electron; /*!< electron kinematis, see ElectronKinematics */
   DeuteronStructure structure;  /*!< deuteron structure functions object, see DeuteronStructure */
 
   /*! method to find the pole in the fsi integration, longitudinal part,
@@ -234,10 +234,10 @@ private:
   * \param pt2 [MeV^2] final transverse spectator momentum sq
   * \param W_sq [MeV^2] mass of resonance entering
    * \param kin kinematics object containing the gamma+D->X+N kinematics <BR>
-   * in TKinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
+   * in Kinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
    * \return [MeV] on-shell pole p_s,z value
    */
-  double get_prz_res(double pt2, double W_sq, TKinematics2to2 & kin);
+  double get_prz_res(double pt2, double W_sq, Kinematics2to2 & kin);
   /*! method to find the pole in the fsi integration, longitudinal part,
    * with resonance mass as input.  Essentially solves Eq. (29) of the paper
   * \param pt2 [MeV^2] final transverse spectator momentum sq

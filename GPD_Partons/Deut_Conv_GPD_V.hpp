@@ -7,10 +7,10 @@
 #include <iostream>
 #include <cstdarg>
 #include <cstdlib>
-#include <Tools/WaveFunctions/TDeuteron.hpp>
+#include <Tools/WaveFunctions/Deuteron.hpp>
 #include <complex>
 #include <Integrator/numint/numint.hpp>
-#include <Tools/WaveFunctions/TInterpolatingWavefunction.hpp>
+#include <Tools/WaveFunctions/InterpolatingWavefunction.hpp>
 
 #include <GPD_Partons/GPD_V_Nucl_grid.hpp>
 
@@ -37,7 +37,7 @@ public:
  * 
  * @param pGPDService GPD Service from PARTONS
  * @param pGPDModel GPD Module from PARTONS
- * @param wfname deuteron wave function parametrization name, see TDeuteron for possibilities
+ * @param wfname deuteron wave function parametrization name, see Deuteron for possibilities
  * @param id PARTONS class id for the gpd model, used for grid filename
  */
 Deut_Conv_GPD_V(PARTONS::GPDService* pGPDService, PARTONS::GPDModule* pGPDModel, const std::string &wfname,unsigned int id);
@@ -159,7 +159,7 @@ std::vector< std::complex<double> > gpd_conv(const double xi, const double x, co
  */
 std::vector< std::complex<double> > FF_conv(const double xi, const double t);
 
-TInterpolatingWavefunction * getWf(){ return &wf;} ///< return deuteron wf object
+InterpolatingWavefunction * getWf(){ return &wf;} ///< return deuteron wf object
 
 /**
  * @brief Get a Deut_GPD_V_set object containing deuteron vector helicity amplitudes
@@ -395,8 +395,8 @@ static void int_k3_FF(numint::vector_z & res, double alpha_1, double kperp, doub
 
 
 
-TDeuteron::Wavefunction *wfref; /*!< contains instance of deuteron wave function*/
-TInterpolatingWavefunction wf;
+Deuteron::Wavefunction *wfref; /*!< contains instance of deuteron wave function*/
+InterpolatingWavefunction wf;
 PARTONS::GPDService* pGPDService; ///< GPD Service from PARTONS
 PARTONS::GPDModule* pGPDModel; ///< GPD Model from PARTONS
 
