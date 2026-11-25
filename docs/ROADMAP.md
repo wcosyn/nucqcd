@@ -25,10 +25,10 @@ same PR.
 | 3 | Rename the repository | ✅ done (PR #7, tagged-poldeut PRs #1 and #2) |
 | 4 | Bug fixes | ✅ done: listed bugs (PRs #8, #9, #12); found later: stale FSI+CT grid (#18), kinematics (#19, #20, #33), DoubleNModel/Pair (#21, then moved to the attic in #22), π⁻ Glauber parameters (#28), TDeuteron errors (#31), He3 spin sum (#47) and factor A in `He3Cross` (#48), `TMPI` not compiling with MPI-3 (fixed in the attic with step 6, "Retire MPI", #54), `RunLog` reading freed memory at `exit()` (#57), `cube_romb` overflow beyond 10 levels in 3D (#60). New bugs found later are added here |
 | 5 | Low-risk modernization | ✅ done: `-fopenmp`, Fortran interop (#11), constants (#13, #14), grid cache (#15–#17), ownership (#23), exceptions (#24), Doxygen (#10, #25–#30, #32, #34–#39: no warnings left) |
-| 6 | Structural refactors | 🔶 done: constants macros (#41), `NuclStructure` merge (#42), code layout items 1–4 (`Tools` split #52, prefixed includes and `.hpp` #53), `Model`/`Cross` renamed (#53); MPI retired (#54); namespace `nucqcd` (#65); integrator benchmark (#61, keep `cube_romb` and `cube_adaptive`), precision reporting (#62); CRLF to LF (#66); long files split (#70), integrator option 0 removed (#69); model selection (#72); to do: Glauber grid dedup and speed, long functions |
+| 6 | Structural refactors | 🔶 done: constants macros (#41), `NuclStructure` merge (#42), code layout items 1–4 (`Tools` split #52, prefixed includes and `.hpp` #53), `Model`/`Cross` renamed (#53); MPI retired (#54); namespace `nucqcd` (#65); integrator benchmark (#61, keep `cube_romb` and `cube_adaptive`), precision reporting (#62); CRLF to LF (#66); long files split (#70), integrator option 0 removed (#69); model selection (#72), long `TKinematics2to3` functions (#74); to do: Glauber grid dedup and speed, rename the `T*` classes |
 | 7 | Unbundle Cuba and cubature | 🔶 Cuba done (#67); cubature (a maintenance question only, see the benchmark) to do |
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
-| 9 | Decouple from ROOT where possible | ✅ done: phases 1–5 (#44, #45, #50, #55, #56, #58), phase 6: GPD generators (#59) and the fits on the standalone Minuit2 (#73). ROOT is only used by the test `unit_vectors` |
+| 9 | Decouple from ROOT where possible | ✅ done: phases 1–5 (#44, #45, #50, #55, #56, #58), phase 6: GPD generators (#59) and the fits on the standalone Minuit2 (#73); the two long `TKinematics2to3` functions split (#74). ROOT is only used by the test `unit_vectors` |
 | 10 | LHAPDF interface for the nucleon structure functions | ✅ done (#46), including MSTW through LHAPDF |
 | 11 | Run bookkeeping (provenance) for all programs | ✅ done: design and `RunLog` (#49), `Bookkeep` replaced in its 8 programs (#51), `RunLog` in all other non-attic programs (#64) |
 
@@ -36,7 +36,7 @@ same PR.
 
 *Updated 2026-11-25.*
 
-**Done recently** (PRs #44–#73): ROOT decoupling phases 1–3; step 10 (LHAPDF);
+**Done recently** (PRs #44–#74): ROOT decoupling phases 1–3; step 10 (LHAPDF);
 He3 fixes; step 11 part 1 (`RunLog`); step 6 code layout: `Tools` split into Core, Kinematics,
 WaveFunctions and StructureFunctions (#52), then includes as paths from the repository root, `.hpp`
 as the only extension, and `Model`/`Cross` renamed to `EMQEHadronCurrent`/`EMQECross` (#53); MPI
@@ -57,7 +57,7 @@ code (#65); CRLF to LF in the C++ files, with a `.gitattributes` (#66); Cuba unb
 4. **Glauber grid work:** deduplicate the hierarchy, and investigate the off-axis grid speed (every
    point hits the evaluation cap; `cube_romb` was 5× faster at 1e-3); value changes need the author's OK.
 5. ~~ROOT phase 6 (fits)~~ (done, #73): ROOT is now only used by the test `unit_vectors`.
-6. **Smaller items:** unbundle cubature (step 7, maintenance only; Cuba is done, #67), the long functions (the files are split, #70), the PDG constants update (changes values).
+6. **Smaller items:** unbundle cubature (step 7, maintenance only; Cuba is done, #67), the PDG constants update (changes values), the rename of the `T*` classes and files (see the item in step 6), and the fix of the format-string crash found with the long functions (#74).
 7. **Last:** the license decision (step 8), then the README (currently a stub).
 
 **Open choices for the author:** the license (step 8, see the item there); the PDG constants update (changes values); whether to unbundle cubature
@@ -757,6 +757,19 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   `<unistd.h>`. Fixed in the attic copy (`MPI_Type_create_struct`, same arguments); it now compiles
   and links with Open MPI 5.0 (not run). `RunLog` keeps its rank detection from the launcher's
   environment (also covers `srun` without MPI).
+- [ ] **Rename the files and classes that start with `T`** (added 2026-11-25, the author's request): the
+  prefix was a ROOT naming convention (`TKinematics`, `TKinematics2to3`, `TDeuteron`, `TSpinor`,
+  `TElectronKinematics`, `TLeptonKinematics`, `TLorentzQuaternion`, `TMFSpinor`, the `T*PWF` wave functions,
+  ...; they came from the strangecalc code, which was built on ROOT). ROOT is no longer used by the libraries
+  (step 9), so drop the prefix and use names that say what the classes are, e.g. `Kinematics2to3`,
+  `Deuteron`, `Spinor`, `ElectronKinematics`. To plan before doing it: a list of the classes and files
+  with the new names (for the author to agree), one rename per library (`git mv` for the files, so that
+  `git blame` follows, and `.git-blame-ignore-revs` for the commit that only renames), a scripted
+  replacement in the libraries, programs, tests and docs (include paths, class names, Doxygen `\file`
+  tags, the CMake lists, `docs/` and `manual/manual.tex`), all tests green and no value changing.
+  Probably best after the long-function work above, which touches `TKinematics2to3` heavily, and
+  together with the `GetName`/`GetTitle` members that `TNamed` left in `TKinematics`,
+  `TKinematics2to3` and `TDeuteron::Wavefunction` (a name and title nobody uses?).
 - [~] **Very long files and functions** (files split 2026-11-25, #70; functions not): the files were split
   without touching any code (the functions were moved verbatim; all tests pass, references unchanged).
   `Tools/Kinematics/TKinematics2to3.cpp` (6.5k lines) is now six files: `TKinematics2to3.cpp` (class
@@ -773,10 +786,39 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   new unit test in `unit_kinematics`. Two small behaviour changes: (1) **a typo in the table:** the
   documented example `kyphikcm_deg` was spelled `kyhpikcm_deg`, so `GetVar("kyphikcm_deg")` threw
   "unknown"; both spellings are accepted now (the old one as an alias); (2) the error message of
-  `GetPhysicalVarArray` named `GetVarArray` and now names itself. Still to do: the long functions
-  `TKinematics2to3::ReadFormatString` (1.2k lines) and `UpdateKinematics` (0.9k), which need more than
-  moving code, and the 1.0-1.2k-line `GlauberGridThick.cpp`, `GlauberDecayGridThick.cpp`,
-  `GlauberGrid.cpp`, `DistMomDistrGrid.cpp` (with the grid dedup above).
+  `GetPhysicalVarArray` named `GetVarArray` and now names itself. **The two long functions are done (2026-11-25, #74).**
+  - `TKinematics2to3::ReadFormatString` (1.2k lines, one 15-25-line branch per variable name) is about 270
+    lines: local helpers for the groups of variables (`energyVar`, `particleEnergy`, `labTheta`, `labPhi`,
+    `cmAngle`, `pairS`, `tg`, `td`) hold the checks, a chain of one line per name calls them. The checks
+    of each group were compared with the old branches (the 18 CM-angle ones by a script).
+  - `UpdateKinematics` (0.9k lines) is a dispatcher (about 100 lines with the setup and the final
+    assignment) and steps: `SolveEnergyScenario` (`SolvePhotonAndParticle1`, `RotateTo23Frame`,
+    `SolveParticle2InCM`, `SolveParticle2InLab`) and `SolveMandelstamScenario` (`SelectMandelstamVariables`,
+    `SolveMandelstamParticle1`, `RotateTo23Frame`, `SolveMandelstamParticles23`), with the intermediate
+    results in a private struct `UpdateWork`; the four copies of "cosine just outside [-1,1]: clamp or
+    unphysical" and of "sine from cosine" are `ClampCosine` and `SineFromCosine`; the 165 lines of
+    commented-out code of the (refused) scenario 2 are gone. Private member functions, declared in the header.
+  - **Checked against the old code** with a scratch program that builds a `TKinematics2to3` for 900k
+    format strings (random strings with random values, and strings made of the three scenarios' variables
+    with the values of 4000 physical events, all three axis conventions, isospin 1-6) and prints the
+    exception message, or the physical flag, the variable names and 34 variables: the output is identical,
+    including the messages and the 63 inputs that crash (below), except for 14 of the Mandelstam cases (angles
+    that are 0 or pi up to rounding: `acos` of 1 - 1e-16 is 1.5e-8 in one build and 0 in the other; the
+    floating-point contraction differs between the restructured functions) and one value that differs in
+    the last digit. New tests in `unit_kinematics`: events rebuilt from a CM-angle format string and from a
+    Mandelstam one, and the refusals (duplicates, conflicts, unknown names, no Q^2, the azimuth that is zero by
+    definition).
+  - **Found on the way, not fixed (own PR, author's decision):** (1) a format string that does not give
+    scenario 1 all of its variables (e.g. `qsquared` twice, or two energies and no angle) is accepted and
+    `UpdateKinematics` then dereferences a null `fE1Var`/`fTh1Var`/`fTh2Var`/`fPhi2Var`: a segmentation
+    fault (63 of 900k fuzzed strings, e.g. `qsquared:ey:ykcosthycm:wlab:ykphiycm:en` for kN); it should
+    throw "Format string is not sane!" in `ReadFormatString`, after the loop, when the variables of the
+    chosen scenario are missing. (2) Quirks kept as they were: `pn` with an axis convention other than kN
+    stores `fEn` (not `fPn`) with the name `P` (`pk` and `py` store their own); the checks in the CM-angle
+    branches compare `fKinSolution[0] == 2` (the number, never true) instead of `'2'`.
+  Still to do: the 1.0-1.2k-line `GlauberGridThick.cpp`, `GlauberDecayGridThick.cpp`, `GlauberGrid.cpp`,
+  `DistMomDistrGrid.cpp` (with the grid dedup above), and `SolvePhotonAndParticle1` (134 lines) could be
+  split further.
 
 ## 7. Unbundle Cuba (and cubature)
 

@@ -165,3 +165,44 @@ TEST_CASE("TKinematics2to3: variables by name (GetVar, GetVarArray, GetPhysicalV
   CHECK_THROWS_WITH(k.GetVarArray("nonsense"), ContainsSubstring("GetVarArray") && ContainsSubstring("unknown"));
   CHECK_THROWS_WITH(k.GetPhysicalVarArray("nonsense"), ContainsSubstring("GetPhysicalVarArray") && ContainsSubstring("unknown"));
 }
+
+TEST_CASE("TKinematics2to3: format strings of the three scenarios reproduce the same event", "[kinematics]") {
+  // ReadFormatString and UpdateKinematics were split into helpers and steps in 2026-11 (checked against the
+  // old code on 900k random format strings, bitwise but for 14 angles within 1e-8 of 0 or pi): an event is
+  // built from lab angles, then rebuilt from other sets of variables: an energy and angles in the CM of the
+  // (2+3) subsystem (scenario 1), and mandelstam variables (scenario 3)
+  TKinematics2to3WithLabAngles lab("", "", 1, TKinematics2to3::kN, "qsquared:wlab:pn:thn:thk:phik", 2.e5, 1800., 300., 1.0,
+                                   0.7, 1.0);
+  REQUIRE(lab.GetNumberOfSolutions() >= 1);
+  const TKinematics2to3 &ev = lab.GetSolution(0);
+  REQUIRE(ev.IsPhysical());
+  auto same_event = [&](const TKinematics2to3 &k) {
+    CHECK(k.IsPhysical());
+    for (const char *v : {"pk", "py", "pn", "thk", "thy", "thn", "wlab", "stot", "sky", "skn", "syn"})
+      CHECK_THAT(k.GetVar(v), WithinRel(ev.GetVar(v), 1e-6));
+  };
+  // scenario 1: wlab, pn and thn fix the first particle, the nucleon (the axis convention kN), the kaon's
+  // angles are in the KY CM
+  same_event(TKinematics2to3("", "", 1, TKinematics2to3::kN, "qsquared:wlab:pn:thn:kythkcm:kyphikcm", ev.GetVar("qsquared"),
+                             ev.GetVar("wlab"), ev.GetVar("pn"), ev.GetVar("thn"), ev.GetVar("kythkcm"), ev.GetVar("kyphikcm")));
+  // scenario 3: s_tot, t_gN, t_gK, t_dY, s_KY
+  same_event(TKinematics2to3("", "", 1, TKinematics2to3::kN, "qsquared:stot:tgn:tgk:tdy:sky", ev.GetVar("qsquared"),
+                             ev.GetVar("stot"), ev.GetVar("tgn"), ev.GetVar("tgk"), ev.GetVar("tdy"), ev.GetVar("sky")));
+}
+
+TEST_CASE("TKinematics2to3: format strings that make no sense are refused", "[kinematics]") {
+  auto make = [](TKinematics2to3::EAxisConvention ac, const char *format) {
+    return TKinematics2to3("", "", 1, ac, format, 2.e5, 1800., 300., 0.5, 0.5, 0.5);
+  };
+  // the same energy twice, a particle's energy and its momentum, an unknown name, no Q^2
+  CHECK_THROWS_WITH(make(TKinematics2to3::kN, "qsquared:wlab:klab:pn:thn:phik"), ContainsSubstring("Format string is not sane!"));
+  CHECK_THROWS_WITH(make(TKinematics2to3::kN, "qsquared:wlab:pn:en:thn:thk"), ContainsSubstring("Format string is not sane!"));
+  CHECK_THROWS_WITH(make(TKinematics2to3::kN, "qsquared:wlab:pn:thn:thk:nonsense"), ContainsSubstring("\"nonsense\" unknown"));
+  CHECK_THROWS_WITH(make(TKinematics2to3::kN, "wlab:pn:thn:thk:phik:ek"), ContainsSubstring("Q^2 needs to be one of 6"));
+  // the azimuth of the particle on the x axis is zero by definition (named in the message)
+  CHECK_THROWS_WITH(make(TKinematics2to3::kK, "phik:qsquared:wlab:thn:thk:ek"), ContainsSubstring("phik is zero by definition"));
+  CHECK_THROWS_WITH(make(TKinematics2to3::kY, "phiy:qsquared:wlab:thn:thk:ey"), ContainsSubstring("phiy is zero by definition"));
+  CHECK_THROWS_WITH(make(TKinematics2to3::kN, "phin:qsquared:wlab:thy:thk:en"), ContainsSubstring("phin is zero by definition"));
+  // the variables of the second particle given in the lab frame together with a CM angle
+  CHECK_THROWS_WITH(make(TKinematics2to3::kN, "qsquared:wlab:pn:thn:thk:kyphikcm"), ContainsSubstring("Format string is not sane!"));
+}
