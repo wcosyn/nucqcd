@@ -49,16 +49,29 @@ void TKinematics2to3::InitializeSubsystems()
 
 
 //_____________________________________________________________________
-// Intermediate results of UpdateKinematics, passed between the steps of the solution
+/*! \brief Intermediate results of UpdateKinematics, passed between the steps of the solution */
 struct TKinematics2to3::UpdateWork {
-  nucqcd::LorentzVector vector1, vector2, vector3; ///< the final state particles in the fAC axis convention (1: the one that fixes the x axis)
+  nucqcd::LorentzVector vector1; ///< the final state particle that fixes the x axis (fAC axis convention)
+  nucqcd::LorentzVector vector2; ///< the second final state particle
+  nucqcd::LorentzVector vector3; ///< the third final state particle
   nucqcd::LorentzVector vector23;                  ///< (2+3) subsystem
-  double m1 = 0., m2 = 0., m3 = 0.;                ///< their masses
+  double m1 = 0.; ///< mass of particle 1
+  double m2 = 0.; ///< mass of particle 2
+  double m3 = 0.; ///< mass of particle 3
   TKinematics2to2 *subSystem = nullptr;            ///< the CM subsystem of particles 2 and 3
-  nucqcd::LorentzRotation rotateTo23, boostCM23;   ///< to the frame with z' along p23 and then to the (2+3) CM
-  double p2cm = 0., e2cm = 0.;                     ///< momentum and energy of particle 2 in the (2+3) CM
-  double *s12 = nullptr, *s23 = nullptr, *tg1 = nullptr, *tg2 = nullptr, *td2 = nullptr, *td3 = nullptr; ///< mandelstam variables (scenario 3)
-  double eg = 0., klab = 0., e1 = 0.;              ///< photon energy and momentum, energy of particle 1 (scenario 3)
+  nucqcd::LorentzRotation rotateTo23;              ///< rotation to the frame with z' along p23
+  nucqcd::LorentzRotation boostCM23;               ///< boost from there to the (2+3) CM
+  double p2cm = 0.; ///< momentum of particle 2 in the (2+3) CM
+  double e2cm = 0.; ///< energy of particle 2 in the (2+3) CM
+  double *s12 = nullptr; ///< scenario 3: mandelstam variable s_12
+  double *s23 = nullptr; ///< scenario 3: mandelstam variable s_23
+  double *tg1 = nullptr; ///< scenario 3: mandelstam variable t_g1
+  double *tg2 = nullptr; ///< scenario 3: mandelstam variable t_g2
+  double *td2 = nullptr; ///< scenario 3: mandelstam variable t_d2
+  double *td3 = nullptr; ///< scenario 3: mandelstam variable t_d3
+  double eg = 0.; ///< scenario 3: photon energy
+  double klab = 0.; ///< scenario 3: photon momentum
+  double e1 = 0.; ///< scenario 3: energy of particle 1
 };
 
 //_____________________________________________________________________
