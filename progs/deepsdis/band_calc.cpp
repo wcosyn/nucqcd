@@ -1,6 +1,7 @@
 //program that calculates cross sections to do a FSI estimation for the BAND data
 
 #include <iostream>
+#include <Tools/Core/RunLog.hpp>
 #include <cstdlib>
 #include <cmath>
 #include <string>
@@ -19,6 +20,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"xb", "Q2 [GeV^2]", "alpha_s", "pT [GeV]"});
 
     double xb = atof(argv[1]);
     double Q2 = atof(argv[2])*1.E06;  //input GeV2 -> in code MeV2!!

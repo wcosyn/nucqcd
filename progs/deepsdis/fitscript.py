@@ -2,6 +2,11 @@ import numpy as np
 import sys
 import math, copy, cmath
 import shlex, subprocess
+
+def skipcomments(text):
+  # The programs start (RunLog) and end their stdout with '# ' comment lines (command line, host, build,
+  # wall time); drop them so that only the numbers are parsed.
+  return "\n".join(l for l in text.splitlines() if not l.lstrip().startswith('#'))
 import pylab as p
 import matplotlib.ticker as ticker
 import matplotlib.font_manager
@@ -243,7 +248,7 @@ for i in np.arange(0,numpoints):
   #print commandline
   args=shlex.split(commandline)
   prun=subprocess.Popen(args, stdout=subprocess.PIPE)
-  outarray=shlex.split(prun.communicate()[0])
+  outarray=shlex.split(skipcomments(prun.communicate()[0]))
   if i==0: 
     datacomparray=[outarray]
   else:
@@ -253,7 +258,7 @@ for i in np.arange(0,numpoints):
     print commandline
     args=shlex.split(commandline)
     prun=subprocess.Popen(args, stdout=subprocess.PIPE)
-    outarray=shlex.split(prun.communicate()[0])
+    outarray=shlex.split(skipcomments(prun.communicate()[0]))
     datacomparray=np.append(datacomparray,[outarray],0)
     
 
@@ -316,7 +321,7 @@ for j in np.arange(0,40):
   #print commandline
   args=shlex.split(commandline)
   prun=subprocess.Popen(args, stdout=subprocess.PIPE)
-  outarray=shlex.split(prun.communicate()[0])
+  outarray=shlex.split(skipcomments(prun.communicate()[0]))
   f.write(' '.join(n for n in outarray))
   f.write('\n')
   
@@ -337,7 +342,7 @@ for j in np.arange(0,60):
   commandline='/home/wim/Code/trunk/bin/bonusextrapolate2 1 ' +str(Q2*1.E06)+' '+str(W*1.E03)+' '+str(ps*1.E03)+' '+str(costhetaindex)+' 3 1 '+str(xprime[0])
   args=shlex.split(commandline)
   prun=subprocess.Popen(args, stdout=subprocess.PIPE)
-  outarray=shlex.split(prun.communicate()[0])
+  outarray=shlex.split(skipcomments(prun.communicate()[0]))
   f.write(' '.join(n for n in outarray))
   f.write('\n')
 f.close()
@@ -375,7 +380,7 @@ print commandlinepre
 #central data value
 print "Fit 1 starting, calling Minuit..."  
 prun=subprocess.Popen(shlex.split(commandlinepre), stdout=subprocess.PIPE)
-fitoutput=shlex.split(prun.communicate()[0])
+fitoutput=shlex.split(skipcomments(prun.communicate()[0]))
 aa=float(fitoutput[-3])
 bb=float(fitoutput[-2])
 cc=float(fitoutput[-1])

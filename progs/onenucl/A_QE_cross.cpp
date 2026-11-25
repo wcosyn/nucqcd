@@ -1,5 +1,6 @@
 //program computes A(e,e'p) cross section.  Used for several calculations (Monaghan's paper for instance)
 
+#include <Tools/Core/RunLog.hpp>
 #include <iostream>
 #include <cstdlib>
 
@@ -20,6 +21,7 @@ using namespace std;
 //run ./onenucl [Q2 [MeV^2]] [omega] [missing momentum]
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"Q2", "omega", "pm"});
   double Q2=atof(argv[1]);
   double omega=atof(argv[2]);
   double pm=atof(argv[3]);

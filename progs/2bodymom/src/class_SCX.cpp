@@ -1,4 +1,5 @@
 #include "event.hpp"
+#include <Tools/Core/RunLog.hpp>
 #include "parser.hpp"
 #include "2bodymom.hpp"
 #include <Integrator/numint/numint.hpp>
@@ -54,6 +55,7 @@ struct F_SCX{
 };
 
 int main(int argc, char** argv){
+	nucqcd::RunLog runlog(argc, argv, {"nucleus", "input event file", "output file", "start event", "stop event"});
 	std::vector<struct Event> events;
 	/** input is of the format
 	 *  [./exec] [nucleus] [input file] [output file] [fsi]

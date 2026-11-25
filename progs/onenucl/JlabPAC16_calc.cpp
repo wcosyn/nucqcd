@@ -1,5 +1,6 @@
 //prog giving transparency estimates for a jlab proposal (CAFE experiment)
 
+#include <Tools/Core/RunLog.hpp>
 #include <iostream>
 #include <cstdlib>
 
@@ -18,6 +19,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"Ebeam", "Q2", "omega", "pm", "cos(phi)", "sharedir"});
 
   double Ebeam=atof(argv[1]);
   double Q2=atof(argv[2]);

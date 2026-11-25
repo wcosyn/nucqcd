@@ -6,6 +6,7 @@
 
 
 #include <iostream>
+#include <Tools/Core/RunLog.hpp>
 #include <cstdlib>
 #include <cmath>
 
@@ -28,6 +29,7 @@ void get_data(double &data, double& error, int beamindex, int Qindex, int Windex
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"beam index", "Q2 index", "W index", "p index", "cos index", "offshell set", "q2dep", "xref"});
   int beamindex = atoi(argv[1]);
   double Ebeam = data::Ebeam[beamindex]; //[0,1]
   int Qindex = atoi(argv[2]); //[0,2] for 4 GeV, [1,2] for 5 GeV

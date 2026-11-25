@@ -26,6 +26,7 @@
 using namespace std;
 
 #include <Tools/Core/constants.hpp>
+#include <Tools/Core/RunLog.hpp>
 #include "fomin_data.hpp"
 #include "slac_data.hpp"
 
@@ -82,6 +83,7 @@ void fill_F2evo_grid(double **F2_grid, double x_evo[], double params[], bool SLA
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"error type (stat or sys)", "SLAC data (noSLAC or wSLAC)", "higher twist (noHT or wHT)", "x cut (noxcut or xcut)"});
   
   bool sys=0;
   SLAC=0;

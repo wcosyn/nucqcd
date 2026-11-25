@@ -1,6 +1,7 @@
 //small program that checked kinematics of the hermes b1 experiment and what influence the angle between beam (=polarization axis) and virtual photon had
 
 #include <iostream>
+#include <Tools/Core/RunLog.hpp>
 #include <cstdlib>
 #include <cmath>
 #include <string>
@@ -17,6 +18,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"Q2 [GeV^2]", "x", "Azz [%]", "b1 [%]", "beam energy [MeV]"});
   double Q2 = atof(argv[1])*1.E06; // parse from argv or something
   double x=atof(argv[2]);
   double Ein=atof(argv[5]); //27.6E03 for hermes 11E03 for JLab12

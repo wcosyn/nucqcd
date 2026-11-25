@@ -1,3 +1,4 @@
+#include <Tools/Core/RunLog.hpp>
 #include <iostream>
 #include <cstdlib>
 
@@ -61,6 +62,7 @@ void klaas_z(numint::vector_d & res, double nu, double z, RhoTCross & cross, dou
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"torz", "nucleus", "Q2", "nu_min", "nu_max", "p_dil", "nocuts", "usersigma", "integrator", "maxEval", "prec", "ptype"});
 
   int torz = atoi(argv[1]);
   int nucleus = atoi(argv[2]);

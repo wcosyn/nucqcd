@@ -3,6 +3,7 @@
 
 
 #include <cstdlib>
+#include <Tools/Core/RunLog.hpp>
 #include <cmath>
 #include <complex>
 #include <cstdarg>
@@ -28,6 +29,7 @@ using std::endl;
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {});
   
 //   for(int i=0;i<3;i++){
 //     double Q2=(data::Q2[i]+data::Q2[i+1])/2.;

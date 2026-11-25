@@ -1,4 +1,5 @@
 #include <string>
+#include <Tools/Core/RunLog.hpp>
 #include "event_random.hpp"
 #include <Tools/Core/constants.hpp>
 #include <algorithm>
@@ -376,7 +377,8 @@ void GenerateEvents(double EneL, double EneH, int nevents, int ndec, complex<dou
 /*
  * Main function.
  */
-int main(int argc, char** argv) {
+int main(int argc, char *argv[]) {
+    nucqcd::RunLog runlog(argc, argv, {"electron beam momentum [GeV]", "proton beam momentum [GeV]", "nevents", "ndec"});
 
 
     //double xi=atof(argv[1]);

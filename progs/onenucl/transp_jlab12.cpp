@@ -1,6 +1,7 @@
 //program used to do some transparency calculations for Or et al. for a proposal.
 //last used to compute jlab 12Gev A(e,e'p) and n transparencies, no phiaveraging in cross sectionnnnn!!!
 
+#include <Tools/Core/RunLog.hpp>
 #include <iostream>
 #include <cstdlib>
 
@@ -24,6 +25,7 @@ void adap_intPm(numint::vector_d &, double costhetacm,EMQECross* pObs, MeanField
 //run ./transp_jlab12 [Q2,GeV^2] [Ein, MeV] [precision in integration] [userset coherence length factor] [userset initial sigma CT value]
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"nucleus", "Ein [GeV]", "Q2 [GeV^2]", "prec", "lc_mod", "nkt_mod"});
   
   string homedir=nucqcd::share_dir;
   //kinematics input

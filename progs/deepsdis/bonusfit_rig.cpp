@@ -6,6 +6,7 @@
 
 
 #include <TVirtualFitter.h>
+#include <Tools/Core/RunLog.hpp>
 #include <TFitter.h>
 #include <TMatrixT.h>
 #include <TMinuit.h>
@@ -102,6 +103,7 @@ void Fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag)
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"beam index", "ps index", "offshell set", "wf", "strucname"});
   
 //   Qindex = atoi(argv[2]); // parse from argv or something
 //   Windex = atoi(argv[3]); // parse from argv or something

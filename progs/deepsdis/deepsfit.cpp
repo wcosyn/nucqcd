@@ -1,6 +1,7 @@
 //program used to fit the rescattering parameters in the FSI to the deeps data
 
 #include <TVirtualFitter.h>
+#include <Tools/Core/RunLog.hpp>
 #include <TFitter.h>
 #include <TMatrixT.h>
 #include <TMinuit.h>
@@ -83,6 +84,7 @@ cout << f/(dof-npar) << " " << dof << " " << npar << " " << f << endl;
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"fixparam", "Q2 index", "W index", "start set", "stop set", "offshell set", "looplimit", "output dir"});
   Qindex = atoi(argv[2]); // parse from argv or something
   Windex = atoi(argv[3]); // parse from argv or something
   int fixparam = atoi(argv[1]); // parse from argv or something

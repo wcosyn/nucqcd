@@ -1,4 +1,5 @@
 #include <ElementaryUtils/logger/CustomException.h>
+#include <Tools/Core/RunLog.hpp>
 #include "event_random.hpp"
 #include <algorithm>
 #include <cmath>
@@ -429,7 +430,8 @@ void GenerateEvents(double EneL, double EneH, int nevents, int ndec, DiDVCS & gi
 /*
  * Main function.
  */
-int main(int argc, char** argv) {
+int main(int argc, char *argv[]) {
+    nucqcd::RunLog runlog(argc, argv, {"GPD model", "electron beam momentum [GeV]", "proton beam momentum [GeV]", "nevents", "ndec"});
 
 
     //double xi=atof(argv[1]);

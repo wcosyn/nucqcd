@@ -1,6 +1,7 @@
 // fixed Q2in, range of Q2out
 
 #include <ElementaryUtils/logger/CustomException.h>
+#include <Tools/Core/RunLog.hpp>
 #include <ElementaryUtils/logger/LoggerManager.h>
 #include <partons/Partons.h>
 #include <partons/services/automation/AutomationService.h>
@@ -68,7 +69,8 @@ using namespace std;
 /*
  * Main function.
  */
-int main(int argc, char** argv) {
+int main(int argc, char *argv[]) {
+    nucqcd::RunLog runlog(argc, argv, {"GPD model", "Q2in [GeV^2]", "t_N [GeV^2]", "t_rho [GeV^2]", "electron beam momentum [GeV]", "proton beam momentum [GeV]", "no_real"});
 
 
     //double xi=atof(argv[1]);

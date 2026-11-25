@@ -8,6 +8,7 @@ using namespace std;
 #include <Glauber/MeanFieldNucleusThick.hpp>
 #include <Tools/Core/Utilfunctions.hpp>
 #include <Tools/Core/constants.hpp>
+#include <Tools/Core/RunLog.hpp>
 #include <vector>
 #include <Integrator/numint/numint.hpp>
 #include <gsl/gsl_sf_bessel.h>
@@ -17,6 +18,7 @@ void adap_intr(numint::vector_z &, double r, MeanFieldNucleusThick *pNucleus, in
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"nucleus", "homedir"});
   
   string homedir=argv[2];
   int nucleus=atoi(argv[1]);

@@ -1,5 +1,6 @@
 //single node program to compute deuteron rho cross sections, output never used for transparency calculations
 
+#include <Tools/Core/RunLog.hpp>
 #include <iostream>
 #include <cstdlib>
 
@@ -26,6 +27,7 @@ void klaas_z(numint::vector_d & res, double nu, double z, RhoDeuteron & deuteron
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"torz", "Q2", "nu_min", "nu_max", "nocuts", "integrator", "maxEval", "fsi"});
 
   int torz = atoi(argv[1]);
   double Q2 = atof(argv[2]);

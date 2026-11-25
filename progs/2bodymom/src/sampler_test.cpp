@@ -1,4 +1,5 @@
 #include "sampler.hpp"
+#include <Tools/Core/RunLog.hpp>
 #include "event.hpp"
 #include <vector>
 #include <Glauber/MeanFieldNucleusThick.hpp>
@@ -10,6 +11,7 @@
 #endif
 
 int main(int argc, char* argv[]){
+	nucqcd::RunLog runlog(argc, argv, {"id (seed)", "number of events"});
 	/** cmd line argument parsing **/
 	if (argc != 3){
 		printf("expected ./executable [id (used for seed)] [number of events]\n");

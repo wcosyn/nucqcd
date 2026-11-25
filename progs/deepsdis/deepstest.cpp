@@ -1,6 +1,7 @@
 //program that calculates reduced structure funtions for spectator tagging as they were presented in the deeps data
 
 #include <iostream>
+#include <Tools/Core/RunLog.hpp>
 #include <cstdlib>
 #include <cmath>
 #include <string>
@@ -19,6 +20,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"Q2 index", "W index", "p index", "offshell set", "looplimit", "sigma [mb]", "beta [GeV^-2]"});
 
 
 

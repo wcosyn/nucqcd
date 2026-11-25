@@ -8,11 +8,13 @@
 using namespace std;
 
 #include <Tools/Core/constants.hpp>
+#include <Tools/Core/RunLog.hpp>
 #include <DIS/Poldeut.hpp>
 
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {});
 
   
   

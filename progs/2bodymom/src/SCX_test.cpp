@@ -1,4 +1,5 @@
 #include "2bodymom.hpp"
+#include <Tools/Core/RunLog.hpp>
 #include "GlauberGridThick_SCX.hpp"
 #include "GlauberGridThick_SEL.hpp"
 #include <Glauber/MeanFieldNucleusThick.hpp>
@@ -169,7 +170,8 @@ void testIntegrand(){
 	std::cout << result << "    " << error << std::endl;
 }
 
-int main(){
+int main(int argc, char *argv[]){
+	nucqcd::RunLog runlog(argc, argv, {});
 	//scatterFrontScaling();
 	//testgrid_el();
 	//testgrid();

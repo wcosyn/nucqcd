@@ -28,6 +28,7 @@
 using namespace std;
 
 #include <Tools/Core/constants.hpp>
+#include <Tools/Core/RunLog.hpp>
 #include "fomin_data.hpp"
 #include "slac_data.hpp"
 
@@ -87,6 +88,7 @@ void bootstrap_evo(double *par, string fileprefix, double reduced_chi2);
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"file name prefix"});
   
   bool sys=0;
   SLAC=0;

@@ -1,6 +1,7 @@
 //program used to calculate some lead transparencies
 
 
+#include <Tools/Core/RunLog.hpp>
 #include <Glauber/MeanFieldNucleusThick.hpp>
 #include <Tools/Kinematics/TKinematics2to2.hpp>
 #include <Tools/Kinematics/TElectronKinematics.hpp>
@@ -92,7 +93,8 @@ void Q2pf_run(MeanFieldNucleusThick& nuc,int pi,int qi){
 
 // Q^2 [0,1,2] : [1.2,.2.45,3.7]
 // pf  [0,1,2] : [1400,1870,2340]
-int main(){
+int main(int argc, char *argv[]){
+  nucqcd::RunLog runlog(argc, argv);
     MeanFieldNucleusThick nuc(MeanFieldNucleus::Pb,getShareDir());
     //run(nuc,1.8*1e6,2000.); // Q^2, pf, mean settings
     Q2pf_run(nuc,2,2);

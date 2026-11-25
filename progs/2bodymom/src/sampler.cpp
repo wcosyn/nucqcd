@@ -1,4 +1,5 @@
 #include "sampler.hpp"
+#include <Tools/Core/RunLog.hpp>
 #include "event.hpp"
 #include <vector>
 #include <Glauber/MeanFieldNucleusThick.hpp>
@@ -15,6 +16,7 @@ void hallb_kinematics(int, char**);
 void prl99_072501_kinematics(int, char**);
 
 int main(int argc, char* argv[]){
+	nucqcd::RunLog runlog(argc, argv, {"seed", "number of events"});
 	//halla_kinematics(argc,argv);
 	//hallb_kinematics(argc,argv);
 	prl99_072501_kinematics(argc,argv);
