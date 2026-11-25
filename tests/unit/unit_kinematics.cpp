@@ -12,6 +12,8 @@
 #include <stdexcept>
 using namespace nucqcd;
 
+#include <catch2/matchers/catch_matchers_string.hpp>
+using Catch::Matchers::ContainsSubstring;
 using Catch::Matchers::WithinAbs;
 using Catch::Matchers::WithinRel;
 
@@ -136,4 +138,30 @@ TEST_CASE("Format strings and variable names are case insensitive, empty tokens 
   CHECK(sol.GetVar("thk") == sol.GetThk());
   CHECK(sol.GetVarName(3) == "pn");
   CHECK_THROWS_AS(sol.GetVar("nonsense"), std::invalid_argument);
+}
+
+TEST_CASE("TKinematics2to3: variables by name (GetVar, GetVarArray, GetPhysicalVarArray)", "[kinematics]") {
+  // the name -> getter table (TKinematics2to3_VarNames.cpp) replaced four copies of an if-chain in 2026-11;
+  // it was checked against the old code on all 152 names, including GetVarArray and GetPhysicalVarArray
+  const double mA = 11177.93, mA2 = mA - nucqcd::mass_p - nucqcd::mass_n + 30.;
+  const double Q2 = 1631389.67942, omega = 580., pn = 1000., thn = 10. * nucqcd::deg_to_rad, thk = 40. * nucqcd::deg_to_rad;
+  TKinematics2to3WithLabAngles lab("", "", 7, TKinematics2to3::kN, "qsquared:wlab:pn:thn:thk:phik", Q2, omega, pn, thn,
+                                   thk, PI, mA, nucqcd::mass_p, nucqcd::mass_n, mA2);
+  REQUIRE(lab.GetNumberOfSolutions() >= 1);
+  TKinematics2to3 k(lab.GetSolution(0));
+  CHECK(k.GetVar("pk") == k.GetPk());
+  CHECK(k.GetVar("PK") == k.GetPk());                 // case insensitive
+  CHECK(k.GetVar("thk_deg") == k.GetThk_deg());
+  CHECK(k.GetVar("ynphincm") == k.GetVar("nyphincm"));  // alias
+  // a variable that is not in the format string: kyphikcm_deg, the example of the documentation, was
+  // misspelled "kyhpikcm_deg" in the table (so it was unknown) until 2026-11; the old name is an alias
+  CHECK(k.GetVar("kyphikcm_deg") == k.GetKYsystem_phikcm_deg());
+  CHECK(k.GetVar("kyhpikcm_deg") == k.GetVar("kyphikcm_deg"));
+  std::unique_ptr<double[]> all(k.GetVarArray("pn"));
+  CHECK(all[0] == k.GetPn());
+  std::unique_ptr<double[]> physical(k.GetPhysicalVarArray("pn"));
+  CHECK(physical[0] == k.GetPn());
+  CHECK_THROWS_WITH(k.GetVar("nonsense"), ContainsSubstring("GetVar(const std::string&)") && ContainsSubstring("\"nonsense\" unknown"));
+  CHECK_THROWS_WITH(k.GetVarArray("nonsense"), ContainsSubstring("GetVarArray") && ContainsSubstring("unknown"));
+  CHECK_THROWS_WITH(k.GetPhysicalVarArray("nonsense"), ContainsSubstring("GetPhysicalVarArray") && ContainsSubstring("unknown"));
 }
