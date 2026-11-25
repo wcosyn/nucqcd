@@ -15,8 +15,9 @@
 #   nucqcd_add_programs(LINK <lib>... PROGRAMS <name>... [DESTINATION <dir>])
 #       Shortcut for several single-source programs with the same libraries.
 #
-#   A program (or test, tests/CMakeLists.txt) that links root_libs is skipped when ROOT was not
-#   found; the skipped ones are listed at the end of the configuration.
+#   A program (or test, tests/CMakeLists.txt) that links root_libs (minuit2_libs) is skipped when ROOT
+#   (Minuit2, see cmake/Minuit2.cmake) was not found; the skipped ones are listed at the end of the
+#   configuration.
 
 include_guard(GLOBAL)
 
@@ -56,6 +57,10 @@ function(nucqcd_add_program name)
   endif()
   if("root_libs" IN_LIST ARG_LINK AND NOT TARGET root_libs)
     set_property(GLOBAL APPEND PROPERTY NUCQCD_SKIPPED_NO_ROOT ${name})
+    return()
+  endif()
+  if("minuit2_libs" IN_LIST ARG_LINK AND NOT TARGET minuit2_libs)
+    set_property(GLOBAL APPEND PROPERTY NUCQCD_SKIPPED_NO_MINUIT2 ${name})
     return()
   endif()
   add_executable(${name} ${ARG_SOURCES})

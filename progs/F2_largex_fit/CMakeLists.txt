@@ -1,3 +1,3 @@
-# fits with ROOT's TMinuit: only built with ROOT
-nucqcd_add_programs(LINK DIS Evolution MePhys root_libs PROGRAMS F2_fit F2_bootstrap)
-nucqcd_add_program(EMC_fit LINK MePhys root_libs)
+# fits with Minuit2 (cmake/Minuit2.cmake)
+nucqcd_add_programs(LINK DIS Evolution MePhys minuit2_libs PROGRAMS F2_fit F2_bootstrap)
+nucqcd_add_program(EMC_fit LINK MePhys minuit2_libs)
