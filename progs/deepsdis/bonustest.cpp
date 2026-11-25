@@ -4,6 +4,7 @@
 //integration was for bin averaging, but not used any more [no significant differences I'm assuming...]
 
 #include <iostream>
+#include <Tools/Core/RunLog.hpp>
 #include <cstdlib>
 #include <cmath>
 
@@ -44,6 +45,7 @@ double sigmaparam(double W, double Q2, bool Q2dep);
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"beam index", "Q2 index", "W index", "p index", "offshell set", "q2dep"});
   double Ebeam = data::Ebeam[atoi(argv[1])]; //[0,1]
   int beamindex=atoi(argv[1]);
   int Qindex = atoi(argv[2]); //[0,2] for 4 GeV, [1,2] for 5 GeV

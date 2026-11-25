@@ -1,4 +1,5 @@
 #include <ElementaryUtils/logger/CustomException.h>
+#include <Tools/Core/RunLog.hpp>
 #include <ElementaryUtils/logger/LoggerManager.h>
 #include <partons/Partons.h>
 #include <partons/services/automation/AutomationService.h>
@@ -56,7 +57,8 @@ using namespace std;
 /*
  * Main function.
  */
-int main(int argc, char** argv) {
+int main(int argc, char *argv[]) {
+    nucqcd::RunLog runlog(argc, argv, {"GPD model", "meson type", "Q2max [GeV^2]"});
 
 
     //double xi=atof(argv[1]);

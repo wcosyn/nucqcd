@@ -8,6 +8,7 @@
 using namespace std;
 
 #include <Tools/Core/constants.hpp>
+#include <Tools/Core/RunLog.hpp>
 #include <Tools/Kinematics/TKinematics2to2.hpp>
 #include <Tools/Kinematics/TElectronKinematics.hpp>
 #include <Tools/StructureFunctions/NuclStructure.hpp>
@@ -17,6 +18,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"Ein [GeV]", "Q2 [GeV^2]", "deuteron wf", "structure function", "polarized beam"});
     double Ein=atof(argv[1])*1.E03;  
     double Q2=atof(argv[2])*1.E06;
     string strucname = argv[4];

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <Tools/Core/RunLog.hpp>
 #include <cstdlib>
 #include <vector>
 
@@ -12,7 +13,8 @@ using namespace std;
 #include <GPD_Partons/Deut_Conv_GPD_T.hpp>
 #include <GPD_Partons/TransGPD_set.hpp>
 
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[]) {
+    nucqcd::RunLog runlog(argc, argv, {"chiral-odd GPD model", "deuteron wf", "-t [GeV^2]", "xi", "ERBL", "scale"});
     std::string wf=argv[2];
     Deut_Conv_GPD_T test=Deut_Conv_GPD_T("MSTW",wf);
     int model=atoi(argv[1]); //chiral odd GPD model nr

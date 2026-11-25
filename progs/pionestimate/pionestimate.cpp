@@ -9,6 +9,7 @@ using namespace std;
 #include <Glauber/FsiCorrelator.hpp>
 #include <Glauber/FastParticle.hpp>
 #include <Tools/Core/constants.hpp>
+#include <Tools/Core/RunLog.hpp>
 #include <Glauber/GlauberGrid.hpp>
 #include <Glauber/OneGlauberGrid.hpp>
 #include <Glauber/GlauberGridThick.hpp>
@@ -35,6 +36,7 @@ void intpm_pw(numint::vector_d & res, double pm, double costheta, double phi, Di
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"nucleus", "pion configuration (ppion)", "homedir"});
   int nucleus=atoi(argv[1]);
   double prec=(nucleus==1? 1.E-05: 1.E-06);//atof(argv[7]);
   int integrator=2;//atoi(argv[8]);

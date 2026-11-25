@@ -30,7 +30,7 @@ same PR.
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
 | 9 | Decouple from ROOT where possible | 🔶 phases 1–5 done (#44, #45, #50, #55, #56, #58): ROOT is optional, the libraries neither include nor link it; 6: GPD generators ROOT-free (#59), fits (Minuit2) to do |
 | 10 | LHAPDF interface for the nucleon structure functions | ✅ done (#46), including MSTW through LHAPDF |
-| 11 | Run bookkeeping (provenance) for all programs | 🔶 part 1 (design, `RunLog`) done (#49); `Bookkeep` replaced in its 8 programs (#51); `RunLog` in the other programs to do |
+| 11 | Run bookkeeping (provenance) for all programs | 🔶 part 1 (design, `RunLog`) done (#49); `Bookkeep` replaced in its 8 programs (#51); `RunLog` in all other non-attic programs (#64) |
 
 ## Where we are / next up
 
@@ -49,8 +49,7 @@ after which the author decided to keep `cube_romb` and `cube_adaptive`.
 **Options for the next step** (no PR is open; recommended order):
 1. ~~Report the integration precision~~ (done, #62; see "The requested precision often does not control the
    accuracy", step 6).
-2. **Step 11 part 2:** `RunLog` in the other ~62 programs outside the attic (9 of 71 have it), `// `
-   headers to `# `; mechanical, can be done in batches per `progs/` subdirectory.
+2. ~~Step 11 part 2~~ (done, #64; `RunLog` in all programs outside the attic).
 3. **`namespace nucqcd`** (code layout item 4), class by class, with compatibility `using` declarations.
 4. **Glauber grid work:** deduplicate the hierarchy, and investigate the off-axis grid speed (every
    point hits the evaluation cap; `cube_romb` was 5× faster at 1e-3); value changes need the author's OK.
@@ -1017,6 +1016,14 @@ argument next to a name from a string array, and the output of `git rev-parse --
    (`poldeut`, `EMT_deut`, `b1_calc`, `pionT_calc12`, `Ca_dens`, `Nucl_dens_profile`,
    `PxPz_exp_sample`, `conv_V_test`; their "exec name" entries dropped, since `RunLog`'s names start at
    argv[1]; `poldeut` and `EMT_deut` had too few names and read past the array), and `Bookkeep`
-   removed from `Utilfunctions`. To do: add `RunLog` to all other programs (not `progs/attic`). Check per program that its data output still parses
-   (commented header lines); change the programs' own `// ` header lines to `# `. Can be combined with
-   ROOT phase 6, which touches the programs too.
+   removed from `Utilfunctions`. **Done (2026-11-25, #64):** `RunLog` is the first statement of `main` in the other 67 programs outside
+   `progs/attic` (77 programs in all; the argument names were read from how each `argv[i]` is used, units only
+   where the code shows them; programs without arguments pass none, and four `int main()` programs now take
+   `argc, argv`). None of them printed `//` header lines, so no output text changed, and none writes the
+   log to a data file: it goes to stdout, before and after the program's own output. Checked that the
+   consumers in the repository skip `#` (`np.loadtxt` in `bonusreadin.py`, `gridplot.py`, the event
+   parsers of `2bodymom`); `progs/deepsdis/fitscript.py` (Python 2, hard-coded paths, parses the stdout of
+   `bonusextrapolate` and `parabfit` by token position) now drops `#` lines first. Not checked: scripts
+   outside the repository that read the stdout of `transp_eli` (it writes a `#__PYHDR_START__` JSON header; the `# `
+   lines now come before it), `transp`, `JlabPAC16_calc` and the other `onenucl` programs. Built with
+   `PARTONS_ENABLED`; the GPD programs were compiled but not run.

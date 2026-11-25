@@ -13,6 +13,7 @@
 
 
 #include <iostream>
+#include <Tools/Core/RunLog.hpp>
 #include <cstdlib>
 #include <sstream>
 #include <cassert>
@@ -105,6 +106,7 @@ void adap_intPm(numint::vector_d &, double pm, double costhetamu, double E_in,
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"Q2p [GeV^2]", "flux integrator", "max initial nucleon momentum", "min final nucleon momentum", "plane wave (1) or FSI (0)", "enable ROMEA", "experiment", "lepton", "share dir"});
   double Q2p=atof(argv[1])*1.E06;   // give input in GeV^2
   bool screening=0;//atoi(argv[4]);
   int nucleus=1;//atoi(argv[6]);                     

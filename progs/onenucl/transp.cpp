@@ -1,6 +1,7 @@
 //program used to do some transparency calculations for Or et al. for a proposal.
 //last used to compute Hall B p and n transparencies, phiaveraging in cross section is on!!!
 
+#include <Tools/Core/RunLog.hpp>
 #include <iostream>
 #include <cstdlib>
 
@@ -26,6 +27,7 @@ void adap_intPm(numint::vector_d &, double costhetacm,EMQECross* pObs, MeanField
 //run ./transp [nucleus] [Q2,GeV^2] [Ein, MeV] [thetae, degr] [thickness] [current] [precision in integration] [userset FSI sigma] [screening sigma value]
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"nucleus", "Q2 [GeV^2]", "prec", "homedir"});
   
   // string homedir=nucqcd::share_dir;
   // double Q2=atof(argv[2])*1.E06;

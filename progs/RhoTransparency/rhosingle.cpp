@@ -1,5 +1,6 @@
 //single node program to compute rho transparencies, never used for actual calculations
 
+#include <Tools/Core/RunLog.hpp>
 #include <iostream>
 #include <cstdlib>
 
@@ -11,6 +12,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"torz", "nucleus", "Q2", "nu_min", "nu_max", "nocuts", "j", "k"});
 
   int torz = atoi(argv[1]);
   int nucleus = atoi(argv[2]);

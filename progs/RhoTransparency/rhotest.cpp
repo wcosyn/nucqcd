@@ -1,5 +1,6 @@
 //program used to test Rho glauber grids and distorted momentum distributions used in the cross section calculations
 
+#include <Tools/Core/RunLog.hpp>
 #include <iostream>
 #include <cstdlib>
 
@@ -19,6 +20,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {});
   
   string homedir=nucqcd::share_dir;
   cout << homedir << endl;

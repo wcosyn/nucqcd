@@ -24,6 +24,7 @@
 using namespace std;
 
 #include <Tools/Core/constants.hpp>
+#include <Tools/Core/RunLog.hpp>
 
 vector<double> EMC_data={-0.207,
 -0.326,
@@ -89,6 +90,7 @@ void Fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag); /
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {});
   
   
   

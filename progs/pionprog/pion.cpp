@@ -1,6 +1,7 @@
 //small program that outputs glauber parameters for pions
 
 #include <iostream>
+#include <Tools/Core/RunLog.hpp>
 #include <cstdlib>
 #include <string>
 using namespace std;
@@ -8,6 +9,7 @@ using namespace std;
 #include <Glauber/FastParticle.hpp>
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {});
   double sigmap[151],sigman[151], beta2p[151], beta2n[151], epsp[151], epsn[151];
   string homedir="/home/wim/Code/share";
   for(int i=0;i<=150;i++){

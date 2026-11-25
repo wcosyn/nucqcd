@@ -1,4 +1,5 @@
 #include <Glauber/ClassGridThick_SCX.hpp>
+#include <Tools/Core/RunLog.hpp>
 #include <Glauber/FastParticle.hpp>
 #include <Glauber/MeanFieldNucleusThick.hpp>
 
@@ -50,7 +51,8 @@ void testCustomDensity(){
     scx.printGrid();
 }
 
-int main(){
+int main(int argc, char *argv[]){
+  nucqcd::RunLog runlog(argc, argv, {});
     testMeanFieldNucleus();
     return 0;
 }

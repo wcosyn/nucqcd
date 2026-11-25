@@ -8,6 +8,7 @@
 using namespace std;
 
 #include <Tools/Core/constants.hpp>
+#include <Tools/Core/RunLog.hpp>
 #include <Tools/Kinematics/TKinematics2to2.hpp>
 #include <Tools/Kinematics/TElectronKinematics.hpp>
 #include <Tools/StructureFunctions/NuclStructure.hpp>
@@ -29,6 +30,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"symm", "offshell", "fixprop", "Q2 [GeV^2]", "deuteron wf", "structure function", "sigma0 [mb]", "sigma slope", "resonance 1 mass [GeV]", "resonance 2 mass [GeV]", "resonance 3 mass [GeV]", "random seed", "kin_choice"});
     double Ein=5000.;  
     double Q2=atof(argv[4])*1.E06;
     srand(atoi(argv[12]));

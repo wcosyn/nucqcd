@@ -10,6 +10,7 @@
 //maxEvalweakamp values of 20k make the fluxintegrand converge faster than a value of 2000 (more accurate, so smoother cross sections...).!!!
 
 #include <iostream>
+#include <Tools/Core/RunLog.hpp>
 #include <cstdlib>
 #include <cassert>
 
@@ -71,6 +72,7 @@ void adap_intPm(numint::vector_d &, double E_in, double costhetamu,
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"T_N", "cos(theta_N)", "flux integrator", "max initial nucleon momentum", "min final nucleon momentum", "plane wave (1) or FSI (0)", "max evaluations weak amplitude", "enable ROMEA", "experiment", "share dir"});
 //   double Q2=atof(argv[1])*1.E06;
   double T_N=atof(argv[1]); // muon momentum along beam [MeV]
   double costhetaN=atof(argv[2]); // muon momentum perp to beam [MeV]

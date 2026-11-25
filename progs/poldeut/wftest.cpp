@@ -20,6 +20,7 @@ using namespace std;
 #include <iostream>
 #include <cmath>
 #include <Tools/Core/constants.hpp>
+#include <Tools/Core/RunLog.hpp>
 #include <Integrator/numint/numint.hpp>
 #include <Integrator/numint/numint2Cuba.hpp>
 
@@ -30,6 +31,7 @@ void int_3d(numint::vector_z &, double p, double costheta, double phi, TDeuteron
 
 
 int main(int argc, char *argv[]){
+  nucqcd::RunLog runlog(argc, argv, {});
 
 
     OldDeuteron wf1("AV18");

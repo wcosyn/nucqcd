@@ -6,6 +6,7 @@
 //also comparison with the EPW definitions etc.
 
 #include <iostream>
+#include <Tools/Core/RunLog.hpp>
 #include <cstdlib>
 #include <cmath>
 #include <string>
@@ -26,6 +27,7 @@ void k_int(numint::vector_d & res, double knorm, double kcosth, TDeuteron::Wavef
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"unused", "Q2 [GeV^2]", "wf", "nucleon structure", "beam energy [GeV]"});
   double Q2 = atof(argv[2])*1.E06; 
   string wf = argv[3];
   double Ein= atof(argv[5])*1.E03; //beam energy in GeV

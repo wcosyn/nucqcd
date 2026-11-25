@@ -10,6 +10,7 @@ using namespace std;
 #include <Glauber/FsiCorrelator.hpp>
 #include <Glauber/FastParticle.hpp>
 #include <Tools/Core/constants.hpp>
+#include <Tools/Core/RunLog.hpp>
 #include <Glauber/GlauberGrid.hpp>
 #include <Glauber/OneGlauberGrid.hpp>
 #include <Glauber/GlauberGridThick.hpp>
@@ -22,6 +23,7 @@ using namespace std;
 //run ./observables [Q2 [MeV^2]] [omega] [missing momentum]
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"shell", "electron angle [deg]", "Eout [MeV]", "medium"});
 //   double Ein=atof(argv[1]);
 //   double Q2=atof(argv[2]);
 //   double omega=atof(argv[3]);

@@ -8,6 +8,7 @@
 //version 
 
 #include <iostream>
+#include <Tools/Core/RunLog.hpp>
 #include <cstdlib>
 
 using namespace std;
@@ -68,6 +69,7 @@ void adap_intPm(numint::vector_d &, double costhetacm,
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"E_in", "cos(theta_mu)", "flux integrator", "max initial nucleon momentum", "min final nucleon momentum", "plane wave (1) or FSI (0)", "enable ROMEA", "share dir"});
 //   double Q2=atof(argv[1])*1.E06;
   double E_in=atof(argv[1]);
   double costhetamu=atof(argv[2]);

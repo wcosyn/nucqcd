@@ -15,12 +15,14 @@
 #include <cmath>
 
 #include <Tools/Core/constants.hpp>
+#include <Tools/Core/RunLog.hpp>
 #include <Tools/StructureFunctions/NucleonStructure.hpp>
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"number of x points"});
   int nx = (argc > 1) ? atoi(argv[1]) : 100;
   const bool neutron = 0;
   const double R = 0.18;

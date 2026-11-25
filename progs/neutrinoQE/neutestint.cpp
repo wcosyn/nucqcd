@@ -13,6 +13,7 @@
 
 
 #include <iostream>
+#include <Tools/Core/RunLog.hpp>
 #include <cstdlib>
 
 using namespace std;
@@ -309,6 +310,7 @@ void adap_intPm(numint::vector_d &, double E_out, double costhetamu, double E_in
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"T_mu_min [MeV]", "cos(theta_mu)_max", "flux integrator", "share dir"});
 //   double Q2=atof(argv[1])*1.E06;
   double T_mu_min=atof(argv[1]);
   double costhetamu_max=atof(argv[2]);

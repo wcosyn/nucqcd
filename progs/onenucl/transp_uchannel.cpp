@@ -11,6 +11,7 @@
 
 
 
+#include <Tools/Core/RunLog.hpp>
 #include <iostream>
 #include <cstdlib>
 
@@ -70,6 +71,7 @@ void int_r3(numint::vector_z & res, double r, double costheta, double phi, MeanF
 
 int main(int argc, char *argv[])
 {
+  nucqcd::RunLog runlog(argc, argv, {"Q2 [GeV^2]", "Eout [GeV]", "thetae [deg]", "pN [GeV]", "thetaN [deg]", "prec", "nucleus"});
   
   string homedir=nucqcd::share_dir;
   //kinematics input
