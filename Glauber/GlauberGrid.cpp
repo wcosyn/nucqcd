@@ -446,19 +446,7 @@ void GlauberGrid::calcGlauberphasesBoth(const int i, const int j, const int k) {
       int res = 90;
       unsigned count = 0;
       double deeserror = 0.;
-      if (integrator == 0) {
-        double restimate = 0., thetaestimate = 0., phiestimate = 0.;
-        if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
-          throw std::invalid_argument(nucqcd::ErrorMessage() << "You should be using the OneGlauberGrid class boy!" );
-        }
-        else {
-          complex < double >results[2] = { 0., 0. };
-//           rombergerN(this, &GlauberGrid::intGlauberR, 0., getPnucleus()->getRange(), 2, results, getPrec(), 3, 8, &restimate, level, mm, &thetaestimate, &phiestimate);
-          fsi_grid[level][mm][i][j][k] = results[0];
-          fsi_ct_grid[level][mm][i][j][k] = results[1];
-        }
-      }
-      else if (integrator == 1 || integrator == 2) {
+      if (integrator == 1 || integrator == 2) {
         if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
           throw std::invalid_argument(nucqcd::ErrorMessage() << "You should be using the OneGlauberGrid class boy!" );
         }
@@ -498,19 +486,7 @@ void GlauberGrid::calcGlauberphasesCt(const int i, const int j, const int k) {
       int res = 90;
       unsigned count = 0;
       double deeserror = 0.;
-      if (integrator == 0) {
-        double restimate = 0., thetaestimate = 0., phiestimate = 0.;
-        if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
-          throw std::invalid_argument(nucqcd::ErrorMessage() << "You should be using the OneGlauberGrid class boy!" );
-        }
-
-        else {
-          complex < double >results = 0.;
-//           rombergerN(this, &GlauberGrid::intGlauberR, 0., getPnucleus()->getRange(), 1, &results, getPrec(), 3, 8, &restimate, level, mm, &thetaestimate, &phiestimate);
-          fsi_ct_grid[level][mm][i][j][k] = results;
-        }
-      }
-      else if (integrator == 1 || integrator == 2) {
+      if (integrator == 1 || integrator == 2) {
         if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
           throw std::invalid_argument(nucqcd::ErrorMessage() << "You should be using the OneGlauberGrid class boy!" );
         }

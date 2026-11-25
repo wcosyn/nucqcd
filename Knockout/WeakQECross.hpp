@@ -45,7 +45,7 @@ public:
    * \param lepton contains all the lepton kinematics
    * \param pnucl pointer to a MF nucleus instance
    * \param prec precision you want in the integrations
-   * \param integrator which integrator (0:Wim's romberg fubini sort of thing, 1:Klaas thingy, 2:adaptive MIT thingy
+   * \param integrator which integrator (1:numint::cube_romb, 2:numint::cube_adaptive (0, the old rombergerN, was removed)
    * \param dir std::string that contains dir with all input, should be the ./share subdir of the project!
   * \param charged neutral weak current [0] or charged weak current [1]
    * \param M_A_in [MeV] value of axial mass
@@ -66,7 +66,7 @@ public:
    * \param elec contains all the electron kinematics
    * \param pnucl pointer to a MF nucleus instance
    * \param prec precision you want in the integrations
-   * \param integrator which integrator (0:Wim's romberg fubini sort of thing, 1:Klaas thingy, 2:adaptive MIT thingy
+   * \param integrator which integrator (1:numint::cube_romb, 2:numint::cube_adaptive (0, the old rombergerN, was removed)
    * \param dir std::string that contains dir with all input, should be the ./share subdir of the project!
   * \param charged neutral weak current [0] or charged weak current [1]
    * \param M_A_in [MeV] value of axial mass

@@ -30,7 +30,7 @@ public:
    * \param wavefunction D wave function name, see TDeuteron
    * \param p_max [MeV] maximum missing momentum in integrations 
    * \param no_cuts apply the experimental cuts in t or z or not 
-   * \param integr which integrator (0:Wim's romberg fubini sort of thing, 1:Klaas thingy, 2:adaptive MIT thingy
+   * \param integr which integrator (1:numint::cube_romb, 2:numint::cube_adaptive (0, the old rombergerN, was removed)
    * \param precision precision you want in the integrations
    * \param max_Eval max # of function evaluations in the pm integration
    * \param fsi fsi or not

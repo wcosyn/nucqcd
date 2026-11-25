@@ -6,6 +6,10 @@
 #include <catch2/matchers/catch_matchers_string.hpp>
 
 #include <Tools/Core/ErrorMessage.hpp>
+#include <Tools/Core/IntegratorFlag.hpp>
+#include <Glauber/GlauberDecayGridThick.hpp>
+#include <Glauber/OneGlauberGrid.hpp>
+#include <Knockout/RhoDeuteron.hpp>
 #include <Glauber/FastParticle.hpp>
 #include <Glauber/GlauberGridThick.hpp>
 #include <Tools/Core/Matrix.hpp>
@@ -61,4 +65,18 @@ TEST_CASE("calls in the wrong order throw std::logic_error", "[errors]") {
 
 TEST_CASE("missing input throws std::runtime_error", "[errors]") {
   CHECK_THROWS_AS(MeanFieldNucleus(MeanFieldNucleus::C, "/nonexistent/share/dir"), std::runtime_error);
+}
+
+TEST_CASE("the integrator option is 1 or 2; 0 (the old rombergerN) was removed", "[errors][integrator]") {
+  const std::string dir = nucqcd_test::share_dir();
+  CHECK(checked_integrator_flag(1) == 1);
+  CHECK(checked_integrator_flag(2) == 2);
+  CHECK_THROWS_WITH(checked_integrator_flag(0), ContainsSubstring("rombergerN"));
+  CHECK_THROWS_AS(checked_integrator_flag(3), std::invalid_argument);
+  MeanFieldNucleusThick carbon(MeanFieldNucleus::C, dir);
+  // before 2026-11 these constructed grids that silently came out as "no FSI"
+  CHECK_THROWS_AS(GlauberGridThick(4, 4, 1, &carbon, 1.E-03, 0, dir), std::invalid_argument);
+  CHECK_THROWS_AS(GlauberDecayGridThick(4, 4, 1, &carbon, 1.E-03, 0, dir), std::invalid_argument);
+  CHECK_THROWS_AS(OneGlauberGrid(4, 4, &carbon, 1.E-03, 0, dir), std::invalid_argument);
+  CHECK_THROWS_AS(RhoDeuteron("paris", 400., true, 0, 1.E-03, 2000, false), std::invalid_argument);
 }

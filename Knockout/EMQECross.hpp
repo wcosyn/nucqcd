@@ -49,7 +49,7 @@ public:
    * \param elec contains all the electron kinematics
    * \param pnucl pointer to a MF nucleus instance
    * \param prec precision you want in the integrations
-   * \param integrator which integrator (0:Wim's romberg fubini sort of thing, 1:Klaas thingy, 2:adaptive MIT thingy
+   * \param integrator which integrator (1:numint::cube_romb, 2:numint::cube_adaptive (0, the old rombergerN, was removed)
    * \param dir std::string that contains dir with all input, should be the ./share subdir of the project!
    * \param user_sigma does the user want to introduce a (anti)screening on sigma
    * \param sigmascreening [%] how much do you want to change the sigma value

@@ -1,3 +1,4 @@
+#include <Tools/Core/IntegratorFlag.hpp>
 #include <Knockout/WeakQECross.hpp>
 
 #include <cmath>
@@ -19,7 +20,7 @@ using namespace std;
 WeakQECross::WeakQECross(TElectronKinematics *elec, MeanFieldNucleusThick *pnucleus, double precision, int integr,
 	     std::string dir, bool cc, double M_A_in, bool user_sigma, bool enable_ROMEA_in,double gA_s_in, double r_s2_in, 
 	      double mu_s_in, double sigma_screening)
-:homedir(dir),lepton(NULL),electron(elec),pnucl(pnucleus),reacmodel(NULL), prec(precision),integrator(integr),
+:homedir(dir),lepton(NULL),electron(elec),pnucl(pnucleus),reacmodel(NULL), prec(precision),integrator(nucqcd::checked_integrator_flag(integr)),
 charged(cc), M_A(M_A_in), usersigma(user_sigma), gA_s(gA_s_in), r_s2(r_s2_in), mu_s(mu_s_in), sigmascreening(sigma_screening), enable_ROMEA(enable_ROMEA_in){
   if(cc){
      cerr << "ERROR in WeakQECross::constructor "
@@ -32,7 +33,7 @@ WeakQECross::WeakQECross(TLeptonKinematics *lep,
 			 MeanFieldNucleusThick *pnucleus, double precision, int integr,
 	     std::string dir, bool cc, double M_A_in, bool user_sigma,bool enable_ROMEA_in, double gA_s_in, double r_s2_in, 
 	      double mu_s_in, double sigma_screening)
-:homedir(dir),lepton(lep),electron(NULL),pnucl(pnucleus),reacmodel(NULL), prec(precision),integrator(integr),
+:homedir(dir),lepton(lep),electron(NULL),pnucl(pnucleus),reacmodel(NULL), prec(precision),integrator(nucqcd::checked_integrator_flag(integr)),
 charged(cc), M_A(M_A_in), usersigma(user_sigma), gA_s(gA_s_in), r_s2(r_s2_in), mu_s(mu_s_in), sigmascreening(sigma_screening), enable_ROMEA(enable_ROMEA_in){
   if(!cc){
      cerr << "ERROR in WeakQECross::constructor "

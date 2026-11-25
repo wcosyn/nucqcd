@@ -1,3 +1,4 @@
+#include <Tools/Core/IntegratorFlag.hpp>
 #include <Knockout/WeakQEHadronCurrent.hpp>
 #include <Tools/Core/ErrorMessage.hpp>
 #include <Tools/Core/TSpinor.hpp>
@@ -14,7 +15,7 @@ using namespace std;
 WeakQEHadronCurrent::WeakQEHadronCurrent(MeanFieldNucleusThick *pnucleus, double precision, int integr, string dir,
 	      int max_Eval, bool cc, double M_A_in, bool user_sigma, bool enable_ROMEA_in, double gA_s_in, double r_s2_in, 
 	      double mu_s_in, double sigma_screening)
-:pnucl(pnucleus), prec(precision), integrator(integr), homedir(dir), maxEval(max_Eval),
+:pnucl(pnucleus), prec(precision), integrator(nucqcd::checked_integrator_flag(integr)), homedir(dir), maxEval(max_Eval),
 charged(cc), M_A(M_A_in), usersigma(user_sigma), gA_s(gA_s_in), r_s2(r_s2_in), mu_s(mu_s_in), sigmascreening(sigma_screening), enable_ROMEA(enable_ROMEA_in),
 gridthick(GlauberGridThick(120,36,5,pnucleus,precision,2,dir)),
 onegrid(OneGlauberGrid(120,36,pnucleus,precision,2,dir)),

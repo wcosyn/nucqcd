@@ -438,35 +438,7 @@ void GlauberDecayGridThick::calcGlauberphasesBoth(const int i, const int j, cons
     unsigned count = 0;
     double deeserror = 0.;
     double src = getFsiCorrelator().getCorrGrid_interp(r_hit, costheta_hit, proton);
-    if (integrator == 0) {
-      double restimate = 0., thetaestimate = 0., phiestimate = 0.;
-      if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
-        double results[8] = { 0., 0., 0., 0., 0., 0., 0., 0. };
-//         rombergerN(this, &GlauberDecayGridThick::intGlauberb_bound, 1.E-02, getPnucleusthick()->getRange(), 8, results,
-//                    getPrec(), 3, 10, &restimate, proton, &thetaestimate, &phiestimate);
-        fsi_grid[0][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * results[0];
-        fsi_grid[1][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * results[1] * src;
-        fsi_grid[2][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * results[2];
-        fsi_grid[3][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * results[3] * src;
-        fsi_ct_grid[0][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * results[4];
-        fsi_ct_grid[1][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * results[5] * src;
-        fsi_ct_grid[2][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * results[6];
-        fsi_ct_grid[3][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * results[7] * src;
-      }
-      else {
-        complex < double >results[8] = { 0., 0., 0., 0., 0., 0., 0., 0. };
-//         rombergerN(this, &GlauberDecayGridThick::intGlauberR, 0., getPnucleusthick()->getRange(), 8, results, getPrec(), 3, 8, &restimate, proton, &thetaestimate, &phiestimate);
-        fsi_grid[0][proton][i][j][k] = results[0];
-        fsi_grid[1][proton][i][j][k] = results[1] * src;
-        fsi_grid[2][proton][i][j][k] = results[2];
-        fsi_grid[3][proton][i][j][k] = results[3] * src;
-        fsi_ct_grid[0][proton][i][j][k] = results[4];
-        fsi_ct_grid[1][proton][i][j][k] = results[5] * src;
-        fsi_ct_grid[2][proton][i][j][k] = results[6];
-        fsi_ct_grid[3][proton][i][j][k] = results[7] * src;
-      }
-    }
-    else if (integrator == 1 || integrator == 2) {
+    if (integrator == 1 || integrator == 2) {
       if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
         numint::array < double, 3 > lower = { {1.E-06, getParticles()[0].getHitz(), 0.} };
         numint::array < double, 3 > upper = { {getPnucleusthick()->getRange(), getPnucleusthick()->getRange(), 2. * PI} };
@@ -534,27 +506,7 @@ void GlauberDecayGridThick::calcGlauberphasesCt(const int i, const int j, const 
     unsigned count = 0;
     double deeserror = 0.;
     double src = getFsiCorrelator().getCorrGrid_interp(r_hit, costheta_hit, proton);
-    if (integrator == 0) {
-      double restimate = 0., thetaestimate = 0., phiestimate = 0.;
-      if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
-        double results[4] = { 0., 0., 0., 0. };
-//         rombergerN(this, &GlauberDecayGridThick::intGlauberb_bound_ct, 1.E-02, getPnucleusthick()->getRange(), 6, results,
-//                    getPrec(), 3, 8, &restimate, proton, &thetaestimate, &phiestimate);
-        fsi_ct_grid[0][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * results[0];
-        fsi_ct_grid[1][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * results[1] * src;
-        fsi_ct_grid[2][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * results[2];
-        fsi_ct_grid[3][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * results[3] * src;
-      }
-      else {
-        complex < double >results[4] = { 0., 0., 0., 0. };
-//         rombergerN(this, &GlauberDecayGridThick::intGlauberRCT, 0., getPnucleusthick()->getRange(), 4, results, getPrec(), 3, 8, &restimate, proton, &thetaestimate, &phiestimate);
-        fsi_ct_grid[0][proton][i][j][k] = results[0];
-        fsi_ct_grid[1][proton][i][j][k] = results[1] * src;
-        fsi_ct_grid[0][proton][i][j][k] = results[2];
-        fsi_ct_grid[1][proton][i][j][k] = results[3] * src;
-      }
-    }
-    else if (integrator == 1 || integrator == 2) {
+    if (integrator == 1 || integrator == 2) {
       if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
         numint::array < double, 3 > lower = { {1.E-06, getParticles()[0].getHitz(), 0.} };
         numint::array < double, 3 > upper = { {getPnucleusthick()->getRange(), getPnucleusthick()->getRange(), 2. * PI} };
