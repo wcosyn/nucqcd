@@ -328,6 +328,21 @@ class TKinematics2to3
   double         GetYNsystem_phiycm_deg_kS() const { return GetYNsystem_phiycm_deg(); } ///< GetYNsystem_phiycm_deg with the standard axis convention (argument-free wrapper, used by GetVarByGetter)
   double         GetYNsystem_phincm_deg_kS() const { return GetYNsystem_phincm_deg(); } ///< GetYNsystem_phincm_deg with the standard axis convention (argument-free wrapper, used by GetVarByGetter)
 
+  // Steps of UpdateKinematics (TKinematics2to3_Update.cpp)
+ private:
+  struct UpdateWork; ///< intermediate results passed between the steps (defined in TKinematics2to3_Update.cpp)
+  void ClampCosine(double &c); ///< rounds a cosine just outside [-1,1] to the edge, makes the point unphysical when further out
+  static double SineFromCosine(double c); ///< the positive sine, 0 for a cosine within kUflow of +-1
+  void RotateTo23Frame(UpdateWork &w); ///< rotation and boost to the CM of the (2+3) subsystem
+  void SolveEnergyScenario(UpdateWork &w); ///< scenario 1: an energy, the angle of particle 1, angles of particle 2
+  void SolvePhotonAndParticle1(UpdateWork &w); ///< scenario 1: photon, particle 1, the (2+3) subsystem
+  void SolveParticle2InCM(UpdateWork &w); ///< scenario 1: particle 2 with its angles in the (2+3) CM
+  void SolveParticle2InLab(UpdateWork &w); ///< scenario 1: particle 2 with its angles in the lab (up to two solutions)
+  void SolveMandelstamScenario(UpdateWork &w); ///< scenario 3: mandelstam variables
+  void SelectMandelstamVariables(UpdateWork &w); ///< scenario 3: which variables were given, the remaining ones
+  void SolveMandelstamParticle1(UpdateWork &w); ///< scenario 3: photon, particle 1, the (2+3) subsystem
+  void SolveMandelstamParticles23(UpdateWork &w); ///< scenario 3: particles 2 and 3
+
   // Lookup of a getter by variable name (table in TKinematics2to3_VarNames.cpp)
  private:
   /// pointer to a getter that returns a double
