@@ -1,7 +1,7 @@
 /** \file
  * \author Camille Colle
- * This is a simple test file to test the construction of TMFSpinors
- * and the integrator lib. We try to make some TMFSpinors and integrate
+ * This is a simple test file to test the construction of MeanFieldSpinors
+ * and the integrator lib. We try to make some MeanFieldSpinors and integrate
  * the wavefunctions to check the normalisation
  */
 
@@ -9,8 +9,8 @@
 using std::cout;
 using std::endl;
 
-#include <Glauber/TMFSpinor.hpp>
-#include <Tools/Core/TSpinor.hpp>
+#include <Glauber/MeanFieldSpinor.hpp>
+#include <Tools/Core/Spinor.hpp>
 #include <Tools/Core/FourVector.hpp>
 #include <Tools/Core/constants.hpp>
 #include <Glauber/MeanFieldNucleus.hpp>
@@ -81,7 +81,7 @@ int main()
 		myStructInstance.n = n;
 		for (int m = -nuc.getJ_array()[n]; m <= nuc.getJ_array()[n]; m+=2)
 		{
-			cout << "Integrating TMFSpinor with shellindex : " << n << " 2*m_j : " << m;
+			cout << "Integrating MeanFieldSpinor with shellindex : " << n << " 2*m_j : " << m;
 			myStructInstance.m = m;
 			int succes = numint::cube_adaptive(mymdf,lowerb,upperb,1.E-10,prec,1E02,maxEval,ret,count,0);
 			cout << " succes(=0)? : " << succes << " norm. result : " << ret << endl;
@@ -92,7 +92,7 @@ int main()
 
 void myIntegrandumFunction(double &res, const numint::array<double,3> &x, MeanFieldNucleus& nuc, int n, int m)
 {
-	TMFSpinor phi = TMFSpinor(nuc,n,m,x[0],x[1],x[2]);
+	MeanFieldSpinor phi = MeanFieldSpinor(nuc,n,m,x[0],x[1],x[2]);
 	res = (phi.H()*phi).real();	
 	//res = x[0]*x[0]; //SPHERE TEST: x[0] = r, because x[1] is cos(theta) the factor sin(theta) in the jacobian is already taken into account
 }

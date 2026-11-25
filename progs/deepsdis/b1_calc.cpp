@@ -17,7 +17,7 @@ using namespace std;
 #include <vector>
 
 
-#include <Tools/WaveFunctions/TDeuteron.hpp>
+#include <Tools/WaveFunctions/Deuteron.hpp>
 #include <Integrator/numint/numint.hpp>
 using namespace nucqcd;
 
@@ -45,13 +45,13 @@ using namespace nucqcd;
  * @param thetaq [rad] angle between beam and photon 3momenta in target lab grame
  * @param strp object that contains nucleon structure functions
  */
-void k_int(numint::vector_d & res, double knorm, double kcosth, TDeuteron::Wavefunction *wfref,
+void k_int(numint::vector_d & res, double knorm, double kcosth, Deuteron::Wavefunction *wfref,
           double Q2, double x, double nu, double qvec, double gamma, double eps, double thetaq, NucleonStructure &strp);
 
-void y_int(numint::vector_d & res, double y, double pperp, TDeuteron::Wavefunction *wfref,
+void y_int(numint::vector_d & res, double y, double pperp, Deuteron::Wavefunction *wfref,
           double Q2, double x, double nu, double qvec, double gamma, double eps, double thetaq, NucleonStructure &strp);
 
-void p_int(numint::vector_d & res, double pnorm, double costh, TDeuteron::Wavefunction *wfref,
+void p_int(numint::vector_d & res, double pnorm, double costh, Deuteron::Wavefunction *wfref,
           double Q2, double x, double nu, double qvec, double gamma, double eps, double thetaq, NucleonStructure &strp);
 
 int main(int argc, char *argv[])
@@ -70,8 +70,8 @@ int main(int argc, char *argv[])
   string nuclstruc = argv[3]; // Nucleon structure function parametrization
   
   // create deuteron wf object
-  TDeuteron::Wavefunction *wfref;
-  wfref = TDeuteron::Wavefunction::CreateWavefunction(wf);
+  Deuteron::Wavefunction *wfref;
+  wfref = Deuteron::Wavefunction::CreateWavefunction(wf);
 
   // create nucleon structure function object (gives you F2n, F2p)
   NucleonStructure strp(nuclstruc);
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
       Ftor_b1 &p = * (Ftor_b1 *) param;
       p.f(ret,x[0],x[1], p.wfref,p.Q2,p.x,p.nu,p.qvec,p.gamma,p.eps,p.thetaq,p.strp);
     }
-    TDeuteron::Wavefunction *wfref;
+    Deuteron::Wavefunction *wfref;
     double Q2;
     double x;
     double nu;
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
     
     
     
-    void (*f)(numint::vector_d & res, double knorm, double kcosth, TDeuteron::Wavefunction *wfref,
+    void (*f)(numint::vector_d & res, double knorm, double kcosth, Deuteron::Wavefunction *wfref,
               double Q2, double x, double nu, double qvec, double gamma, double eps, double thetaq, NucleonStructure &strp);
   };
   
@@ -220,7 +220,7 @@ int main(int argc, char *argv[])
   }
 }
 
-void k_int(numint::vector_d & res, double knorm, double costh, TDeuteron::Wavefunction *wfref,
+void k_int(numint::vector_d & res, double knorm, double costh, Deuteron::Wavefunction *wfref,
 	      double Q2, double x, double nu, double qvec, double gamma, double eps, double thetaq,
               NucleonStructure &strp){
     
@@ -306,7 +306,7 @@ void k_int(numint::vector_d & res, double knorm, double costh, TDeuteron::Wavefu
 
 
 
-void y_int(numint::vector_d & res, double y, double pt, TDeuteron::Wavefunction *wfref,
+void y_int(numint::vector_d & res, double y, double pt, Deuteron::Wavefunction *wfref,
 	      double Q2, double x, double nu, double qvec, double gamma, double eps, double thetaq,
               NucleonStructure &strp){
   
@@ -337,7 +337,7 @@ void y_int(numint::vector_d & res, double y, double pt, TDeuteron::Wavefunction 
   res[2]=result*(a2*pow(wfref->GetWp(pnorm),2.));
  }
   
-void p_int(numint::vector_d & res, double pnorm, double costh, TDeuteron::Wavefunction *wfref,
+void p_int(numint::vector_d & res, double pnorm, double costh, Deuteron::Wavefunction *wfref,
 	      double Q2, double x, double nu, double qvec, double gamma, double eps, double thetaq,
               NucleonStructure &strp){
   

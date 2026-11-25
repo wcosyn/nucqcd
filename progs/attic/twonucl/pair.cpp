@@ -10,7 +10,7 @@ Pair::Pair(string wfname, string path, int A, int n1, int l1, int two_ms1, int t
 {
 	double hbaromega =45.*pow(A, -1./3.) - 25 * pow( A, -2./3.); //MeV
 	nu = 938.*hbaromega/2./197./197.;
-	deuteronwf = TDeuteron::Wavefunction::CreateWavefunction(wfname);
+	deuteronwf = Deuteron::Wavefunction::CreateWavefunction(wfname);
 	if( coeflistmade == false) makecoeflist();
 }
 

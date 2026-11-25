@@ -15,7 +15,7 @@ using namespace std;
 #include <Glauber/GlauberGridThick.hpp>
 #include <Glauber/GlauberDecayGridThick.hpp>
 #include <Glauber/DistMomDistrGrid.hpp>
-#include <Glauber/TMFSpinor.hpp>
+#include <Glauber/MeanFieldSpinor.hpp>
 #include <Tools/Core/Rotation.hpp>
 using namespace nucqcd;
 

@@ -40,7 +40,7 @@ DeuteronStructure& DeuteronStructure::operator=(const DeuteronStructure& rhs){
   
 }
 
-double DeuteronStructure::getLeptonSSA_sf(TKinematics2to2 &kin, TElectronKinematics &electron, double Einoff) const{
+double DeuteronStructure::getLeptonSSA_sf(Kinematics2to2 &kin, ElectronKinematics &electron, double Einoff) const{
   double piq=(Einoff*kin.GetWlab()+kin.GetKlab()*kin.GetPklab()*kin.GetCosthklab());  //vec{pi}=-vec{pr} in PW!
   double nutilde=piq/massi;
   double mi_off = Einoff*Einoff-kin.GetPklab()*kin.GetPklab(); //effective mass off-shell nucleon SQUARED
@@ -53,7 +53,7 @@ double DeuteronStructure::getLeptonSSA_sf(TKinematics2to2 &kin, TElectronKinemat
 }
 
 
-void DeuteronStructure::getStructureFunctions(TKinematics2to2 &kin, double &FL, double &FT, 
+void DeuteronStructure::getStructureFunctions(Kinematics2to2 &kin, double &FL, double &FT, 
 					      double &FTT, double &FTL,double Einoff) const{
   double alphaq=(kin.GetWlab()-kin.GetKlab())/(nucqcd::mass_d/2.);
   double alphai=(Einoff+kin.GetPklab()*kin.GetCosthklab())/(nucqcd::mass_d/2.);  //vec{pi}=-vec{pr} in PW!
@@ -91,7 +91,7 @@ void DeuteronStructure::getStructureFunctions(TKinematics2to2 &kin, double &FL, 
   return;
 }
 
-void DeuteronStructure::getStructureFunctions(TKinematics2to2 &kin, double &FL, double &FT, double &FTT, 
+void DeuteronStructure::getStructureFunctions(Kinematics2to2 &kin, double &FL, double &FT, double &FTT, 
 					      double &FTL, double &F2, double Einoff) const{
   double alphaq=(kin.GetWlab()-kin.GetKlab())/(nucqcd::mass_d/2.);
   double alphai=(Einoff+kin.GetPklab()*kin.GetCosthklab())/(nucqcd::mass_d/2.);  //vec{pi}=-vec{pr} in PW!
@@ -130,7 +130,7 @@ void DeuteronStructure::getStructureFunctions(TKinematics2to2 &kin, double &FL, 
 }
 
 
-void DeuteronStructure::getStructureFunctions_off (TKinematics2to2 &kin, double &FL, double &FT, double &FTT, double &FTL,
+void DeuteronStructure::getStructureFunctions_off (Kinematics2to2 &kin, double &FL, double &FT, double &FTT, double &FTL,
 						   double Wsq, double Einoff) const{
   double alphaq=(kin.GetWlab()-kin.GetKlab())/(nucqcd::mass_d/2.);
   double alphai=(Einoff+kin.GetPklab()*kin.GetCosthklab())/(nucqcd::mass_d/2.);  //vec{pi}=-vec{pr} in PW!
@@ -163,7 +163,7 @@ void DeuteronStructure::getStructureFunctions_off (TKinematics2to2 &kin, double 
   return;
 }
 
-double DeuteronStructure::getStructure(TKinematics2to2 &kin, TElectronKinematics &electron, double phir, double Einoff) const{
+double DeuteronStructure::getStructure(Kinematics2to2 &kin, ElectronKinematics &electron, double phir, double Einoff) const{
   double FL, FT, FTT, FTL;
   getStructureFunctions(kin,FL, FT, FTT, FTL, Einoff);
   if(std::isnan(FL)) return FL;
@@ -172,7 +172,7 @@ double DeuteronStructure::getStructure(TKinematics2to2 &kin, TElectronKinematics
   
 }
 
-void DeuteronStructure::getResponses(TKinematics2to2 &kin, TElectronKinematics &electron, 
+void DeuteronStructure::getResponses(Kinematics2to2 &kin, ElectronKinematics &electron, 
 				     double &ResLandT, double &ResTT, double &ResTL, double Einoff) const{
   double FL, FT, FTT, FTL;
   getStructureFunctions(kin,FL, FT, FTT, FTL, Einoff);
@@ -184,7 +184,7 @@ void DeuteronStructure::getResponses(TKinematics2to2 &kin, TElectronKinematics &
   }
 }
 
-void DeuteronStructure::getResponses_off(TKinematics2to2 &kin, TElectronKinematics &electron, double Wsq,
+void DeuteronStructure::getResponses_off(Kinematics2to2 &kin, ElectronKinematics &electron, double Wsq,
 				     double &ResLandT, double &ResTT, double &ResTL, double Einoff) const{
   double FL, FT, FTT, FTL;
   getStructureFunctions_off(kin,FL, FT, FTT, FTL, Wsq, Einoff);
@@ -197,7 +197,7 @@ void DeuteronStructure::getResponses_off(TKinematics2to2 &kin, TElectronKinemati
 }
 
 
-double DeuteronStructure::getDeutStructure(TKinematics2to2 &kin, TElectronKinematics &electron, double Einoff, bool avg, double phi) const{
+double DeuteronStructure::getDeutStructure(Kinematics2to2 &kin, ElectronKinematics &electron, double Einoff, bool avg, double phi) const{
   double FL, FT, FTT, FTL;
   getStructureFunctions(kin,FL, FT, FTT, FTL, Einoff);
   if(std::isnan(FL)) return FL;
@@ -256,7 +256,7 @@ double DeuteronStructure::getStructureLC(LightConeKin2to2 &kin) const{
 
 }
 
-double DeuteronStructure::getavgPrefactor(TKinematics2to2 &kin, TElectronKinematics &electron, double Einoff) const{
+double DeuteronStructure::getavgPrefactor(Kinematics2to2 &kin, ElectronKinematics &electron, double Einoff) const{
   double FL, FT, FTT, FTL,F2;
   getStructureFunctions(kin,FL, FT, FTT, FTL, F2,Einoff);
   if(std::isnan(FL)) return FL;
@@ -264,7 +264,7 @@ double DeuteronStructure::getavgPrefactor(TKinematics2to2 &kin, TElectronKinemat
   
 }
 
-double DeuteronStructure::getavgStructure_off(TKinematics2to2 &kin, TElectronKinematics &electron, double Wsq, double Einoff) const{
+double DeuteronStructure::getavgStructure_off(Kinematics2to2 &kin, ElectronKinematics &electron, double Wsq, double Einoff) const{
   double FL, FT, FTT, FTL;
   getStructureFunctions_off(kin,FL, FT, FTT, FTL, Wsq, Einoff);
   if(std::isnan(FL)) return FL;
@@ -274,7 +274,7 @@ double DeuteronStructure::getavgStructure_off(TKinematics2to2 &kin, TElectronKin
 }
 
 
-double DeuteronStructure::getInclStructure(TKinematics2to2 &kin, double Einoff) const{
+double DeuteronStructure::getInclStructure(Kinematics2to2 &kin, double Einoff) const{
   double FL, FT, FTT, FTL;
   getStructureFunctions(kin,FL, FT, FTT, FTL, Einoff);
   if(std::isnan(FL)) {cout << "blaaa  " << endl; return FL;}
@@ -283,7 +283,7 @@ double DeuteronStructure::getInclStructure(TKinematics2to2 &kin, double Einoff) 
   
 }
 
-double DeuteronStructure::getInclStructure_off(TKinematics2to2 &kin, double Wsq, double Einoff) const{
+double DeuteronStructure::getInclStructure_off(Kinematics2to2 &kin, double Wsq, double Einoff) const{
   double FL, FT, FTT, FTL;
   getStructureFunctions_off(kin,FL, FT, FTT, FTL, Wsq, Einoff);
   if(std::isnan(FL)) return FL;

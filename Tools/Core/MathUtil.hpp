@@ -59,7 +59,7 @@ inline std::vector<double> quadratic_real_roots(double a, double b, double c) {
  * \throw std::runtime_error if A is singular (a zero pivot)
  *
  * Defined in MathUtil.cpp, which is compiled with -ffp-contract=off: with fused multiply-adds
- * (-march=native) the rounding, and so the Yukawa D-wave coefficients of TYukawaPWF, would differ from
+ * (-march=native) the rounding, and so the Yukawa D-wave coefficients of YukawaWavefunction, would differ from
  * ROOT's (its libMatrix is built without them).
  */
 std::array<double, 3> solve_3x3(std::array<double, 9> a, std::array<double, 3> b);

@@ -14,7 +14,7 @@ using namespace std;
 #include <Tools/Core/GammaStructure.hpp>
 #include <Tools/StructureFunctions/NuclStructure.hpp>
 #include <Knockout/WeakQECross.hpp>
-#include <Tools/Kinematics/TLeptonKinematics.hpp>
+#include <Tools/Kinematics/LeptonKinematics.hpp>
 #include <Glauber/MeanFieldNucleusThick.hpp>
 using namespace nucqcd;
 
@@ -82,7 +82,7 @@ int main(int argc, char *argv[]){
   double M_A=1.03E03;
   string homedir="/home/wim/Code/trunk/share/";
   MeanFieldNucleusThick Nucleus(1,homedir);
-  TLeptonKinematics *lepton = TLeptonKinematics::CreateWithBeamEnergy(TLeptonKinematics::muon,Ein);
+  LeptonKinematics *lepton = LeptonKinematics::CreateWithBeamEnergy(LeptonKinematics::muon,Ein);
 //   WeakQECross obs(lepton,&Nucleus,1.E-03,2,homedir,1, 1.03E03, 0., 0.);  
   
 //   for(int i=0;i<200;i++){

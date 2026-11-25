@@ -1,6 +1,6 @@
 # libToolsCore: constants, errors, string and math utilities, the grid cache, run bookkeeping
-# (RunLog), the Dirac/Lorentz algebra (FourVector, Matrix, GammaStructure, TLorentzQuaternion,
-# TSpinor), Moshinsky brackets (recmosh), and the ROOT-free vector and Lorentz classes (Vector3,
+# (RunLog), the Dirac/Lorentz algebra (FourVector, Matrix, GammaStructure, LorentzQuaternion,
+# Spinor), Moshinsky brackets (recmosh), and the ROOT-free vector and Lorentz classes (Vector3,
 # LorentzVector, Rotation, LorentzRotation; roadmap step 9, phase 4).
 
 # constants.hpp (physical constants and nucqcd::share_dir = <repo>/share) is generated in the source
@@ -38,7 +38,7 @@ add_custom_target(nucqcd_git_info
   COMMENT "git state of the source tree for nucqcd::RunLog")
 set_property(SOURCE RunLog.cpp APPEND PROPERTY INCLUDE_DIRECTORIES "${NUCQCD_GENERATED_DIR}")
 
-# solve_3x3 has to round as ROOT's TDecompLU did (TYukawaPWF D-wave coefficients): no fused multiply-adds
+# solve_3x3 has to round as ROOT's TDecompLU did (YukawaWavefunction D-wave coefficients): no fused multiply-adds
 set_source_files_properties(MathUtil.cpp PROPERTIES COMPILE_OPTIONS -ffp-contract=off)
 # The vector and Lorentz classes reproduce ROOT's TVector3 & co. bitwise: the functions that ROOT
 # compiles into libPhysics (built without fused multiply-adds) are in these files, so no FMAs here either
@@ -53,8 +53,8 @@ nucqcd_add_library(ToolsCore
     Matrix.cpp
     GammaStructure.cpp
     FourVector.cpp
-    TSpinor.cpp
-    TLorentzQuaternion.cpp
+    Spinor.cpp
+    LorentzQuaternion.cpp
     recmosh.cpp
     Vector3.cpp
     LorentzVector.cpp

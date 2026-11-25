@@ -5,8 +5,8 @@ Used to compute sum rule integrals for the deuteron structure functions
 
 
 #include<Tools/WaveFunctions/OldDeuteron.hpp>
-#include<Tools/WaveFunctions/TDeuteron.hpp>
-#include<Tools/WaveFunctions/TInterpolatingWavefunction.hpp>
+#include<Tools/WaveFunctions/Deuteron.hpp>
+#include<Tools/WaveFunctions/InterpolatingWavefunction.hpp>
 #include<Tools/StructureFunctions/NucleonStructure.hpp>
 
 
@@ -25,8 +25,8 @@ using namespace std;
 #include <Integrator/numint/numint2Cuba.hpp>
 using namespace nucqcd;
 
-//void int_3d(numint::vector_z &, double p, double costheta, double phi, TInterpolatingWavefunction &wf, nucqcd::Vector3 &pvec);
-void int_3d(numint::vector_z &, double p, double costheta, double phi, TDeuteron::Wavefunction &wf, nucqcd::Vector3 &pvec);
+//void int_3d(numint::vector_z &, double p, double costheta, double phi, InterpolatingWavefunction &wf, nucqcd::Vector3 &pvec);
+void int_3d(numint::vector_z &, double p, double costheta, double phi, Deuteron::Wavefunction &wf, nucqcd::Vector3 &pvec);
 
 
 
@@ -44,8 +44,8 @@ int main(int argc, char *argv[]){
  //   cout << "normalization OldDeuteron " << sum1*4.*PI << " " << sum2*4.*PI << " " << sum3*4.*PI << " " << sum4*4.*PI << endl;
     
 
-    TDeuteron::Wavefunction *wfref = TDeuteron::Wavefunction::CreateWavefunction("AV18");
-    TInterpolatingWavefunction wf;
+    Deuteron::Wavefunction *wfref = Deuteron::Wavefunction::CreateWavefunction("AV18");
+    InterpolatingWavefunction wf;
     double r_grid=20.E-03;
     for(int i=0;i<=1000;i++){
         wf.AddUp(i,wfref->GetUp(i));
@@ -165,7 +165,7 @@ int main(int argc, char *argv[]){
 
     //CG-test!
     cout << "Testing Clebsch Gordan" << endl;
-    cout << TDeuteron::Wavefunction::ClebschGordan(4,4,1,1,5,5) << " " << 1. << endl;
+    cout << Deuteron::Wavefunction::ClebschGordan(4,4,1,1,5,5) << " " << 1. << endl;
 
     double pnorm=0.,rnorm=0.,quad=0.;
     for(int i=0;i<=100;i++){
@@ -199,11 +199,11 @@ int main(int argc, char *argv[]){
             //p.f(ret,x[0],x[1],x[2],*p.wfref,p.pvec);
             p.f(ret,x[0],x[1],x[2],*p.wfref,p.pvec);
         }
-        //TInterpolatingWavefunction *wf;
-        TDeuteron::Wavefunction *wfref;
+        //InterpolatingWavefunction *wf;
+        Deuteron::Wavefunction *wfref;
         nucqcd::Vector3 pvec;
-        //void (*f)(numint::vector_z &, double p, double costheta, double phi, TInterpolatingWavefunction &wf, nucqcd::Vector3 &pvec);
-        void (*f)(numint::vector_z &, double p, double costheta, double phi, TDeuteron::Wavefunction &wf, nucqcd::Vector3 &pvec);
+        //void (*f)(numint::vector_z &, double p, double costheta, double phi, InterpolatingWavefunction &wf, nucqcd::Vector3 &pvec);
+        void (*f)(numint::vector_z &, double p, double costheta, double phi, Deuteron::Wavefunction &wf, nucqcd::Vector3 &pvec);
 
     };
 
@@ -241,8 +241,8 @@ int main(int argc, char *argv[]){
 }
 
 
-//void int_3d(numint::vector_z &res, double r, double costheta, double phi, TInterpolatingWavefunction &wf, nucqcd::Vector3 &pvec){
-void int_3d(numint::vector_z &res, double r, double costheta, double phi, TDeuteron::Wavefunction &wf, nucqcd::Vector3 &pvec){
+//void int_3d(numint::vector_z &res, double r, double costheta, double phi, InterpolatingWavefunction &wf, nucqcd::Vector3 &pvec){
+void int_3d(numint::vector_z &res, double r, double costheta, double phi, Deuteron::Wavefunction &wf, nucqcd::Vector3 &pvec){
 
     res=numint::vector_z(13,0.);
     double d3dnorm=0.;

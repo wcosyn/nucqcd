@@ -2,10 +2,10 @@
 #include <Knockout/WeakQECross.hpp>
 
 #include <cmath>
-#include <Tools/Core/TSpinor.hpp>
+#include <Tools/Core/Spinor.hpp>
 #include <Glauber/OneGlauberGrid.hpp>
 #include <Glauber/GlauberGridThick.hpp>
-#include <Glauber/TMFSpinor.hpp>
+#include <Glauber/MeanFieldSpinor.hpp>
 #include <cassert>
 #include <Tools/Core/constants.hpp>
 #include <Tools/Core/GammaStructure.hpp>
@@ -17,19 +17,19 @@ namespace nucqcd {
 
 using namespace std;
 
-WeakQECross::WeakQECross(TElectronKinematics *elec, MeanFieldNucleusThick *pnucleus, double precision, int integr,
+WeakQECross::WeakQECross(ElectronKinematics *elec, MeanFieldNucleusThick *pnucleus, double precision, int integr,
 	     std::string dir, bool cc, double M_A_in, bool user_sigma, bool enable_ROMEA_in,double gA_s_in, double r_s2_in, 
 	      double mu_s_in, double sigma_screening)
 :homedir(dir),lepton(NULL),electron(elec),pnucl(pnucleus),reacmodel(NULL), prec(precision),integrator(nucqcd::checked_integrator_flag(integr)),
 charged(cc), M_A(M_A_in), usersigma(user_sigma), gA_s(gA_s_in), r_s2(r_s2_in), mu_s(mu_s_in), sigmascreening(sigma_screening), enable_ROMEA(enable_ROMEA_in){
   if(cc){
      cerr << "ERROR in WeakQECross::constructor "
-	<< "invalid, use TLeptonKinematics constructor for a CC process.\n";
+	<< "invalid, use LeptonKinematics constructor for a CC process.\n";
       assert(1==0);
   }
 }
 
-WeakQECross::WeakQECross(TLeptonKinematics *lep, 
+WeakQECross::WeakQECross(LeptonKinematics *lep, 
 			 MeanFieldNucleusThick *pnucleus, double precision, int integr,
 	     std::string dir, bool cc, double M_A_in, bool user_sigma,bool enable_ROMEA_in, double gA_s_in, double r_s2_in, 
 	      double mu_s_in, double sigma_screening)
@@ -37,7 +37,7 @@ WeakQECross::WeakQECross(TLeptonKinematics *lep,
 charged(cc), M_A(M_A_in), usersigma(user_sigma), gA_s(gA_s_in), r_s2(r_s2_in), mu_s(mu_s_in), sigmascreening(sigma_screening), enable_ROMEA(enable_ROMEA_in){
   if(!cc){
      cerr << "ERROR in WeakQECross::constructor "
-	<< "invalid, use TElectronKinematics constructor for a NC process.\n";
+	<< "invalid, use ElectronKinematics constructor for a NC process.\n";
       assert(1==0);
   }
 }
@@ -380,7 +380,7 @@ void WeakQECross::getRFGWeakQECross(double &presult, double &nresult, double Q2,
 
 
 /*
-double WeakQECross::getElWeakQECross(TKinematics2to2 &kin, int current, double phi, int maxEval, bool phi_int,
+double WeakQECross::getElWeakQECross(Kinematics2to2 &kin, int current, double phi, int maxEval, bool phi_int,
  				    bool neutrino, bool proton){
    double Q2=kin.GetQsquared();
    double qvec=kin.GetKlab();
@@ -424,7 +424,7 @@ double WeakQECross::getElWeakQECross(TKinematics2to2 &kin, int current, double p
 //   
  } */
 
-double WeakQECross::getDiffWeakQECross(TKinematics2to2 &kin, int current, int thick, int SRC, int CT, int pw, int shellindex, 
+double WeakQECross::getDiffWeakQECross(Kinematics2to2 &kin, int current, int thick, int SRC, int CT, int pw, int shellindex, 
 			   double phi, int maxEval, differential d_type, bool phi_int){
   
   //electron kinematics
@@ -704,7 +704,7 @@ double WeakQECross::getDiffWeakQECross(TKinematics2to2 &kin, int current, int th
   }  
 }
 
-// void  WeakQECross::getAllDiffWeakQECross(std::vector<double> &cross, TKinematics2to2 &kin, int current, 
+// void  WeakQECross::getAllDiffWeakQECross(std::vector<double> &cross, Kinematics2to2 &kin, int current, 
 // 			     int shellindex, int thick, double phi, int maxEval, bool lab, bool phi_int, bool neutrino){
 //   
 //   cross=vector<double>(5,0.);

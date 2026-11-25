@@ -9,8 +9,8 @@ using namespace std;
 
 #include <Glauber/MeanFieldNucleusThick.hpp>
 #include <Tools/Core/constants.hpp>
-#include <Tools/Kinematics/TKinematics2to2.hpp>
-#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/Kinematics/Kinematics2to2.hpp>
+#include <Tools/Kinematics/ElectronKinematics.hpp>
 #include <Knockout/EMQECross.hpp>
 #include <Tools/Core/Utilfunctions.hpp>
 #include <vector>
@@ -19,7 +19,7 @@ using namespace nucqcd;
 
 
 void getBound(double &high, double &low, MeanFieldNucleusThick &nucleus, double Q2, double omega, int shell);
-void adap_intPm(numint::vector_d &, double costhetacm,EMQECross* pObs, MeanFieldNucleusThick *pNucleus, TElectronKinematics *elec,
+void adap_intPm(numint::vector_d &, double costhetacm,EMQECross* pObs, MeanFieldNucleusThick *pNucleus, ElectronKinematics *elec,
 		double Q2, double omega, int current, int thick, double lc_mod, double nkt_mod, double *cthmax);
 
 
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
   
   //create objects for nucleus, kinematics and cross section
   MeanFieldNucleusThick Nucleus(atoi(argv[1]),homedir);
-  TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ein);
+  ElectronKinematics *elec = ElectronKinematics::CreateWithBeamEnergy(Ein);
   EMQECross obs(*elec,&Nucleus,prec, 2, homedir, userset, screening);
 
   //arrays to collect results
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
     }
     EMQECross *pObs;
     MeanFieldNucleusThick *pNucleus;
-    TElectronKinematics *elec;
+    ElectronKinematics *elec;
     double Q2;
     double omega;
     int current;
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
     double lc_mod;
     double nkt_mod;
     double *cthmax;
-    void (*f)(numint::vector_d &, double pm,EMQECross* pObs, MeanFieldNucleusThick *pNucleus, TElectronKinematics *elec,
+    void (*f)(numint::vector_d &, double pm,EMQECross* pObs, MeanFieldNucleusThick *pNucleus, ElectronKinematics *elec,
 	  double Q2, double omega, int current, int thick, double lc_mod, double nkt_mod, double *cthmax);
 
   };
@@ -165,13 +165,13 @@ int main(int argc, char *argv[])
 
 
 //integrandum
-void adap_intPm(numint::vector_d & results, double costhetacm,EMQECross* pObs, MeanFieldNucleusThick *pNucleus, TElectronKinematics *elec,
+void adap_intPm(numint::vector_d & results, double costhetacm,EMQECross* pObs, MeanFieldNucleusThick *pNucleus, ElectronKinematics *elec,
 		double Q2, double omega, int current, int thick, double lc_mod, double nkt_mod, double *cthmax){
 		  
   results=numint::vector_d(3*pNucleus->getTotalLevels()+6,0.);
   for(int shell=0;shell<pNucleus->getPLevels();shell++) {
     if(costhetacm<cthmax[shell]){
-      TKinematics2to2 kin("","",pNucleus->getMassA(),
+      Kinematics2to2 kin("","",pNucleus->getMassA(),
         pNucleus->getMassA_min_proton()+pNucleus->getExcitation()[shell],
         nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,costhetacm);
       double pm=kin.GetPklab();
@@ -197,7 +197,7 @@ void adap_intPm(numint::vector_d & results, double costhetacm,EMQECross* pObs, M
 
   for(int shell=pNucleus->getPLevels();shell<pNucleus->getTotalLevels();shell++) {
     if(costhetacm<cthmax[shell]){
-      TKinematics2to2 kin("","",pNucleus->getMassA(),
+      Kinematics2to2 kin("","",pNucleus->getMassA(),
         pNucleus->getMassA_min_neutron()+pNucleus->getExcitation()[shell],
         nucqcd::mass_n,"qsquared:wlab:costhkcm",Q2,omega,costhetacm);
       double pm=kin.GetPklab();
@@ -229,7 +229,7 @@ void adap_intPm(numint::vector_d & results, double costhetacm,EMQECross* pObs, M
 
 // find cm scatt angles so that missing momentum stays below 300 MeV 
 void getBound(double &high, double &low, MeanFieldNucleusThick &nucleus, double Q2, double omega, int shell){
-  TKinematics2to2 kin("","",nucleus.getMassA(),
+  Kinematics2to2 kin("","",nucleus.getMassA(),
 		      (shell<nucleus.getPLevels()? nucleus.getMassA_min_proton(): nucleus.getMassA_min_neutron())+nucleus.getExcitation()[shell],
 		      nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,(high+low)/2.);
   double pm=kin.GetPklab();

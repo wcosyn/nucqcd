@@ -4,8 +4,8 @@
 
 #include <Knockout/EMQECross.hpp>
 #include <Glauber/MeanFieldNucleusThick.hpp>
-#include <Tools/Kinematics/TElectronKinematics.hpp>
-#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/Kinematics/ElectronKinematics.hpp>
+#include <Tools/Kinematics/Kinematics2to2.hpp>
 #include <Tools/Core/constants.hpp>
 
 #include <filesystem>
@@ -21,10 +21,10 @@ nucqcd_test::RefStore refs("reg_eep_planewave");
 void check_nucleus(const char *name) {
   const std::string dir = nucqcd_test::share_dir();
   MeanFieldNucleusThick nucl(MeanFieldNucleus::TypeNames.at(name), dir);
-  std::unique_ptr<TElectronKinematics> elec(TElectronKinematics::CreateWithBeamEnergy(3245.));
+  std::unique_ptr<ElectronKinematics> elec(ElectronKinematics::CreateWithBeamEnergy(3245.));
   EMQECross obs(*elec, &nucl, 1.E-05, 2, dir, false, 1.);
   for (double pm : {50., 150., 250.}) {
-    TKinematics2to2 kin("", "", nucl.getMassA(), nucl.getMassA_min_proton(), nucqcd::mass_p, "qsquared:wlab:pklab", 1.8E06,
+    Kinematics2to2 kin("", "", nucl.getMassA(), nucl.getMassA_min_proton(), nucqcd::mass_p, "qsquared:wlab:pklab", 1.8E06,
                         1000., pm);
     std::ostringstream base;
     base << name << "_pm" << pm;

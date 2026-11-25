@@ -13,14 +13,14 @@
 #include <Tools/Core/FourVector.hpp>
 #include <Glauber/MeanFieldNucleusThick.hpp>
 #include <Glauber/AbstractFsiCTGrid.hpp>
-#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/Kinematics/Kinematics2to2.hpp>
 #include <Glauber/NucleonWeakOperator.hpp>
 #include <Tools/Core/Vector3.hpp>
 #include <Glauber/GlauberGridThick.hpp>
 #include <Glauber/OneGlauberGrid.hpp>
 #include <Glauber/ROMEAGrid.hpp>
 #include <Integrator/numint/numint.hpp>
-#include <Tools/Core/TSpinor.hpp>
+#include <Tools/Core/Spinor.hpp>
 
 #include <string>
 #include <cstdarg>
@@ -70,7 +70,7 @@ public:
    * \param current selects the current operator [1=CC1, 2=CC2, 3=CC3], see T. de Forest, Nucl. Phys. A 392, 232 (1983).
    * \param vector_or_axial [1] calc vector part of the current [0] calc axial vector part of the current
    */
-  void getMatrixEl(TKinematics2to2 &tk, Matrix<2,4> &results, int shellindex, int m, int CT, int pw, int current,
+  void getMatrixEl(Kinematics2to2 &tk, Matrix<2,4> &results, int shellindex, int m, int CT, int pw, int current,
     int SRC, int thick, bool vector_or_axial);
   /*! Computes amplitudes \f$ \bar{u}(\vec{p}_f,m_f)\Gamma^{\mu}\epsilon_\mu \phi^{D}_{\alpha}(\vec{p}_m,m) \f$
    * for all four vector boson polarizations (0,-1,+1,z) and both final nucleon helicities (-1,+1) and all glauber varieties<BR>
@@ -84,7 +84,7 @@ public:
    * \param current selects the current operator [1=CC1, 2=CC2, 3=CC3], see T. de Forest, Nucl. Phys. A 392, 232 (1983).
    * \param thick thickness in the glauber
    */
-  void getAllMatrixElMult(TKinematics2to2 &tk, Matrix<2,4> *results, int shellindex, int m, int current, int thick);
+  void getAllMatrixElMult(Kinematics2to2 &tk, Matrix<2,4> *results, int shellindex, int m, int current, int thick);
   /*! Computes amplitudes \f$ \bar{u}(\vec{p}_f,m_f)\Gamma^{\mu}\epsilon_\mu \phi^{D}_{\alpha}(\vec{p}_m,m) \f$
    * for all four vector boson polarizations (0,-1,+1,z) and both final nucleon helicities (-1,+1) and all glauber varieties<BR>
    * Computed in the frame where the z-axis lies along the ejected nucleon!!!!!!
@@ -100,7 +100,7 @@ public:
    * \param thick thickness in the glauber
    * \param medium medium modifications (0=none, 1=QCM, 2=CQSM)
    */
-  void getAllMatrixEl(TKinematics2to2 &tk, Matrix<2,4> *results, int shellindex, int m, int current, int thick, int medium);
+  void getAllMatrixEl(Kinematics2to2 &tk, Matrix<2,4> *results, int shellindex, int m, int current, int thick, int medium);
    /*! Computes the on-shell amplitude \f$ \bar{u}(\vec{p}_f,m_f)\Gamma^{\mu}\epsilon_\mu u(0,m_i) \f$ in the nucleon rest fram, q vector along the z axis
    * \param Q2 [MeV^2] virtual photon Q-squared
    * \param proton [1] proton or [0] neutron

@@ -23,9 +23,9 @@ using namespace std;
 
 #include <Glauber/MeanFieldNucleusThick.hpp>
 #include <Tools/Core/constants.hpp>
-#include <Tools/Kinematics/TKinematics2to2.hpp>
-#include <Tools/Kinematics/TElectronKinematics.hpp>
-#include <Tools/Kinematics/TLeptonKinematics.hpp>
+#include <Tools/Kinematics/Kinematics2to2.hpp>
+#include <Tools/Kinematics/ElectronKinematics.hpp>
+#include <Tools/Kinematics/LeptonKinematics.hpp>
 #include <Knockout/WeakQECross.hpp>
 #include <Tools/Core/Utilfunctions.hpp>
 //headers for integration 
@@ -156,15 +156,15 @@ int main(int argc, char *argv[])
   double leptonmass=0.;
   int flav=999;
   if(!lepton_id.compare("electron")){
-    leptonmass=TLeptonKinematics::masse;
+    leptonmass=LeptonKinematics::masse;
     flav=0;
   } 
   else if (!lepton_id.compare("muon")){
-    leptonmass=TLeptonKinematics::massmu;
+    leptonmass=LeptonKinematics::massmu;
     flav=1;
   } 
   else if (!lepton_id.compare("tau")){
-    leptonmass=TLeptonKinematics::masstau;
+    leptonmass=LeptonKinematics::masstau;
     flav=2;
   } 
   else {cerr << "invalid lepton name chosen" << endl << "Choose either electron, muon or tau" << endl; assert(1==0);}
@@ -239,7 +239,7 @@ int main(int argc, char *argv[])
           do{
             double costhetamu=1.-k*0.001;
             double Q2=-leptonmass*leptonmass+2.*E_in*El_out-2.*E_in*pl_out*costhetamu;
-            TKinematics2to2 kin("","",Nucleus.getMassA(),resmass,
+            Kinematics2to2 kin("","",Nucleus.getMassA(),resmass,
               nucqcd::mass_n,"qsquared:wlab:pklab",Q2,omega,pm);
             // if(kin.IsPhysical()) cout << E_in << " " << pm << " " << costhetamu << " " << kin.GetCosthkcm() << " " << Q2 << " " << Q2p << " " << omega << endl;
             if(kin.IsPhysical()&&phys==0) phys=1;
@@ -373,15 +373,15 @@ void adap_intPm(numint::vector_d & results, double omega, double E_in, double co
   double leptonmass=0.;
   int flav=999;
   if(!lepton_id.compare("electron")){
-    leptonmass=TLeptonKinematics::masse;
+    leptonmass=LeptonKinematics::masse;
     flav=0;
   } 
   else if (!lepton_id.compare("muon")){
-    leptonmass=TLeptonKinematics::massmu;
+    leptonmass=LeptonKinematics::massmu;
     flav=1;
   } 
   else if (!lepton_id.compare("tau")){
-    leptonmass=TLeptonKinematics::masstau;
+    leptonmass=LeptonKinematics::masstau;
     flav=2;
   } 
   else {cerr << "invalid lepton name chosen" << endl << "Choose either electron, muon or tau" << endl; assert(1==0);}
@@ -399,10 +399,10 @@ void adap_intPm(numint::vector_d & results, double omega, double E_in, double co
     if(/*E_in>maxbeam||E_in<minbeam*/E_out>leptonmass&&Q2>0.&&EAmin1>resmass){
       
       double pm=sqrt(EAmin1*EAmin1-resmass*resmass);
-      TLeptonKinematics *lepton = TLeptonKinematics::CreateWithBeamEnergy(static_cast<TLeptonKinematics::Lepton>(flav),E_in);
+      LeptonKinematics *lepton = LeptonKinematics::CreateWithBeamEnergy(static_cast<LeptonKinematics::Lepton>(flav),E_in);
       WeakQECross pobs(lepton,&nucleus,prec,integrator,homedir,charged,1.03E03,screening,enable_romea);  
         
-      TKinematics2to2 kin("","",nucleus.getMassA(),resmass,
+      Kinematics2to2 kin("","",nucleus.getMassA(),resmass,
         shell<nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
       if(!kin.IsPhysical()||kin.GetPYlab()<min_final_nucl_mom||kin.GetPklab()>max_initial_nucl_mom){ //final nucleon momentum too low, impose cut!
         // cout << kin.IsPhysical() << " " << E_out << " " << omega << " " << Q2*1.E-06 << " " << costhetamu << " " << kin.GetCosthkcm() <<  " " << kin.GetEYlab() << " " << En_out << endl;
@@ -461,13 +461,13 @@ void int_hydr(numint::vector_d & results, double E_in,
   results=numint::vector_d(2,0.);  
   double leptonmass=0.;
   if(!lepton_id.compare("electron")){
-    leptonmass=TLeptonKinematics::masse;
+    leptonmass=LeptonKinematics::masse;
   } 
   else if (!lepton_id.compare("muon")){
-    leptonmass=TLeptonKinematics::massmu;
+    leptonmass=LeptonKinematics::massmu;
   } 
   else if (!lepton_id.compare("tau")){
-    leptonmass=TLeptonKinematics::masstau;
+    leptonmass=LeptonKinematics::masstau;
   } 
  //   if(abs(costhetamu)>1.) {/*cout << "costheta" << endl;*/ cout << E_out << " " << result[0] << " " << result[1] << endl; return;}
   double E_out_n=E_in-En_out+nucqcd::mass_n;

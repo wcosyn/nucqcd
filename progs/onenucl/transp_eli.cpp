@@ -3,8 +3,8 @@
 
 #include <Tools/Core/RunLog.hpp>
 #include <Glauber/MeanFieldNucleusThick.hpp>
-#include <Tools/Kinematics/TKinematics2to2.hpp>
-#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/Kinematics/Kinematics2to2.hpp>
+#include <Tools/Kinematics/ElectronKinematics.hpp>
 #include <Knockout/EMQECross.hpp>
 #include <Glauber/FastParticle.hpp>
 #include <cstdlib>
@@ -33,8 +33,8 @@ double diffcross(MeanFieldNucleusThick& nuc,int level,double pm, double Q2, doub
     /** ========= **/
     
     
-    TKinematics2to2 kin("kinematics_name","kinematics_title",nuc.getMassA(),nuc.getMassA_min_proton(),nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
-    TElectronKinematics* elec = TElectronKinematics::CreateWithBeamEnergy(Ebeam);
+    Kinematics2to2 kin("kinematics_name","kinematics_title",nuc.getMassA(),nuc.getMassA_min_proton(),nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
+    ElectronKinematics* elec = ElectronKinematics::CreateWithBeamEnergy(Ebeam);
     EMQECross cross(*elec,&nuc,abserr,2,getShareDir(),user_sigma,screening);
     
     delete elec;

@@ -1,7 +1,7 @@
 /** \file
  * \author Camille Colle
- * This is a simple test file to test the construction of TMFSpinors
- * and the integrator lib. We try to make some TMFSpinors and integrate
+ * This is a simple test file to test the construction of MeanFieldSpinors
+ * and the integrator lib. We try to make some MeanFieldSpinors and integrate
  * the wavefunctions to check orthonormalisation
  */
 
@@ -9,8 +9,8 @@
 using std::cout;
 using std::endl;
 
-#include <Glauber/TMFSpinor.hpp>
-#include <Tools/Core/TSpinor.hpp>
+#include <Glauber/MeanFieldSpinor.hpp>
+#include <Tools/Core/Spinor.hpp>
 
 #include <Tools/Core/constants.hpp>
 #include <Glauber/MeanFieldNucleus.hpp>
@@ -94,8 +94,8 @@ int main()
 
 void myIntegrandumFunction(double &res, const numint::array<double,3> &x, MeanFieldNucleus& nuc, int n1, int m1,int n2, int m2)
 {
-	TMFSpinor phi1 = TMFSpinor(nuc,n1,m1,x[0],x[1],x[2]);
-	TMFSpinor phi2 = TMFSpinor(nuc,n2,m2,x[0],x[1],x[2]);
+	MeanFieldSpinor phi1 = MeanFieldSpinor(nuc,n1,m1,x[0],x[1],x[2]);
+	MeanFieldSpinor phi2 = MeanFieldSpinor(nuc,n2,m2,x[0],x[1],x[2]);
 	res = (phi2.H()*phi1).real();
 	//res = (phi.H()*phi).real();	
 	//res = x[0]*x[0]; //SPHERE TEST: x[0] = r, because x[1] is cos(theta) the factor sin(theta) in the jacobian is already taken into account

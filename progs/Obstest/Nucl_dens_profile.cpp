@@ -12,8 +12,8 @@ using namespace std;
 #include <Glauber/GlauberGrid.hpp>
 #include <Glauber/OneGlauberGrid.hpp>
 #include <Glauber/GlauberGridThick.hpp>
-#include <Tools/Kinematics/TKinematics2to2.hpp>
-#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/Kinematics/Kinematics2to2.hpp>
+#include <Tools/Kinematics/ElectronKinematics.hpp>
 #include <Knockout/EMQECross.hpp>
 #include <Tools/Core/Utilfunctions.hpp>
 #include <Tools/Core/RunLog.hpp>
@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
   
   string homedir=nucqcd::share_dir;
   MeanFieldNucleusThick nucleus(MeanFieldNucleus::TypeNames.at(nucleus_name),homedir);
-  TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ein);
+  ElectronKinematics *elec = ElectronKinematics::CreateWithBeamEnergy(Ein);
   
   cout << "L of shell: " << nucleus.getL_array()[shell] << endl;
 
@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
   double pm=i*10.;
   
   
-    TKinematics2to2 kin("","",nucleus.getMassA(),nucleus.getMassA_min_proton()+nucleus.getExcitation()[shell]
+    Kinematics2to2 kin("","",nucleus.getMassA(),nucleus.getMassA_min_proton()+nucleus.getExcitation()[shell]
 		,nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
     // cout << i << endl;
     if(kin.IsPhysical()){

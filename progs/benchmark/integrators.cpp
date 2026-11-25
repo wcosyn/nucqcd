@@ -18,8 +18,8 @@
 #include <Tools/Core/Utilfunctions.hpp>
 #include <Tools/Core/constants.hpp>
 #include <Tools/Core/RunLog.hpp>
-#include <Tools/Kinematics/TElectronKinematics.hpp>
-#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/Kinematics/ElectronKinematics.hpp>
+#include <Tools/Kinematics/Kinematics2to2.hpp>
 #include <Glauber/FastParticle.hpp>
 #include <Glauber/GlauberGridThick.hpp>
 #include <Glauber/MeanFieldNucleusThick.hpp>
@@ -321,8 +321,8 @@ void part_b() {
       return [=, &share]() {
         fresh_grid_dir("B2");
         MeanFieldNucleusThick carbon(MeanFieldNucleus::C, share);
-        std::unique_ptr<TElectronKinematics> elec(TElectronKinematics::CreateWithBeamEnergy(3245.));
-        TKinematics2to2 kin("", "", carbon.getMassA(), carbon.getMassA_min_proton(), nucqcd::mass_p, "qsquared:wlab:pklab", 1.8E06, 1000., 150.);
+        std::unique_ptr<ElectronKinematics> elec(ElectronKinematics::CreateWithBeamEnergy(3245.));
+        Kinematics2to2 kin("", "", carbon.getMassA(), carbon.getMassA_min_proton(), nucqcd::mass_p, "qsquared:wlab:pklab", 1.8E06, 1000., 150.);
         EMQECross obs(*elec, &carbon, prec, integrator, share, false, 1.);
         return std::vector<double>{obs.getDiffCross(kin, 2, 0, 0, 0, 1, shell, 0., 2000000, true, false, 1., 1.)};
       };
@@ -354,8 +354,8 @@ void part_c() {
   std::printf("# %-6s %-6s %10s %12s %10s\n", "shell", "FSI", "maxEval", "rel.dev", "time [s]");
   fresh_grid_dir("C");  // one grid directory: the RMSGA grid is computed once and then read from the cache
   MeanFieldNucleusThick carbon(MeanFieldNucleus::C, share);
-  std::unique_ptr<TElectronKinematics> elec(TElectronKinematics::CreateWithBeamEnergy(3245.));
-  TKinematics2to2 kin("", "", carbon.getMassA(), carbon.getMassA_min_proton(), nucqcd::mass_p, "qsquared:wlab:pklab", 1.8E06, 1000., 150.);
+  std::unique_ptr<ElectronKinematics> elec(ElectronKinematics::CreateWithBeamEnergy(3245.));
+  Kinematics2to2 kin("", "", carbon.getMassA(), carbon.getMassA_min_proton(), nucqcd::mass_p, "qsquared:wlab:pklab", 1.8E06, 1000., 150.);
   EMQECross obs(*elec, &carbon, 1e-5, 2, share, false, 1.);
   for (int shell = 0; shell < carbon.getPLevels(); ++shell)
     for (int pw : {1, 0}) {

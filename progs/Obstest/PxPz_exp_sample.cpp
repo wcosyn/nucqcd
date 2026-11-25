@@ -19,8 +19,8 @@ using namespace std;
 #include <Glauber/GlauberGrid.hpp>
 #include <Glauber/OneGlauberGrid.hpp>
 #include <Glauber/GlauberGridThick.hpp>
-#include <Tools/Kinematics/TKinematics2to2.hpp>
-#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/Kinematics/Kinematics2to2.hpp>
+#include <Tools/Kinematics/ElectronKinematics.hpp>
 #include <Knockout/EMQECross.hpp>
 #include <Tools/Core/Utilfunctions.hpp>
 #include <Tools/Core/RunLog.hpp>
@@ -137,10 +137,10 @@ int main(int argc, char *argv[])
 
         //double Emiss_model = nucleus.getMassA_min_proton()+nucleus.getExcitation()[shell]+nucqcd::mass_p-nucleus.getMassA();
 
-        TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ein);
+        ElectronKinematics *elec = ElectronKinematics::CreateWithBeamEnergy(Ein);
         EMQECross obs(*elec,&nucleus,prec,integrator,homedir,screening,scr);
         //mass Amin1 is tweaked to correspond to exp sample Emiss
-        TKinematics2to2 kin("","",nucleus.getMassA(),Emiss_sample-nucqcd::mass_p+nucleus.getMassA(),
+        Kinematics2to2 kin("","",nucleus.getMassA(),Emiss_sample-nucqcd::mass_p+nucleus.getMassA(),
 	    	nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
 
         // cout << "q|omega|nucl_p|nucl_thetaq|pm|pm_thetaq|";

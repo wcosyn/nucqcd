@@ -25,10 +25,10 @@ same PR.
 | 3 | Rename the repository | ✅ done (PR #7, tagged-poldeut PRs #1 and #2) |
 | 4 | Bug fixes | ✅ done: listed bugs (PRs #8, #9, #12); found later: stale FSI+CT grid (#18), kinematics (#19, #20, #33), DoubleNModel/Pair (#21, then moved to the attic in #22), π⁻ Glauber parameters (#28), TDeuteron errors (#31), He3 spin sum (#47) and factor A in `He3Cross` (#48), `TMPI` not compiling with MPI-3 (fixed in the attic with step 6, "Retire MPI", #54), `RunLog` reading freed memory at `exit()` (#57), `cube_romb` overflow beyond 10 levels in 3D (#60). New bugs found later are added here |
 | 5 | Low-risk modernization | ✅ done: `-fopenmp`, Fortran interop (#11), constants (#13, #14), grid cache (#15–#17), ownership (#23), exceptions (#24), Doxygen (#10, #25–#30, #32, #34–#39: no warnings left) |
-| 6 | Structural refactors | 🔶 done: constants macros (#41), `NuclStructure` merge (#42), code layout items 1–4 (`Tools` split #52, prefixed includes and `.hpp` #53), `Model`/`Cross` renamed (#53); MPI retired (#54); namespace `nucqcd` (#65); integrator benchmark (#61, keep `cube_romb` and `cube_adaptive`), precision reporting (#62); CRLF to LF (#66); long files split (#70), integrator option 0 removed (#69); model selection (#72), long `TKinematics2to3` functions (#74); to do: Glauber grid dedup and speed, rename the `T*` classes |
+| 6 | Structural refactors | 🔶 done: constants macros (#41), `NuclStructure` merge (#42), code layout items 1–4 (`Tools` split #52, prefixed includes and `.hpp` #53), `Model`/`Cross` renamed (#53); MPI retired (#54); namespace `nucqcd` (#65); integrator benchmark (#61, keep `cube_romb` and `cube_adaptive`), precision reporting (#62); CRLF to LF (#66); long files split (#70), integrator option 0 removed (#69); model selection (#72), long `TKinematics2to3` functions (#74); `T*` classes renamed (#76); to do: Glauber grid dedup and speed |
 | 7 | Unbundle Cuba and cubature | 🔶 Cuba done (#67); cubature (a maintenance question only, see the benchmark) to do |
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
-| 9 | Decouple from ROOT where possible | ✅ done: phases 1–5 (#44, #45, #50, #55, #56, #58), phase 6: GPD generators (#59) and the fits on the standalone Minuit2 (#73); the two long `TKinematics2to3` functions split (#74). ROOT is only used by the test `unit_vectors` |
+| 9 | Decouple from ROOT where possible | ✅ done: phases 1–5 (#44, #45, #50, #55, #56, #58), phase 6: GPD generators (#59) and the fits on the standalone Minuit2 (#73); the two long `TKinematics2to3` functions split (#74) and the crash they showed fixed (#75); the `T*` classes renamed (#76; the names in this file before that are the old ones). ROOT is only used by the test `unit_vectors` |
 | 10 | LHAPDF interface for the nucleon structure functions | ✅ done (#46), including MSTW through LHAPDF |
 | 11 | Run bookkeeping (provenance) for all programs | ✅ done: design and `RunLog` (#49), `Bookkeep` replaced in its 8 programs (#51), `RunLog` in all other non-attic programs (#64) |
 
@@ -36,7 +36,7 @@ same PR.
 
 *Updated 2026-11-25.*
 
-**Done recently** (PRs #44–#74): ROOT decoupling phases 1–3; step 10 (LHAPDF);
+**Done recently** (PRs #44–#76): ROOT decoupling phases 1–3; step 10 (LHAPDF);
 He3 fixes; step 11 part 1 (`RunLog`); step 6 code layout: `Tools` split into Core, Kinematics,
 WaveFunctions and StructureFunctions (#52), then includes as paths from the repository root, `.hpp`
 as the only extension, and `Model`/`Cross` renamed to `EMQEHadronCurrent`/`EMQECross` (#53); MPI
@@ -57,7 +57,7 @@ code (#65); CRLF to LF in the C++ files, with a `.gitattributes` (#66); Cuba unb
 4. **Glauber grid work:** deduplicate the hierarchy, and investigate the off-axis grid speed (every
    point hits the evaluation cap; `cube_romb` was 5× faster at 1e-3); value changes need the author's OK.
 5. ~~ROOT phase 6 (fits)~~ (done, #73): ROOT is now only used by the test `unit_vectors`.
-6. **Smaller items:** unbundle cubature (step 7, maintenance only; Cuba is done, #67), the PDG constants update (changes values), the rename of the `T*` classes and files (see the item in step 6), and the fix of the format-string crash found with the long functions (#74).
+6. **Smaller items:** unbundle cubature (step 7, maintenance only; Cuba is done, #67), the PDG constants update (changes values), and the fix of the format-string crash found with the long functions (#75, done).
 7. **Last:** the license decision (step 8), then the README (currently a stub).
 
 **Open choices for the author:** the license (step 8, see the item there); the PDG constants update (changes values); whether to unbundle cubature
@@ -757,19 +757,30 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   `<unistd.h>`. Fixed in the attic copy (`MPI_Type_create_struct`, same arguments); it now compiles
   and links with Open MPI 5.0 (not run). `RunLog` keeps its rank detection from the launcher's
   environment (also covers `srun` without MPI).
-- [ ] **Rename the files and classes that start with `T`** (added 2026-11-25, the author's request): the
-  prefix was a ROOT naming convention (`TKinematics`, `TKinematics2to3`, `TDeuteron`, `TSpinor`,
-  `TElectronKinematics`, `TLeptonKinematics`, `TLorentzQuaternion`, `TMFSpinor`, the `T*PWF` wave functions,
-  ...; they came from the strangecalc code, which was built on ROOT). ROOT is no longer used by the libraries
-  (step 9), so drop the prefix and use names that say what the classes are, e.g. `Kinematics2to3`,
-  `Deuteron`, `Spinor`, `ElectronKinematics`. To plan before doing it: a list of the classes and files
-  with the new names (for the author to agree), one rename per library (`git mv` for the files, so that
-  `git blame` follows, and `.git-blame-ignore-revs` for the commit that only renames), a scripted
-  replacement in the libraries, programs, tests and docs (include paths, class names, Doxygen `\file`
-  tags, the CMake lists, `docs/` and `manual/manual.tex`), all tests green and no value changing.
-  Probably best after the long-function work above, which touches `TKinematics2to3` heavily, and
-  together with the `GetName`/`GetTitle` members that `TNamed` left in `TKinematics`,
-  `TKinematics2to3` and `TDeuteron::Wavefunction` (a name and title nobody uses?).
+- [x] **Rename the files and classes that start with `T`** (done 2026-11-25, #76, the author's request and
+  choice of names): the prefix was a ROOT naming convention (the classes came from the strangecalc code,
+  built on ROOT), and ROOT is no longer used by the libraries (step 9). Done with `git mv` for the files (so
+  `git blame` follows) and one scripted replacement, with word boundaries, of the names in the libraries,
+  programs, tests, CMake lists and CLAUDE.md, in a commit of its own that is in `.git-blame-ignore-revs`;
+  no code changed:
+  | old | new |
+  |---|---|
+  | `TKinematics`, `TKinematics2to2`, `TKinematics2to3`, `TKinematics2to3WithLabAngles` | `Kinematics`, `Kinematics2to2`, `Kinematics2to3`, `Kinematics2to3WithLabAngles` (also the files `Kinematics2to3_*.cpp`) |
+  | `TElectronKinematics`, `TLeptonKinematics` | `ElectronKinematics`, `LeptonKinematics` |
+  | `TSpinor`, `TVSpinor`, `THelicitySpinor`, `THelicityVSpinor` | `Spinor`, `VSpinor`, `HelicitySpinor`, `HelicityVSpinor` |
+  | `TLorentzQuaternion` | `LorentzQuaternion` |
+  | `TDeuteron` (and its nested `Wavefunction`, `Polarization`) | `Deuteron` |
+  | `TMFSpinor` | `MeanFieldSpinor` |
+  | `TYukawaPWF`, `TGrossPWF`, `TCstPWF` | `YukawaWavefunction`, `GrossWavefunction`, `CstWavefunction` |
+  | `TInterpolatingWavefunction`, `TWavefunctionImplementation` | `InterpolatingWavefunction`, `WavefunctionImplementation` |
+  The include guards got the new names too. The local struct `Kinematics` of `NuclStructure.cpp`, which
+  would have collided with the new class, is `OnShellPoint`. **Not renamed:** `TMPI` (the attic copy in
+  `progs/attic/mpi`), and the ROOT classes in the comments. **This ROADMAP and `docs/HISTORY.md` still use
+  the old names where they describe what was done before this rename** (PR numbers #1-#75 refer to the old
+  names). Left for later: the `GetName`/`GetTitle`/`SetName`/`SetTitle` members that `TNamed` left in
+  `Kinematics`, `Kinematics2to3` and `Deuteron::Wavefunction` (a name and title nobody uses?).
+  Checked: full build with `BUILD_PROGS` and PARTONS, `ctest -LE slow` 133/133, `ctest -L slow` 11/11,
+  `make doc` no warnings, all with unchanged references.
 - [~] **Very long files and functions** (files split 2026-11-25, #70; functions not): the files were split
   without touching any code (the functions were moved verbatim; all tests pass, references unchanged).
   `Tools/Kinematics/TKinematics2to3.cpp` (6.5k lines) is now six files: `TKinematics2to3.cpp` (class

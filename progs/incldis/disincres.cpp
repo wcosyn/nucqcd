@@ -9,8 +9,8 @@ using namespace std;
 
 #include <Tools/Core/constants.hpp>
 #include <Tools/Core/RunLog.hpp>
-#include <Tools/Kinematics/TKinematics2to2.hpp>
-#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/Kinematics/Kinematics2to2.hpp>
+#include <Tools/Kinematics/ElectronKinematics.hpp>
 #include <Tools/StructureFunctions/NuclStructure.hpp>
 #include <DIS/InclusiveCross.hpp>
 using namespace nucqcd;
@@ -26,14 +26,14 @@ int main(int argc, char *argv[])
     double Q2=atof(argv[1])*1.E06;
     string strucname = argv[3];
     string wf = argv[2];
-    TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ein);
+    ElectronKinematics *elec = ElectronKinematics::CreateWithBeamEnergy(Ein);
     std::vector<double> resonances;
     resonances.push_back(1.232E03);
     resonances.push_back(1.5E03);
     resonances.push_back(1.75E03);
     for(int i=1;i<50;i++){      
       double x=0.02*i;
-      //TKinematics2to2 kin("","",nucqcd::mass_d,nucqcd::mass_p,Wprime,"qsquared:wlab:pklab",1.8E06,nu,pr);
+      //Kinematics2to2 kin("","",nucqcd::mass_d,nucqcd::mass_p,Wprime,"qsquared:wlab:pklab",1.8E06,nu,pr);
       double teller=0.,fsi1=0.,fsi2=0.,fsioff1=0.,fsioff2=0.,fsioffsuppr1=0.,fsioffsuppr2=0.,noemer=1.;
       for(int proton=0;proton<=1;++proton){
 	InclusiveCross Dinc(proton,strucname,wf,*elec,resonances,3);

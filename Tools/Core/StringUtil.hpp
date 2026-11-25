@@ -1,6 +1,6 @@
 /*! \file StringUtil.hpp
  * \brief Small std::string helpers that replace the TString methods used in the kinematics classes and
- * TDeuteron (roadmap step 9, phase 3)
+ * Deuteron (roadmap step 9, phase 3)
  * \author Wim Cosyn
  * \date 22/11/2026
  *

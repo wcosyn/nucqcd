@@ -17,7 +17,7 @@
  * - A special class for the glauber grid of one particle, exploiting the symmetry along the z-axis (no phi dependence).  <BR>
  * [OneGlauberGrid] <BR>
  * - A class for spinors that represent the MF wave function of a nucleon in a certain nucleus at a coordinate. <BR>
- * [TMFSpinor] <BR>
+ * [MeanFieldSpinor] <BR>
  * - A class that includes all properties of certain "ejected" particles (scattering parameters, kinetics, etc). <BR>
  * [FastParticle] <BR>
  * - A class that stores grids for distorted momentum distributions <BR>

@@ -13,10 +13,10 @@
 #define WEAKQECROSS_HPP
 
 #include <vector>
-#include <Tools/Kinematics/TLeptonKinematics.hpp>
-#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/Kinematics/LeptonKinematics.hpp>
+#include <Tools/Kinematics/ElectronKinematics.hpp>
 #include <Glauber/MeanFieldNucleusThick.hpp>
-#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/Kinematics/Kinematics2to2.hpp>
 #include <Knockout/WeakQEHadronCurrent.hpp>
 
 namespace nucqcd {
@@ -56,7 +56,7 @@ public:
    * \param sigma_screening [%] how much do you want to change the sigma value
    * \param enable_ROMEA enable ROMEA FSI for slow nucleons
    */
-  WeakQECross(TLeptonKinematics *lepton, MeanFieldNucleusThick *pnucl, 
+  WeakQECross(LeptonKinematics *lepton, MeanFieldNucleusThick *pnucl, 
 	double prec, int integrator, std::string dir, bool charged, double M_A_in, bool user_sigma, bool enable_ROMEA,
 	double gA_s=-0.19, double r_s2=0., 
 	double mu_s=0., double sigma_screening=0.);
@@ -77,7 +77,7 @@ public:
    * \param sigma_screening [%] how much do you want to change the sigma value
    * \param enable_ROMEA enable ROMEA FSI for slow nucleons
    */
-  WeakQECross(TElectronKinematics *elec, MeanFieldNucleusThick *pnucl, 
+  WeakQECross(ElectronKinematics *elec, MeanFieldNucleusThick *pnucl, 
 	double prec, int integrator, std::string dir, bool charged, double M_A_in, bool user_sigma, bool enable_ROMEA,
 	double gA_s=-0.19, double r_s2=0., 
 	double mu_s=0., double sigma_screening=0.);
@@ -98,7 +98,7 @@ public:
    * \param phi_int integrated over phi (angle between lepton and hadron plane)?
    * \return [fm^2/MeV/sr^2] differential cross section  \f$ d\sigma/d\Omega_l'dT_\mu \f$ or other differentials/units, see d_type options
    */
-  double getDiffWeakQECross(TKinematics2to2 &kin, int current, int thick, int SRC, int CT, int pw, int shellindex, 
+  double getDiffWeakQECross(Kinematics2to2 &kin, int current, int thick, int SRC, int CT, int pw, int shellindex, 
 		      double phi, int maxEval,differential d_type, bool phi_int);
   /*! Computes the differential A(nu,lN) cross section for certain kinematics and a certain shell of the nucleus
    * \param cross vector with the different cross sections <BR>
@@ -119,7 +119,7 @@ public:
    * \param phi_int integrated over phi (angle between lepton and hadron plane)?
    * \param neutrino [1] neutrino or [0] antineutrino
    */
-  void getAllDiffWeakQECross(std::vector<double> &cross, TKinematics2to2 &kin, int current, 
+  void getAllDiffWeakQECross(std::vector<double> &cross, Kinematics2to2 &kin, int current, 
 		       int shellindex, int thick, double phi, int maxEval, bool lab, bool phi_int, bool neutrino);
 
   /*! Computes the on-shell nucleon weak interaction cross section for certain kinematics <BR>
@@ -159,15 +159,15 @@ public:
   double getSigmascreening() const{return sigmascreening;} /*!< [%] screening of sigma */
   bool getUsersigma() const{return usersigma;} /*!< has the user set sigma? */
   MeanFieldNucleusThick * getPnucl() const{return pnucl;}  /*!< pointer to nucleus object */
-  TLeptonKinematics * getPlepton() const{return lepton;} /*!< get pointer to lepton object */
-  TElectronKinematics * getPelectron() const{return electron;} /*!< get pointer to lepton object */
+  LeptonKinematics * getPlepton() const{return lepton;} /*!< get pointer to lepton object */
+  ElectronKinematics * getPelectron() const{return electron;} /*!< get pointer to lepton object */
    
 private:
   std::string homedir; /*!< Contains dir with all input */
   double prec; /*!< precision you want in the integrations */
   double integrator; /*!< choice of integrator */
-  TLeptonKinematics *lepton; /*!<  kinematics */
-  TElectronKinematics *electron; /*!< NC lepton kinematics */
+  LeptonKinematics *lepton; /*!<  kinematics */
+  ElectronKinematics *electron; /*!< NC lepton kinematics */
   MeanFieldNucleusThick *pnucl; /*!< pointer to nucleus */
 //   double kinfactors[6]; /*!< electron kinematic factors, get multiplied with response functions */
 //   double response[5][9]; /*!< response functions, from the hadronic tensor */

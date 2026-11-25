@@ -9,8 +9,8 @@
 #ifndef DEUTERONSTRUCTURE_HPP
 #define DEUTERONSTRUCTURE_HPP
 
-#include <Tools/Kinematics/TKinematics2to2.hpp>
-#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/Kinematics/Kinematics2to2.hpp>
+#include <Tools/Kinematics/ElectronKinematics.hpp>
 #include <string>
 #include <Tools/Kinematics/LightConeKin2to2.hpp>
 
@@ -41,19 +41,19 @@ public:
   
   /*! return all four structure functions in semi-inclusive kinematics <BR>
    * For details see Phys.Rev. C84 (2011) 014601 Eqs. (24-30)
-   * \param kin semi-exclusive gamma+D->X+N kinematics, see TKinematics2to2 <BR>
-   * in TKinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
+   * \param kin semi-exclusive gamma+D->X+N kinematics, see Kinematics2to2 <BR>
+   * in Kinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
    * \param[out] FL FL structure function
    * \param[out] FT FT structure function
    * \param[out] FTT FTT structure function
    * \param[out] FTL FTL structure function
    * \param Einoff [MeV] off-shell energy of interacting nucleon
    */
-  void getStructureFunctions(TKinematics2to2 &kin, double &FL, double &FT, double &FTT, double &FTL, double Einoff) const;
+  void getStructureFunctions(Kinematics2to2 &kin, double &FL, double &FT, double &FTT, double &FTL, double Einoff) const;
   /*! return all four structure functions in semi-inclusive kinematics and F2 (to extract prefactor)<BR>
    * For details see Phys.Rev. C84 (2011) 014601 Eqs. (24-30)
-   * \param kin semi-exclusive gamma+D->X+N kinematics, see TKinematics2to2 <BR>
-   * in TKinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
+   * \param kin semi-exclusive gamma+D->X+N kinematics, see Kinematics2to2 <BR>
+   * in Kinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
    * \param[out] FL FL structure function
    * \param[out] FT FT structure function
    * \param[out] FTT FTT structure function
@@ -61,12 +61,12 @@ public:
    * \param[out] F2 F2N nucleon structure function
    * \param Einoff [MeV] off-shell energy of interacting nucleon
    */
-  void getStructureFunctions(TKinematics2to2 &kin, double &FL, double &FT, double &FTT, double &FTL, double &F2, double Einoff) const;
+  void getStructureFunctions(Kinematics2to2 &kin, double &FL, double &FT, double &FTT, double &FTL, double &F2, double Einoff) const;
   /*! return all four structure functions in semi-inclusive kinematics <BR>
    * For details see Phys.Rev. C84 (2011) 014601 Eqs. (24-30)<BR>
    * This one is for DIS where an off-shell X is produced, W is the mass and enters as input
-   * \param kin semi-exclusive gamma+D->X+N kinematics, see TKinematics2to2 <BR>
-   * in TKinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
+   * \param kin semi-exclusive gamma+D->X+N kinematics, see Kinematics2to2 <BR>
+   * in Kinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
    * \param[out] FL FL structure function
    * \param[out] FT FT structure function
    * \param[out] FTT FTT structure function
@@ -74,24 +74,24 @@ public:
    * \param Wsq [MeV^2] mass of produced X squared, differs from invariant p_X^2 due to off-shellness
    * \param Einoff [MeV] off-shell energy of interacting nucleon
    */
-  void getStructureFunctions_off(TKinematics2to2 &kin, double &FL, double &FT, double &FTT, double &FTL, double Wsq, double Einoff) const;
+  void getStructureFunctions_off(Kinematics2to2 &kin, double &FL, double &FT, double &FTT, double &FTL, double Wsq, double Einoff) const;
   /*! gives you the combination of all structure functions
-   * \param kin semi-exclusive gamma+D->X+N kinematics, see TKinematics2to2 <BR>
-   * in TKinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
-   * \param[in] el electron kinematics, see TElectronKinematics
+   * \param kin semi-exclusive gamma+D->X+N kinematics, see Kinematics2to2 <BR>
+   * in Kinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
+   * \param[in] el electron kinematics, see ElectronKinematics
    * \param phi [rad] angle between electron scattering plane and hadron reaction plane
    * \param Einoff [MeV] off-shell energy of interacting nucleon
    */
-  double getStructure(TKinematics2to2 &kin, TElectronKinematics &el, double phi, double Einoff) const;
+  double getStructure(Kinematics2to2 &kin, ElectronKinematics &el, double phi, double Einoff) const;
   /*! combination of all structure functions averaged over phi (angle between hadron and electron plane)
-   * \param kin semi-exclusive gamma+D->X+N kinematics, see TKinematics2to2 <BR>
-   * in TKinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
-    * \param[in] el electron kinematics, see TElectronKinematics
+   * \param kin semi-exclusive gamma+D->X+N kinematics, see Kinematics2to2 <BR>
+   * in Kinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
+    * \param[in] el electron kinematics, see ElectronKinematics
      * \param Einoff [MeV] off-shell energy of interacting nucleon
      * \param avg 0: not averaged over phi, 1 averaged over phi
      * \param phi [rads] phi angle of tagged spectator, irrelevant if avg=1
    */
-  double getDeutStructure(TKinematics2to2 &kin, TElectronKinematics &el, double Einoff, bool avg, double phi) const;
+  double getDeutStructure(Kinematics2to2 &kin, ElectronKinematics &el, double Einoff, bool avg, double phi) const;
   /*! combination of all structure functions averaged over phi (angle between hadron and electron plane) for LC formalism
    * \param kin semi-exclusive gamma+D->X+N kinematics, see LightConeKin2to2 <BR>
    */
@@ -103,76 +103,76 @@ public:
   /*! prefactor needed in neutron structure function extraction,
    * obtained from combination of all structure functions averaged over phi (angle between hadron and electron plane) 
    * divided by F2N
-   * \param kin semi-exclusive gamma+D->X+N kinematics, see TKinematics2to2 <BR>
-   * in TKinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
-    * \param[in] el electron kinematics, see TElectronKinematics
+   * \param kin semi-exclusive gamma+D->X+N kinematics, see Kinematics2to2 <BR>
+   * in Kinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
+    * \param[in] el electron kinematics, see ElectronKinematics
      * \param Einoff [MeV] off-shell energy of interacting nucleon
    */
-  double getavgPrefactor(TKinematics2to2 &kin, TElectronKinematics &el, double Einoff) const;
+  double getavgPrefactor(Kinematics2to2 &kin, ElectronKinematics &el, double Einoff) const;
   /*! combination of all structure functions averaged over phi (angle between hadron and electron plane)
    * Off-shell produced X case here!!!  mass W is known, but differs from invariant mass 
-   * \param[in] kin semi-exclusive gamma+D->X+N kinematics, see TKinematics2to2 <BR>
-   * in TKinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
-    * \param[in] el electron kinematics, see TElectronKinematics
+   * \param[in] kin semi-exclusive gamma+D->X+N kinematics, see Kinematics2to2 <BR>
+   * in Kinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
+    * \param[in] el electron kinematics, see ElectronKinematics
     * \param Wsq [MeV^2] invariant mass squared of produced X
      * \param Einoff [MeV] off-shell energy of interacting nucleon
      * \result [] prefactor
    */
-  double getavgStructure_off(TKinematics2to2 &kin, TElectronKinematics &el, double Wsq, double Einoff) const;
+  double getavgStructure_off(Kinematics2to2 &kin, ElectronKinematics &el, double Wsq, double Einoff) const;
   /*! Deuteron F2 structure functions, used in the inclusive calculations, defined as
    * \f$ F_2^D = F_L^D + \frac{Q^2}{2|q|^2}\frac{\nu}{m_N}F_T^D \f$
-   * \param kin semi-exclusive gamma+D->X+N kinematics, see TKinematics2to2 <BR>
-   * in TKinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
+   * \param kin semi-exclusive gamma+D->X+N kinematics, see Kinematics2to2 <BR>
+   * in Kinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
   * \param Einoff [MeV] off-shell energy of interacting nucleon
    */
-  double getInclStructure(TKinematics2to2 &kin, double Einoff) const;
+  double getInclStructure(Kinematics2to2 &kin, double Einoff) const;
   /*! Deuteron F2 structure functions, used in the inclusive calculations, defined as
    * \f$ F_2^D = F_L^D + \frac{Q^2}{2|q|^2}\frac{\nu}{m_N}F_T^D \f$ <BR>
    * Off-shell produced X case here!!!  mass W is known, but differs from invariant mass 
-   * \param kin semi-exclusive gamma+D->X+N kinematics, see TKinematics2to2 <BR>
-   * in TKinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
+   * \param kin semi-exclusive gamma+D->X+N kinematics, see Kinematics2to2 <BR>
+   * in Kinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
    * \param Wsq [MeV^2] mass of produced X squared, differs from invariant p_X^2 due to off-shellness
   * \param Einoff [MeV] off-shell energy of interacting nucleon
    */
-  double getInclStructure_off(TKinematics2to2 &kin, double Wsq, double Einoff) const;
+  double getInclStructure_off(Kinematics2to2 &kin, double Wsq, double Einoff) const;
   /*! Deuteron F2 response functions including electron factors, split in dependence on phi spectator
    * 
-   * \param kin [in] semi-exclusive gamma+D->X+N kinematics, see TKinematics2to2 <BR>
-   * in TKinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
-   * \param[in] el electron kinematics, see TElectronKinematics
+   * \param kin [in] semi-exclusive gamma+D->X+N kinematics, see Kinematics2to2 <BR>
+   * in Kinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
+   * \param[in] el electron kinematics, see ElectronKinematics
    * \param[out] ResLandT longitudinal and transverse part
    * \param[out] ResTL TL part
    * \param [out] ResTT TT part
    * \param Einoff [MeV] off-shell energy of interacting nucleon
    */
-  void getResponses(TKinematics2to2 &kin, TElectronKinematics &el, double &ResLandT, double &ResTT, double &ResTL, double Einoff) const;
+  void getResponses(Kinematics2to2 &kin, ElectronKinematics &el, double &ResLandT, double &ResTT, double &ResTL, double Einoff) const;
   /*! Deuteron F2 response functions including electron factors, split in dependence on phi spectator
    * 
-   * \param kin [in] semi-exclusive gamma+D->X+N kinematics, see TKinematics2to2 <BR>
-   * in TKinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
-   * \param[in] el electron kinematics, see TElectronKinematics
+   * \param kin [in] semi-exclusive gamma+D->X+N kinematics, see Kinematics2to2 <BR>
+   * in Kinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
+   * \param[in] el electron kinematics, see ElectronKinematics
    * \param Wsq [MeV^2] mass of produced X squared, differs from invariant p_X^2 due to off-shellness
    * \param[out] ResLandT longitudinal and transverse part
    * \param[out] ResTL TL part
    * \param [out] ResTT TT part
    * \param Einoff [MeV] off-shell energy of interacting nucleon
    */
-  void getResponses_off(TKinematics2to2 &kin, TElectronKinematics &el, double Wsq,
+  void getResponses_off(Kinematics2to2 &kin, ElectronKinematics &el, double Wsq,
 			double &ResLandT, double &ResTT, double &ResTL, double Einoff) const;
                         
   /*! gives you the lepton SSA deuteron structure function.  Goes like g1+g2 times a kinematic factor
    * 
-  * \param kin [in] semi-exclusive gamma+D->X+N kinematics, see TKinematics2to2 <BR>
-   * in TKinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
-   * \param[in] el electron kinematics, see TElectronKinematics
+  * \param kin [in] semi-exclusive gamma+D->X+N kinematics, see Kinematics2to2 <BR>
+   * in Kinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
+   * \param[in] el electron kinematics, see ElectronKinematics
    * \param Einoff [MeV] off-shell energy of interacting nucleon
    */
-  double getLeptonSSA_sf(TKinematics2to2 &kin, TElectronKinematics &el, double Einoff) const;
+  double getLeptonSSA_sf(Kinematics2to2 &kin, ElectronKinematics &el, double Einoff) const;
     
   const std::string & getName() const{return name;} ///< name of the structure-function parametrization
   
 private:
-//   TElectronKinematics electron; /*!< electron kinematics */
+//   ElectronKinematics electron; /*!< electron kinematics */
   bool proton; /*!< photon interacts with proton [1] or neutron [0] */
   std::string name; /*!< string that has the structure function parametrization name */
   double massi; /*!< mass of nucleon interacting with photon */

@@ -52,11 +52,11 @@ struct F {
 		p.f(ret,x,p.P,p.u_pm,p.u_ps,p.nuc,p.shellindex1,p.m1,p.shellindex2,p.m2);
 	}
 	MeanFieldNucleusThick* nuc;
-	TSpinor *u_pm,*u_ps;
+	Spinor *u_pm,*u_ps;
 	int shellindex1,m1,shellindex2,m2;
 	nucqcd::Vector3 P;
 
-	void (*f)(complex<double>& , const numint::array<double,3>&, nucqcd::Vector3& P,TSpinor*, TSpinor*, MeanFieldNucleusThick*, int, int,int,int);
+	void (*f)(complex<double>& , const numint::array<double,3>&, nucqcd::Vector3& P,Spinor*, Spinor*, MeanFieldNucleusThick*, int, int,int,int);
 };
 /** a struct for elastic nucleon nucleon rescattering **/
 struct F_Glauber : F { 
@@ -66,7 +66,7 @@ struct F_Glauber : F {
 	}
 	GlauberGridThick* grid;
 	
-	void (*f)(complex<double>& , const numint::array<double,3>&, nucqcd::Vector3& P,TSpinor*, TSpinor*, MeanFieldNucleusThick*,int, int,int,int,GlauberGridThick*);
+	void (*f)(complex<double>& , const numint::array<double,3>&, nucqcd::Vector3& P,Spinor*, Spinor*, MeanFieldNucleusThick*,int, int,int,int,GlauberGridThick*);
 };
 /** a struct for single charge exchange nucleon nucleon rescattering **/
 struct F_SCX : F {
@@ -76,7 +76,7 @@ struct F_SCX : F {
 	}
 	GlauberGridThick_SCX* grid;
 
-	void (*f)(complex<double>&, const numint::array<double,3>&, nucqcd::Vector3& P,TSpinor*,TSpinor*,MeanFieldNucleusThick*,int,int,int,int,GlauberGridThick_SCX* grid);
+	void (*f)(complex<double>&, const numint::array<double,3>&, nucqcd::Vector3& P,Spinor*,Spinor*,MeanFieldNucleusThick*,int,int,int,int,GlauberGridThick_SCX* grid);
 };
 
 /** a struct for single elastic scattering nucleon nucleon rescattering **/
@@ -87,7 +87,7 @@ struct F_SEL : F {
 	}
 	GlauberGridThick_SEL* grid;
 
-	void (*f)(complex<double>&, const numint::array<double,3>&, nucqcd::Vector3& P,TSpinor*,TSpinor*,MeanFieldNucleusThick*,int,int,int,int,GlauberGridThick_SEL* grid);
+	void (*f)(complex<double>&, const numint::array<double,3>&, nucqcd::Vector3& P,Spinor*,Spinor*,MeanFieldNucleusThick*,int,int,int,int,GlauberGridThick_SEL* grid);
 };
 /** expose dist2bodymom function so that i can use it in python or whatever **/
 /*extern "C" double dist2bodymom(void* nuc,int stat,
@@ -174,14 +174,14 @@ void dist2bodymom_SEL(MeanFieldNucleusThick& nuc,Event& e,double& res,double& er
 	f.shellindex2 = e.shellindex2;
 	f.P = e.k1 + e.p2; // c.m. momentum
 	f.grid = &grid;
-	TSpinor::Polarization::State pol[2] = {TSpinor::Polarization::kDown,TSpinor::Polarization::kUp}; // make a list to use my beloved basic forloops
+	Spinor::Polarization::State pol[2] = {Spinor::Polarization::kDown,Spinor::Polarization::kUp}; // make a list to use my beloved basic forloops
 	for (int s1=0; s1<2; s1++) // sum m_s1
 	{
-		TSpinor u_k1 = TSpinor(f_k1,e.mass1,TSpinor::Polarization(0.,0.,pol[s1]),TSpinor::kUnity);
+		Spinor u_k1 = Spinor(f_k1,e.mass1,Spinor::Polarization(0.,0.,pol[s1]),Spinor::kUnity);
 		f.u_pm = &u_k1;
 		for (int s2=0; s2<2; s2++) // sum m_s2
 		{
-			TSpinor u_p2 = TSpinor(f_p2,e.mass2,TSpinor::Polarization(0.,0.,pol[s2]),TSpinor::kUnity);
+			Spinor u_p2 = Spinor(f_p2,e.mass2,Spinor::Polarization(0.,0.,pol[s2]),Spinor::kUnity);
 			f.u_ps = &u_p2;
 			for (int m1 = -nuc.getJ_array()[e.shellindex1]; m1 <= nuc.getJ_array()[e.shellindex1]; m1+=2) // sum m1
 			{
@@ -257,14 +257,14 @@ void dist2bodymom_SCX(MeanFieldNucleusThick& nuc,Event& e,double& res,double& er
 	f.shellindex2 = e.shellindex2;
 	f.P = e.k1 + e.p2; // c.m. momentum
 	f.grid = &grid;
-	TSpinor::Polarization::State pol[2] = {TSpinor::Polarization::kDown,TSpinor::Polarization::kUp}; // make a list to use my beloved basic forloops
+	Spinor::Polarization::State pol[2] = {Spinor::Polarization::kDown,Spinor::Polarization::kUp}; // make a list to use my beloved basic forloops
 	for (int s1=0; s1<2; s1++) // sum m_s1
 	{
-		TSpinor u_k1 = TSpinor(f_k1,e.mass1,TSpinor::Polarization(0.,0.,pol[s1]),TSpinor::kUnity);
+		Spinor u_k1 = Spinor(f_k1,e.mass1,Spinor::Polarization(0.,0.,pol[s1]),Spinor::kUnity);
 		f.u_pm = &u_k1;
 		for (int s2=0; s2<2; s2++) // sum m_s2
 		{
-			TSpinor u_p2 = TSpinor(f_p2,e.mass2,TSpinor::Polarization(0.,0.,pol[s2]),TSpinor::kUnity);
+			Spinor u_p2 = Spinor(f_p2,e.mass2,Spinor::Polarization(0.,0.,pol[s2]),Spinor::kUnity);
 			f.u_ps = &u_p2;
 			for (int m1 = -nuc.getJ_array()[e.shellindex1]; m1 <= nuc.getJ_array()[e.shellindex1]; m1+=2) // sum m1
 			{
@@ -345,14 +345,14 @@ void dist2bodymom_glauber(MeanFieldNucleusThick& nuc,Event& e,double& res,double
 	f.shellindex2 = e.shellindex2;
 	f.P = e.k1 + e.p2; // c.m. momentum
 	f.grid = &grid;
-	TSpinor::Polarization::State pol[2] = {TSpinor::Polarization::kDown,TSpinor::Polarization::kUp}; // make a list to use my beloved basic forloops
+	Spinor::Polarization::State pol[2] = {Spinor::Polarization::kDown,Spinor::Polarization::kUp}; // make a list to use my beloved basic forloops
 	for (int s1=0; s1<2; s1++) // sum m_s1
 	{
-		TSpinor u_k1 = TSpinor(f_k1,e.mass1,TSpinor::Polarization(0.,0.,pol[s1]),TSpinor::kUnity);
+		Spinor u_k1 = Spinor(f_k1,e.mass1,Spinor::Polarization(0.,0.,pol[s1]),Spinor::kUnity);
 		f.u_pm = &u_k1;
 		for (int s2=0; s2<2; s2++) // sum m_s2
 		{
-			TSpinor u_p2 = TSpinor(f_p2,e.mass2,TSpinor::Polarization(0.,0.,pol[s2]),TSpinor::kUnity);
+			Spinor u_p2 = Spinor(f_p2,e.mass2,Spinor::Polarization(0.,0.,pol[s2]),Spinor::kUnity);
 			f.u_ps = &u_p2;
 			for (int m1 = -nuc.getJ_array()[e.shellindex1]; m1 <= nuc.getJ_array()[e.shellindex1]; m1+=2) // sum m1
 			{
@@ -417,14 +417,14 @@ void dist2bodymom_rpwia(MeanFieldNucleusThick& nuc,Event& e,double& res,double& 
 	f.shellindex2 = e.shellindex2;
 	f.P = e.k1 + e.p2 ; // c.m. momentum P = k1 + p2
 	//cout << vecString(f.P) << "\t Mag: " << f.P.Mag() << "\t";
-	TSpinor::Polarization::State pol[2] = {TSpinor::Polarization::kDown,TSpinor::Polarization::kUp}; // make a list to use my beloved basic forloops
+	Spinor::Polarization::State pol[2] = {Spinor::Polarization::kDown,Spinor::Polarization::kUp}; // make a list to use my beloved basic forloops
 	for (int s1=0; s1<2; s1++) // sum s_1
 	{
-		TSpinor u_k1 = TSpinor(f_k1,e.mass1,TSpinor::Polarization(0.,0.,pol[s1]),TSpinor::kUnity);
+		Spinor u_k1 = Spinor(f_k1,e.mass1,Spinor::Polarization(0.,0.,pol[s1]),Spinor::kUnity);
 		f.u_pm = &u_k1;
 		for (int s2=0; s2<2; s2++) // sum s_2
 		{
-			TSpinor u_p2 = TSpinor(f_p2,e.mass2,TSpinor::Polarization(0.,0.,pol[s2]),TSpinor::kUnity);
+			Spinor u_p2 = Spinor(f_p2,e.mass2,Spinor::Polarization(0.,0.,pol[s2]),Spinor::kUnity);
 			f.u_ps = &u_p2;
 			for (int m1 = -nuc.getJ_array()[e.shellindex1]; m1 <= nuc.getJ_array()[e.shellindex1]; m1+=2) // sum m1
 			{
@@ -482,28 +482,28 @@ void dist2bodymom_rpwia(MeanFieldNucleusThick& nuc,Event& e,double& res,double& 
 	//return intgrl_res;
 }
 
-void integrandum_rwpia(complex<double>& res, const numint::array<double,3>& x, nucqcd::Vector3& P, TSpinor* u_pm, TSpinor* u_ps, MeanFieldNucleusThick* nuc, int shellindex1, int m1, int shellindex2,int m2)
+void integrandum_rwpia(complex<double>& res, const numint::array<double,3>& x, nucqcd::Vector3& P, Spinor* u_pm, Spinor* u_ps, MeanFieldNucleusThick* nuc, int shellindex1, int m1, int shellindex2,int m2)
 {
 	double sinth = sqrt(1.-x[1]*x[1]);
 	double PR = P*nucqcd::Vector3(x[0]*sinth*cos(x[2]),x[0]*sinth*sin(x[2]),x[0]*x[1]); // dot product of vector P with vector R
-	res = exp(-nucqcd::i_unit*nucqcd::inv_hbarc*PR)*TSpinor::Bar(*u_pm)*TMFSpinor(*nuc,shellindex1,m1,x[0],x[1],x[2])*TSpinor::Bar(*u_ps)*TMFSpinor(*nuc,shellindex2,m2,x[0],x[1],x[2]); // Wavefunctions already defined with factor r, so no r^2 that would appear from jacobian, no sin(theta) because we integrate over d(cos(theta))
+	res = exp(-nucqcd::i_unit*nucqcd::inv_hbarc*PR)*Spinor::Bar(*u_pm)*MeanFieldSpinor(*nuc,shellindex1,m1,x[0],x[1],x[2])*Spinor::Bar(*u_ps)*MeanFieldSpinor(*nuc,shellindex2,m2,x[0],x[1],x[2]); // Wavefunctions already defined with factor r, so no r^2 that would appear from jacobian, no sin(theta) because we integrate over d(cos(theta))
 }
 
-void integrandum_glauber(complex<double>& res, const numint::array<double,3>& x, nucqcd::Vector3& P, TSpinor* u_pm, TSpinor* u_ps, MeanFieldNucleusThick* nuc, int shellindex1, int m1, int shellindex2,int m2, GlauberGridThick* grid)
+void integrandum_glauber(complex<double>& res, const numint::array<double,3>& x, nucqcd::Vector3& P, Spinor* u_pm, Spinor* u_ps, MeanFieldNucleusThick* nuc, int shellindex1, int m1, int shellindex2,int m2, GlauberGridThick* grid)
 {
 	complex<double> rwpia;
 	integrandum_rwpia(rwpia,x,P,u_pm,u_ps,nuc,shellindex1,m1,shellindex2,m2);
 	res = rwpia*grid->getFsiGridFull_interp3(x[0],x[1],x[2]);
 }
 
-void integrandum_SCX(complex<double>& res, const numint::array<double,3>& x, nucqcd::Vector3& P, TSpinor* u_pm, TSpinor* u_ps, MeanFieldNucleusThick* nuc, int shellindex1, int m1, int shellindex2,int m2, GlauberGridThick_SCX* grid)
+void integrandum_SCX(complex<double>& res, const numint::array<double,3>& x, nucqcd::Vector3& P, Spinor* u_pm, Spinor* u_ps, MeanFieldNucleusThick* nuc, int shellindex1, int m1, int shellindex2,int m2, GlauberGridThick_SCX* grid)
 {
 	complex<double> rwpia;
 	integrandum_rwpia(rwpia,x,P,u_pm,u_ps,nuc,shellindex1,m1,shellindex2,m2);
 	res = rwpia*grid->getInterp(x); // x is r,costheta,phi
 }
 
-void integrandum_SEL(complex<double>& res, const numint::array<double,3>& x, nucqcd::Vector3& P, TSpinor* u_pm, TSpinor* u_ps, MeanFieldNucleusThick* nuc, int shellindex1, int m1, int shellindex2,int m2, GlauberGridThick_SEL* grid)
+void integrandum_SEL(complex<double>& res, const numint::array<double,3>& x, nucqcd::Vector3& P, Spinor* u_pm, Spinor* u_ps, MeanFieldNucleusThick* nuc, int shellindex1, int m1, int shellindex2,int m2, GlauberGridThick_SEL* grid)
 {
 	complex<double> rwpia;
 	integrandum_rwpia(rwpia,x,P,u_pm,u_ps,nuc,shellindex1,m1,shellindex2,m2);

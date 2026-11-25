@@ -31,7 +31,7 @@ przprime(-9999.),
 offshellset(offshells),
 looplimit(loop_limit)
 {
-  wfref = TDeuteron::Wavefunction::CreateWavefunction(name);
+  wfref = Deuteron::Wavefunction::CreateWavefunction(name);
   for(int i=0;i<=1000;i++){
     wf.AddUp(i,wfref->GetUp(i));
     wf.AddWp(i,wfref->GetWp(i));
@@ -74,7 +74,7 @@ massi(MASS_N),
 massr(MASS_N),
 przprime(-9999.),
 offshellset(3){
-  wfref = TDeuteron::Wavefunction::CreateWavefunction(name);
+  wfref = Deuteron::Wavefunction::CreateWavefunction(name);
   for(int i=0;i<=2000.;i++){
     wf.AddUp(i,wfref->GetUp(i));
     wf.AddWp(i,wfref->GetWp(i));
@@ -98,7 +98,7 @@ DeuteronMomDistr::DeuteronMomDistr(const DeuteronMomDistr& rhs){
   massr=rhs.massr;
   przprime=rhs.przprime;
   offshellset=rhs.przprime;
-  wfref = TDeuteron::Wavefunction::CreateWavefunction(wfname);
+  wfref = Deuteron::Wavefunction::CreateWavefunction(wfname);
   wf=rhs.wf;
 }
 
@@ -114,7 +114,7 @@ DeuteronMomDistr& DeuteronMomDistr::operator=(const DeuteronMomDistr& rhs){
     massr=rhs.massr;
     przprime=rhs.przprime;
     offshellset=rhs.przprime;
-    wfref = TDeuteron::Wavefunction::CreateWavefunction(wfname);
+    wfref = Deuteron::Wavefunction::CreateWavefunction(wfname);
     wf=rhs.wf;
   }
   return *this;
@@ -136,7 +136,7 @@ void DeuteronMomDistr::setScatter(double sigmain, double betain, double epsin){
  return; 
 }
 
-double DeuteronMomDistr::getLCMomDistrpw(TKinematics2to2 &kin) const{
+double DeuteronMomDistr::getLCMomDistrpw(Kinematics2to2 &kin) const{
   //kaon translates to spectator nucleon
   double pwtotal=0.;
   double alpha=2.*(kin.GetEklab()-kin.GetPklab()*kin.GetCosthklab())/nucqcd::mass_d; //lightcone alpha_s=(E-p_z)/M_n
@@ -185,7 +185,7 @@ double DeuteronMomDistr::getLCMomDistrpw(nucqcd::Vector3 p) const{
   return (pow(wf.GetUp(k),2.)+pow(wf.GetWp(k),2.))/(4.*PI)*sqrt(massr*massr+k*k)/pow(2.-alpha,2.)/E; 
 }
 
-double DeuteronMomDistr::getMomDistrpw(TKinematics2to2 &kin) const{
+double DeuteronMomDistr::getMomDistrpw(Kinematics2to2 &kin) const{
   //kaon translates to spectator nucleon
   double pwtotal=0.;
 //   double sintheta=sqrt(1.-kin.GetCosthklab()*kin.GetCosthklab());
@@ -212,7 +212,7 @@ double DeuteronMomDistr::getMomDistrpwLC(LightConeKin2to2 &kin) const{
 	    *kin.getEk()/kin.getAlpha_s()/kin.getAlpha_i();
 }
 
-double DeuteronMomDistr::getAzzDistrpw(TKinematics2to2 &kin) const{
+double DeuteronMomDistr::getAzzDistrpw(Kinematics2to2 &kin) const{
   //kaon translates to spectator nucleon
   double pwtotal=0.;
   double sintheta=sqrt(1.-kin.GetCosthklab()*kin.GetCosthklab());
@@ -260,7 +260,7 @@ complex<double> DeuteronMomDistr::getMomDistrpwcoh(nucqcd::Vector3 pvec,nucqcd::
 }
 
 
-double DeuteronMomDistr::getMomDistrfsi(TKinematics2to2 &kin, double phi){
+double DeuteronMomDistr::getMomDistrfsi(Kinematics2to2 &kin, double phi){
   //kaon translates to spectator nucleon
   double fsitotal=0.;
   double sintheta=sqrt(1.-kin.GetCosthklab()*kin.GetCosthklab());
@@ -306,7 +306,7 @@ double DeuteronMomDistr::getMomDistrfsi(TKinematics2to2 &kin, double phi){
 }
 
 
-double DeuteronMomDistr::getMomDistr_y_fsi(TKinematics2to2 &kin, double phi){
+double DeuteronMomDistr::getMomDistr_y_fsi(Kinematics2to2 &kin, double phi){
   //kaon translates to spectator nucleon
   double fsitotal=0.;
   double sintheta=sqrt(1.-kin.GetCosthklab()*kin.GetCosthklab());
@@ -394,7 +394,7 @@ double DeuteronMomDistr::getMomDistrfsiLC(LightConeKin2to2 &kin){
   return fsitotal/kin.getAlpha_i()/kin.getAlpha_s();
 }
 
-double DeuteronMomDistr::getAzzDistrfsi(TKinematics2to2 &kin, double phi){
+double DeuteronMomDistr::getAzzDistrfsi(Kinematics2to2 &kin, double phi){
   //kaon translates to spectator nucleon
   double fsitotal=0.;
   double sintheta=sqrt(1.-kin.GetCosthklab()*kin.GetCosthklab());
@@ -440,7 +440,7 @@ double DeuteronMomDistr::getAzzDistrfsi(TKinematics2to2 &kin, double phi){
 }
 
 void DeuteronMomDistr::FSI_int(numint::vector_z & result, double qt, double qphi, DeuteronMomDistr &momdistr,
-			       TKinematics2to2 &kin, int M, int spinr, double Er, double phi){
+			       Kinematics2to2 &kin, int M, int spinr, double Er, double phi){
   result=numint::vector_z(1,0.);
   if(qt<1.E-03) { result[0]=0.; return;}
   
@@ -489,7 +489,7 @@ void DeuteronMomDistr::FSI_int(numint::vector_z & result, double qt, double qphi
 }
 
 void DeuteronMomDistr::FSI_y_int(numint::vector_z & result, double qt, double qphi, DeuteronMomDistr &momdistr,
-			       TKinematics2to2 &kin, int M, int spinr, double Er, double phi){
+			       Kinematics2to2 &kin, int M, int spinr, double Er, double phi){
   result=numint::vector_z(2,0.);
   if(qt<1.E-03) { result[0]=result[1]=0.; return;}
   
@@ -628,7 +628,7 @@ void DeuteronMomDistr::FSILC_int(numint::vector_z & result, double qt, double qp
 
 // void DeuteronMomDistr::totdens_qt(const double qt, complex<double>* result, va_list ap){
 //   
-//   TKinematics2to2 *pkin = va_arg(ap, TKinematics2to2*);
+//   Kinematics2to2 *pkin = va_arg(ap, Kinematics2to2*);
 //   int M = va_arg(ap,int);
 //   int spinr = va_arg(ap,int);
 //   double Er = va_arg(ap,double);
@@ -643,7 +643,7 @@ void DeuteronMomDistr::FSILC_int(numint::vector_z & result, double qt, double qp
 // 
 // void DeuteronMomDistr::totdens_qphi(const double qphi, complex<double>* result, va_list ap){
 //   
-//   TKinematics2to2 *pkin = va_arg(ap, TKinematics2to2*);
+//   Kinematics2to2 *pkin = va_arg(ap, Kinematics2to2*);
 //   double qt = va_arg(ap,double);
 //   int M = va_arg(ap,int);
 //   int spinr = va_arg(ap,int);
@@ -684,7 +684,7 @@ void DeuteronMomDistr::FSILC_int(numint::vector_z & result, double qt, double qp
 //   
 // }
 
-void DeuteronMomDistr::get_przprime(double pt2, double Er, TKinematics2to2 & kin){
+void DeuteronMomDistr::get_przprime(double pt2, double Er, Kinematics2to2 & kin){
   przprime=0.;
   for(int i=0;i<looplimit;i++){
     double f_Erprime=sqrt(massr*massr+pt2+przprime*przprime);  //guess for on-shell energy of initial spectator

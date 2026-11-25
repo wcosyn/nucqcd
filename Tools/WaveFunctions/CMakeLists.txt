@@ -1,16 +1,16 @@
-# libToolsWaveFunctions: deuteron wave functions (TDeuteron and its implementations TYukawaPWF,
-# TGrossPWF, TCstPWF, TInterpolatingWavefunction; OldDeuteron) and the He3 wave function (He3wf, a
+# libToolsWaveFunctions: deuteron wave functions (Deuteron and its implementations YukawaWavefunction,
+# GrossWavefunction, CstWavefunction, InterpolatingWavefunction; OldDeuteron) and the He3 wave function (He3wf, a
 # wrapper around the Fortran getwavemod_tm.f with its helpers clebsch.f and spline.f).
-# TDeuteron.hpp uses TKinematics2to3, hence the link to ToolsKinematics.
+# Deuteron.hpp uses Kinematics2to3, hence the link to ToolsKinematics.
 
 nucqcd_add_library(ToolsWaveFunctions
   SOURCES
-    TDeuteron.cpp
-    TWavefunctionImplementation.cpp
-    TYukawaPWF.cpp
-    TGrossPWF.cpp
-    TCstPWF.cpp
-    TInterpolatingWavefunction.cpp
+    Deuteron.cpp
+    WavefunctionImplementation.cpp
+    YukawaWavefunction.cpp
+    GrossWavefunction.cpp
+    CstWavefunction.cpp
+    InterpolatingWavefunction.cpp
     OldDeuteron.cpp
     WaveFunctionModels.cpp
     He3wf.cpp

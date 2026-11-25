@@ -58,7 +58,7 @@ DeuteronCross& DeuteronCross::operator=(const DeuteronCross& rhs){
 }
 
 
-double DeuteronCross::getavgBonus(TKinematics2to2 &kin,TElectronKinematics &elec, bool lc){
+double DeuteronCross::getavgBonus(Kinematics2to2 &kin,ElectronKinematics &elec, bool lc){
   
   double dens=lc? momdistr.getLCMomDistrpw(kin) : momdistr.getMomDistrpw(kin); 
   FourVector<double> k_in, k_out;
@@ -114,8 +114,8 @@ void DeuteronCross::getBonusextrapolate(double Q2, double W, double Ein, double 
   cout << xprime << " " << xx << endl;*/
   double x=Q2/(2.*massi*nu);
     
-  TKinematics2to2 kin("","",nucqcd::mass_d,nucqcd::mass_p,W,"qsquared:wlab:pklab",Q2,nu,pr);
-  TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ein);
+  Kinematics2to2 kin("","",nucqcd::mass_d,nucqcd::mass_p,W,"qsquared:wlab:pklab",Q2,nu,pr);
+  ElectronKinematics *elec = ElectronKinematics::CreateWithBeamEnergy(Ein);
 //   DeuteronCross test(*elec,"paris",proton,"SLAC",36.3274,1.97948,-0.5,8.,1.2,4);
   double alphar=(Er-prz)/(nucqcd::mass_d/2.);
 
@@ -188,8 +188,8 @@ double DeuteronCross::getBonus_extrapratio(double Q2, double W, double Ein, doub
   cout << xprime << " " << xx << endl;*/
   double x=Q2/(2.*massi*nu);
     
-  TKinematics2to2 kin("","",nucqcd::mass_d,nucqcd::mass_p,W,"qsquared:wlab:pklab",Q2,nu,pr);
-  TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ein);
+  Kinematics2to2 kin("","",nucqcd::mass_d,nucqcd::mass_p,W,"qsquared:wlab:pklab",Q2,nu,pr);
+  ElectronKinematics *elec = ElectronKinematics::CreateWithBeamEnergy(Ein);
 //   DeuteronCross test(*elec,"paris",proton,"SLAC",36.3274,1.97948,-0.5,8.,1.2,4);
   double alphar=(Er-prz)/(nucqcd::mass_d/2.);
 
@@ -242,8 +242,8 @@ void DeuteronCross::getBonusMCresult(double &MCresult, double &modelresultpw, do
   cout << xprime << " " << xx << endl;*/
   double x=Q2/(2.*massi*nu);
     
-  TKinematics2to2 kin("","",nucqcd::mass_d,nucqcd::mass_p,W,"qsquared:wlab:pklab",Q2,nu,pr);
-  TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ein);
+  Kinematics2to2 kin("","",nucqcd::mass_d,nucqcd::mass_p,W,"qsquared:wlab:pklab",Q2,nu,pr);
+  ElectronKinematics *elec = ElectronKinematics::CreateWithBeamEnergy(Ein);
 //   DeuteronCross test(*elec,"paris",proton,"SLAC",36.3274,1.97948,-0.5,8.,1.2,4);
   
   double Eout=Ein-nu;
@@ -256,7 +256,7 @@ void DeuteronCross::getBonusMCresult(double &MCresult, double &modelresultpw, do
   modelresultfsi= pw? modelresultpw: getavgVNALabCross(kin,*elec,0, Einoff,1,0.)/nucqcd::hbarc/nucqcd::hbarc/10.*2.*Ein*Eout*x/nu/Er;  //go to dEdOmegaed^3ps in GeV-6
 }
 
-double DeuteronCross::getavgVNALabCross(TKinematics2to2 &kin,TElectronKinematics &elec, bool pw, double Einoff, bool avg, double phi){
+double DeuteronCross::getavgVNALabCross(Kinematics2to2 &kin,ElectronKinematics &elec, bool pw, double Einoff, bool avg, double phi){
   
   double y=kin.GetWlab()/elec.GetBeamEnergy(kin); 
   double x=kin.GetQsquared()/(2.*massi*kin.GetWlab());
@@ -313,7 +313,7 @@ double DeuteronCross::getVNACross(LightConeKin2to2 &kin, bool pw){
   double pr=sqrt(pow(kin.getPs_mu()[1]-kin.getA_mu()[1]/2.,2.)+
 		 pow(kin.getPs_mu()[2]-kin.getA_mu()[2]/2.,2.)+
 		 pow(kin.getPs_mu()[3]-kin.getA_mu()[3]/2.,2.));
-  TKinematics2to2 VNAkin("","",kin.getMassA(),kin.getMassN(),kin.getMassX(),"qsquared:wlab:pklab",kin.getQ2(),nu_lab,pr);
+  Kinematics2to2 VNAkin("","",kin.getMassA(),kin.getMassN(),kin.getMassX(),"qsquared:wlab:pklab",kin.getQ2(),nu_lab,pr);
   double dens=pw?momdistr.getMomDistrpw(VNAkin):momdistr.getMomDistrfsi(VNAkin,0.);
   double Dstrucs=structure.getStructureLC(kin);
   return front*dens*Dstrucs*nucqcd::hbarc*nucqcd::hbarc*1.E19*sqrt(pr*pr+kin.getMassN()*kin.getMassN());
@@ -331,7 +331,7 @@ double DeuteronCross::getavgVNACross(LightConeKin2to2 &kin, bool pw){
   double pr=sqrt(pow(kin.getPs_mu()[1]-kin.getA_mu()[1]/2.,2.)+
 		 pow(kin.getPs_mu()[2]-kin.getA_mu()[2]/2.,2.)+
 		 pow(kin.getPs_mu()[3]-kin.getA_mu()[3]/2.,2.));
-  TKinematics2to2 VNAkin("","",kin.getMassA(),kin.getMassN(),kin.getMassX(),"qsquared:wlab:pklab",Q2,nu_lab,pr);
+  Kinematics2to2 VNAkin("","",kin.getMassA(),kin.getMassN(),kin.getMassX(),"qsquared:wlab:pklab",Q2,nu_lab,pr);
   double dens=pw?momdistr.getMomDistrpw(VNAkin):momdistr.getMomDistrfsi(VNAkin,0.);
   double Dstrucs=structure.getavgStructureLC(kin);
   /*cout << "VNA " << front*kin.getEpsilon()*nucqcd::mass_d << " " << dens*kin.getAlpha_s()/kin.getAlpha_i() << " " << Dstrucs/(kin.getEpsilon()*nucqcd::mass_d) 
@@ -342,7 +342,7 @@ double DeuteronCross::getavgVNACross(LightConeKin2to2 &kin, bool pw){
 
 
 
-double DeuteronCross::getavgAzz(TKinematics2to2 &kin,TElectronKinematics &elec, bool azz, bool pw, double Einoff){
+double DeuteronCross::getavgAzz(Kinematics2to2 &kin,ElectronKinematics &elec, bool azz, bool pw, double Einoff){
   
   double y=kin.GetWlab()/elec.GetBeamEnergy(kin); 
   double x=kin.GetQsquared()/(2.*massi*kin.GetWlab());
@@ -385,8 +385,8 @@ void DeuteronCross::getDeepsresult(double Q2, double W, double Ein, double pr, d
   cout << xprime << " " << xx << endl;*/
   double x=Q2/(2.*massi*nu);
     
-  TKinematics2to2 kin("","",nucqcd::mass_d,nucqcd::mass_p,W,"qsquared:wlab:pklab",Q2,nu,pr);
-  TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ein);
+  Kinematics2to2 kin("","",nucqcd::mass_d,nucqcd::mass_p,W,"qsquared:wlab:pklab",Q2,nu,pr);
+  ElectronKinematics *elec = ElectronKinematics::CreateWithBeamEnergy(Ein);
 //   DeuteronCross test(*elec,"paris",proton,"SLAC",36.3274,1.97948,-0.5,8.,1.2,4);
   
   double Eout=Ein-nu;
@@ -438,8 +438,8 @@ void DeuteronCross::getDeepsresultLC(double Q2, double W, double Ein, double pr,
   cout << xprime << " " << xx << endl;*/
   double x=Q2/(2.*massi*nu);
     
-  TKinematics2to2 kin("","",nucqcd::mass_d,nucqcd::mass_p,W,"qsquared:wlab:pklab",Q2,nu,pr);
-  TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ein);
+  Kinematics2to2 kin("","",nucqcd::mass_d,nucqcd::mass_p,W,"qsquared:wlab:pklab",Q2,nu,pr);
+  ElectronKinematics *elec = ElectronKinematics::CreateWithBeamEnergy(Ein);
 //   DeuteronCross test(*elec,"paris",proton,"SLAC",36.3274,1.97948,-0.5,8.,1.2,4);
   
   double Eout=Ein-nu;
@@ -499,8 +499,8 @@ void DeuteronCross::getDeepsAzz(double Q2, double W, double Ein, double pr, doub
   cout << xprime << " " << xx << endl;*/
   double x=Q2/(2.*massi*nu);
     
-  TKinematics2to2 kin("","",nucqcd::mass_d,nucqcd::mass_p,W,"qsquared:wlab:pklab",Q2,nu,pr);
-  TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ein);
+  Kinematics2to2 kin("","",nucqcd::mass_d,nucqcd::mass_p,W,"qsquared:wlab:pklab",Q2,nu,pr);
+  ElectronKinematics *elec = ElectronKinematics::CreateWithBeamEnergy(Ein);
 //   DeuteronCross test(*elec,"paris",proton,"SLAC",36.3274,1.97948,-0.5,8.,1.2,4);
   
   double Eout=Ein-nu;

@@ -33,9 +33,9 @@
 #define DEUTERONCROSS_HPP
 
 #include <Knockout/DeuteronMomDistr.hpp>
-#include <Tools/Kinematics/TKinematics2to2.hpp>
+#include <Tools/Kinematics/Kinematics2to2.hpp>
 #include <Tools/StructureFunctions/DeuteronStructure.hpp>
-#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/Kinematics/ElectronKinematics.hpp>
 #include <Tools/Kinematics/LightConeKin2to2.hpp>
 
 #include <string>
@@ -48,7 +48,7 @@ class DeuteronCross{
   
 public:
     /*! Constructor
-   * \param wfname Deuteron wave function name, see TDeuteron constructor for possibilities ["AV18", "Paris", etc.]
+   * \param wfname Deuteron wave function name, see Deuteron constructor for possibilities ["AV18", "Paris", etc.]
    * \param proton photon interacts with proton [1] or neutron [0]
    * \param strucname which structure function parametrization ["CB"=Christy-Bosted (SLAC above W^2 = 9 GeV^2), "SLAC", "Alekhin", or any other name of NuclStructure: "CTEQ", "MSTW", "LHAPDF:<set>", combinations such as "CB+LHAPDF:CT18LO@4"], see NuclStructure 
    * \param sigmain [mb] total rescattering cross section in FSI
@@ -73,15 +73,15 @@ public:
 
   /*! get the average cross section like it was generated in the BONUS MC
    * \param kin kinematics object containing the gamma+D->X+N kinematics <BR>
-   * in TKinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
+   * in Kinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
    * \param electron has electron kinematics
    * \param lc lightcone density to restore data or VNA one
    * \return [MeV^-6] semi-inclusive cross section \f$ \frac{d\sigma}{d\Omega dE'd^3p_s} \f$ averaged over phi
    */
-  double getavgBonus(TKinematics2to2 &kin, TElectronKinematics &electron, bool lc);
+  double getavgBonus(Kinematics2to2 &kin, ElectronKinematics &electron, bool lc);
   /*! get the average cross section in VNA formalism, only valid in lab frame
    * \param kin kinematics object containing the gamma+D->X+N kinematics <BR>
-   * in TKinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
+   * in Kinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
    * \param electron has electron kinematics
    * \param pw plane-wave calculation [1] or not [0]
    * \param Einoff off-shell energy of the nucleon interacting with the photon
@@ -89,7 +89,7 @@ public:
    * \param phi [rads] azimuthal angle detected spectator, irrelevant if phi=0
    * \return [nb/GeV^4] semi-inclusive cross section \f$ \frac{d\sigma}{dxdQ^2\frac{d^3p_s}{E_s}} \f$ averaged over phi
    */
-  double getavgVNALabCross(TKinematics2to2 &kin, TElectronKinematics &electron, bool pw, double Einoff, bool avg, double phi);
+  double getavgVNALabCross(Kinematics2to2 &kin, ElectronKinematics &electron, bool pw, double Einoff, bool avg, double phi);
   /*! get the average cross section in LC formalism, only valid for collinear LightConeKin2to2!!!
    * \param kin kinematics object containing the gamma+D->X+N kinematics <BR>
    * \param pw plane-wave calculation [1] or including FWI [0]
@@ -199,7 +199,7 @@ public:
 					 bool proton, bool lc);
   /*! get the average Azz observable or cross section ratio
    * \param kin kinematics object containing the gamma+D->X+N kinematics <BR>
-   * in TKinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
+   * in Kinematics2to2 language: deuteron is N, nucleon is Kaon, X is hyperon
    * \param elec has electron kinematics
    * \param pw plane-wave calculation [1] or not [0]
    * \param Azz [0] cross section or [1] Azz
@@ -207,7 +207,7 @@ public:
    * \return [nb/GeV^4] semi-inclusive cross section \f$ \frac{d\sigma}{dxdQ^2\frac{d^3p_s}{E_s}} \f$ averaged over phi
    * or Azz observable
    */
-  double getavgAzz(TKinematics2to2 &kin,TElectronKinematics &elec, bool Azz, bool pw, double Einoff); 
+  double getavgAzz(Kinematics2to2 &kin,ElectronKinematics &elec, bool Azz, bool pw, double Einoff); 
   /*! computes the results like they are presented in the Deeps data
    * \param Q2 [MeV^2] four-momentum transfer
    * \param W [MeV] invariant mass of X
@@ -256,7 +256,7 @@ public:
 private:
   double massi; /*!< mass of nucleon interacting with photon */
   std::string strucname; /*!< structure function parametrization */
-//   TElectronKinematics electron; /*!< electron kinematics */
+//   ElectronKinematics electron; /*!< electron kinematics */
   DeuteronMomDistr momdistr; /*!< object instance used to calculate the deuteron momentum distributions */
   DeuteronStructure structure; /*!< object used to calculate the structure functions needed in semi-inclusive deuteron scattering */
 

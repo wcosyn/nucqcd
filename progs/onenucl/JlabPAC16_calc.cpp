@@ -13,8 +13,8 @@ using namespace std;
 #include <Glauber/GlauberGrid.hpp>
 #include <Glauber/OneGlauberGrid.hpp>
 #include <Glauber/GlauberGridThick.hpp>
-#include <Tools/Kinematics/TKinematics2to2.hpp>
-#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/Kinematics/Kinematics2to2.hpp>
+#include <Tools/Kinematics/ElectronKinematics.hpp>
 #include <Knockout/EMQECross.hpp>
 using namespace nucqcd;
 
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
   MeanFieldNucleusThick Ca40(MeanFieldNucleus::Ca40,sharedir);
   MeanFieldNucleusThick Ca48(MeanFieldNucleus::Ca48,sharedir);
 
-  TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ebeam);
+  ElectronKinematics *elec = ElectronKinematics::CreateWithBeamEnergy(Ebeam);
   cout << Ebeam << " " << Q2 << " " << omega << " " << pm << " " << phi << " ";
   vector<EMQECross> obs;
   obs.push_back(EMQECross(*elec,&Fe54,prec,integrator,sharedir,screening,scr));
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
     double pw=0.;
     for(int plevel=0;plevel<obs[i].getPnucl()->getPLevels();plevel++){
       cout << i << " " << plevel << endl;
-      TKinematics2to2 kin("","",obs[i].getPnucl()->getMassA(),obs[i].getPnucl()->getMassA_min_proton()+(obs[i].getPnucl()->getExcitation())[plevel]
+      Kinematics2to2 kin("","",obs[i].getPnucl()->getMassA(),obs[i].getPnucl()->getMassA_min_proton()+(obs[i].getPnucl()->getExcitation())[plevel]
                           ,nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
 //       cout << kin.GetPYlab() << " " << acos(kin.GetCosthYlab()) << endl;
       cross+=obs[i].getDiffCross(kin,2,thick,0,0,0,plevel,phi,maxEval,1,0,1.,1.);

@@ -9,8 +9,8 @@ using namespace std;
 
 #include <Tools/Core/constants.hpp>
 #include <Tools/Core/RunLog.hpp>
-#include <Tools/Kinematics/TKinematics2to2.hpp>
-#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/Kinematics/Kinematics2to2.hpp>
+#include <Tools/Kinematics/ElectronKinematics.hpp>
 #include <Tools/StructureFunctions/NuclStructure.hpp>
 #include <DIS/InclusiveCrossRes.hpp>
 #include <DIS/Resonance.hpp>
@@ -48,8 +48,8 @@ int main(int argc, char *argv[])
     Resonance res3=Resonance(atof(argv[11])*1.E03,gamma,atof(argv[7]), atof(argv[8]));
     for(int i=1;i<bla;i++){
       double x=1./bla*i;
-      //TKinematics2to2 kin("","",nucqcd::mass_d,nucqcd::mass_p,Wprime,"qsquared:wlab:pklab",1.8E06,nu,pr);
-      TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ein);
+      //Kinematics2to2 kin("","",nucqcd::mass_d,nucqcd::mass_p,Wprime,"qsquared:wlab:pklab",1.8E06,nu,pr);
+      ElectronKinematics *elec = ElectronKinematics::CreateWithBeamEnergy(Ein);
       double teller=0.,fsi1=0.,fsi2=0.,noemer=0.;
       for(int proton=0;proton<=1;++proton){
 	InclusiveCrossRes Dinc(proton,argv[6],argv[5],*elec,atoi(argv[1]),atoi(argv[2]),atoi(argv[3]),atoi(argv[13]));

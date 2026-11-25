@@ -1,10 +1,10 @@
-// MePhys: deuteron wave functions (TDeuteron, OldDeuteron). Normalization, D-state probability,
+// MePhys: deuteron wave functions (Deuteron, OldDeuteron). Normalization, D-state probability,
 // quadrupole moment, spin structure; logic from progs/poldeut/wftest.cpp.
 #include <test_support.hpp>
 
 #include <Tools/WaveFunctions/OldDeuteron.hpp>
-#include <Tools/WaveFunctions/TDeuteron.hpp>
-#include <Tools/WaveFunctions/TInterpolatingWavefunction.hpp>
+#include <Tools/WaveFunctions/Deuteron.hpp>
+#include <Tools/WaveFunctions/InterpolatingWavefunction.hpp>
 #include <Tools/Core/constants.hpp>
 
 #include <Tools/Core/Vector3.hpp>
@@ -28,8 +28,8 @@ double simpson(const std::function<double(double)> &f, double a, double b, int n
   return s * h / 3.;
 }
 
-std::unique_ptr<TDeuteron::Wavefunction> make_wf(const std::string &name) {
-  return std::unique_ptr<TDeuteron::Wavefunction>(TDeuteron::Wavefunction::CreateWavefunction(name));
+std::unique_ptr<Deuteron::Wavefunction> make_wf(const std::string &name) {
+  return std::unique_ptr<Deuteron::Wavefunction>(Deuteron::Wavefunction::CreateWavefunction(name));
 }
 
 struct WfData {
@@ -41,7 +41,7 @@ struct WfData {
 const WfData wfs[] = {{"AV18", 5.76, 0.270}, {"CDBonn", 4.85, 0.270}, {"Paris", 5.77, 0.279}};
 }  // namespace
 
-TEST_CASE("TDeuteron wave functions are normalized in r and p space", "[deuteron]") {
+TEST_CASE("Deuteron wave functions are normalized in r and p space", "[deuteron]") {
   for (const auto &d : wfs) {
     INFO("wave function " << d.name);
     auto wf = make_wf(d.name);
@@ -109,7 +109,7 @@ TEST_CASE("DeuteronPState: spin structure against closed forms", "[deuteron]") {
 }
 
 TEST_CASE("Clebsch-Gordan coefficients and spherical harmonics", "[deuteron]") {
-  using WF = TDeuteron::Wavefunction;
+  using WF = Deuteron::Wavefunction;
   CHECK_THAT(WF::ClebschGordan(4, 4, 1, 1, 5, 5), WithinAbs(1., 1e-14));
   CHECK_THAT(WF::ClebschGordan(1, 1, 1, -1, 0, 0), WithinAbs(1. / std::sqrt(2.), 1e-14));
   CHECK_THAT(WF::ClebschGordan(1, -1, 1, 1, 0, 0), WithinAbs(-1. / std::sqrt(2.), 1e-14));
@@ -134,7 +134,7 @@ TEST_CASE("Clebsch-Gordan coefficients and spherical harmonics", "[deuteron]") {
 }
 
 TEST_CASE("D-wave conventions: sign of w(r) and W(p), and the Bessel transform between them", "[deuteron]") {
-  // documented in TDeuteron::Wavefunction: u and w have the same sign at large r, W(p) > 0 at low p,
+  // documented in Deuteron::Wavefunction: u and w have the same sign at large r, W(p) > 0 at low p,
   // and U, W are the plain Bessel transforms (no factor (-i)^L, which DeuteronPState adds itself)
   for (const std::string name : {"Paris", "AV18", "CDBonn"}) {
     auto wf = make_wf(name);
@@ -152,27 +152,27 @@ TEST_CASE("D-wave conventions: sign of w(r) and W(p), and the Bessel transform b
     // DeuteronPState: the D wave enters with a minus sign, DeuteronRState with a plus sign
     // (M=0, both spins up is pure D wave with m_L=-1)
     const nucqcd::Vector3 dir(std::sin(1.) * std::cos(2.), std::sin(1.) * std::sin(2.), std::cos(1.));
-    const std::complex<double> Y2m1 = TDeuteron::Wavefunction::SphericalHarmonicCos(2, -1, std::cos(1.), 2.);
-    const double cg = TDeuteron::Wavefunction::ClebschGordan(4, -2, 2, 2, 2, 0);
+    const std::complex<double> Y2m1 = Deuteron::Wavefunction::SphericalHarmonicCos(2, -1, std::cos(1.), 2.);
+    const double cg = Deuteron::Wavefunction::ClebschGordan(4, -2, 2, 2, 2, 0);
     CHECK(std::abs(wf->DeuteronPState(0, 1, 1, 150. * dir) - (-wf->GetWp(150.) * cg * Y2m1)) < 1e-12 * wf->GetWp(150.));
     CHECK(std::abs(wf->DeuteronRState(0, 1, 1, 2. * dir) - (wf->GetWr(2.) * cg * Y2m1)) < 1e-12 * wf->GetWr(2.));
   }
 }
 
-TEST_CASE("TDeuteron::Wavefunction: errors are exceptions", "[deuteron][errors]") {
+TEST_CASE("Deuteron::Wavefunction: errors are exceptions", "[deuteron][errors]") {
   // until 2026-11 an unknown name returned a null pointer (with a warning), and getResidu() of a
   // non-Yukawa wave function had no return value when assertions were off
-  CHECK_THROWS_AS(TDeuteron::Wavefunction::CreateWavefunction("Nijmegen"), std::invalid_argument);
+  CHECK_THROWS_AS(Deuteron::Wavefunction::CreateWavefunction("Nijmegen"), std::invalid_argument);
   CHECK_NOTHROW(make_wf("nijm3"));
   CHECK_THROWS_AS(make_wf("nijm3")->getResidu(), std::logic_error);
   CHECK(make_wf("AV18")->getResidu() > 0.);
 }
 
-TEST_CASE("TInterpolatingWavefunction states have the TDeuteron conventions", "[deuteron]") {
-  // Deut_Conv_EMTLF and Poldeut use an interpolated copy of a TDeuteron wave function, and
-  // TInterpolatingWavefunction has its own DeuteronPState/DeuteronRState: same signs and couplings
+TEST_CASE("InterpolatingWavefunction states have the Deuteron conventions", "[deuteron]") {
+  // Deut_Conv_EMTLF and Poldeut use an interpolated copy of a Deuteron wave function, and
+  // InterpolatingWavefunction has its own DeuteronPState/DeuteronRState: same signs and couplings
   auto wf = make_wf("AV18");
-  TInterpolatingWavefunction interp;
+  InterpolatingWavefunction interp;
   for (int i = 0; i <= 1000; i++) {
     interp.AddUp(i, wf->GetUp(i));
     interp.AddWp(i, wf->GetWp(i));

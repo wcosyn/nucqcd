@@ -4,7 +4,7 @@
 #include <Tools/StructureFunctions/NucleonStructure.hpp>
 #include <Tools/Core/Vector3.hpp>
 #include <cassert>
-#include <Tools/WaveFunctions/TDeuteron.hpp>
+#include <Tools/WaveFunctions/Deuteron.hpp>
 #include <Tools/Core/constants.hpp>
 
 namespace nucqcd {
@@ -19,7 +19,7 @@ s_wave(1),
 d_wave(1),
 melosh(1)
 {
-  wfref = TDeuteron::Wavefunction::CreateWavefunction(wfname);
+  wfref = Deuteron::Wavefunction::CreateWavefunction(wfname);
   for(int i=0;i<=1200;i++){
     wf.AddUp(i,wfref->GetUp(i));
     wf.AddWp(i,wfref->GetWp(i));
@@ -37,7 +37,7 @@ Poldeut::~Poldeut(){
 Poldeut::Poldeut(const Poldeut& rhs){
   strucname=rhs.strucname;
   wfname=rhs.wfname;
-  wfref = TDeuteron::Wavefunction::CreateWavefunction(wfname);
+  wfref = Deuteron::Wavefunction::CreateWavefunction(wfname);
   wf=rhs.wf;
   s_wave=rhs.s_wave;
   d_wave=rhs.d_wave;
@@ -51,7 +51,7 @@ Poldeut& Poldeut::operator=(const Poldeut& rhs){
     strucname=rhs.strucname;
     wfname=rhs.wfname;
     delete wfref;
-    wfref = TDeuteron::Wavefunction::CreateWavefunction(wfname);
+    wfref = Deuteron::Wavefunction::CreateWavefunction(wfname);
     wf=rhs.wf;
     s_wave=rhs.s_wave;
     d_wave=rhs.d_wave;

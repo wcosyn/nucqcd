@@ -2,8 +2,8 @@
 using std::cout;
 using std::endl;
 
-#include <Glauber/TMFSpinor.hpp>
-#include <Tools/Core/TSpinor.hpp>
+#include <Glauber/MeanFieldSpinor.hpp>
+#include <Tools/Core/Spinor.hpp>
 #include <Tools/Core/FourVector.hpp>
 #include <Tools/Core/constants.hpp>
 #include <Glauber/MeanFieldNucleusThick.hpp>
@@ -41,7 +41,7 @@ using namespace nucqcd;
 
 void printArray(MeanFieldNucleusThick&, const int*);
 void printNucleusInfo(MeanFieldNucleusThick&);
-void integrandum(complex<double> &, const numint::array<double,3>&, nucqcd::Vector3&, TSpinor*, TSpinor*, MeanFieldNucleusThick*, int shellindex1,int m1, int shellindex2, int m2, GlauberGridThick*);
+void integrandum(complex<double> &, const numint::array<double,3>&, nucqcd::Vector3&, Spinor*, Spinor*, MeanFieldNucleusThick*, int shellindex1,int m1, int shellindex2, int m2, GlauberGridThick*);
 
 
 void genPcmList(nucqcd::Vector3 [] , int nsteps); // pass a TVector pointer, will contain list, second argument is number of steps in each perpendicular direction, so length of list is 3*nsteps
@@ -56,12 +56,12 @@ struct F {
 	}
 	
 	MeanFieldNucleusThick* nuc;
-	TSpinor *u_pm,*u_ps;
+	Spinor *u_pm,*u_ps;
 	GlauberGridThick* grid;
 	int shellindex1,m1,shellindex2,m2;
 	nucqcd::Vector3 P;
 
-	void (*f)(complex<double>& , const numint::array<double,3>&, nucqcd::Vector3& P,TSpinor*, TSpinor*, MeanFieldNucleusThick*, int, int,int,int,GlauberGridThick*);
+	void (*f)(complex<double>& , const numint::array<double,3>&, nucqcd::Vector3& P,Spinor*, Spinor*, MeanFieldNucleusThick*, int, int,int,int,GlauberGridThick*);
 };
 
 
@@ -308,14 +308,14 @@ double dist2bodymom(MeanFieldNucleusThick& nuc, int shellindex1, int shellindex2
 	f.P = P;
 	f.grid = &grid;
 	
-	TSpinor::Polarization::State pol[2] = {TSpinor::Polarization::kDown,TSpinor::Polarization::kUp}; // make a list to use my beloved basic forloops
+	Spinor::Polarization::State pol[2] = {Spinor::Polarization::kDown,Spinor::Polarization::kUp}; // make a list to use my beloved basic forloops
 	for (int s1=0; s1<2; s1++) // sum s_1
 	{
-		TSpinor u_pm = TSpinor(f_pm,nucqcd::mass_p,TSpinor::Polarization(0.,0.,pol[s1]),TSpinor::kUnity);
+		Spinor u_pm = Spinor(f_pm,nucqcd::mass_p,Spinor::Polarization(0.,0.,pol[s1]),Spinor::kUnity);
 		f.u_pm = &u_pm;
 		for (int s2=0; s2<2; s2++) // sum s_2
 		{
-			TSpinor u_ps = TSpinor(f_ps,nucqcd::mass_p,TSpinor::Polarization(0.,0.,pol[s2]),TSpinor::kUnity);
+			Spinor u_ps = Spinor(f_ps,nucqcd::mass_p,Spinor::Polarization(0.,0.,pol[s2]),Spinor::kUnity);
 			f.u_ps = &u_ps;
 			for (int m1 = -nuc.getJ_array()[shellindex1]; m1 <= nuc.getJ_array()[shellindex1]; m1+=2) // sum m1
 			{
@@ -346,11 +346,11 @@ double dist2bodymom(MeanFieldNucleusThick& nuc, int shellindex1, int shellindex2
 }
 
 
-void integrandum(complex<double>& res, const numint::array<double,3>& x, nucqcd::Vector3& P, TSpinor* u_pm, TSpinor* u_ps, MeanFieldNucleusThick* nuc, int shellindex1, int m1, int shellindex2,int m2, GlauberGridThick* grid)
+void integrandum(complex<double>& res, const numint::array<double,3>& x, nucqcd::Vector3& P, Spinor* u_pm, Spinor* u_ps, MeanFieldNucleusThick* nuc, int shellindex1, int m1, int shellindex2,int m2, GlauberGridThick* grid)
 {
 	double sinth = sqrt(1.-x[1]*x[1]);
 	double PR = P*nucqcd::Vector3(x[0]*sinth*cos(x[2]),x[0]*sinth*sin(x[2]),x[0]*x[1]); // dot product of vector P with vector R
-	res = exp(-nucqcd::i_unit*nucqcd::inv_hbarc*PR)*TSpinor::Bar(*u_pm)*TMFSpinor(*nuc,shellindex1,m1,x[0],x[1],x[2])*TSpinor::Bar(*u_ps)*TMFSpinor(*nuc,shellindex2,m2,x[0],x[1],x[2])*grid->getFsiCtGridFull_interp3(x[0],x[1],x[2]); // Wavefunctions already defined with factor r, so no r^2 that would appear from jacobian, no sin(theta) because we integrate over d(cos(theta))
+	res = exp(-nucqcd::i_unit*nucqcd::inv_hbarc*PR)*Spinor::Bar(*u_pm)*MeanFieldSpinor(*nuc,shellindex1,m1,x[0],x[1],x[2])*Spinor::Bar(*u_ps)*MeanFieldSpinor(*nuc,shellindex2,m2,x[0],x[1],x[2])*grid->getFsiCtGridFull_interp3(x[0],x[1],x[2]); // Wavefunctions already defined with factor r, so no r^2 that would appear from jacobian, no sin(theta) because we integrate over d(cos(theta))
 
 }
 

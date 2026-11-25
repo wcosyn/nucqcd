@@ -18,7 +18,7 @@
  * I also added some new classes: <BR>
  * - A class that contains nucleon structure functions [NuclStructure] <BR>
  * - A class that contains deuteron structure functions [DeuteronStructure] <BR>
- * - A leptonkinematics class for neutrino scattering [TLeptonKinematics] <BR>
+ * - A leptonkinematics class for neutrino scattering [LeptonKinematics] <BR>
  * - A class for he3 wave functions [He3wf] <BR>
  * -A class that has lightcone kinematics for a two body scattering reaction  [LightConeKin2to2] <BR><BR>
  * -A class that has lightcone kinematics for a two to three body scattering reaction  [LightConeKin2to3] <BR><BR>
@@ -38,7 +38,7 @@
   * <BR>
   * -moved definitions of ToFourVector and ToLorentzVector from kinematics2to3.cpp to a new file FourVector.cpp <BR>
   * <BR>
-  * -commented out include "2to3kinematics.h" in TDeuteron.cpp <BR>
+  * -commented out include "2to3kinematics.h" in Deuteron.cpp <BR>
   * <BR>
   * -commented out all hash functions <BR>
   * -commented out numtoa.h includes <BR>
@@ -49,25 +49,25 @@
   * <BR>
   * -included needed constants (nucqcd::strange_underflow, nucqcd::mass_p, nucqcd::mass_n) to my file constants.hpp (some  double definitions now of course) <BR>
   * <BR>
-  * -replaced all includes of Structures.h with include "constants.hpp" (was not even needed in TYukawaPWF.cpp) <BR>
+  * -replaced all includes of Structures.h with include "constants.hpp" (was not even needed in YukawaWavefunction.cpp) <BR>
   * <BR>
-  * -changed TYukawaPWF to also include parmetrization with non-equidistant Mass(i) (AV18 f.i.) <BR>
+  * -changed YukawaWavefunction to also include parmetrization with non-equidistant Mass(i) (AV18 f.i.) <BR>
   *  -added double *fM member <BR>
   * -added fM(NULL) to initializer list of constructor<BR>
   * -added new constructor with array of m values<BR>
   * -check in constructor to delete fM when necessary<BR>
   * -modified Mass(int i) for this case<BR>
   * <BR>
-  *-added AV18 and Av18b Deuteron wf to TDeuteron.hpp & TDeuteron.cpp <BR>
+  *-added AV18 and Av18b Deuteron wf to Deuteron.hpp & Deuteron.cpp <BR>
   *<BR>
-  *-added coordinate state wavefunction functions to TDeuteron<BR>
+  *-added coordinate state wavefunction functions to Deuteron<BR>
   *-some more vector types to DeuteronRState and DeuteronPState<BR>
   *-added off-shell momentum wave function parts to TWaveFunctionImplementation and derived classes
   * (GetUpoff etc, DeuteronPStateOff functions...)<BR>
   *<BR>
-  *-commented out hash functions in TKinematics.cpp<BR>
+  *-commented out hash functions in Kinematics.cpp<BR>
 
-  *-added hypron kin vars in TKinematics.cpp: updated constructors, getters, updatekinematics<BR>
+  *-added hypron kin vars in Kinematics.cpp: updated constructors, getters, updatekinematics<BR>
   *-pklab: ++energycount changed to ++anglecount<BR>
   *-l1250 added pklab kinematics<BR>
   *<BR>
@@ -75,7 +75,7 @@
   *<BR>
   *-electronkinematics changed all 2to3 to 2to2<BR>
   *<BR>
-  *-added TKinematics2to3 to Tools, commented out functions that I moved previously...<BR>
+  *-added Kinematics2to3 to Tools, commented out functions that I moved previously...<BR>
   *<BR>
   *-added masses to constructors to Tkinematics2to3(withlabangles)<BR>
   *changed setisospin function for masses functionality<BR>

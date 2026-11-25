@@ -9,7 +9,7 @@
 using namespace std;
 
 #include <Tools/Core/constants.hpp>
-#include <Tools/Kinematics/TElectronKinematics.hpp>
+#include <Tools/Kinematics/ElectronKinematics.hpp>
 #include <Knockout/DQEinclusive.hpp>
 using namespace nucqcd;
 
@@ -36,10 +36,10 @@ int main(int argc, char *argv[])
 //       double sin2th=Q2/Eout/Ein/4.;
 //       cout << nu << " " << Eout << " " << sin2th << " " << qvec << endl;
 //       
-      TElectronKinematics *elec = TElectronKinematics::CreateWithBeamEnergy(Ein);
+      ElectronKinematics *elec = ElectronKinematics::CreateWithBeamEnergy(Ein);
 
   //     cout << "q " << qvec << " " << nu << " " << Q2/4./Ein/(Ein-nu) << " " << Ein << endl;
-      //TKinematics2to2 kin("","",nucqcd::mass_d,nucqcd::mass_p,Wprime,"qsquared:wlab:pklab",1.8E06,nu,pr);
+      //Kinematics2to2 kin("","",nucqcd::mass_d,nucqcd::mass_p,Wprime,"qsquared:wlab:pklab",1.8E06,nu,pr);
       double pw_direct=0.,pw_cross=0.,fsi1=0.,fsi2=0.,fsioff1=0.,fsioff2=0.,fsioffPV1=0.,fsioffPV2=0.,noemer=1.;
       //azz have to be divided by the unpolarized cross section afterwards by user!!!!
       double azz_direct=0., azz_cross=0.,azz_fsi1=0.,azz_fsi2=0.,azz_fsioff1=0.,azz_fsioff2=0.;  

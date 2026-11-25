@@ -2,7 +2,7 @@
 #include <Tools/Core/Utilfunctions.hpp>
 #include <Tools/Core/AuxFunction.hpp>
 #include <gsl/gsl_poly.h>
-#include <Tools/Core/TSpinor.hpp>
+#include <Tools/Core/Spinor.hpp>
 #include <Tools/Core/FourVector.hpp>
 #include <Tools/Core/Vector3.hpp>
 #include <Glauber/FastParticle.hpp>
@@ -22,7 +22,7 @@ const FourVector<complex<double> > DQEinclusive::polVectorMin=FourVector<complex
 const FourVector<complex<double> > DQEinclusive::polVector0 = FourVector<complex<double> >(1.,0.,0.,0.);
 
 
-DQEinclusive::DQEinclusive(bool proton_in, int ff_param, string wavename, TElectronKinematics &elec, 
+DQEinclusive::DQEinclusive(bool proton_in, int ff_param, string wavename, ElectronKinematics &elec, 
 			       int offshell, double betaoffin, double lambdain)
 :proton(proton_in),
 betaoff(betaoffin*1.E-06),
@@ -35,7 +35,7 @@ ffactorseq(NULL),
 ffactorsdiff(NULL),
 ffparam(ff_param){
 
-  wf.reset(TDeuteron::Wavefunction::CreateWavefunction(wavename));
+  wf.reset(Deuteron::Wavefunction::CreateWavefunction(wavename));
   minpcm=1.E03;
 }
 
@@ -186,10 +186,10 @@ void DQEinclusive::planewave_int(numint::vector_d & result, double pperp,
 	GammaStructure Jplus = cross.getFFactorseq()->getCC(current, q, pi, pn)*polVectorPlus;
 	GammaStructure Jmin = cross.getFFactorseq()->getCC(current, q, pi, pn)*polVectorMin;
 	
-	Matrix<1,4> un_down=TSpinor::Bar(TSpinor(pn,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kDoubleMass));
-	Matrix<1,4> un_up=TSpinor::Bar(TSpinor(pn,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kDoubleMass));
-	TSpinor ui_down(pi,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kDoubleMass);
-	TSpinor ui_up(pi,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kDoubleMass);
+	Matrix<1,4> un_down=Spinor::Bar(Spinor(pn,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kDoubleMass));
+	Matrix<1,4> un_up=Spinor::Bar(Spinor(pn,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kDoubleMass));
+	Spinor ui_down(pi,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kDoubleMass);
+	Spinor ui_up(pi,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kDoubleMass);
 
 	//also needed for cross term
 	FourVector<double> ps(Ernorm,pperp*cosphi,pperp*sinphi,prz[it]);
@@ -199,10 +199,10 @@ void DQEinclusive::planewave_int(numint::vector_d & result, double pperp,
 	GammaStructure Jplusprime = cross.getFFactorsdiff()->getCC(current, q, piprime, ps)*polVectorPlus;
 	GammaStructure Jminprime = cross.getFFactorsdiff()->getCC(current, q, piprime, ps)*polVectorMin;
 	
-	Matrix<1,4> us_down=TSpinor::Bar(TSpinor(ps,cross.getMassr(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kDoubleMass));
-	Matrix<1,4> us_up=TSpinor::Bar(TSpinor(ps,cross.getMassr(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kDoubleMass));
-	TSpinor uiprime_down(piprime,cross.getMassr(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kDoubleMass);
-	TSpinor uiprime_up(piprime,cross.getMassr(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kDoubleMass);
+	Matrix<1,4> us_down=Spinor::Bar(Spinor(ps,cross.getMassr(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kDoubleMass));
+	Matrix<1,4> us_up=Spinor::Bar(Spinor(ps,cross.getMassr(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kDoubleMass));
+	Spinor uiprime_down(piprime,cross.getMassr(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kDoubleMass);
+	Spinor uiprime_up(piprime,cross.getMassr(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kDoubleMass);
 
 	res3=res2=res1=res0=0.;
 	//summation over all the spin indices
@@ -459,10 +459,10 @@ void DQEinclusive::FSI_int(numint::vector_d & result, double pperp1, double qt,
 	  GammaStructure Jplus = cross.getFFactorseq()->getCC(current, q, pi1, pn1)*polVectorPlus;
 	  GammaStructure Jmin = cross.getFFactorseq()->getCC(current, q, pi1, pn1)*polVectorMin;
 	  
-	  Matrix<1,4> un1_down=TSpinor::Bar(TSpinor(pn1,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kDoubleMass));
-	  Matrix<1,4> un1_up=TSpinor::Bar(TSpinor(pn1,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kDoubleMass));
-	  TSpinor ui1_down(pi1,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kDoubleMass);
-	  TSpinor ui1_up(pi1,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kDoubleMass);
+	  Matrix<1,4> un1_down=Spinor::Bar(Spinor(pn1,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kDoubleMass));
+	  Matrix<1,4> un1_up=Spinor::Bar(Spinor(pn1,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kDoubleMass));
+	  Spinor ui1_down(pi1,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kDoubleMass);
+	  Spinor ui1_up(pi1,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kDoubleMass);
 	
 	  for(size_t it2=0;it2<prz2.size();it2++){      
 	    double Erprimenorm=sqrt(pperp2*pperp2+prz2[it2]*prz2[it2]+cross.getMassr()*cross.getMassr());
@@ -480,10 +480,10 @@ void DQEinclusive::FSI_int(numint::vector_d & result, double pperp1, double qt,
 	      GammaStructure Jplusprime = cross.getFFactorseq()->getCC(current, q, pi2, pn2)*polVectorPlus;
 	      GammaStructure Jminprime = cross.getFFactorseq()->getCC(current, q, pi2, pn2)*polVectorMin;	     
 	      
-	      Matrix<1,4> un2_down=TSpinor::Bar(TSpinor(pn2,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kDoubleMass));
-	      Matrix<1,4> un2_up=TSpinor::Bar(TSpinor(pn2,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kDoubleMass));
-	      TSpinor ui2_down(pi2,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kDoubleMass);
-	      TSpinor ui2_up(pi2,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kDoubleMass);
+	      Matrix<1,4> un2_down=Spinor::Bar(Spinor(pn2,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kDoubleMass));
+	      Matrix<1,4> un2_up=Spinor::Bar(Spinor(pn2,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kDoubleMass));
+	      Spinor ui2_down(pi2,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kDoubleMass);
+	      Spinor ui2_up(pi2,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kDoubleMass);
 	      
 	      //crossed term
 	      //pr2 remains the first spectator after rescattering
@@ -499,10 +499,10 @@ void DQEinclusive::FSI_int(numint::vector_d & result, double pperp1, double qt,
 	      GammaStructure Jplusprime_cross = cross.getFFactorsdiff()->getCC(current, q, pi2_cross,pn2_cross)*polVectorPlus;
 	      GammaStructure Jminprime_cross = cross.getFFactorsdiff()->getCC(current, q, pi2_cross,pn2_cross)*polVectorMin;	     
 	      
-	      Matrix<1,4> un2_down_cross=TSpinor::Bar(TSpinor(pn2_cross,cross.getMassr(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kDoubleMass));
-	      Matrix<1,4> un2_up_cross=TSpinor::Bar(TSpinor(pn2_cross,cross.getMassr(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kDoubleMass));
-	      TSpinor ui2_down_cross(pi2_cross,cross.getMassr(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kDoubleMass);
-	      TSpinor ui2_up_cross(pi2_cross,cross.getMassr(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kDoubleMass);
+	      Matrix<1,4> un2_down_cross=Spinor::Bar(Spinor(pn2_cross,cross.getMassr(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kDoubleMass));
+	      Matrix<1,4> un2_up_cross=Spinor::Bar(Spinor(pn2_cross,cross.getMassr(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kDoubleMass));
+	      Spinor ui2_down_cross(pi2_cross,cross.getMassr(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kDoubleMass);
+	      Spinor ui2_up_cross(pi2_cross,cross.getMassr(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kDoubleMass);
 	      
 	      res0=res1=res2=res3=res4=res5=res6=res7=0.;
 	      //summation over all the spin indices
@@ -913,10 +913,10 @@ double DQEinclusive::FSI_intPV(double pz1, double pz2, double pperp1, double ppe
     GammaStructure Jplus = cross.getFFactorseq()->getCC(current, q, pi1, pn1)*polVectorPlus;
     GammaStructure Jmin = cross.getFFactorseq()->getCC(current, q, pi1, pn1)*polVectorMin;
     
-    Matrix<1,4> un1_down=TSpinor::Bar(TSpinor(pn1,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kDoubleMass));
-    Matrix<1,4> un1_up=TSpinor::Bar(TSpinor(pn1,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kDoubleMass));
-    TSpinor ui1_down(pi1,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kDoubleMass);
-    TSpinor ui1_up(pi1,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kDoubleMass);
+    Matrix<1,4> un1_down=Spinor::Bar(Spinor(pn1,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kDoubleMass));
+    Matrix<1,4> un1_up=Spinor::Bar(Spinor(pn1,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kDoubleMass));
+    Spinor ui1_down(pi1,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kDoubleMass);
+    Spinor ui1_up(pi1,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kDoubleMass);
   
     double Erprimenorm=sqrt(pperp2*pperp2+pz2*pz2+cross.getMassr()*cross.getMassr());
     if(Erprimenorm<nucqcd::mass_d-200.){
@@ -933,10 +933,10 @@ double DQEinclusive::FSI_intPV(double pz1, double pz2, double pperp1, double ppe
       GammaStructure Jplusprime = cross.getFFactorseq()->getCC(current, q, pi2, pn2)*polVectorPlus;
       GammaStructure Jminprime = cross.getFFactorseq()->getCC(current, q, pi2, pn2)*polVectorMin;	     
       
-      Matrix<1,4> un2_down=TSpinor::Bar(TSpinor(pn2,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kDoubleMass));
-      Matrix<1,4> un2_up=TSpinor::Bar(TSpinor(pn2,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kDoubleMass));
-      TSpinor ui2_down(pi2,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kDoubleMass);
-      TSpinor ui2_up(pi2,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kDoubleMass);
+      Matrix<1,4> un2_down=Spinor::Bar(Spinor(pn2,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kDoubleMass));
+      Matrix<1,4> un2_up=Spinor::Bar(Spinor(pn2,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kDoubleMass));
+      Spinor ui2_down(pi2,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kDoubleMass);
+      Spinor ui2_up(pi2,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kDoubleMass);
 
       FourVector<double> pi2_cross(Erprimenorm-nu,pperp1*cosphi1+qt*cosqphi,qt*sinqphi,pz2-qvec); //pi2_cross = pr2 - qvec
       FourVector<double> pn2_cross=pi2_cross+q; //pn2=pi2+q (or pr2)
@@ -947,10 +947,10 @@ double DQEinclusive::FSI_intPV(double pz1, double pz2, double pperp1, double ppe
       GammaStructure Jplusprime_cross = cross.getFFactorsdiff()->getCC(current, q, pi2_cross,pn2_cross)*polVectorPlus;
       GammaStructure Jminprime_cross = cross.getFFactorsdiff()->getCC(current, q, pi2_cross,pn2_cross)*polVectorMin;	     
       
-      Matrix<1,4> un2_down_cross=TSpinor::Bar(TSpinor(pn2_cross,cross.getMassr(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kDoubleMass));
-      Matrix<1,4> un2_up_cross=TSpinor::Bar(TSpinor(pn2_cross,cross.getMassr(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kDoubleMass));
-      TSpinor ui2_down_cross(pi2_cross,cross.getMassr(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kDoubleMass);
-      TSpinor ui2_up_cross(pi2_cross,cross.getMassr(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kDoubleMass);
+      Matrix<1,4> un2_down_cross=Spinor::Bar(Spinor(pn2_cross,cross.getMassr(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kDoubleMass));
+      Matrix<1,4> un2_up_cross=Spinor::Bar(Spinor(pn2_cross,cross.getMassr(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kDoubleMass));
+      Spinor ui2_down_cross(pi2_cross,cross.getMassr(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kDoubleMass);
+      Spinor ui2_up_cross(pi2_cross,cross.getMassr(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kDoubleMass);
       
       //summation over all the spin indices
       //check and exploit parity symmetry!!!!
@@ -1162,10 +1162,10 @@ void DQEinclusive::FSI_PVfirst_perp(numint::vector_d & res, double pz1, double p
     GammaStructure Jplus = cross.getFFactorseq()->getCC(current, q, pi1, pn1)*polVectorPlus;
     GammaStructure Jmin = cross.getFFactorseq()->getCC(current, q, pi1, pn1)*polVectorMin;
     
-    Matrix<1,4> un1_down=TSpinor::Bar(TSpinor(pn1,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kDoubleMass));
-    Matrix<1,4> un1_up=TSpinor::Bar(TSpinor(pn1,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kDoubleMass));
-    TSpinor ui1_down(pi1,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kDoubleMass);
-    TSpinor ui1_up(pi1,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kDoubleMass);
+    Matrix<1,4> un1_down=Spinor::Bar(Spinor(pn1,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kDoubleMass));
+    Matrix<1,4> un1_up=Spinor::Bar(Spinor(pn1,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kDoubleMass));
+    Spinor ui1_down(pi1,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kDoubleMass);
+    Spinor ui1_up(pi1,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kDoubleMass);
   
     double Erprimenorm=sqrt(pperp2*pperp2+pz2*pz2+cross.getMassr()*cross.getMassr());
     if(Erprimenorm<nucqcd::mass_d-200.){
@@ -1181,10 +1181,10 @@ void DQEinclusive::FSI_PVfirst_perp(numint::vector_d & res, double pz1, double p
       GammaStructure Jplusprime = cross.getFFactorseq()->getCC(current, q, pi2, pn2)*polVectorPlus;
       GammaStructure Jminprime = cross.getFFactorseq()->getCC(current, q, pi2, pn2)*polVectorMin;	     
       
-      Matrix<1,4> un2_down=TSpinor::Bar(TSpinor(pn2,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kDoubleMass));
-      Matrix<1,4> un2_up=TSpinor::Bar(TSpinor(pn2,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kDoubleMass));
-      TSpinor ui2_down(pi2,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kDoubleMass);
-      TSpinor ui2_up(pi2,cross.getMassi(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kDoubleMass);
+      Matrix<1,4> un2_down=Spinor::Bar(Spinor(pn2,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kDoubleMass));
+      Matrix<1,4> un2_up=Spinor::Bar(Spinor(pn2,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kDoubleMass));
+      Spinor ui2_down(pi2,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kDoubleMass);
+      Spinor ui2_up(pi2,cross.getMassi(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kDoubleMass);
 
       FourVector<double> pi2_cross(Erprimenorm-nu,pperp1*cosphi1+qt*cosqphi,qt*sinqphi,pz2-qvec); //pi2_cross = pr2 - qvec
       FourVector<double> pn2_cross=pi2_cross+q; //pn2=pi2+q
@@ -1195,10 +1195,10 @@ void DQEinclusive::FSI_PVfirst_perp(numint::vector_d & res, double pz1, double p
       GammaStructure Jplusprime_cross = cross.getFFactorsdiff()->getCC(current, q, pi2_cross,pn2_cross)*polVectorPlus;
       GammaStructure Jminprime_cross = cross.getFFactorsdiff()->getCC(current, q, pi2_cross,pn2_cross)*polVectorMin;	     
       
-      Matrix<1,4> un2_down_cross=TSpinor::Bar(TSpinor(pn2_cross,cross.getMassr(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kDoubleMass));
-      Matrix<1,4> un2_up_cross=TSpinor::Bar(TSpinor(pn2_cross,cross.getMassr(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kDoubleMass));
-      TSpinor ui2_down_cross(pi2_cross,cross.getMassr(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kDown),TSpinor::kDoubleMass);
-      TSpinor ui2_up_cross(pi2_cross,cross.getMassr(),TSpinor::Polarization(0.,0.,TSpinor::Polarization::kUp),TSpinor::kDoubleMass);
+      Matrix<1,4> un2_down_cross=Spinor::Bar(Spinor(pn2_cross,cross.getMassr(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kDoubleMass));
+      Matrix<1,4> un2_up_cross=Spinor::Bar(Spinor(pn2_cross,cross.getMassr(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kDoubleMass));
+      Spinor ui2_down_cross(pi2_cross,cross.getMassr(),Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kDoubleMass);
+      Spinor ui2_up_cross(pi2_cross,cross.getMassr(),Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kDoubleMass);
       
       
       //summation over all the spin indices
