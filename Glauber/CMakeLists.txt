@@ -4,6 +4,7 @@ nucqcd_add_library(Glauber
     MeanFieldNucleus.cpp
     MeanFieldNucleusThick.cpp
     NucleonEMOperator.cpp
+    NucleonEMOperatorTables.cpp
     NucleonWeakOperator.cpp
     FsiCorrelator.cpp
     FastParticle.cpp
