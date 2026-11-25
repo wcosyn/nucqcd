@@ -611,6 +611,27 @@ Do these one at a time, running the full test suite (including `slow`) after eac
      of `EMQECross.hpp` and `WeakQECross.hpp` had to be closed outside the namespace).
 - [ ] **Glauber grid hierarchy:** deduplicate it. `GlauberGridThick` and `GlauberDecayGridThick` are
   largely copy-pasted, as are the {plain, Thick} × {CT, Decay} abstract classes.
+  **Safety net done (2026-11-25, #68):** `reg_glauber_variants` [slow, ~90 s] covers what the other tests
+  did not: `GlauberGrid` (the thin-nucleus grid only works off axis, it throws "use OneGlauberGrid" for a
+  particle along z), `GlauberGridThick` with the SRC grids, `GlauberDecayGridThick` (all 8 grids; rho,
+  rho→ππ pair, proton; along z and off axis), `OneGlauberGrid` and `ROMEAGrid`; tiny grids, 4 points each,
+  references captured before any refactor. Until then `GlauberDecayGridThick` (used by `RhoTCross` and
+  `RhoDeuteron`) was covered only by a compile check.
+  **Measured scope** (same date): `GlauberDecayGridThick.cpp` has 1005 non-blank lines, 738 of them
+  identical to `GlauberGridThick.cpp` after renaming; the headers share 146 of 237. The abstract classes
+  are one interface layer per named grid (`Src`, `Ct`, `Decay`, ...) with four interpolation wrappers each.
+  The two concrete classes cannot simply be merged: the decay class computes 8 grids at once (the 4
+  extra ones with decay), so using it for plain grids would double their cost, change the cache files and
+  the adaptive-integration sampling (values within the precision, not bitwise). The dedup therefore needs
+  a shared implementation parameterized on the number of variants, with the grids and file names left as
+  they are; the test above must stay bitwise equal. Not started.
+  **Found on the way:** in the Glauber grids `integrator == 0` (the old `rombergerN`) is dead: the
+  `rombergerN` calls are commented out in `GlauberGrid`, `GlauberGridThick`, `GlauberDecayGridThick`
+  (and elsewhere), so the results stay at their initial 0 and the grids silently come out as "no FSI"
+  (1 − σ·0). A program that passes 0 on to these grids gets wrong grids without any message (not checked which
+  programs do). To fix: throw `std::invalid_argument` for `integrator == 0` in these
+  classes (or remove flag 0 together with `rombergerN`, see below). Nothing is known to be affected, since
+  the tests and the published runs use 2.
 - [ ] **Speed of the Glauber grids (to investigate, added 2026-11-23).** From the author's experience,
   grids for particles that do not all move along the z axis are slow to compute (cached afterwards,
   but still). The `numint` integrators used there (`cube_adaptive`, `cube_romb`) are serial; only the
