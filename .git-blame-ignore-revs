@@ -1,3 +1,5 @@
 # Commits that only changed line endings (git config blame.ignoreRevsFile .git-blame-ignore-revs)
 # CRLF to LF in 4 C++ files
 34069043b7a297f7425c5a63935624c9a0d27976
+# Scripted rename of the T* classes and files (TKinematics -> Kinematics, ...)
+8c49cc7a9730098850a9c3663421038328d814cf
