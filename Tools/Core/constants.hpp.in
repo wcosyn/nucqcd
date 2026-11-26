@@ -29,6 +29,20 @@ inline constexpr double integration_prec = 1e-04;      //!< default precision of
 /*! underflow in the code: a double smaller than this should be treated as zero */
 inline constexpr double strange_underflow = 1.0e-12;
 
+// ---- where the values come from ----
+// The values are NOT from one edition of the PDG or CODATA. They are a mix of vintages, kept as they were when the
+// code was written, apart from the rho mass (PDG 2022-2026 average, 2026-11). Checked against the sources
+// (2026-11-26): the proton mass 938.27231 MeV is the 1986 CODATA value that the PDG listings of the 1990s quote (the
+// current PDG value is 938.27209 MeV); alpha_em 0.00729735253 is the CODATA 1998 value; the neutron mass 939.56536 MeV
+// matches no edition that was found (the 1986 CODATA/PDG 1998 value is 939.56563 MeV, possibly digits swapped; the
+// current PDG value is 939.56542 MeV). Judging from the numbers (not checked against the editions), the boson masses,
+// G_F, V_ud and sin^2(theta_W) are of about PDG 2008-2012 and several hadron masses (K0, the Sigmas) of about 2000.
+// The author decided (2026-11-26) NOT to update them: the changes to the current values are tiny, below 1e-6 relative for
+// the nucleon masses, alpha_em and hbar*c, and of the order of 1e-4 to 1e-3 for the boson masses, V_ud, sin^2(theta_W) and some
+// hadron masses (rough estimates from the current values, not re-checked), far below the accuracy of the calculations
+// (numerical precisions of 1e-3 to 1e-5, model uncertainties of the order of percent). Changing a value
+// changes results and the regression references, so do it only with the author's OK.
+
 // ---- conversion and couplings ----
 inline constexpr double hbarc = 197.327;               //!< hbar*c [MeV fm]
 inline constexpr double inv_hbarc = 1. / hbarc;        //!< (hbar*c)^-1 [(MeV fm)^-1]

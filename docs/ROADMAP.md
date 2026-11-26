@@ -63,15 +63,13 @@ the integration method as an enumeration with one dispatch function, `numint::cu
 2. **Glauber grids:** the off-axis speed (every point hits the evaluation cap; `cube_romb` was 5x faster at 1e-3;
    variants change values within the precision and need the author's OK), and the rest of the hierarchy dedup
    (the eight abstract classes with four interpolation wrappers per named grid, the 5D raw pointer arrays).
-3. **Smaller items:** other integration algorithms in `numint::cube` (step 6, optional part 3), the hard-coded absolute paths in some programs (step 6, copy-paste leftovers), unbundle cubature (step 7, maintenance only, no accuracy gain per the benchmark), the PDG
-   constants update (changes values), the long Glauber files (`GlauberGrid.cpp`, `DistMomDistrGrid.cpp`, ...),
+3. **Smaller items:** other integration algorithms in `numint::cube` (step 6, optional part 3), the hard-coded absolute paths in some programs (step 6, copy-paste leftovers), unbundle cubature (step 7, maintenance only, no accuracy gain per the benchmark), the long Glauber files (`GlauberGrid.cpp`, `DistMomDistrGrid.cpp`, ...),
    `SolvePhotonAndParticle1` (134 lines), reporting the Suave bug to the Cuba authors, a format string that gives
    no scenario at all is still accepted (step 6, long functions), `Resonance` stays in the DIS library although
    only the archived class used it.
 4. **Last:** the license decision (step 8), then the README (currently a stub; step 8 lists what it must cover).
 
-**Open choices for the author:** the license (step 8, see the item there); the PDG constants update (changes
-values); whether to unbundle cubature (step 7); which of the open leads to take up first; the README (step 8)
+**Open choices for the author:** the license (step 8, see the item there); whether to unbundle cubature (step 7); which of the open leads to take up first; the README (step 8)
 comes last.
 
 ---
@@ -625,9 +623,17 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   accepted the string literal `HOMEDIR` by a GCC extension). Values are unchanged: all tests,
   including `slow`, pass with the same references. `unit_constants` now fails to compile if an old
   alias comes back.
-- [ ] **Update the constants to current PDG values** (split off from the item above): several values
-  are older PDG values (e.g. the proton mass 938.27231 versus 938.27209 in PDG 2024); updating them
-  changes results, so it needs the author's OK.
+- [x] **Update the constants to current PDG values: decided not to (author, 2026-11-26).** The constants
+  are not of one PDG edition but a mix of vintages, as they were when the code was written. Checked against the sources:
+  the proton mass 938.27231 MeV is the 1986 CODATA value that the PDG listings of the 1990s quote (current PDG: 938.27209
+  MeV, from CODATA 2018), `alpha_em` 0.00729735253 is the CODATA 1998 value, and the neutron mass 939.56536 MeV matches no
+  edition that was found (the 1986 CODATA/PDG 1998 value is 939.56563 MeV, so the digits may have been swapped when it
+  was typed; current PDG: 939.56542 MeV); the boson masses, `G_F`, `V_ud` and `sin2_theta_w` look like about PDG 2008-2012
+  and the K0 and Sigma masses like about 2000 (judged from the numbers only). The changes to the current values are below
+  1e-6 relative for the nucleon masses, `alpha_em` and `hbarc` and of the order of 1e-4 to 1e-3 for the boson masses,
+  `V_ud`, `sin2_theta_w` and a few hadron masses (rough estimates, not re-checked), far below the accuracy of the
+  calculations (numerical precisions of 1e-3 to 1e-5, model uncertainties of the order of percent), so the values stay.
+  The note is in `Tools/Core/constants.hpp.in`. The rho mass was already moved to PDG 2022-2026 (step 5).
 - [x] **Code layout** (sharpened 2026-11-22 with the author; all four parts done: #52, #53, #65, and the rename of the `T*` classes #76). Headers next to their sources is fine and
   stays (no general `include/`/`src/` split: that pays off for libraries installed for outside
   projects, which nucqcd's are not, and moving every file would cost the `git blame` history). What
