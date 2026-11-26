@@ -1,10 +1,10 @@
-nucqcd patch of cubature 1.0.4 (Steven G. Johnson, https://github.com/stevengj/cubature), two changes, applied by Integrator/CMakeLists.txt with patch -p1:
+nucqcd patch of cubature 1.0.4 (Steven G. Johnson, https://github.com/stevengj/cubature), applied by Integrator/CMakeLists.txt with patch -p1:
 1. hcubature_minEval: hcubature with a minimum number of function evaluations (convergence is only accepted after more than minEval
    evaluations), the interface of the 2010 adapt_integrate that nucqcd bundled until 2026-11. hcubature itself is unchanged (minEval = 0).
-2. the choice of the dimension to split a region is the rule of the 2010 version (the largest fourth difference, the first on ties), so that
-   all results of nucqcd stay unchanged; cubature 1.0.4 breaks near-ties in favour of the longest side (a fix for a hang with unlimited maxEval,
-   which nucqcd never uses), which changes the adaptive subdivision for integrands with steps. -DNUCQCD_UPSTREAM_SPLIT (CMake option
-   CUBATURE_UPSTREAM_SPLIT) gives the upstream rule.
+2. -DNUCQCD_LEGACY_SPLIT (CMake option CUBATURE_LEGACY_SPLIT) selects the rule of the 2010 version to choose the dimension to split a region
+   (the largest fourth difference, the first on ties), which reproduces the results of nucqcd before 2026-11 bit for bit; without it the rule is
+   that of cubature 1.0.4 (near-ties are broken in favour of the longest side of the region), which changes the adaptive subdivision for
+   integrands with steps. The default is the rule of 1.0.4.
 Made with diff -ru of the pristine tarball files hcubature.c and cubature.h.
 
 diff -ru a/cubature.h b/cubature.h
@@ -33,7 +33,7 @@ diff -ru a/hcubature.c b/hcubature.c
  		df += R[iR].ee[j].err;
  	  df /= R[iR].h.vol * r->df_scale;
  
-+#ifdef NUCQCD_UPSTREAM_SPLIT
++#ifndef NUCQCD_LEGACY_SPLIT
 +	  /* cubature 1.0.4 (fix of a hang for some integrands with unlimited maxEval): ties between the dimensions within df
 +	     are broken in favour of the longest side of the region */
  	  for (i = 0; i < dim; ++i) {
@@ -44,9 +44,9 @@ diff -ru a/hcubature.c b/hcubature.c
  			dimDiffMax = i;
  	  }
 +#else
-+	  /* nucqcd: the rule of the 2010 version that nucqcd bundled until 2026-11 (it keeps all results of nucqcd unchanged):
-+	     the dimension with the largest fourth difference, the first one on ties. Define NUCQCD_UPSTREAM_SPLIT (CMake option
-+	     CUBATURE_UPSTREAM_SPLIT) for the rule above. */
++	  /* nucqcd: define NUCQCD_LEGACY_SPLIT (CMake option CUBATURE_LEGACY_SPLIT) for the rule of the 2010 version that nucqcd
++	     bundled until 2026-11, to reproduce its results bit for bit: the dimension with the largest fourth difference, the
++	     first one on ties */
 +	  (void) df;
 +	  for (i = 0; i < dim; ++i)
 +		if (diff[iR*dim + i] > maxdiff) {

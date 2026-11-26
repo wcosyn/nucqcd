@@ -26,7 +26,7 @@ same PR.
 | 4 | Bug fixes | ✅ done: listed bugs (PRs #8, #9, #12); found later: stale FSI+CT grid (#18), kinematics (#19, #20, #33), DoubleNModel/Pair (#21, then moved to the attic in #22), π⁻ Glauber parameters (#28), TDeuteron errors (#31), He3 spin sum (#47) and factor A in `He3Cross` (#48), `TMPI` not compiling with MPI-3 (fixed in the attic with step 6, "Retire MPI", #54), `RunLog` reading freed memory at `exit()` (#57), `cube_romb` overflow beyond 10 levels in 3D (#60). New bugs found later are added here |
 | 5 | Low-risk modernization | ✅ done: `-fopenmp`, Fortran interop (#11), constants (#13, #14), grid cache (#15–#17), ownership (#23), exceptions (#24), Doxygen (#10, #25–#30, #32, #34–#39: no warnings left) |
 | 6 | Structural refactors | 🔶 done: constants macros (#41), `NuclStructure` merge (#42), code layout (`Tools` split #52, prefixed includes and `.hpp` #53, namespace `nucqcd` #65, the `T*` classes renamed #76, the `TNamed` leftovers #78), `Model`/`Cross` renamed (#53), MPI retired (#54), integrator benchmark (#61), precision reporting (#62), integrator option 0 removed (#69), CRLF to LF (#66), long files split (#70), `GetVar*` table (#71), model names as enumerations (#72), the long `TKinematics2to3` functions split (#74) and the crash they showed fixed (#75), the thick Glauber grids deduplicated (#77); `rombergerN` removed from the libraries (#82); copy-paste comments and a duplicate header guard (#86); the integration method as an enumeration with one dispatch function (#87, #88); the Glauber abstract classes reduced from seven to two (#92); the raw grid arrays replaced by `Grid3D` and `std::vector` (#93, #94); to do: the off-axis grid speed, the long Glauber files, the hard-coded paths, optional other integration algorithms |
-| 7 | Unbundle Cuba and cubature | ✅ done: Cuba (#67), cubature (this PR: cubature 1.0.4 downloaded and patched, no value changes) |
+| 7 | Unbundle Cuba and cubature | ✅ done: Cuba (#67), cubature (cubature 1.0.4 downloaded and patched; results of integrands with steps change at the 1e-6 to 1e-2 level, `-DCUBATURE_LEGACY_SPLIT=yes` reproduces the old ones) |
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
 | 9 | Decouple from ROOT where possible | ✅ done: phases 1–5 (#44, #45, #50, #55, #56, #58), phase 6: GPD generators (#59) and the fits on the standalone Minuit2 (#73). ROOT is only used by the test `unit_vectors` |
 | 10 | LHAPDF interface for the nucleon structure functions | ✅ done (#46), including MSTW through LHAPDF |
@@ -1163,41 +1163,45 @@ This is a build-system change only, and the `unit_cuba` tests verify it.
   download passes all tests including `slow` (unchanged references). Not tested: a system Cuba package
   (none installed here), and a build without network access other than through `CUBA_TARBALL`.
 
-- [x] **cubature unbundled (added 2026-11-23, done 2026-11-26): no value changes.** The bundled `Integrator/adaptive/cubature.{c,h}` (1435
-  lines) was Steven G. Johnson's pre-1.0 `adapt_integrate` from October 2010 with a `minEval` argument that upstream does not have (no
-  convergence before `minEval` evaluations; the code passes 1e2 to 1e4). It is replaced by **cubature 1.0.4**
-  (github.com/stevengj/cubature; **GPL-2-or-later, as the bundled copy was: no license change**), downloaded at configure time
-  (SHA256 pinned, `-DCUBATURE_TARBALL=<file>` for machines without network, a wrong tarball is refused), patched with
-  `cmake/patches/cubature-1.0.4-nucqcd.patch` and its one source file `hcubature.c` compiled into `libIntegrator` (and `IntegratorST` with
-  `STATIC_BUILD`); `<cubature/cubature.h>` comes from `<build>/Integrator/cubature-include`. The unpacked and patched source is redone when the
-  patch changes. A system `libcubature-dev` is not used: it has no `minEval`. `numint2adapt.hpp` (`cube_adaptive`) calls
-  `hcubature_minEval` with `ERROR_INDIVIDUAL` (the same convergence test: every component below the absolute or the relative
-  tolerance); the integrand returns `int` now. The old directory is gone; the unit test and the archived `inttest` use the new interface.
-  **The patch has two parts.** (1) `hcubature_minEval`: `hcubature` with the minimum number of evaluations (`hcubature` itself is
-  unchanged, `minEval` = 0). (2) The rule to choose the dimension to split a region is the one of the 2010 version. **Why (2):** comparing the
-  two sources, the only difference in the algorithm is this rule: cubature 1.0.4 breaks near-ties of the fourth differences in favour
-  of the longest side of the region (the fix of a hang with unlimited `maxEval` (upstream #14), which nucqcd never uses: it always passes a
-  limit). For smooth integrands this changes nothing but the last digits, but for integrands with steps it changes the adaptive subdivision:
-  `-DCUBATURE_UPSTREAM_SPLIT=yes` (macro `NUCQCD_UPSTREAM_SPLIT`) gives upstream's rule, and then the references of the regression tests move:
-  of the 9 reference files all 9 change: the thin `GlauberGrid` grid entries by up to 6.6e-3 on values of order one (the largest relative
-  changes are on tiny imaginary parts), the 120 x 36 x 5 thick grid by up to 6e-3 per grid value, the A(e,e'p) cross sections of
-  `reg_glauber_grid` by up to 3.3e-3, the F2D FSI pieces of `reg_inclusive_dis` by about 4e-4 (the Azz of the neutron at x = 0.8, a number of
-  1e-6, by 8%), `reg_eep_planewave` and `reg_weakqe` by at most 3e-6; larger than the 1e-3 precision that the grids request, so on
-  integrands with steps at least one of the two versions is not converged where it claims to be (in the scratch test the new rule
-  was better on a kink and worse on a step: 6e-3 against 3e-3 at 2e4 evaluations). It is therefore off by default.
-  **Checked (default build):** `ctest -LE slow` 141/141 and `ctest -L slow` 11/11 **against the unchanged references**; the 23 grid cache
-  files of the slow tests are **byte-identical to master**; a scratch comparison of the old bundled `adapt_integrate` and the patched
-  `hcubature_minEval` on 108 cases (6 integrands, 3 tolerances, 3 values of `minEval`, 2 of `maxEval`, scalar and 6-component vector
-  integrands) is **bitwise identical in the value, the error estimate and the number of evaluations in all 108**, and with
-  the upstream rule in 26; the Glauber probe of #92 (all named interpolations) identical. New unit tests: `hcubature` on the inttest integrand, and
-  `hcubature_minEval` (minEval = 0 is `hcubature`, the number of evaluations exceeds `minEval`). The CMake option and the offline
-  tarball path were tested with a scratch configure (with `STATIC_BUILD`), and the option with a build (5 of 8 regression tests then fail, with it off
-  all pass). **Not tested:** a build without network access other than through `CUBATURE_TARBALL` from a clean tree beyond the configure above; the
-  `STATIC_BUILD` build itself (only its configure).
+- [x] **cubature unbundled (added 2026-11-23, done 2026-11-26): the adaptive integrator is now cubature 1.0.4, values change at the 1e-6 to 1e-2
+  level for integrands with steps (author's decision), `CUBATURE_LEGACY_SPLIT` reproduces the old results bit for bit.** The bundled
+  `Integrator/adaptive/cubature.{c,h}` (1435 lines) was Steven G. Johnson's pre-1.0 `adapt_integrate` from October 2010 with a `minEval`
+  argument that upstream does not have (no convergence before `minEval` evaluations; the code passes 1e2 to 1e4). It is replaced by **cubature 1.0.4**
+  (github.com/stevengj/cubature; **GPL-2-or-later, as the bundled copy was: no license change**), downloaded at configure time (SHA256 pinned,
+  `-DCUBATURE_TARBALL=<file>` for machines without network, a wrong tarball is refused), patched with `cmake/patches/cubature-1.0.4-nucqcd.patch`
+  and its one source file `hcubature.c` compiled into `libIntegrator` (and `IntegratorST` with `STATIC_BUILD`); `<cubature/cubature.h>` comes from
+  `<build>/Integrator/cubature-include`. The unpacked and patched source is redone when the patch changes. A system `libcubature-dev` is not used:
+  it has no `minEval`. `numint2adapt.hpp` (`cube_adaptive`) calls `hcubature_minEval` with `ERROR_INDIVIDUAL` (the same convergence test: every
+  component below the absolute or the relative tolerance); the integrand returns `int` now. The old directory is gone; the unit test and the
+  archived `inttest` use the new interface.
+  **The patch.** (1) `hcubature_minEval`: `hcubature` with the minimum number of evaluations (`hcubature` itself is unchanged, `minEval` = 0).
+  (2) The macro `NUCQCD_LEGACY_SPLIT` (CMake option `CUBATURE_LEGACY_SPLIT`, off) selects the rule of the 2010 version to choose the dimension to
+  split a region; by default it is the rule of 1.0.4. Comparing the two sources, this rule is the only difference in the algorithm: 1.0.4 breaks
+  near-ties of the fourth differences in favour of the longest side of the region (the fix of a hang with unlimited `maxEval`, upstream #14, which nucqcd
+  never uses: it always passes a limit). For smooth integrands this changes nothing but the last digits; for integrands with steps (the Glauber integrals
+  have cuts) it changes the adaptive subdivision, and so the results at the level of the integration error. **The first version of this item kept
+  the 2010 rule so that nothing changed; the author then asked for upstream's behaviour and regenerated references (2026-11-26).**
+  **What changed (default build vs master).** The 23 grid cache files of the slow tests: 1 identical (the ROMEA file), in the others the
+  value changes per file (absolute, maximum over the file) are between 2.8e-6 and 5.4e-2, the median 4.8e-5: the thin off-axis `GlauberGrid` (tiny 4 x 4 x 3
+  grid, 1e-3 requested) has entries off by up to 6e-2 and the 120 x 36 x 5 thick grid by up to 6e-3 per grid value, the other tiny grids by 1e-6 to 5e-4. In
+  the references of the regression tests (**343 entries re-baselined**; 65 entries that moved by less than 1e-9 relative, last-bit noise, were restored to
+  master's values, among them the 4 changed entries of `reg_nucleon_structure`, which does not use the integrator): `reg_glauber_grid` (A(e,e'p) of carbon)
+  20 of 20 entries, up to 3.3e-3; `reg_glauber_variants` 254 of 392, up to 6.6e-3 on the real parts of values of order one (the largest relative changes,
+  up to 4e-1, are on imaginary parts of 2e-3); `reg_glauber_points` 22 of 38, up to 9e-5; `reg_inclusive_dis` 21 of 28, F2D FSI pieces by about 4e-4 and the
+  neutron Azz at x = 0.8 (a number of 7e-7) by 8%; `reg_deuteron_tagged` 6 of 23, up to 7e-7; `reg_distmomdistr_pw` 17 of 18, up to 2e-7; `reg_eep_planewave` 2 of 90, up to
+  3e-6; `reg_weakqe` 1 of 22, 1.4e-9. The size of the grid changes is above the 1e-3 precision that the grids request, so on integrands with steps at least one of the two versions is not
+  converged where it claims to be (in a scratch test of a step and a kink: the new rule was better on the kink, worse on the step: 6e-3 against 3e-3 at 2e4
+  evaluations). Results of published calculations were computed with the 2010 rule: reproduce them with `-DCUBATURE_LEGACY_SPLIT=yes`.
+  **Checked:** with the default build, `ctest -LE slow` 141/141 and `ctest -L slow` 11/11 against the regenerated references. With
+  `-DCUBATURE_LEGACY_SPLIT=yes` and **master's original references**: 141/141 and 11/11, and the 23 grid cache files **byte-identical to master**; a
+  scratch comparison of the old bundled `adapt_integrate` and the patched `hcubature_minEval` on 108 cases (6 integrands, 3 tolerances, 3 values of `minEval`,
+  2 of `maxEval`, scalar and 6-component vector integrands): with the legacy rule **bitwise identical in the value, the error estimate and the number of
+  evaluations in all 108**, with the default rule in 26. New unit tests: `hcubature` on the inttest integrand, and `hcubature_minEval` (minEval = 0 is
+  `hcubature`, the number of evaluations exceeds `minEval`). The offline tarball path and the `STATIC_BUILD` configure were tested with a scratch configure.
+  **Not tested:** the `STATIC_BUILD` build itself (only its configure); a build without network from a clean tree beyond the tarball configure.
   Still open: `pcubature` (excellent on smooth integrands, misses narrow peaks) and `hcubature_v` for parallel evaluation (see "Speed of the Glauber
-  grids", step 6) are available in the downloaded source but not used. **Benchmark (2026-11-23, `docs/integrator_benchmark.md`):** 1.0.4's
-  `hcubature` gives practically the same results as the old code on smooth integrands, is not better on steps, and on a kink reports convergence
-  while wrong (estimated 1e-5, true 6e-4): unbundling was a maintenance step, not an accuracy gain.
+  grids", step 6) are in the downloaded source but not used. **Benchmark (2026-11-23, `docs/integrator_benchmark.md`):** 1.0.4's `hcubature` gives practically the
+  same results as the old code on smooth integrands, is not better on steps, and on a kink reports convergence while wrong (estimated 1e-5, true 6e-4).
 
 ## 8. Repository README
 

@@ -13,15 +13,15 @@ nucqcd_add_library(Integrator
 # hcubature of Steven G. Johnson's cubature 1.0.4 (https://github.com/stevengj/cubature, GPL-2-or-later), the engine of
 # numint::cube_adaptive. It is downloaded at configure time (URL and SHA256 pinned; -DCUBATURE_TARBALL=<file> uses a local
 # copy of v1.0.4.tar.gz, for machines without network), patched (cmake/patches/cubature-1.0.4-nucqcd.patch: hcubature_minEval, the
-# minimum number of function evaluations that the 2010 adapt_integrate, which nucqcd bundled until 2026-11, had, and the 2010 rule to
-# choose the dimension to split, which keeps all results unchanged) and its one source file is compiled into libIntegrator.
-# -DCUBATURE_UPSTREAM_SPLIT=yes uses the rule of cubature 1.0.4 instead (results of integrands with steps change, see the ROADMAP).
+# minimum number of function evaluations that the 2010 adapt_integrate, which nucqcd bundled until 2026-11, had) and its one source file
+# is compiled into libIntegrator. The rule to choose the dimension to split a region is that of cubature 1.0.4; -DCUBATURE_LEGACY_SPLIT=yes
+# selects the rule of the 2010 version instead, which reproduces the results of nucqcd before 2026-11 bit for bit (see the ROADMAP).
 # A cubature installed on the system (libcubature-dev) cannot be used: it has no minEval. The unpacked and patched source is redone
 # when the patch changes. <cubature/cubature.h> is provided from <build>/Integrator/cubature-include.
 set(CUBATURE_VERSION 1.0.4)
 set(CUBATURE_SHA256 cd4899de0b047a9d220cfb751a8bdbb8fd0c97c1c894d07523b75168e6426f60)
 set(CUBATURE_TARBALL "" CACHE FILEPATH "Local cubature v1.0.4.tar.gz to use instead of downloading it")
-option(CUBATURE_UPSTREAM_SPLIT "Use the rule of cubature 1.0.4 to choose the dimension to split (changes results), not the 2010 one" OFF)
+option(CUBATURE_LEGACY_SPLIT "Use the rule of the 2010 cubature to choose the dimension to split (the results of nucqcd before 2026-11), not that of 1.0.4" OFF)
 set(CUBATURE_PATCH "${PROJECT_SOURCE_DIR}/cmake/patches/cubature-${CUBATURE_VERSION}-nucqcd.patch")
 set(CUBATURE_SRC_DIR "${CMAKE_CURRENT_BINARY_DIR}/cubature-src")
 set(CUBATURE_STAMP "${CUBATURE_SRC_DIR}/.nucqcd-patch-sha256")
@@ -72,9 +72,9 @@ if(NOT CUBATURE_UP_TO_DATE)
 endif()
 configure_file("${CUBATURE_SRC_DIR}/cubature.h" "${CUBATURE_INCLUDE_STAGE}/cubature/cubature.h" COPYONLY)
 set(CUBATURE_COMPILE_FLAGS "-w")  # third-party code
-if(CUBATURE_UPSTREAM_SPLIT)
-  set(CUBATURE_COMPILE_FLAGS "${CUBATURE_COMPILE_FLAGS} -DNUCQCD_UPSTREAM_SPLIT")
-  message(STATUS "cubature: using the split rule of cubature 1.0.4 (results differ from the 2010 rule)")
+if(CUBATURE_LEGACY_SPLIT)
+  set(CUBATURE_COMPILE_FLAGS "${CUBATURE_COMPILE_FLAGS} -DNUCQCD_LEGACY_SPLIT")
+  message(STATUS "cubature: using the split rule of the 2010 version (the results of nucqcd before 2026-11), not that of cubature 1.0.4")
 endif()
 set_source_files_properties("${CUBATURE_SRC_DIR}/hcubature.c" PROPERTIES COMPILE_FLAGS "${CUBATURE_COMPILE_FLAGS}")
 target_sources(Integrator PRIVATE "${CUBATURE_SRC_DIR}/hcubature.c")

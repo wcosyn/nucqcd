@@ -124,7 +124,7 @@ The programs mostly pass 2·10⁴ (`progs/onenucl`, `progs/Obstest`), i.e. 1e-5 
    warning, because the `numint` wrapper of `cube_adaptive` returns 0 and drops the error estimate.
    Worth fixing independently of the integrator choice (see the ROADMAP).
 6. **Unbundling cubature (step 7):** moving to upstream 1.0.4 does not improve accuracy (worse on kinks);
-   it is a maintenance question only. Done 2026-11-26 without changing any value: the build downloads 1.0.4 and the patch keeps the
-   2010 rule to choose the dimension to split (upstream's rule is the difference measured above; `-DCUBATURE_UPSTREAM_SPLIT=yes`). `pcubature` could be considered for smooth integrands.
+   it is a maintenance question only. Done 2026-11-26: the build downloads 1.0.4 (its rule to choose the dimension to split is the difference measured above,
+   it changes results of integrands with steps by 1e-6 to 1e-2; `-DCUBATURE_LEGACY_SPLIT=yes` selects the 2010 rule and reproduces the old results bit for bit). `pcubature` could be considered for smooth integrands.
 
 Bugs found: `cube_romb` 32-bit overflow beyond 10 refinement levels in 3D (#60).
