@@ -239,7 +239,7 @@ int main(int argc, char *argv[])
           do{
             double costhetamu=1.-k*0.001;
             double Q2=-leptonmass*leptonmass+2.*E_in*El_out-2.*E_in*pl_out*costhetamu;
-            Kinematics2to2 kin("","",Nucleus.getMassA(),resmass,
+            Kinematics2to2 kin(Nucleus.getMassA(),resmass,
               nucqcd::mass_n,"qsquared:wlab:pklab",Q2,omega,pm);
             // if(kin.IsPhysical()) cout << E_in << " " << pm << " " << costhetamu << " " << kin.GetCosthkcm() << " " << Q2 << " " << Q2p << " " << omega << endl;
             if(kin.IsPhysical()&&phys==0) phys=1;
@@ -402,7 +402,7 @@ void adap_intPm(numint::vector_d & results, double omega, double E_in, double co
       LeptonKinematics *lepton = LeptonKinematics::CreateWithBeamEnergy(static_cast<LeptonKinematics::Lepton>(flav),E_in);
       WeakQECross pobs(lepton,&nucleus,prec,integrator,homedir,charged,1.03E03,screening,enable_romea);  
         
-      Kinematics2to2 kin("","",nucleus.getMassA(),resmass,
+      Kinematics2to2 kin(nucleus.getMassA(),resmass,
         shell<nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
       if(!kin.IsPhysical()||kin.GetPYlab()<min_final_nucl_mom||kin.GetPklab()>max_initial_nucl_mom){ //final nucleon momentum too low, impose cut!
         // cout << kin.IsPhysical() << " " << E_out << " " << omega << " " << Q2*1.E-06 << " " << costhetamu << " " << kin.GetCosthkcm() <<  " " << kin.GetEYlab() << " " << En_out << endl;

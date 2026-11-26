@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     for(int i=1;i<bla;i++){
       double x=1./bla*i;
 //       cout << x << endl;
-      //Kinematics2to2 kin("","",nucqcd::mass_d,nucqcd::mass_p,Wprime,"qsquared:wlab:pklab",1.8E06,nu,pr);
+      //Kinematics2to2 kin(nucqcd::mass_d,nucqcd::mass_p,Wprime,"qsquared:wlab:pklab",1.8E06,nu,pr);
       teller[i-1]=0.,fsi1[i-1]=0.,fsi2[i-1]=0.,noemer[i-1]=0.;
       for(int proton=0;proton<=1;++proton){
 	InclusiveCrossRes Dinc(proton,argv[6],argv[5],*elec,atoi(argv[1]),atoi(argv[2]),atoi(argv[3]),0);

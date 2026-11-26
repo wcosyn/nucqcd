@@ -96,7 +96,7 @@ class MeanFieldSpinor
   MeanFieldSpinor(const MeanFieldSpinor&);  /*!< Copy Constructor */
   virtual ~MeanFieldSpinor();  /*!< Destructor */
   MeanFieldSpinor& operator=(const MeanFieldSpinor&);  /*!< Copy operator */
-  virtual MeanFieldSpinor* Clone(const char* ="") const;  /*!< Clone function */
+  virtual MeanFieldSpinor* Clone() const;  /*!< Clone function */
 
   operator const Matrix<4,1>&() const { return *fComponent; }  /*!< cast to matrix object */
   template<int K>

@@ -89,9 +89,8 @@ using std::complex;
 const double Deuteron::Wavefunction::kMd = 1877.05;
 
 //_____________________________________________________________________
-Deuteron::Wavefunction::Wavefunction(const std::string& name,
-			     const std::string& title)
-  : fName(name),fTitle(title), fRelativistic(0), fImplementation(0), yukawa(0)
+Deuteron::Wavefunction::Wavefunction(const std::string& name)
+  : fName(name), fRelativistic(0), fImplementation(0), yukawa(0)
 {
   // Default constructor is private
   // User are only allowed to use named constructors
@@ -101,7 +100,7 @@ Deuteron::Wavefunction::Wavefunction(const std::string& name,
 
 //_____________________________________________________________________
 Deuteron::Wavefunction::Wavefunction(const Wavefunction& rhs)
-  : fName(rhs.fName),fTitle(rhs.fTitle), fRelativistic(rhs.fRelativistic), fImplementation(0), yukawa(rhs.yukawa)
+  : fName(rhs.fName), fRelativistic(rhs.fRelativistic), fImplementation(0), yukawa(rhs.yukawa)
 {
   // Copy constructor
 
@@ -115,7 +114,6 @@ Deuteron::Wavefunction& Deuteron::Wavefunction::operator=(const Wavefunction& rh
 
   if( this!=&rhs ) { // avoid self-assignment
     fName=rhs.fName;
-    fTitle=rhs.fTitle;
     fRelativistic = rhs.fRelativistic;
     yukawa=rhs.yukawa;
     delete fImplementation;

@@ -47,7 +47,7 @@ class GrossWavefunction : public WavefunctionImplementation
   GrossWavefunction& operator=(const GrossWavefunction&); ///< assignment
   virtual ~GrossWavefunction(); ///< destructor
 
-  virtual GrossWavefunction *Clone(const char* ="") const {return new GrossWavefunction(*this); } ///< virtual copy constructor
+  virtual GrossWavefunction *Clone() const {return new GrossWavefunction(*this); } ///< virtual copy constructor
 
   virtual double GetUr(double r) const; ///< [fm^-1/2] S wave u (L=0) in coordinate space \param r [fm]
   virtual double GetWr(double r) const; ///< [fm^-1/2] D wave w (L=2) in coordinate space \param r [fm]

@@ -61,14 +61,13 @@ using std::vector;
 const std::ofstream Kinematics2to3WithLabAngles::fgDevNull("/dev/null");
 
 //_____________________________________________________________________
-Kinematics2to3WithLabAngles::Kinematics2to3WithLabAngles(const char *name, const char *title,
-							   int isospin, EAxisConvention ac, 
+Kinematics2to3WithLabAngles::Kinematics2to3WithLabAngles(int isospin, EAxisConvention ac, 
 							   const char *format,
 							   double var1, double var2, double var3,
 							   double var4, double var5, double var6,
 							   double Md,double Mn, double Mk,double My)
 							  
-  : Kinematics2to3(name,title,isospin,kK,"qsquared:wlab:pk:thk:yncosthycm:ynphiycm",
+  : Kinematics2to3(isospin,kK,"qsquared:wlab:pk:thk:yncosthycm:ynphiycm",
 		    0.,0.,0.,0.,0.,0.,Md,Mn,Mk,My),
     fNrOfSolutions(0), fSolutions(new Kinematics2to3*[2])
 {
@@ -83,7 +82,7 @@ Kinematics2to3WithLabAngles::Kinematics2to3WithLabAngles(const char *name, const
 
 //_____________________________________________________________________
 Kinematics2to3WithLabAngles::Kinematics2to3WithLabAngles(const Kinematics2to3WithLabAngles& rhs)
-  : Kinematics2to3("","",1,kK,"qsquared:wlab:pk:thk:yncosthycm:ynphiycm",
+  : Kinematics2to3(1,kK,"qsquared:wlab:pk:thk:yncosthycm:ynphiycm",
 		    0.,0.,0.,0.,0.,0.,rhs.fMd,rhs.fMn,rhs.fMk,rhs.fMy),
     fNrOfSolutions(rhs.fNrOfSolutions), fSolutions(new Kinematics2to3*[2])
 {
@@ -628,7 +627,7 @@ void Kinematics2to3WithLabAngles::UpdateKinematics()
     
     // Create the solution
     if(fSolutions[i]) delete fSolutions[i];
-    fSolutions[i] = new Kinematics2to3("","",fIsospin,fAC,
+    fSolutions[i] = new Kinematics2to3(fIsospin,fAC,
 					formatString,
 					GetVar(1), GetVar(2),
 					GetVar(3), GetVar(4),

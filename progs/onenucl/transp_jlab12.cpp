@@ -171,7 +171,7 @@ void adap_intPm(numint::vector_d & results, double costhetacm,EMQECross* pObs, M
   results=numint::vector_d(3*pNucleus->getTotalLevels()+6,0.);
   for(int shell=0;shell<pNucleus->getPLevels();shell++) {
     if(costhetacm<cthmax[shell]){
-      Kinematics2to2 kin("","",pNucleus->getMassA(),
+      Kinematics2to2 kin(pNucleus->getMassA(),
         pNucleus->getMassA_min_proton()+pNucleus->getExcitation()[shell],
         nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,costhetacm);
       double pm=kin.GetPklab();
@@ -197,7 +197,7 @@ void adap_intPm(numint::vector_d & results, double costhetacm,EMQECross* pObs, M
 
   for(int shell=pNucleus->getPLevels();shell<pNucleus->getTotalLevels();shell++) {
     if(costhetacm<cthmax[shell]){
-      Kinematics2to2 kin("","",pNucleus->getMassA(),
+      Kinematics2to2 kin(pNucleus->getMassA(),
         pNucleus->getMassA_min_neutron()+pNucleus->getExcitation()[shell],
         nucqcd::mass_n,"qsquared:wlab:costhkcm",Q2,omega,costhetacm);
       double pm=kin.GetPklab();
@@ -229,7 +229,7 @@ void adap_intPm(numint::vector_d & results, double costhetacm,EMQECross* pObs, M
 
 // find cm scatt angles so that missing momentum stays below 300 MeV 
 void getBound(double &high, double &low, MeanFieldNucleusThick &nucleus, double Q2, double omega, int shell){
-  Kinematics2to2 kin("","",nucleus.getMassA(),
+  Kinematics2to2 kin(nucleus.getMassA(),
 		      (shell<nucleus.getPLevels()? nucleus.getMassA_min_proton(): nucleus.getMassA_min_neutron())+nucleus.getExcitation()[shell],
 		      nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,(high+low)/2.);
   double pm=kin.GetPklab();

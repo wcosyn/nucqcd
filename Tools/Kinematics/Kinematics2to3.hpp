@@ -49,15 +49,6 @@ class LorentzQuaternion;
  */
 class Kinematics2to3
 {
-  std::string fName;  ///< name (formerly from the ROOT base class TNamed)
-  std::string fTitle; ///< title
-
- public:
-  const char *GetName() const { return fName.c_str(); }  ///< name
-  const char *GetTitle() const { return fTitle.c_str(); } ///< title
-  void SetName(const char *name) { fName = name; }        ///< sets the name
-  void SetTitle(const char *title) { fTitle = title; }    ///< sets the title
-
   friend class Kinematics2to3WithLabAngles;
 
  public:
@@ -74,7 +65,6 @@ class Kinematics2to3
   };
 
   /*! constructor
-   * \param name,title ROOT name and title
    * \param isospin isospin channel: (1) K+ Lambda n, (2) K+ Sigma0 n, (3) K0 Sigma+ n, (4) K0 Lambda p,
    * (5) K0 Sigma0 p, (6) K+ Sigma- p, (7) masses given by Md, Mn, Mk, My
    * \param ac standard axis convention (kK, kY or kN; kS is not allowed)
@@ -83,8 +73,7 @@ class Kinematics2to3
    * independent variables, in the order of the format string
    * \param Md,Mn,Mk,My [MeV] masses of deuteron, nucleon, kaon and hyperon (isospin channel 7)
    */
-  Kinematics2to3(const char *name, const char *title,
-		  int isospin, EAxisConvention ac, 
+  Kinematics2to3(int isospin, EAxisConvention ac, 
 		  const char *format,
 		  double var1, double var2, double var3,
 		  double var4, double var5, double var6,

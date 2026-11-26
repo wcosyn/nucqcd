@@ -77,17 +77,13 @@ class Deuteron
  public:
   class Wavefunction
   {
-    std::string fName;  ///< name (formerly from the ROOT base class TNamed)
-    std::string fTitle; ///< title
+    std::string fName;  ///< name of the parametrization ("CDBonn", "Paris", ...), set by the named constructors
 
    public:
-    const char *GetName() const { return fName.c_str(); }  ///< name
-    const char *GetTitle() const { return fTitle.c_str(); } ///< title
-    void SetName(const char *name) { fName = name; }        ///< sets the name
-    void SetTitle(const char *title) { fTitle = title; }    ///< sets the title
+    const char *GetName() const { return fName.c_str(); }  ///< name of the parametrization
 
   private:
-    Wavefunction(const std::string& name="", const std::string& title=""); ///< private: use the named constructors
+    Wavefunction(const std::string& name=""); ///< private: use the named constructors
   public:
     Wavefunction(const Wavefunction&); ///< copy constructor (clones the implementation)
     Wavefunction& operator=(const Wavefunction&); ///< assignment (clones the implementation)

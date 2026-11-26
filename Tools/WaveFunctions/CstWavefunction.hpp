@@ -46,7 +46,7 @@ class CstWavefunction : public WavefunctionImplementation
   CstWavefunction& operator=(const CstWavefunction&); ///< assignment
   virtual ~CstWavefunction(); ///< destructor
 
-  virtual CstWavefunction *Clone(const char* ="") const {return new CstWavefunction(*this); } ///< virtual copy constructor
+  virtual CstWavefunction *Clone() const {return new CstWavefunction(*this); } ///< virtual copy constructor
 
   virtual double GetUr(double r) const; ///< [fm^-1/2] S wave u (L=0) in coordinate space \param r [fm]
   virtual double GetWr(double r) const; ///< [fm^-1/2] D wave w (L=2) in coordinate space \param r [fm]

@@ -30,7 +30,7 @@ class ElectronKinematics
   ElectronKinematics& operator=(const ElectronKinematics&); ///< assignment
   virtual ~ElectronKinematics() {} // Destructor
 
-  virtual ElectronKinematics* Clone(const char * ="") const { return new ElectronKinematics(*this); } ///< virtual copy constructor
+  virtual ElectronKinematics* Clone() const { return new ElectronKinematics(*this); } ///< virtual copy constructor
 
   static ElectronKinematics* CreateWithBeamEnergy(double); ///< fixes the beam energy [MeV]; the caller owns the object
   static ElectronKinematics* CreateWithEpsilon(double); ///< fixes the transverse linear polarization epsilon of the virtual photon; the caller owns the object

@@ -137,7 +137,7 @@ MeanFieldSpinor& MeanFieldSpinor::operator=(const MeanFieldSpinor& rhs)
 }
 
 //_____________________________________________________________________
-MeanFieldSpinor* MeanFieldSpinor::Clone(const char*) const
+MeanFieldSpinor* MeanFieldSpinor::Clone() const
 {
   // Virtual copy constructor
   return new MeanFieldSpinor(*this);

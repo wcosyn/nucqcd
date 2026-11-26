@@ -37,7 +37,7 @@ class LeptonKinematics
   LeptonKinematics& operator=(const LeptonKinematics&); /*!< assignment operator */
   virtual ~LeptonKinematics() {} /*!< Destructor */
 
-  virtual LeptonKinematics* Clone(const char * ="") const { return new LeptonKinematics(*this); } /*!< ROOT Cloner */
+  virtual LeptonKinematics* Clone() const { return new LeptonKinematics(*this); } /*!< ROOT Cloner */
 
   /// lepton type
   enum Lepton { electron = 0, ///< electron

@@ -257,7 +257,7 @@ int Kinematics2to3::VariableInfo() const
 {
   // Print information on the type of independent variables and their status.
 
-  std::cout << GetName() << ": " << GetTitle()
+  std::cout << "Kinematics2to3"
 	       << "\n****************************************************\n";
 
   for(int var=0; var<6; ++var) {

@@ -124,13 +124,12 @@ using std::strcmp;
 const double Kinematics2to3::kUflow = 1.e-7;
 
 //_____________________________________________________________________
-Kinematics2to3::Kinematics2to3(const char *name, const char *title,
-				 int isospin, EAxisConvention ac, 
+Kinematics2to3::Kinematics2to3(int isospin, EAxisConvention ac, 
 				 const char *format,
 				 double var1, double var2, double var3,
 				 double var4, double var5, double var6,
 				 double Md, double Mn, double Mk, double My)
-  : fName(name),fTitle(title), fKYsystem(0), fKNsystem(0), fYNsystem(0),
+  : fKYsystem(0), fKNsystem(0), fYNsystem(0),
     fKvector(0), fYvector(0), fNvector(0), fGvector(0), fDvector(0),
     fIsospin(0), fMd(Md), fMk(Mk), fMy(My), fMn(Mn), fIsPhysical(false),
     fQsquared(0), fWlab(0), fKlab(0), fEk(0), fEy(0), fEn(0),
@@ -207,7 +206,7 @@ Kinematics2to3::Kinematics2to3(const char *name, const char *title,
 
 //_____________________________________________________________________
 Kinematics2to3::Kinematics2to3(const Kinematics2to3& toCopy)
-  : fName(toCopy.fName),fTitle(toCopy.fTitle), fKYsystem(0), fKNsystem(0), fYNsystem(0),
+  : fKYsystem(0), fKNsystem(0), fYNsystem(0),
     fKvector(0), fYvector(0), fNvector(0), fGvector(0), fDvector(0),
     fIsospin(toCopy.fIsospin), fMd(toCopy.fMd), fMk(toCopy.fMk), 
     fMy(toCopy.fMy), fMn(toCopy.fMn), fIsPhysical(toCopy.fIsPhysical),
@@ -302,10 +301,6 @@ Kinematics2to3& Kinematics2to3::operator=(const Kinematics2to3& toCopy)
   // Assignment
 
   if( this!=&toCopy ) { // avoid self-assignment
-    
-    fName=toCopy.fName;
-    
-    fTitle=toCopy.fTitle;
     
     ChangeIsospinChannel(toCopy.fIsospin);
     fAC = toCopy.fAC;
