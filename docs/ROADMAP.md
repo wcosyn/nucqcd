@@ -25,7 +25,7 @@ same PR.
 | 3 | Rename the repository | ✅ done (PR #7, tagged-poldeut PRs #1 and #2) |
 | 4 | Bug fixes | ✅ done: listed bugs (PRs #8, #9, #12); found later: stale FSI+CT grid (#18), kinematics (#19, #20, #33), DoubleNModel/Pair (#21, then moved to the attic in #22), π⁻ Glauber parameters (#28), TDeuteron errors (#31), He3 spin sum (#47) and factor A in `He3Cross` (#48), `TMPI` not compiling with MPI-3 (fixed in the attic with step 6, "Retire MPI", #54), `RunLog` reading freed memory at `exit()` (#57), `cube_romb` overflow beyond 10 levels in 3D (#60). New bugs found later are added here |
 | 5 | Low-risk modernization | ✅ done: `-fopenmp`, Fortran interop (#11), constants (#13, #14), grid cache (#15–#17), ownership (#23), exceptions (#24), Doxygen (#10, #25–#30, #32, #34–#39: no warnings left) |
-| 6 | Structural refactors | 🔶 done: constants macros (#41), `NuclStructure` merge (#42), code layout (`Tools` split #52, prefixed includes and `.hpp` #53, namespace `nucqcd` #65, the `T*` classes renamed #76, the `TNamed` leftovers #78), `Model`/`Cross` renamed (#53), MPI retired (#54), integrator benchmark (#61), precision reporting (#62), integrator option 0 removed (#69), CRLF to LF (#66), long files split (#70), `GetVar*` table (#71), model names as enumerations (#72), the long `TKinematics2to3` functions split (#74) and the crash they showed fixed (#75), the thick Glauber grids deduplicated (#77); `rombergerN` removed from the libraries (#82); copy-paste comments and a duplicate header guard (#86); the integration method as an enumeration with one dispatch function (#87, #88); the Glauber abstract classes reduced from seven to two (#92); the raw grid arrays replaced by `Grid3D` and `std::vector` (#93, #94); to do: the off-axis grid speed, the long Glauber files, the hard-coded paths, optional other integration algorithms |
+| 6 | Structural refactors | 🔶 done: constants macros (#41), `NuclStructure` merge (#42), code layout (`Tools` split #52, prefixed includes and `.hpp` #53, namespace `nucqcd` #65, the `T*` classes renamed #76, the `TNamed` leftovers #78), `Model`/`Cross` renamed (#53), MPI retired (#54), integrator benchmark (#61), precision reporting (#62), integrator option 0 removed (#69), CRLF to LF (#66), long files split (#70), `GetVar*` table (#71), model names as enumerations (#72), the long `TKinematics2to3` functions split (#74) and the crash they showed fixed (#75), the thick Glauber grids deduplicated (#77); `rombergerN` removed from the libraries (#82); copy-paste comments and a duplicate header guard (#86); the integration method as an enumeration with one dispatch function (#87, #88); the Glauber abstract classes reduced from seven to two (#92); the raw grid arrays replaced by `Grid3D` and `std::vector` (#93, #94); the long Glauber files split (#96); to do: the off-axis grid speed, the hard-coded paths, optional other integration algorithms |
 | 7 | Unbundle Cuba and cubature | ✅ done: Cuba (#67), cubature (cubature 1.0.4 downloaded and patched; results of integrands with steps change at the 1e-6 to 1e-2 level, `-DCUBATURE_LEGACY_SPLIT=yes` reproduces the old ones) |
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
 | 9 | Decouple from ROOT where possible | ✅ done: phases 1–5 (#44, #45, #50, #55, #56, #58), phase 6: GPD generators (#59) and the fits on the standalone Minuit2 (#73). ROOT is only used by the test `unit_vectors` |
@@ -66,7 +66,7 @@ seven abstract Glauber grid classes reduced to two (`GridVariant`, #92); the raw
 2. **Glauber grids:** the off-axis speed (every point hits the evaluation cap; `cube_romb` was 5x faster at 1e-3;
    variants change values within the precision and need the author's OK). The hierarchy dedup is done (#77, #92, #93, #94);
    only the named `printFsi_*_grid` functions are left, low priority.
-3. **Smaller items:** other integration algorithms in `numint::cube` (step 6, optional part 3), the hard-coded absolute paths in some programs (step 6, copy-paste leftovers), the long Glauber files (`FastParticle.cpp` 986 lines, `DistMomDistrGrid.cpp` 636, `FsiCorrelator.cpp` 585, `GlauberGrid.cpp` 540; `NucleonEMOperatorTables.cpp` is data tables),
+3. **Smaller items:** other integration algorithms in `numint::cube` (step 6, optional part 3), the hard-coded absolute paths in some programs (step 6, copy-paste leftovers), the longest files of the libraries other than `Glauber/` (see the item on long files, step 6),
    `SolvePhotonAndParticle1` (134 lines), reporting the Suave bug to the Cuba authors, a format string that gives
    no scenario at all is still accepted (step 6, long functions), `Resonance` stays in the DIS library although
    only the archived class used it.
@@ -1053,6 +1053,20 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   `DistMomDistrGrid.cpp` (with the grid dedup above), and `SolvePhotonAndParticle1` (134 lines) could be
   split further.
 
+  **Glauber files (2026-11-26, #96):** the four longest files of `Glauber/` were split the same way, the functions moved verbatim into a new file
+  of the class: `FastParticle.cpp` 986 lines -> 551 + `FastParticle_ScatteringData.cpp` 465 (`setGlauberParameters`, `setPionGlauberData`,
+  `interpPionGlauberData` and the table struct of the latter), `DistMomDistrGrid.cpp` 636 -> 333 + `DistMomDistrGrid_Construct.cpp` 340
+  (`constructAllGrids`, `constructCtGrid`, `constructpwGrid`, `intRhoRpw` and the two integrands), `FsiCorrelator.cpp` 585 -> 284 +
+  `FsiCorrelator_Solver.cpp` 328 (the matrix, the correlation function and the Newton solver), `GlauberGrid.cpp` 540 -> 184 +
+  `GlauberGrid_Construct.cpp` 380 (`constructAllGrids`, `constructCtGrid`, the Glauber phases of one grid point, the integrands). A splitter script
+  checked that every line of the original is in exactly one of the two files. **Checked:** `ctest -LE slow` 141/141, `ctest -L slow` 11/11 and the 23 grid cache
+  files **byte-identical** to master (moving functions between files can change the last bits through the compiler's choice of fused multiply-adds, as in
+  #93; here it did not); `setPionGlauberData` for 30 momenta and `FsiCorrelator` on 6 x 6, 12 x 12 and 20 x 20 grids (log and cache file): identical
+  to master. The doxygen limit `DOT_GRAPH_MAX_NODES` was raised from 50 to 100 (the include graph of `ErrorMessage.hpp` got too large with the new files).
+  The longest files left in `Glauber/`: `FastParticle.cpp` 551, `GlauberGridThick.cpp` 451 and `GlauberDecayGridThick.cpp` 381 lines (and the data
+  tables `NucleonEMOperatorTables.cpp` and `global2009.f`); elsewhere in the libraries `Tools/WaveFunctions/Deuteron.cpp` (2169), `Tools/Kinematics/Kinematics.cpp`
+  (1745), `Knockout/DQEinclusive.cpp` (1275), `DIS/InclusiveCross.cpp` (1173), `Tools/Core/Spinor.cpp` (1165) and `GammaStructure.cpp` (1072) are
+  longer than 1000 lines (not looked at).
 - [x] **Comments that belong to another file (copy-paste leftovers)** (crawl of 2026-11-26, fixed the same day, mostly
   comments; **partly done**, see the rest below). A scripted crawl of the tracked C++ files outside `progs/attic` and
   `tests/` (file tags, header guards, the first comment block of every file against the file name, usage lines against
