@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <Integrator/numint/cube.hpp>
 #include <Tools/Core/ErrorMessage.hpp>
 #include <iostream>
 #include <fstream>
@@ -16,7 +17,7 @@ namespace nucqcd {
 
 //constructor, calls abstractfsigrid's constructor
 GlauberGrid::GlauberGrid(const int r_grid, const int cth_grid, const int phi_grid, MeanFieldNucleus * pnucl,
-                         double prec, int integrator, string dir):AbstractFsiGrid(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir),
+                         double prec, IntegrationMethod integrator, string dir):AbstractFsiGrid(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir),
 AbstractFsiCTGrid(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir), fsi_grid(NULL), fsi_ct_grid(NULL), treshold(NULL) {
 
   //mem reservation for the grids, index [shelllevel][mindex(postive only due to symmetry][rgrid][thgrid][phgrid]
@@ -446,33 +447,27 @@ void GlauberGrid::calcGlauberphasesBoth(const int i, const int j, const int k) {
       int res = 90;
       unsigned count = 0;
       double deeserror = 0.;
-      if (integrator == 1 || integrator == 2) {
-        if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
-          throw std::invalid_argument(nucqcd::ErrorMessage() << "You should be using the OneGlauberGrid class boy!" );
-        }
-        else {
-          numint::array < double, 3 > lower = { {0., -1., 0.} };
-          numint::array < double, 3 > upper = { {getPnucleus()->getRange(), 1., 2. * PI} };
-
-          GlauberGrid::Ftor_one F;
-          F.grid = this;
-          F.level = level;
-          F.mm = mm;
-          numint::mdfunction < numint::vector_z, 3 > mdf;
-          mdf.func = &Ftor_one::exec;
-          mdf.param = &F;
-          vector<complex<double> > ret(2, 0.);
-          F.f = klaas_one_bound;
-          if (integrator == 1)
-            res = numint::cube_romb(mdf, lower, upper, 1.E-12, prec, ret, count, 0);
-          else
-            res = numint::cube_adaptive(mdf, lower, upper, 1.E-12, prec, 2E03,2E06, ret, count, 0);
-          fsi_grid[level][mm][i][j][k] = ret[0];
-          fsi_ct_grid[level][mm][i][j][k] = ret[1];
-
-        }
+      if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
+        throw std::invalid_argument(nucqcd::ErrorMessage() << "You should be using the OneGlauberGrid class boy!" );
       }
-//       else {cerr  << "integrator type not implemented" << endl; exit(1);}
+      else {
+        numint::array < double, 3 > lower = { {0., -1., 0.} };
+        numint::array < double, 3 > upper = { {getPnucleus()->getRange(), 1., 2. * PI} };
+
+        GlauberGrid::Ftor_one F;
+        F.grid = this;
+        F.level = level;
+        F.mm = mm;
+        numint::mdfunction < numint::vector_z, 3 > mdf;
+        mdf.func = &Ftor_one::exec;
+        mdf.param = &F;
+        vector<complex<double> > ret(2, 0.);
+        F.f = klaas_one_bound;
+        res = numint::cube({integrator, 1.E-12, prec, 2000, 2000000}, mdf, lower, upper, ret, count, 0);
+        fsi_grid[level][mm][i][j][k] = ret[0];
+        fsi_ct_grid[level][mm][i][j][k] = ret[1];
+
+      }
 //       cout << i << " " << j << " " << k << " " << level << " " << mm << fsi_grid[level][mm][i][j][k] << " " << fsi_ct_grid[level][mm][i][j][k] <<
 //       " " << res << " " << count << endl;
     }
@@ -486,32 +481,26 @@ void GlauberGrid::calcGlauberphasesCt(const int i, const int j, const int k) {
       int res = 90;
       unsigned count = 0;
       double deeserror = 0.;
-      if (integrator == 1 || integrator == 2) {
-        if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
-          throw std::invalid_argument(nucqcd::ErrorMessage() << "You should be using the OneGlauberGrid class boy!" );
-        }
-        else {
-          numint::array < double, 3 > lower = { {0., -1., 0.} };
-          numint::array < double, 3 > upper = { {getPnucleus()->getRange(), 1., 2. * PI} };
-
-          GlauberGrid::Ftor_one F;
-          F.grid = this;
-          F.level = level;
-          F.mm = mm;
-          numint::mdfunction < numint::vector_z, 3 > mdf;
-          mdf.func = &Ftor_one::exec;
-          mdf.param = &F;
-          vector<complex<double> > ret(1, 0.);
-          F.f = klaas_one_bound_ct;
-          if (integrator == 1)
-            res = numint::cube_romb(mdf, lower, upper, 1.E-12, prec, ret, count, 0);
-          else
-            res = numint::cube_adaptive(mdf, lower, upper, 1.E-12, prec, 2E03,2E06, ret, count, 0);
-          fsi_ct_grid[level][mm][i][j][k] = ret[2];
-
-        }
+      if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
+        throw std::invalid_argument(nucqcd::ErrorMessage() << "You should be using the OneGlauberGrid class boy!" );
       }
-//       else {cerr  << "integrator type not implemented" << endl; exit(1);}
+      else {
+        numint::array < double, 3 > lower = { {0., -1., 0.} };
+        numint::array < double, 3 > upper = { {getPnucleus()->getRange(), 1., 2. * PI} };
+
+        GlauberGrid::Ftor_one F;
+        F.grid = this;
+        F.level = level;
+        F.mm = mm;
+        numint::mdfunction < numint::vector_z, 3 > mdf;
+        mdf.func = &Ftor_one::exec;
+        mdf.param = &F;
+        vector<complex<double> > ret(1, 0.);
+        F.f = klaas_one_bound_ct;
+        res = numint::cube({integrator, 1.E-12, prec, 2000, 2000000}, mdf, lower, upper, ret, count, 0);
+        fsi_ct_grid[level][mm][i][j][k] = ret[2];
+
+      }
 //       cout << i << " " << j << " " << k << " " << level << " " << mm << fsi_grid[level][mm][i][j][k] << " " << fsi_ct_grid[level][mm][i][j][k] <<
 //       " " << res << " " << count << endl;
     }

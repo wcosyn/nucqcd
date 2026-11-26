@@ -12,7 +12,7 @@ namespace nucqcd {
 
 
 AbstractFsiCTDecayGridThick::AbstractFsiCTDecayGridThick(int r_grid, int cth_grid, int phi_grid, MeanFieldNucleusThick *pnucl, 
-					      double prec, int integrator, string homedir):
+					      double prec, IntegrationMethod integrator, string homedir):
 AbstractFsiGrid(r_grid,cth_grid,phi_grid,pnucl,prec,integrator,homedir),
 AbstractFsiGridThick(r_grid,cth_grid,phi_grid,pnucl,prec,integrator,homedir), 
 AbstractFsiDecayGridThick(r_grid,cth_grid,phi_grid,pnucl,prec,integrator,homedir), 

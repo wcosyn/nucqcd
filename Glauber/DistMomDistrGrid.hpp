@@ -14,6 +14,7 @@
 #include <Tools/Core/Vector3.hpp>
 #include <Tools/Core/Matrix.hpp>
 #include <Integrator/numint/numint.hpp>
+#include <Tools/Core/IntegratorFlag.hpp>
 
 namespace nucqcd {
 
@@ -37,14 +38,14 @@ public:
    * \param phi_grid gridsizein phi
    * \param pfsi_grid pointer to a fsi/ct grid
    * \param precision precision you want in the integrations
-   * \param integr which integrator (1:numint::cube_romb, 2:numint::cube_adaptive (0, the old rombergerN, was removed)
+   * \param integr which integrator: numint::IntegrationMethod::Romberg (numint::cube_romb) or numint::IntegrationMethod::Adaptive (numint::cube_adaptive); the integers 1 and 2 convert with nucqcd::integration_method()
    * \param max_Eval max number of evaluations
    * \param theta_rot [rad] rotation angle that connects momentum frame with glauberframe
    * \param homedir std::string that contains dir with all input, should be the ./share subdir of the project!
    * The grids are cached next to the FSI grids of pfsi_grid (see GridCache.hpp).
    */
   DistMomDistrGrid(const int shell, const double p_max, const int p_grid, const int cth_grid, const int phi_grid,
-				   AbstractFsiCTGrid *pfsi_grid, const double precision, const int integr, 
+				   AbstractFsiCTGrid *pfsi_grid, const double precision, const IntegrationMethod integr, 
 				   const int max_Eval, const double theta_rot, const std::string homedir);
   ~DistMomDistrGrid(); /*!< Destructor */
   DistMomDistrGrid(const DistMomDistrGrid &Copy); /*!< Copy constructor */
@@ -85,7 +86,7 @@ public:
   double getSinphi_hit() const{return sinphi_hit;} /*!< sin(phi) of that momentum */
   const Matrix<1,4>& getUpm_bar() const{return Upm_bar;} /*!< spinor that gets contracted with the mean-field spinor of the nucleon */
   double getPrec() const{return prec;} /*!< returns the precision in the integrations */
-  int getIntegrator() const{return integrator;} /*!< choice of integrator, see the constructor */
+  IntegrationMethod getIntegrator() const{return integrator;} /*!< choice of integrator, see the constructor */
   int getMaxEval() const{return maxEval;} /*!< maximum number of evaluations in the integrations */
   double getThetarot() const{return thetarot;} /*!< [rad] rotation angle between the momentum frame and the Glauber frame */
   double* const getRhopwgrid() const{return rhopwgrid;} /*!< plane-wave momentum distribution grid (depends on |p| only) */
@@ -171,7 +172,7 @@ private:
   double sinphi_hit;/*!< sin of phi coordinate of the momentum vector point, what the grid depens on */
   Matrix<1,4> Upm_bar; /*!< holds a spinor that gest contracted with a nucleon MF spinor */
   double prec; /*!< precision in the integrations */
-  int integrator; /*!<choice of integrator */
+  IntegrationMethod integrator; /*!<choice of integrator */
   int maxEval; /*!< max number of evaluations in the integrations */
   double thetarot; /*!< rotationangle that connects glauberframe with momentumframe*/
         

@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <Integrator/numint/cube.hpp>
 #include <Tools/Core/ErrorMessage.hpp>
 #include <iostream>
 #include <fstream>
@@ -15,7 +16,7 @@ namespace nucqcd {
 
 
 GlauberDecayGridThick::GlauberDecayGridThick(const int r_grid, const int cth_grid, const int phi_grid, MeanFieldNucleusThick * pnucl,
-                                             double prec, int integrator, string dir):AbstractFsiGrid(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir),
+                                             double prec, IntegrationMethod integrator, string dir):AbstractFsiGrid(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir),
 AbstractFsiCTGrid(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir),
 AbstractFsiGridThick(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir),
 AbstractFsiCTDecayGridThick(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir),
@@ -124,59 +125,48 @@ void GlauberDecayGridThick::calcGlauberphasesBoth(const int i, const int j, cons
     unsigned count = 0;
     double deeserror = 0.;
     double src = getFsiCorrelator().getCorrGrid_interp(r_hit, costheta_hit, proton);
-    if (integrator == 1 || integrator == 2) {
-      if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
-        numint::array < double, 3 > lower = { {1.E-06, getParticles()[0].getHitz(), 0.} };
-        numint::array < double, 3 > upper = { {getPnucleusthick()->getRange(), getPnucleusthick()->getRange(), 2. * PI} };
+    if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
+      numint::array < double, 3 > lower = { {1.E-06, getParticles()[0].getHitz(), 0.} };
+      numint::array < double, 3 > upper = { {getPnucleusthick()->getRange(), getPnucleusthick()->getRange(), 2. * PI} };
 
-        GlauberDecayGridThick::Ftor_bound F;
-        F.grid = this;
-        F.proton = proton;
-        numint::mdfunction < numint::vector_d, 3 > mdf;
-        mdf.func = &Ftor_bound::exec;
-        mdf.param = &F;
-        vector < double >ret(8, 0.);
-        F.f = klaas_int_bound;
-        if (integrator == 1)
-          res = numint::cube_romb(mdf, lower, upper, 1.E-12, prec, ret, count, 0);
-        else
-          res = numint::cube_adaptive(mdf, lower, upper, 1.E-12, prec, 2E03,2E06, ret, count, 0);
-        fsi_grid[0][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[0];
-        fsi_grid[1][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[1] * src;
-        fsi_grid[2][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[2];
-        fsi_grid[3][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[3] * src;
-        fsi_ct_grid[0][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[4];
-        fsi_ct_grid[1][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[5] * src;
-        fsi_ct_grid[2][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[6];
-        fsi_ct_grid[3][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[7] * src;
-      }
-      else {
-        numint::array < double, 3 > lower = { {0., -1., 0.} };
-        numint::array < double, 3 > upper = { {getPnucleusthick()->getRange(), 1., 2. * PI} };
-        GlauberDecayGridThick::Ftor_all F;
-        F.grid = this;
-        F.proton = proton;
-        numint::mdfunction < numint::vector_z, 3 > mdf;
-        mdf.func = &Ftor_all::exec;
-        mdf.param = &F;
-        vector < complex < double > >ret(8, 0.);
-        F.f = klaas_int_all;
-        if (integrator == 1)
-          res = numint::cube_romb(mdf, lower, upper, 1.E-12, prec, ret, count, 0);
-        else
-          res = numint::cube_adaptive(mdf, lower, upper, 1.E-12, prec, 2E03,2E06, ret, count, 0);
-        fsi_grid[0][proton][i][j][k] = ret[0];
-        fsi_grid[1][proton][i][j][k] = ret[1] * src;
-        fsi_grid[2][proton][i][j][k] = ret[2];
-        fsi_grid[3][proton][i][j][k] = ret[3] * src;
-        fsi_ct_grid[0][proton][i][j][k] = ret[4];
-        fsi_ct_grid[1][proton][i][j][k] = ret[5] * src;
-        fsi_ct_grid[2][proton][i][j][k] = ret[6];
-        fsi_ct_grid[3][proton][i][j][k] = ret[7] * src;
-      }
+      GlauberDecayGridThick::Ftor_bound F;
+      F.grid = this;
+      F.proton = proton;
+      numint::mdfunction < numint::vector_d, 3 > mdf;
+      mdf.func = &Ftor_bound::exec;
+      mdf.param = &F;
+      vector < double >ret(8, 0.);
+      F.f = klaas_int_bound;
+      res = numint::cube({integrator, 1.E-12, prec, 2000, 2000000}, mdf, lower, upper, ret, count, 0);
+      fsi_grid[0][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[0];
+      fsi_grid[1][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[1] * src;
+      fsi_grid[2][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[2];
+      fsi_grid[3][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[3] * src;
+      fsi_ct_grid[0][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[4];
+      fsi_ct_grid[1][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[5] * src;
+      fsi_ct_grid[2][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[6];
+      fsi_ct_grid[3][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[7] * src;
     }
     else {
-      throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented" );
+      numint::array < double, 3 > lower = { {0., -1., 0.} };
+      numint::array < double, 3 > upper = { {getPnucleusthick()->getRange(), 1., 2. * PI} };
+      GlauberDecayGridThick::Ftor_all F;
+      F.grid = this;
+      F.proton = proton;
+      numint::mdfunction < numint::vector_z, 3 > mdf;
+      mdf.func = &Ftor_all::exec;
+      mdf.param = &F;
+      vector < complex < double > >ret(8, 0.);
+      F.f = klaas_int_all;
+      res = numint::cube({integrator, 1.E-12, prec, 2000, 2000000}, mdf, lower, upper, ret, count, 0);
+      fsi_grid[0][proton][i][j][k] = ret[0];
+      fsi_grid[1][proton][i][j][k] = ret[1] * src;
+      fsi_grid[2][proton][i][j][k] = ret[2];
+      fsi_grid[3][proton][i][j][k] = ret[3] * src;
+      fsi_ct_grid[0][proton][i][j][k] = ret[4];
+      fsi_ct_grid[1][proton][i][j][k] = ret[5] * src;
+      fsi_ct_grid[2][proton][i][j][k] = ret[6];
+      fsi_ct_grid[3][proton][i][j][k] = ret[7] * src;
     }
 //     cout << i << " " << j << " " << k << " " << proton << " "<< fsi_grid[0][proton][i][j][k] << " " <<
 //     fsi_grid[1][proton][i][j][k] << " " << fsi_ct_grid[0][proton][i][j][k] << " " <<
@@ -192,52 +182,41 @@ void GlauberDecayGridThick::calcGlauberphasesCt(const int i, const int j, const 
     unsigned count = 0;
     double deeserror = 0.;
     double src = getFsiCorrelator().getCorrGrid_interp(r_hit, costheta_hit, proton);
-    if (integrator == 1 || integrator == 2) {
-      if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
-        numint::array < double, 3 > lower = { {1.E-06, getParticles()[0].getHitz(), 0.} };
-        numint::array < double, 3 > upper = { {getPnucleusthick()->getRange(), getPnucleusthick()->getRange(), 2. * PI} };
+    if (getParticles().size() == 1 && getParticles()[0].getCosTheta() == 1.) {
+      numint::array < double, 3 > lower = { {1.E-06, getParticles()[0].getHitz(), 0.} };
+      numint::array < double, 3 > upper = { {getPnucleusthick()->getRange(), getPnucleusthick()->getRange(), 2. * PI} };
 
-        GlauberDecayGridThick::Ftor_bound F;
-        F.grid = this;
-        F.proton = proton;
-        numint::mdfunction < numint::vector_d, 3 > mdf;
-        mdf.func = &Ftor_bound::exec;
-        mdf.param = &F;
-        vector < double >ret(4, 0.);
-        F.f = GlauberDecayGridThick::klaas_int_bound_ct;
-        if (integrator == 1)
-          res = numint::cube_romb(mdf, lower, upper, 1.E-12, prec, ret, count, 0);
-        else
-          res = numint::cube_adaptive(mdf, lower, upper, 1.E-12, prec, 2E03,5E06, ret, count, 0);
-        fsi_ct_grid[0][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[0];
-        fsi_ct_grid[1][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[1] * src;
-        fsi_ct_grid[2][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[2];
-        fsi_ct_grid[3][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[3] * src;
-      }
-      else {
-        numint::array < double, 3 > lower = { {0., -1., 0.} };
-        numint::array < double, 3 > upper = { {getPnucleusthick()->getRange(), 1., 2. * PI} };
-
-        GlauberDecayGridThick::Ftor_all F;
-        F.grid = this;
-        F.proton = proton;
-        numint::mdfunction < numint::vector_z, 3 > mdf;
-        mdf.func = &Ftor_all::exec;
-        mdf.param = &F;
-        vector < complex < double > >ret(4, 0.);
-        F.f = GlauberDecayGridThick::klaas_int_all_ct;
-        if (integrator == 1)
-          res = numint::cube_romb(mdf, lower, upper, 1.E-12, prec, ret, count, 0);
-        else
-          res = numint::cube_adaptive(mdf, lower, upper, 1.E-12, prec, 2E03,5E06, ret, count, 0);
-        fsi_ct_grid[0][proton][i][j][k] = ret[0];
-        fsi_ct_grid[1][proton][i][j][k] = ret[1] * src;
-        fsi_ct_grid[2][proton][i][j][k] = ret[2];
-        fsi_ct_grid[3][proton][i][j][k] = ret[3] * src;
-      }
+      GlauberDecayGridThick::Ftor_bound F;
+      F.grid = this;
+      F.proton = proton;
+      numint::mdfunction < numint::vector_d, 3 > mdf;
+      mdf.func = &Ftor_bound::exec;
+      mdf.param = &F;
+      vector < double >ret(4, 0.);
+      F.f = GlauberDecayGridThick::klaas_int_bound_ct;
+      res = numint::cube({integrator, 1.E-12, prec, 2000, 5000000}, mdf, lower, upper, ret, count, 0);
+      fsi_ct_grid[0][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[0];
+      fsi_ct_grid[1][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[1] * src;
+      fsi_ct_grid[2][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[2];
+      fsi_ct_grid[3][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[3] * src;
     }
     else {
-      throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented" );
+      numint::array < double, 3 > lower = { {0., -1., 0.} };
+      numint::array < double, 3 > upper = { {getPnucleusthick()->getRange(), 1., 2. * PI} };
+
+      GlauberDecayGridThick::Ftor_all F;
+      F.grid = this;
+      F.proton = proton;
+      numint::mdfunction < numint::vector_z, 3 > mdf;
+      mdf.func = &Ftor_all::exec;
+      mdf.param = &F;
+      vector < complex < double > >ret(4, 0.);
+      F.f = GlauberDecayGridThick::klaas_int_all_ct;
+      res = numint::cube({integrator, 1.E-12, prec, 2000, 5000000}, mdf, lower, upper, ret, count, 0);
+      fsi_ct_grid[0][proton][i][j][k] = ret[0];
+      fsi_ct_grid[1][proton][i][j][k] = ret[1] * src;
+      fsi_ct_grid[2][proton][i][j][k] = ret[2];
+      fsi_ct_grid[3][proton][i][j][k] = ret[3] * src;
     }
 //     cout << i << " " << j << " " << k << " " << proton << " "<< fsi_grid[0][proton][i][j][k] << " " <<
 //     fsi_grid[1][proton][i][j][k] << " " << fsi_ct_grid[0][proton][i][j][k] << " " <<

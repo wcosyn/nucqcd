@@ -41,7 +41,7 @@ TEST_CASE("GlauberGrid (thin nucleus), carbon, off axis", "[glauber][variants]")
   MeanFieldNucleus carbon(MeanFieldNucleus::C, dir);
   // GlauberGrid only handles particles off the z axis (it asks for OneGlauberGrid otherwise)
   FastParticle proton(0, 0, 1500., 0.5, 0., 8., 0., 1., 1., dir);
-  GlauberGrid grid(4, 4, 3, &carbon, 1.E-03, 2, dir);
+  GlauberGrid grid(4, 4, 3, &carbon, 1.E-03, IntegrationMethod::Adaptive, dir);
   grid.addParticle(proton);
   grid.fillGrids();
   record(grid, "GG_off", 2, carbon.getRange());
@@ -51,7 +51,7 @@ TEST_CASE("GlauberGridThick with SRC grids, carbon, off axis", "[glauber][varian
   const std::string dir = nucqcd_test::share_dir();
   MeanFieldNucleusThick carbon(MeanFieldNucleus::C, dir);
   FastParticle proton(0, 0, 1500., 0.5, 0., 8., 0., 1., 1., dir);
-  GlauberGridThick grid(4, 4, 3, &carbon, 1.E-03, 2, dir);
+  GlauberGridThick grid(4, 4, 3, &carbon, 1.E-03, IntegrationMethod::Adaptive, dir);
   grid.addParticle(proton);
   grid.fillGrids();
   record(grid, "GGT_off", 4, carbon.getRange());
@@ -64,7 +64,7 @@ TEST_CASE("GlauberDecayGridThick: rho and rho->pi pi along z and off axis", "[gl
   for (int type : {4, 7})
     for (double theta : {0., 0.5}) {
       FastParticle rho(type, 0, 2000., theta, 0., 2., 145., 1., 1., dir);
-      GlauberDecayGridThick grid(4, 4, 3, &carbon, 1.E-03, 2, dir);
+      GlauberDecayGridThick grid(4, 4, 3, &carbon, 1.E-03, IntegrationMethod::Adaptive, dir);
       grid.addParticle(rho);
       grid.fillGrids();
       std::ostringstream name;
@@ -77,11 +77,11 @@ TEST_CASE("GlauberDecayGridThick: proton (no decay) reproduces the plain thick g
   const std::string dir = nucqcd_test::share_dir();
   MeanFieldNucleusThick carbon(MeanFieldNucleus::C, dir);
   FastParticle proton(0, 0, 1500., 0., 0., 8., 0., 1., 1., dir);
-  GlauberDecayGridThick dgrid(4, 4, 3, &carbon, 1.E-03, 2, dir);
+  GlauberDecayGridThick dgrid(4, 4, 3, &carbon, 1.E-03, IntegrationMethod::Adaptive, dir);
   dgrid.addParticle(proton);
   dgrid.fillGrids();
   record(dgrid, "GDT_proton", 8, carbon.getRange());
-  GlauberGridThick grid(4, 4, 3, &carbon, 1.E-03, 2, dir);
+  GlauberGridThick grid(4, 4, 3, &carbon, 1.E-03, IntegrationMethod::Adaptive, dir);
   grid.addParticle(proton);
   grid.fillGrids();
   const double R = carbon.getRange();
@@ -99,13 +99,13 @@ TEST_CASE("OneGlauberGrid and ROMEAGrid, carbon, along z", "[glauber][variants]"
   MeanFieldNucleus carbon(MeanFieldNucleus::C, dir);
   FastParticle proton(0, 0, 1500., 0., 0., 8., 0., 1., 1., dir);
   {
-    OneGlauberGrid grid(4, 4, &carbon, 1.E-03, 2, dir);
+    OneGlauberGrid grid(4, 4, &carbon, 1.E-03, IntegrationMethod::Adaptive, dir);
     grid.addParticle(proton);
     grid.fillGrids();
     record(grid, "One_z", 2, carbon.getRange());
   }
   {
-    ROMEAGrid grid(4, 4, 3, &carbon, 1.E-03, 2, ROMEAGrid::EDAIC12, dir);
+    ROMEAGrid grid(4, 4, 3, &carbon, 1.E-03, IntegrationMethod::Adaptive, ROMEAGrid::EDAIC12, dir);
     grid.addParticle(proton);
     grid.fillGrids();
     record(grid, "ROMEA_z", 1, carbon.getRange());

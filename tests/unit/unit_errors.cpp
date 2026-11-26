@@ -58,7 +58,7 @@ TEST_CASE("values outside a grid or parametrization throw std::out_of_range", "[
 TEST_CASE("calls in the wrong order throw std::logic_error", "[errors]") {
   const std::string dir = nucqcd_test::share_dir();
   MeanFieldNucleusThick carbon(MeanFieldNucleus::C, dir);
-  GlauberGridThick grid(8, 4, 2, &carbon, 1.E-03, 2, dir);
+  GlauberGridThick grid(8, 4, 2, &carbon, 1.E-03, IntegrationMethod::Adaptive, dir);
   CHECK_THROWS_AS(grid.getFsiGridFull_interp3(1., 0.5, 0.), std::logic_error);  // not filled yet
 }
 
@@ -67,14 +67,21 @@ TEST_CASE("missing input throws std::runtime_error", "[errors]") {
 }
 
 TEST_CASE("the integrator option is 1 or 2; 0 (the old rombergerN) was removed", "[errors][integrator]") {
-  const std::string dir = nucqcd_test::share_dir();
+  // the grids take an IntegrationMethod since 2026-11, so an invalid integer can no longer reach a constructor: it is
+  // rejected when it is converted (before 2026-11 a constructor argument 0 silently gave grids without FSI)
+  CHECK(integration_method(1) == IntegrationMethod::Romberg);
+  CHECK(integration_method(2) == IntegrationMethod::Adaptive);
+  CHECK(numint::method_flag(IntegrationMethod::Romberg) == 1);
+  CHECK(numint::method_flag(IntegrationMethod::Adaptive) == 2);
+  CHECK_THROWS_WITH(integration_method(0), ContainsSubstring("rombergerN"));
+  CHECK_THROWS_AS(integration_method(3), std::invalid_argument);
+  CHECK(integration_method("romberg") == IntegrationMethod::Romberg);
+  CHECK(integration_method("Adaptive") == IntegrationMethod::Adaptive);
+  CHECK(integration_method("2") == IntegrationMethod::Adaptive);
+  CHECK_THROWS_AS(integration_method("simpson"), std::invalid_argument);
+  CHECK_THROWS_AS(integration_method(""), std::invalid_argument);
+  // the Knockout classes still take an integer and validate it with checked_integrator_flag
   CHECK(checked_integrator_flag(1) == 1);
   CHECK(checked_integrator_flag(2) == 2);
-  CHECK_THROWS_WITH(checked_integrator_flag(0), ContainsSubstring("rombergerN"));
-  CHECK_THROWS_AS(checked_integrator_flag(3), std::invalid_argument);
-  MeanFieldNucleusThick carbon(MeanFieldNucleus::C, dir);
-  // before 2026-11 these constructed grids that silently came out as "no FSI"
-  CHECK_THROWS_AS(GlauberGridThick(4, 4, 1, &carbon, 1.E-03, 0, dir), std::invalid_argument);
-  CHECK_THROWS_AS(GlauberDecayGridThick(4, 4, 1, &carbon, 1.E-03, 0, dir), std::invalid_argument);
-  CHECK_THROWS_AS(OneGlauberGrid(4, 4, &carbon, 1.E-03, 0, dir), std::invalid_argument);
+  CHECK_THROWS_AS(checked_integrator_flag(0), std::invalid_argument);
 }

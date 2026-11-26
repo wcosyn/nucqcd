@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
 
 
   //proton momentum is input
-  OneGlauberGrid grid(120,36,&Nucleus,prec,2,nucqcd::share_dir);
+  OneGlauberGrid grid(120,36,&Nucleus,prec,IntegrationMethod::Adaptive,nucqcd::share_dir);
   FastParticle proton(0, 0, pN,0.,0.,Q2*1.E-06,0.,lc_mod, nkt_mod, nucqcd::share_dir);
   grid.clearParticles();
   grid.addParticle(proton);

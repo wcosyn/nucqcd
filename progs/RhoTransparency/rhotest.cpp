@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
    
   MeanFieldNucleusThick FeThick(3,homedir);
   FastParticle rho(4, 0, 2340,0.,0.,1.0,145.,1.,1.,homedir);
-  GlauberDecayGridThick gridthick(60,20,5,&FeThick,2,1.E-04,homedir);  
+  GlauberDecayGridThick gridthick(60,20,5,&FeThick,1.E-04,IntegrationMethod::Adaptive,homedir);  
   gridthick.addParticle(rho);
   //gridthick.printParticles();
   gridthick.updateGrids();
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
   //   cout << gridthick.getNumber_of_grids() << endl;
    DistMomDistrGrid** pdistgrid = new DistMomDistrGrid*[FeThick.getTotalLevels()];
    for(int i=0;i<FeThick.getTotalLevels();i++){
-     pdistgrid[i] = new DistMomDistrGrid(i, 400., 30,20,5,&gridthick,1.E-03,2,1E04,0.,homedir);
+     pdistgrid[i] = new DistMomDistrGrid(i, 400., 30,20,5,&gridthick,1.E-03,IntegrationMethod::Adaptive,1E04,0.,homedir);
    }
    for(int i=0;i<=400;i+=10){
      double p=i;

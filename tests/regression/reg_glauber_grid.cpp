@@ -36,7 +36,7 @@ TEST_CASE("Glauber grid: fill, interpolate, cache round trip (off-axis proton in
 
   std::complex<double> computed[4][2];
   {
-    GlauberGridThick grid(12, 6, 3, &carbon, 1.E-03, 2, dir);
+    GlauberGridThick grid(12, 6, 3, &carbon, 1.E-03, IntegrationMethod::Adaptive, dir);
     grid.addParticle(proton);
     grid.fillGrids();  // computes and writes the cache file
     for (int i = 0; i < 4; i++) {
@@ -57,7 +57,7 @@ TEST_CASE("Glauber grid: fill, interpolate, cache round trip (off-axis proton in
     if (entry.path().filename().string().rfind("Gl.Thick.C.", 0) == 0) files++;
   CHECK(files >= 1);
   // a new grid object with the same parameters reads the cache and reproduces the values exactly
-  GlauberGridThick reread(12, 6, 3, &carbon, 1.E-03, 2, dir);
+  GlauberGridThick reread(12, 6, 3, &carbon, 1.E-03, IntegrationMethod::Adaptive, dir);
   reread.addParticle(proton);
   reread.fillGrids();
   for (int i = 0; i < 4; i++) {
@@ -95,7 +95,7 @@ TEST_CASE("Glauber grid cache: NUCQCD_GRID_DIR and recovery from a truncated fil
   std::complex<double> computed;
   std::string fsi_file, fsict_file;
   {
-    GlauberGridThick grid(8, 4, 2, &carbon, 1.E-03, 2, dir);
+    GlauberGridThick grid(8, 4, 2, &carbon, 1.E-03, IntegrationMethod::Adaptive, dir);
     grid.addParticle(proton);
     grid.fillGrids();
     computed = grid.getFsiCtGridFull_interp3(1.5, 0.3, 1.);
@@ -114,7 +114,7 @@ TEST_CASE("Glauber grid cache: NUCQCD_GRID_DIR and recovery from a truncated fil
   // a truncated cache file (e.g. from a crash under the old non-atomic writes) is recomputed
   fs::resize_file(fsict_file, fs::file_size(fsict_file) / 2);
   {
-    GlauberGridThick grid(8, 4, 2, &carbon, 1.E-03, 2, dir);
+    GlauberGridThick grid(8, 4, 2, &carbon, 1.E-03, IntegrationMethod::Adaptive, dir);
     grid.addParticle(proton);
     grid.fillGrids();
     // constructCtGrid() integrates the CT grid on its own instead of together with the FSI grid
@@ -140,7 +140,7 @@ TEST_CASE("Glauber grid cache: grids are computed at the bin centre, independent
   FastParticle second(0, 0, 1504., 0.52, 0.72, 8.03, 0., 1., 1., dir);
   auto compute = [&](FastParticle &particle, const fs::path &cache, std::string &file) {
     setenv("NUCQCD_GRID_DIR", cache.c_str(), 1);
-    GlauberGridThick grid(8, 4, 2, &carbon, 1.E-03, 2, dir);
+    GlauberGridThick grid(8, 4, 2, &carbon, 1.E-03, IntegrationMethod::Adaptive, dir);
     grid.addParticle(particle);
     grid.fillGrids();
     file = fs::path(grid.getFsi_Ct_Filename()).filename().string();
@@ -176,7 +176,7 @@ TEST_CASE("Glauber grid cache: reading an FSI grid does not write a stale FSI+CT
   std::string b_ct_file;
   {
     // b's grids, computed from scratch; then only its FSI+CT file is removed
-    GlauberGridThick grid(8, 4, 2, &carbon, 1.E-03, 2, dir);
+    GlauberGridThick grid(8, 4, 2, &carbon, 1.E-03, IntegrationMethod::Adaptive, dir);
     grid.addParticle(b);
     grid.fillGrids();
     b_ct = grid.getFsiCtGridFull_interp3(1.5, 0.3, 1.);
@@ -184,7 +184,7 @@ TEST_CASE("Glauber grid cache: reading an FSI grid does not write a stale FSI+CT
   }
   fs::remove(b_ct_file);
   {
-    GlauberGridThick grid(8, 4, 2, &carbon, 1.E-03, 2, dir);
+    GlauberGridThick grid(8, 4, 2, &carbon, 1.E-03, IntegrationMethod::Adaptive, dir);
     grid.addParticle(a);
     grid.fillGrids();  // computed: all grids filled
     grid.clearParticles();
@@ -194,7 +194,7 @@ TEST_CASE("Glauber grid cache: reading an FSI grid does not write a stale FSI+CT
   }
   {
     // and the file that was written is b's
-    GlauberGridThick grid(8, 4, 2, &carbon, 1.E-03, 2, dir);
+    GlauberGridThick grid(8, 4, 2, &carbon, 1.E-03, IntegrationMethod::Adaptive, dir);
     grid.addParticle(b);
     grid.fillGrids();
     CHECK(std::abs(grid.getFsiCtGridFull_interp3(1.5, 0.3, 1.) - b_ct) <= 2e-3 * std::abs(b_ct));

@@ -24,9 +24,9 @@ nucqcd_test::RefStore refs("reg_distmomdistr_pw");
 TEST_CASE("DistMomDistrGrid: plane-wave momentum distribution grid of carbon s and p shells", "[distmomdistr]") {
   const std::string dir = nucqcd_test::share_dir();
   MeanFieldNucleusThick carbon(MeanFieldNucleus::C, dir);
-  GlauberGridThick fsi(4, 4, 1, &carbon, 1.E-03, 2, dir);  // only its number of grids is used by the constructor
+  GlauberGridThick fsi(4, 4, 1, &carbon, 1.E-03, IntegrationMethod::Adaptive, dir);  // only its number of grids is used by the constructor
   for (int shell : {0, 1}) {
-    DistMomDistrGrid dist(shell, 400., 8, 1, 1, &fsi, 1.E-03, 2, 20000, 0., dir);
+    DistMomDistrGrid dist(shell, 400., 8, 1, 1, &fsi, 1.E-03, IntegrationMethod::Adaptive, 20000, 0., dir);
     const double *pw = dist.getRhopwgrid();
     REQUIRE(pw != nullptr);
     for (int i = 0; i <= 8; i++) {

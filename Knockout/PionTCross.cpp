@@ -24,7 +24,7 @@ maxEval(max_Eval){
 
 //   pdistgrid = new DistMomDistrGrid*[nucleusthick.getTotalLevels()];
   for(int i=0;i<nucleusthick.getTotalLevels();i++){
-    pfsigrid.push_back(std::make_unique<GlauberGridThick>(60,20,5,&nucleusthick,prec,2,homedir));
+    pfsigrid.push_back(std::make_unique<GlauberGridThick>(60,20,5,&nucleusthick,prec,IntegrationMethod::Adaptive,homedir));
 //     pdistgrid[i] = new DistMomDistrGrid(i, pmax, 30,20,5,pfsigrid[i],1.E-03,2,2E04,0.,homedir);
   }
   nrofcross=pfsigrid[0]->getNumber_of_grids()+1;
@@ -77,7 +77,7 @@ void PionTCross::getMomdistr(double *results, double ppi, double thetapi, double
   map<double,DistMomDistrGrid>::iterator it=distgridmap.find(key);
 //   cout << key << " " << thetarho << " " << shell  << endl;
   if(it==distgridmap.end()){
-    distgridmap[key]=DistMomDistrGrid(shell, pmax, 30,20,5,pfsigrid[shell].get(),1.E-03,2,5E04,0.,homedir);
+    distgridmap[key]=DistMomDistrGrid(shell, pmax, 30,20,5,pfsigrid[shell].get(),1.E-03,IntegrationMethod::Adaptive,5E04,0.,homedir);
 //     distgridmap.insert(pair<double,DistMomDistrGrid>(key,DistMomDistrGrid(shell, pmax, 30,20,5,pfsigrid[shell].get(),1.E-03,2,2E04,0.,homedir)));
     distgridmap[key].updateGrids(pfsigrid[shell].get(),shell,rot);
 //     distgridmap[key].printRho_grid(0);

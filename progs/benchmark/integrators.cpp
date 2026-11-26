@@ -280,7 +280,7 @@ void part_b() {
         fresh_grid_dir("B1_" + std::to_string(integrator) + "_" + std::to_string(prec) + "_" + std::to_string(theta));
         MeanFieldNucleusThick carbon(MeanFieldNucleus::C, share);
         FastParticle proton(0, 0, 1500., theta, 0., 8., 0., 1., 1., share);
-        GlauberGridThick grid(12, 6, 3, &carbon, prec, integrator, share);
+        GlauberGridThick grid(12, 6, 3, &carbon, prec, integration_method(integrator), share);
         grid.addParticle(proton);
         grid.fillGrids();
         std::vector<double> v;

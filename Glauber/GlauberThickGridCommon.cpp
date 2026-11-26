@@ -13,7 +13,7 @@ using namespace std;
 namespace nucqcd {
 
 GlauberThickGridCommon::GlauberThickGridCommon(int nvariants, int r_grid, int cth_grid, int phi_grid, MeanFieldNucleusThick *pnuclthick,
-                                               double prec, int integrator, std::string dir)
+                                               double prec, IntegrationMethod integrator, std::string dir)
   : AbstractFsiGrid(r_grid, cth_grid, phi_grid, pnuclthick, prec, integrator, dir),
     AbstractFsiCTGrid(r_grid, cth_grid, phi_grid, pnuclthick, prec, integrator, dir),
     variants(nvariants), fsi_grid(NULL), fsi_ct_grid(NULL), treshold(NULL), error(0.) {

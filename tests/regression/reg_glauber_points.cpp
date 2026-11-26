@@ -25,7 +25,7 @@ TEST_CASE("Glauber and CT FSI factors for a 1.5 GeV proton in carbon (tiny grid)
   FastParticle proton(0, 0, 1500., 0., 0., 8., 0., 1., 1., dir);
   CHECK_REF(refs, "proton_sigmap", proton.getSigmap(), 1e-10);
   CHECK_REF(refs, "proton_sigman", proton.getSigman(), 1e-10);
-  GlauberGridThick grid(4, 4, 1, &carbon, 1.E-03, 2, dir);
+  GlauberGridThick grid(4, 4, 1, &carbon, 1.E-03, IntegrationMethod::Adaptive, dir);
   grid.addParticle(proton);
   grid.fillGrids();
   const double R = carbon.getRange();

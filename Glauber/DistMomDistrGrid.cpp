@@ -1,4 +1,5 @@
 #include <Tools/Core/IntegratorFlag.hpp>
+#include <Integrator/numint/cube.hpp>
 #include <cstdlib>
 #include <Tools/Core/ErrorMessage.hpp>
 #include <iostream>
@@ -37,7 +38,7 @@ rhopwgrid(NULL){
 }
 
 DistMomDistrGrid::DistMomDistrGrid(const int shell, const double p_max, const int p_grid, const int cth_grid, const int phi_grid,
-				   AbstractFsiCTGrid *pfsi_grid, const double precision, const int integr, 
+				   AbstractFsiCTGrid *pfsi_grid, const double precision, const IntegrationMethod integr, 
 				   const int max_Eval, const double theta_rot, const std::string homedir):
 shellindex(shell),
 pmax(p_max),
@@ -50,7 +51,7 @@ cthgrid(cth_grid),
 phigrid(phi_grid),
 pfsigrid(pfsi_grid),
 prec(precision),
-integrator(nucqcd::checked_integrator_flag(integr)),
+integrator(integr),
 maxEval(max_Eval),
 thetarot(theta_rot),
 rhogrid(NULL),
@@ -334,7 +335,7 @@ void DistMomDistrGrid::setFilenames(string homedir){
     string addendum = "Rhogrid.l"+to_string(getShellindex())+".throt"+to_string(int(round(thetarot*10.)))
 		    +".p"+to_string(getPgrid())
 		    +".cth"+to_string(getCthgrid())+".phi"+to_string(getPhigrid())+".pmax"+
-		    to_string(getPmax())+".prec"+to_string(getPrec()*1.E05)+".integr"+to_string(integrator)+".";
+		    to_string(getPmax())+".prec"+to_string(getPrec()*1.E05)+".integr"+to_string(numint::method_flag(integrator))+".";
     rho_filename.insert(found+1,addendum);
     rhoct_filename.insert(found+1,addendum);
   }
@@ -455,7 +456,6 @@ void DistMomDistrGrid::constructAllGrids(nucqcd::Rotation & rot){
 	    int res=90;
 	    unsigned count=0;
 	    double deeserror=0.;
-	    if (integrator==2||integrator==1){
 	      numint::array<double,3> lower = {{0.,-1.,0.}};
 	      numint::array<double,3> upper = {{getPfsigrid()->getPnucleus()->getRange(),1.,2.*PI}};
 	      DistMomDistrGrid::Ftor_one F;
@@ -466,15 +466,12 @@ void DistMomDistrGrid::constructAllGrids(nucqcd::Rotation & rot){
 	      mdf.param = &F;
 	      vector<complex<double> > ret(number_of_Grids,0.);
 	      F.f=DistMomDistrGrid::klaas_distint;
-	      if(integrator==1) res = numint::cube_romb(mdf,lower,upper,absprec,prec,ret,count,0);
-	      else res = numint::cube_adaptive(mdf,lower,upper,absprec,prec,2E03,maxEval,ret,count,0);
+	      res = numint::cube({integrator, absprec, prec, 2000, maxEval}, mdf, lower, upper, ret, count, 0);
 	      if(abs(ret[i])*prec*0.1>absprec) absprec=abs(ret[i])*prec*0.1;
 	      for(int l=0;l<number_of_Grids/2;l++){
           rhogrid[l][i][j][k]+=norm(ret[l]);
           rhoctgrid[l][i][j][k]+=norm(ret[l+number_of_Grids/2]);
 	      }
-	    }      
-	    else {throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented" );}
 //   	    cout << i << " " << j << " " << k << " " << m << " " << ms << " " << rhogrid[0][i][j][k] << " " << rhogrid[1][i][j][k]<< " " << rhogrid[2][i][j][k]<< " " << rhoctgrid[0][i][j][k]<< " " << res << " " << count << endl;
 	    
 	  }
@@ -564,7 +561,6 @@ void DistMomDistrGrid::constructCtGrid(nucqcd::Rotation & rot){
     	    int res=90;
 	    unsigned count=0;
 	    double deeserror=0.;
-	    if (integrator==2||integrator==1){
 	      numint::array<double,3> lower = {{0.,-1.,0.}};
 	      numint::array<double,3> upper = {{getPfsigrid()->getPnucleus()->getRange(),1.,2.*PI}};
 	      DistMomDistrGrid::Ftor_one F;
@@ -575,14 +571,11 @@ void DistMomDistrGrid::constructCtGrid(nucqcd::Rotation & rot){
 	      mdf.param = &F;
 	      vector<complex<double> > ret(number_of_Grids/2,0.);
 	      F.f=DistMomDistrGrid::klaas_distint_ct;
-	      if(integrator==1) res = numint::cube_romb(mdf,lower,upper,absprec,prec,ret,count,0);
-	      else res = numint::cube_adaptive(mdf,lower,upper,absprec,prec,2E03,maxEval,ret,count,0);
+	      res = numint::cube({integrator, absprec, prec, 2000, maxEval}, mdf, lower, upper, ret, count, 0);
 	      if(abs(ret[i])*prec*0.1>absprec) absprec=abs(ret[i])*prec*0.1;
 	      for(int l=0;l<number_of_Grids/2;l++){
 		rhoctgrid[l][i][j][k]+=norm(ret[l]);
 	      }
-	    }      
-	    else {throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented" );}
 // 	    cout << i << " " << j << " " << k << " " << m << " " << ms << " " << rhoctgrid[0][i][j][k] << " " << rhoctgrid[1][i][j][k]<< " " << rhoctgrid[2][i][j][k]<< " " << res << " " << count << endl;
 	  }
 	}
