@@ -11,6 +11,8 @@
 #include <cstdarg>
 
 #include <Glauber/AbstractFsiCTGrid.hpp>
+#include <Tools/Core/Grid3D.hpp>
+#include <vector>
 #include <Integrator/numint/numint.hpp>
 
 namespace nucqcd {
@@ -62,9 +64,8 @@ public:
   virtual void print_grid(int gridindex);
   
 protected:
-  std::complex<double> *****fsi_grid; /*!< grid that contains the fsi factor */
-  std::complex<double> *****fsi_ct_grid; /*!< grid that contains the fsi+ct factor*/
-  int ** treshold; /*!< array that checks if calculated glauberphases are close to one, then doesn't compute them for larger r, to save computing time*/
+  std::vector<std::vector<Grid3D<std::complex<double> > > > fsi_grid; /*!< grid that contains the fsi factor, `[shell][m][r][cos theta][phi]` (m: the positive values only, one value for the last shell, that of all the nucleons) */
+  std::vector<std::vector<Grid3D<std::complex<double> > > > fsi_ct_grid; /*!< grid that contains the fsi+ct factor, same indices */
     
   
 private:

@@ -12,10 +12,12 @@
 #include <Glauber/AbstractFsiCTGrid.hpp>
 #include <Glauber/FsiCorrelator.hpp>
 #include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Tools/Core/Grid3D.hpp>
 
 #include <complex>
 #include <fstream>
 #include <string>
+#include <vector>
 
 namespace nucqcd {
 
@@ -72,7 +74,7 @@ protected:
    * factors to the powers of the numbers of nucleons that are not knocked out
    * \param array fsi_grid or fsi_ct_grid \param variant index in its first dimension
    * \throw std::logic_error if the grids are not filled */
-  std::complex<double> interpolateVariant(std::complex<double> *****array, int variant);
+  std::complex<double> interpolateVariant(const std::vector<std::vector<Grid3D<std::complex<double> > > > &array, int variant);
 
   /*! set the file names of the grids: the grid cache directory with the prefix "Thick." added \param dir cache directory plus the prefix of the derived class */
   virtual void setFilenames(std::string dir);
@@ -93,9 +95,8 @@ protected:
   const int variants; /*!< number of variants: size of the first index of the arrays */
   MeanFieldNucleusThick *pnucleusthick; /*!< the nucleus */
   FsiCorrelator fsicorrelator; /*!< the SRC correlation grid */
-  std::complex<double> *****fsi_grid; /*!< grid that contains the fsi factor, `[variant][nucleon: 0 neutron, 1 proton][r][cos theta][phi]` */
-  std::complex<double> *****fsi_ct_grid; /*!< grid that contains the fsi+ct factor, same indices */
-  int ** treshold; /*!< array that checks if calculated glauberphases are close to one, then doesn't compute them for larger r, to save computing time*/
+  std::vector<std::vector<Grid3D<std::complex<double> > > > fsi_grid; /*!< grid that contains the fsi factor, `[variant][nucleon: 0 neutron, 1 proton][r][cos theta][phi]` */
+  std::vector<std::vector<Grid3D<std::complex<double> > > > fsi_ct_grid; /*!< grid that contains the fsi+ct factor, same indices */
   double error; /*!< integration error estimate of the cubature integrators */
 
 private:

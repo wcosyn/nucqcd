@@ -23,7 +23,7 @@ OneGlauberGrid::~OneGlauberGrid(){
 }
 
 //2d interpolation of array
-complex<double> OneGlauberGrid::getInterp(complex<double> ***grid){
+complex<double> OneGlauberGrid::getInterp(const Grid3D<complex<double> > &grid){
   return (
     complex<double>(getComp_t_interp()*(getComp_s_interp()*real(grid[getRindex()][getCthindex()][0])
 	+ getS_interp()*real(grid[getRindex()+1][getCthindex()][0]))

@@ -752,8 +752,30 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   interpolations and `getFsiGridN_interp` at a point (12 digits) is identical (71 lines), and so are the 11 cache files
   it writes (names and md5); `ctest -L slow` with the 23 cache files of the two Glauber regression tests: identical names
   and md5 to master; `ctest -LE slow` 136/136.
-  Still to do for this item: the 5D raw pointer arrays (`fsi_grid`, `fsi_ct_grid`, in the Glauber classes), and the
-  named print functions (`printFsi_*_grid`, declared in the concrete classes only now, with their per-class header text).
+  **The grid arrays of the Glauber classes (2026-11-26, part A of the raw pointer arrays):** the `std::complex<double> *****`
+  arrays (`fsi_grid`, `fsi_ct_grid` of `GlauberThickGridCommon`: `[variant][nucleon][r][cos theta][phi]`, and of `GlauberGrid`:
+  `[shell][m][r][cos theta][phi]`, ragged in `m`), the 3D `fsi_grid` of `ROMEAGrid`, the `int **` threshold arrays and the
+  `complex<double> **` optical potential were allocated with a `new` per row and freed with matching loops. New
+  `Tools/Core/Grid3D.hpp`: `Grid3D<T>`, an owning 3D array in one contiguous `std::vector` with the `grid[i][j][k]` syntax
+  (value-initialized, copyable, movable; iterators in the order of the cache files). The 5D arrays are
+  `std::vector<std::vector<Grid3D<std::complex<double>>>>` (`[variant][nucleon]` or `[shell][m]` outside, a Grid3D for
+  r, cos theta, phi), the threshold arrays are local `std::vector<std::vector<int>>` in the loops that use them (they were
+  members that were allocated and freed inside one function; the check "Treshold should only be initialized once!" is
+  gone with them), the optical potential is a `std::vector<std::vector<std::complex<double>>>` that is cleared at the end of
+  `constructAllGrids` (the getter returns a const reference). `Interp3d` and `getInterp` take a `Grid3D`. The manual
+  new/delete code of 4 files is gone; the index uses (about 250) are unchanged. **Checked:** `ctest -LE slow` 139/139 (3 new
+  tests in `unit_grid3d`: indexing and order, copy and move, `Interp3d`); `ctest -L slow` 11/11; the before/after probe
+  of #92 (all named interpolations to 12 digits, file names, `number_of_grids`) identical (71 lines); of the 23 cache
+  files of the Glauber regression tests 19 are byte-identical to master and **4 differ in the last bit**: the thin
+  `GlauberGrid` and `OneGlauberGrid` files (FSI and CT each), in the block of the product over all nucleons (64 of the 700
+  numbers of the probe file differ by 1 ulp, 2e-16 relative). **Cause (tested):** FMA contraction (`-O3 -march=native`)
+  chose differently for the changed array access (`GlauberGrid.o`: 38 fused multiply-add instructions, 37 on master); with
+  master and the branch both built with `-ffp-contract=off` (scratch builds of all Glauber sources) all 11 probe cache files and
+  the probe output are byte-identical. So the logic is the same; cached grids from before stay valid (the file format is
+  unchanged, the values differ at 1e-16).
+  Still to do for this item: the 4D `double` arrays of `DistMomDistrGrid` (`rhogrid`, `rhoctgrid`, with hand-written copy
+  code, kept in a `std::map` by `RhoTCross` and `PionTCross`) and the smaller arrays in `FsiCorrelator` and `FastParticle`
+  (part B), and the named print functions (`printFsi_*_grid`, declared in the concrete classes only now, with their per-class header text).
   **Found on the way, fixed (2026-11-25, #69):** in the Glauber grids `integrator == 0` (the old
   `rombergerN`) was dead: the `rombergerN` calls were commented out in `GlauberGrid`, `GlauberGridThick`,
   `GlauberDecayGridThick` (and in `DistMomDistrGrid`, `EMQEHadronCurrent`, `RhoDeuteron`), so the results

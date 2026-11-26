@@ -93,6 +93,7 @@ nucqcd_add_test(unit_pair            DIR unit LABEL unit LINK ToolsWaveFunctions
                 SOURCES ${NUCQCD_TWONUCL_DIR}/pair.cpp ${NUCQCD_TWONUCL_DIR}/newcoef.cpp)
 target_include_directories(unit_pair PRIVATE ${NUCQCD_TWONUCL_DIR})
 nucqcd_add_test(unit_constants       DIR unit LABEL unit LINK ToolsCore cuba)
+nucqcd_add_test(unit_grid3d          DIR unit LABEL unit LINK ToolsCore cuba)
 nucqcd_add_test(unit_meanfield       DIR unit LABEL unit LINK Glauber cuba)
 nucqcd_add_test(unit_ownership       DIR unit LABEL unit LINK DIS cuba)
 nucqcd_add_test(unit_errors          DIR unit LABEL unit LINK Knockout ToolsStructureFunctions cuba)

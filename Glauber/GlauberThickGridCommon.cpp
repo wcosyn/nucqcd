@@ -15,45 +15,15 @@ namespace nucqcd {
 GlauberThickGridCommon::GlauberThickGridCommon(int nvariants, int r_grid, int cth_grid, int phi_grid, MeanFieldNucleusThick *pnuclthick,
                                                double prec, IntegrationMethod integrator, std::string dir)
   : AbstractFsiCTGrid(r_grid, cth_grid, phi_grid, pnuclthick, prec, integrator, dir),
-    variants(nvariants), pnucleusthick(pnuclthick), fsicorrelator(pnuclthick, 90, 90, dir),
-    fsi_grid(NULL), fsi_ct_grid(NULL), treshold(NULL), error(0.) {
+    variants(nvariants), pnucleusthick(pnuclthick), fsicorrelator(pnuclthick, 90, 90, dir), error(0.) {
   number_of_grids = 2 * nvariants;
-  auto allocate = [this]() {
-    std::complex<double> *****grid = new complex<double> ****[variants];
-    for (int i = 0; i < variants; i++) {
-      grid[i] = new complex<double> ***[2];
-      for (int j = 0; j < 2; j++) {
-        grid[i][j] = new complex<double> **[getRgrid() + 1];
-        for (int k = 0; k < (getRgrid() + 1); k++) {
-          grid[i][j][k] = new complex<double> *[getCthgrid() + 1];
-          for (int l = 0; l < (getCthgrid() + 1); l++) {
-            grid[i][j][k][l] = new complex<double>[getPhigrid() + 1];
-          }
-        }
-      }
-    }
-    return grid;
-  };
-  fsi_grid = allocate();
-  fsi_ct_grid = allocate();
+  // [variant][nucleon: 0 neutron, 1 proton] of an array of (r, cos theta, phi) points, set to zero
+  const Grid3D<complex<double> > points(getRgrid() + 1, getCthgrid() + 1, getPhigrid() + 1);
+  fsi_grid.assign(variants, std::vector<Grid3D<complex<double> > >(2, points));
+  fsi_ct_grid.assign(variants, std::vector<Grid3D<complex<double> > >(2, points));
 }
 
 GlauberThickGridCommon::~GlauberThickGridCommon() {
-  auto release = [this](std::complex<double> *****grid) {
-    for (int i = 0; i < variants; i++) {
-      for (int j = 0; j < 2; j++) {
-        for (int k = 0; k < (getRgrid() + 1); k++) {
-          for (int l = 0; l < (getCthgrid() + 1); l++) delete[] grid[i][j][k][l];
-          delete[] grid[i][j][k];
-        }
-        delete[] grid[i][j];
-      }
-      delete[] grid[i];
-    }
-    delete[] grid;
-  };
-  release(fsi_grid);
-  release(fsi_ct_grid);
 }
 
 int GlauberThickGridCommon::getGridNumber(GridVariant variant) const {
@@ -67,7 +37,7 @@ void GlauberThickGridCommon::setFilenames(string dir) {
   AbstractFsiCTGrid::setFilenames(dir + "Thick.");
 }
 
-complex<double> GlauberThickGridCommon::interpolateVariant(std::complex<double> *****array, int variant) {
+complex<double> GlauberThickGridCommon::interpolateVariant(const std::vector<std::vector<Grid3D<std::complex<double> > > > &array, int variant) {
   if (!filledallgrid) {
     throw std::logic_error(nucqcd::ErrorMessage() << "You have to fill the grids first!");
   }
@@ -116,16 +86,7 @@ void GlauberThickGridCommon::constructGrids(bool ctOnly) {
   // The loops over the grid points. A point where all factors are within 1e-6 of one (the "threshold") makes
   // the points at larger r with the same angles one too, which saves computing time; the point at r = 0
   // and the points along the z axis (cos theta = +-1) are copied to all angles.
-  if (treshold == NULL) {
-    treshold = new int *[getCthgrid() + 1];
-    for (int i = 0; i <= getCthgrid(); i++) {
-      treshold[i] = new int[getPhigrid() + 1];
-      for (int j = 0; j <= getPhigrid(); j++) treshold[i][j] = 0;
-    }
-  }
-  else {
-    throw std::logic_error(nucqcd::ErrorMessage() << "Treshold should only be initialized once!");
-  }
+  std::vector<std::vector<int> > treshold(getCthgrid() + 1, std::vector<int>(getPhigrid() + 1, 0));
 
   for (int i = 0; i <= getRgrid(); i++) {
     r_hit = float(i) * getPnucleus()->getRange() / getRgrid();
@@ -187,21 +148,15 @@ void GlauberThickGridCommon::constructGrids(bool ctOnly) {
       }
     }
   }
-  // mem cleanup
-  for (int i = 0; i <= getCthgrid(); i++) delete[] treshold[i];
-  delete[] treshold;
-  treshold = NULL;
 }
 
 namespace {
 // reading and writing a 5D array in the order of the cache files: variant, nucleon, r, cos theta, phi
 template <class F>
-void for_all_points(std::complex<double> *****grid, int variants, int nr, int nth, int nph, F f) {
-  for (int i = 0; i < variants; i++)
-    for (int j = 0; j < 2; j++)
-      for (int k = 0; k < nr; k++)
-        for (int l = 0; l < nth; l++)
-          for (int mm = 0; mm < nph; mm++) f(grid[i][j][k][l][mm]);
+void for_all_points(std::vector<std::vector<Grid3D<std::complex<double> > > > &grid, F f) {
+  for (auto &variant : grid)
+    for (auto &nucleon : variant)
+      for (auto &value : nucleon) f(value);  // r, cos theta, phi: phi runs fastest
 }
 }  // namespace
 
@@ -210,7 +165,7 @@ void GlauberThickGridCommon::readinFsiGrid(ifstream &infile) {
     cerr << "File is empty " << getFsi_Filename() << endl;
     assert(1 == 0);
   }
-  for_all_points(fsi_grid, variants, getRgrid() + 1, getCthgrid() + 1, getPhigrid() + 1,
+  for_all_points(fsi_grid,
                  [&infile](complex<double> &v) { infile.read(reinterpret_cast<char *>(&v), sizeof(complex<double>)); });
 }
 
@@ -219,17 +174,17 @@ void GlauberThickGridCommon::readinFsiCtGrid(ifstream &infile) {
     cerr << "File is empty " << getFsi_Ct_Filename() << endl;
     assert(1 == 0);
   }
-  for_all_points(fsi_ct_grid, variants, getRgrid() + 1, getCthgrid() + 1, getPhigrid() + 1,
+  for_all_points(fsi_ct_grid,
                  [&infile](complex<double> &v) { infile.read(reinterpret_cast<char *>(&v), sizeof(complex<double>)); });
 }
 
 void GlauberThickGridCommon::writeoutFsiGrid(ofstream &outfile) {
-  for_all_points(fsi_grid, variants, getRgrid() + 1, getCthgrid() + 1, getPhigrid() + 1,
+  for_all_points(fsi_grid,
                  [&outfile](complex<double> &v) { outfile.write(reinterpret_cast<char *>(&v), sizeof(complex<double>)); });
 }
 
 void GlauberThickGridCommon::writeoutFsiCtGrid(ofstream &outfile) {
-  for_all_points(fsi_ct_grid, variants, getRgrid() + 1, getCthgrid() + 1, getPhigrid() + 1,
+  for_all_points(fsi_ct_grid,
                  [&outfile](complex<double> &v) { outfile.write(reinterpret_cast<char *>(&v), sizeof(complex<double>)); });
 }
 

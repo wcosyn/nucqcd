@@ -205,7 +205,7 @@ complex<double> AbstractFsiGrid::getFsiGridN_interp1(const int grid, const doubl
 
 
 //3d interpolation of array
-complex<double> AbstractFsiGrid::getInterp(complex<double> ***grid){
+complex<double> AbstractFsiGrid::getInterp(const Grid3D<complex<double> > &grid){
 //   return getComp_u_interp()*(getComp_t_interp()*(getComp_s_interp()*grid[getRindex()][getCthindex()][getPhiindex()]
 // 	+ getS_interp()*grid[getRindex()+1][getCthindex()][getPhiindex()]) 
 // 	+ getT_interp()*(getComp_s_interp()*grid[getRindex()][getCthindex()+1][getPhiindex()] 
