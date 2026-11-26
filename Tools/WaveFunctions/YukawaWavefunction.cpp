@@ -1,5 +1,5 @@
 /*
- * WavefunctionImplementation.cpp
+ * YukawaWavefunction.cpp
  * 
  * Author: Pieter Vancraeyveld
  *         pieter.vancraeyveld@ugent.be

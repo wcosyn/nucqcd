@@ -21,7 +21,7 @@ using namespace std;
 #include <Glauber/NucleonEMOperator.hpp>
 using namespace nucqcd;
 
-//run ./observables [Q2 [MeV^2]] [omega] [missing momentum]
+//run ./Ca_dens [nucleus shell] [scattered electron angle [degrees]] [scattered electron energy [MeV]]
 int main(int argc, char *argv[])
 {
 

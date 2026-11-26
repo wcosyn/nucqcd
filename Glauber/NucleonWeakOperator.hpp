@@ -1,5 +1,5 @@
-/*! \file NucleonEMOperator.hpp 
- * \brief Contains declaration of class NucleonEMoperator
+/*! \file NucleonWeakOperator.hpp 
+ * \brief Contains declaration of class NucleonWeakOperator
  * \author Wim Cosyn
  * \date 16/10/2012
  * \addtogroup Glauber

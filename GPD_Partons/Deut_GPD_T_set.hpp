@@ -5,7 +5,7 @@ namespace nucqcd {
 
 
 /**
- * @brief small class that holds deuteron (isosinglet) vector helicity amplitudes for a certain kinematics
+ * @brief small class that holds deuteron (isosinglet) transversity helicity amplitudes for a certain kinematics (all nine helicity combinations)
  * 
  */
 class Deut_GPD_T_set{

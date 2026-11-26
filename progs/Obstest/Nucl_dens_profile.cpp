@@ -1,4 +1,4 @@
-//program that calculates density profiles for Calcium, per request from Eli and Jechiel
+//program that calculates density profiles for a nucleus given as argument (generalization of Ca_dens, which is for Calcium), per request from Eli and Jechiel
 
 #include <iostream>
 #include <cstdlib>
@@ -21,7 +21,7 @@ using namespace std;
 #include <Glauber/NucleonEMOperator.hpp>
 using namespace nucqcd;
 
-//run ./observables [Q2 [MeV^2]] [omega] [missing momentum]
+//run ./Nucl_dens_profile [nucleus] [nucleus shell] [scattered electron angle [degrees]] [scattered electron energy [MeV]] [phi angle between electron and hadron plane [degrees]] [medium modifications: 0 no, 1 CQM, 2 QSM]
 int main(int argc, char *argv[])
 {
 

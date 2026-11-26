@@ -19,7 +19,7 @@ using namespace std;
 using namespace nucqcd;
 
 
-//run ./onenucl [Q2 [MeV^2]] [omega] [missing momentum]
+//run ./A_QE_cross [Q2 [MeV^2]] [omega] [missing momentum]
 int main(int argc, char *argv[])
 {
   nucqcd::RunLog runlog(argc, argv, {"Q2", "omega", "pm"});

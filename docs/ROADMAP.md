@@ -34,7 +34,7 @@ same PR.
 
 ## Where we are / next up
 
-*Updated 2026-11-26 (after PR #84; the rho t/z fix is PR #85).*
+*Updated 2026-11-26 (after PR #85; the comment cleanup is in an open PR).*
 
 **Done** (PRs #44-#82, details in the steps below): ROOT decoupling (ROOT is now only used by the test
 `unit_vectors`; the fits run on the standalone Minuit2, #73); LHAPDF structure functions (step 10); He3 fixes; run
@@ -58,8 +58,7 @@ for all Glauber grid variants (#68) and the deduplication of the two thick grids
 2. **Glauber grids:** the off-axis speed (every point hits the evaluation cap; `cube_romb` was 5x faster at 1e-3;
    variants change values within the precision and need the author's OK), and the rest of the hierarchy dedup
    (the eight abstract classes with four interpolation wrappers per named grid, the 5D raw pointer arrays).
-3. **Smaller items:** the comment and header-guard cleanup of step 6 (copy-paste leftovers, including a duplicate
-   `MODEL_HPP` guard), unbundle cubature (step 7, maintenance only, no accuracy gain per the benchmark), the PDG
+3. **Smaller items:** the hard-coded absolute paths in some programs (step 6, copy-paste leftovers), unbundle cubature (step 7, maintenance only, no accuracy gain per the benchmark), the PDG
    constants update (changes values), the long Glauber files (`GlauberGrid.cpp`, `DistMomDistrGrid.cpp`, ...),
    `SolvePhotonAndParticle1` (134 lines), reporting the Suave bug to the Cuba authors, a format string that gives
    no scenario at all is still accepted (step 6, long functions), `Resonance` stays in the DIS library although
@@ -974,34 +973,38 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   `DistMomDistrGrid.cpp` (with the grid dedup above), and `SolvePhotonAndParticle1` (134 lines) could be
   split further.
 
-- [ ] **Comments that belong to another file (copy-paste leftovers), crawl of 2026-11-26.** A scripted crawl of the
-  tracked C++ files outside `progs/attic` and `tests/` (file tags, header guards, the first comment block of every
-  file against the file name, usage lines against the program name), reading the hits by hand; what had been cleaned in
-  earlier items is not repeated. **To fix (comments and guards only, no behaviour change except the first point):**
-  - **Header guard collision:** `Knockout/EMQEHadronCurrent.hpp` and `Knockout/WeakQEHadronCurrent.hpp` both use
-    `MODEL_HPP` (left over from the `Model` rename); a translation unit that includes both silently loses the second
-    one (none does today). `Knockout/EMQECross.hpp` still uses `CROSS_HPP`. Rename to `EMQEHADRONCURRENT_HPP`,
-    `WEAKQEHADRONCURRENT_HPP`, `EMQECROSS_HPP`.
-  - **Wrong `\file` tag or brief:** `Glauber/NucleonWeakOperator.hpp` (`\file NucleonEMOperator.hpp`, brief "class
-    NucleonEMoperator"), `DIS/InclusiveCross.hpp` (`\file DeuteronCross.hpp`; the same in the archived
-    `progs/attic/threeres/InclusiveCrossRes.hpp`), `Tools/WaveFunctions/YukawaWavefunction.cpp` (first line says
-    `WavefunctionImplementation.cpp`).
-  - **Usage lines naming another program** (the program was copied from it): `progs/neutrinoQE/ddiff.cpp`,
-    `ddiff_minerva.cpp`, `ddiff_minerva_N.cpp`, `neutestint.cpp` (`./neutest`, no such target; `neutestfixEin.cpp`
-    names itself), `progs/Obstest/Ca_dens.cpp`, `Nucl_dens_profile.cpp`, `PxPz_exp_sample.cpp` (`./observables`, a
-    different program in the same directory), `progs/F2_largex_fit/F2_bootstrap.cpp` (`bin/F2_fit`),
-    `progs/onenucl/A_QE_cross.cpp` (`./onenucl`), `progs/pionestimate/pionestimate.cpp` (`./pionest`). The usage
-    lines of the neutrino programs also give the arguments of the program they were copied from; check them against
-    the `argv` handling.
-  - **Same description in two programs:** `progs/deepsdis/b1_calc.cpp` and `b1_calc_comp.cpp`;
-    `progs/Obstest/Ca_dens.cpp` and `Nucl_dens_profile.cpp` (both "density profiles for Calcium").
-  - **Stale absolute paths:** `progs/deepsdis/fitscript.py` calls `/home/wim/Code/trunk/bin/...` (`bonusextrapolate`,
-    `bonusextrapolate2`, `parabfit`).
+- [x] **Comments that belong to another file (copy-paste leftovers)** (crawl of 2026-11-26, fixed the same day, mostly
+  comments; **partly done**, see the rest below). A scripted crawl of the tracked C++ files outside `progs/attic` and
+  `tests/` (file tags, header guards, the first comment block of every file against the file name, usage lines against
+  the program name), reading the hits by hand; what had been cleaned in earlier items is not repeated. Fixed:
+  - **Header guard collision:** `Knockout/EMQEHadronCurrent.hpp` and `Knockout/WeakQEHadronCurrent.hpp` both used
+    `MODEL_HPP` (left over from the `Model` rename), so a translation unit that included both would silently have
+    lost the second one (none did). Now `EMQEHADRONCURRENT_HPP` and `WEAKQEHADRONCURRENT_HPP`; `EMQECross.hpp`
+    `CROSS_HPP` -> `EMQECROSS_HPP`. A scan of all headers finds no duplicate guard left.
+  - **Wrong `\file` tag or brief:** `Glauber/NucleonWeakOperator.hpp`, `DIS/InclusiveCross.hpp`, the archived
+    `progs/attic/threeres/InclusiveCrossRes.hpp`, the first line of `Tools/WaveFunctions/YukawaWavefunction.cpp`, and
+    the brief of `GPD_Partons/Deut_GPD_T_set.hpp` ("vector helicity amplitudes", a copy of the `V` set: now
+    "transversity", **inferred from the class name and `Deut_Conv_GPD_T`, to confirm**).
+  - **Usage lines naming another program or giving its arguments:** `progs/neutrinoQE/ddiff.cpp`, `ddiff_minerva.cpp`,
+    `ddiff_minerva_N.cpp` (now the full argument list of the `RunLog` names: they also gave `./neutest` and left out
+    the ROMEA flag and the experiment), `neutestint.cpp`, `progs/Obstest/Ca_dens.cpp`, `Nucl_dens_profile.cpp`,
+    `PxPz_exp_sample.cpp` (all said `./observables [Q2] [omega] [pm]`), `progs/onenucl/A_QE_cross.cpp`,
+    `progs/pionestimate/pionestimate.cpp`, `progs/F2_largex_fit/F2_bootstrap.cpp` (it said `F2_fit` and two
+    parameters, the code reads one). `Nucl_dens_profile.cpp` no longer says it is for Calcium (it takes the
+    nucleus as an argument).
+  - `CLAUDE.md`: the `gh pr edit` note (the Ubuntu `gh` 2.46 is too old; 2.106 from GitHub's apt repository works).
+
+  **Still to do (not comments, or the author's call):**
+  - **Hard-coded absolute paths of the author's machine:** `progs/deepsdis/fitscript.py` (`/home/wim/Code/trunk/bin/...`,
+    `/home/wim/Calculations/Bonus/results/`), `progs/deepsdis/bonus_F2nfit.cpp`, `bonus_F2nfit_allangles.cpp`,
+    `bonus_F2nfit_sys.cpp` (`outdir="/home/wim/Calculations/Bonus/results/parabfits..."`), `progs/onenucl/transp_eli.cpp`
+    (`$HOME/Code/trunk/share`, a code path that does not exist: use `nucqcd::share_dir`); these programs fail or write
+    elsewhere on another machine. Changes behaviour (paths), so separate.
   - **Library-wide Doxygen blocks that sit in one class header** (low priority): the `\defgroup DIS` text in
     `DIS/DeuteronCross.hpp` and the `\mainpage`/`\defgroup Glauber` text in `Glauber/AbstractFsiGrid.hpp`.
   - **Not covered by the crawl:** the Fortran files, `progs/attic`, `tests/`, the Python scripts apart from the usage
-    check, and comments inside function bodies; a second pass with a reader (not a script) over the `GPD_Partons` and
-    `progs/deepsdis` files is worth doing, since their headers are copies of each other.
+    check, and comments inside function bodies; a reader pass of the remaining `progs/deepsdis` files (many are variants
+    of each other) is worth doing. The `GPD_Partons` headers were read: only `Deut_GPD_T_set.hpp` was wrong.
 
 ## 7. Unbundle Cuba (and cubature)
 
