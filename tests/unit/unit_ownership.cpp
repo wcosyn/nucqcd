@@ -12,7 +12,6 @@
 #include <Glauber/GlauberGrid.hpp>
 #include <Glauber/GlauberGridThick.hpp>
 #include <DIS/InclusiveCross.hpp>
-#include <DIS/InclusiveCrossRes.hpp>
 #include <Glauber/MeanFieldNucleusThick.hpp>
 #include <Knockout/EMQEHadronCurrent.hpp>
 #include <Glauber/OneGlauberGrid.hpp>
@@ -38,7 +37,6 @@ static_assert(!std::is_copy_constructible_v<PionTCross> && !std::is_move_constru
 static_assert(!std::is_copy_constructible_v<RhoTCross> && !std::is_move_constructible_v<RhoTCross>);
 // a deuteron wave function held by std::unique_ptr: movable, not copyable
 static_assert(!std::is_copy_constructible_v<InclusiveCross> && std::is_move_constructible_v<InclusiveCross>);
-static_assert(!std::is_copy_constructible_v<InclusiveCrossRes> && std::is_move_constructible_v<InclusiveCrossRes>);
 static_assert(!std::is_copy_constructible_v<DQEinclusive> && std::is_move_constructible_v<DQEinclusive>);
 static_assert(!std::is_copy_constructible_v<Deut_Conv_EMTLF> && std::is_move_constructible_v<Deut_Conv_EMTLF>);
 // std::vector members: copyable and assignable (rule of zero)

@@ -5,12 +5,10 @@
 using namespace std;
 
 #include <Knockout/RhoTCross.hpp>
-#include <Tools/Core/Utilfunctions.hpp>
+#include <Tools/Core/IntegratorFlag.hpp>
 #include <string>
 using namespace nucqcd;
 
-void tzint(double tz, double* result, va_list ap);
-void nuint(double nu, double* result, va_list ap);
 void klaas_t(numint::vector_d & res, double nu, double t, RhoTCross & cross, double Q2, double Ebeam){
   res=numint::vector_d(cross.getNrofcross(),0.);
   double results[cross.getNrofcross()];
@@ -84,16 +82,8 @@ int main(int argc, char *argv[])
 
   RhoTCross test = RhoTCross(nucleus,330,homedir,nocuts,1,usersigma,prec,2,maxEval,p_dil,ptype);  
   
-  if(integrator==0){
-    double result[test.getNrofcross()];
-    double nuestimate=0.,tzestimate=0.;
-    rombergerN(nuint,nu_min,nu_max,test.getNrofcross(),result,nucqcd::integration_prec,3,7,&nuestimate, 
-				  torz,Q2,nocuts,Ebeam, &test, &tzestimate);
-    cout << Q2 << " ";
-    for (int l=0;l<test.getNrofcross();l++) cout << result[l] << " ";
-    cout << endl;
-  }
-  else if(integrator==1||integrator==2){
+  nucqcd::checked_integrator_flag(integrator);  // 1: cube_romb, 2: cube_adaptive (0, the old nested rombergerN, was removed)
+  {
     /*! struct that is used for integrators (clean ones)*/
     struct Ftor_tz {
 
@@ -137,36 +127,3 @@ int main(int argc, char *argv[])
   
   
 }
-
-
-void nuint(double nu, double* result, va_list ap){
-  
-  int torz = va_arg(ap,int);
-  double Q2 = va_arg(ap,double);
-  int nocuts = va_arg(ap,int);
-  double Ebeam = va_arg(ap,double);
-  RhoTCross *ptest = va_arg(ap,RhoTCross*);
-  double *ptzestimate = va_arg(ap,double*);
-
-  if(torz) rombergerN(tzint,-0.4,-0.1,ptest->getNrofcross(),result,nucqcd::integration_prec,3,6,
-	      ptzestimate,nu,torz,Q2,nocuts,Ebeam,ptest);
-  else rombergerN(tzint,0.9,1.,ptest->getNrofcross(),result,nucqcd::integration_prec,3,6,
-	      ptzestimate,nu,torz,Q2,nocuts,Ebeam,ptest);
-  return;
-}
-
-void tzint(double tz, double* result, va_list ap){
-  
-  double nu = va_arg(ap,double); 
-  int torz = va_arg(ap,int);
-  double Q2 = va_arg(ap,double);
-  int nocuts = va_arg(ap,int);
-  double Ebeam = va_arg(ap,double);
-  RhoTCross *ptest = va_arg(ap,RhoTCross*);  
-  
-  if(torz) ptest->getCrosst(result,Ebeam,Q2,nu,tz);
-  else ptest->getCrossz(result,Ebeam,Q2,nu,tz);
-  return;
-}
-
-

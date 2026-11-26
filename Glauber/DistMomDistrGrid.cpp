@@ -520,10 +520,18 @@ void DistMomDistrGrid::constructpwGrid(){
   //fill the arrays!
   for(int i=0; i<=getPgrid(); i++){
     p_hit = float(i)/getInvPstep();
-    double restimate=0.;
-    double result;
-    rombergerN(this,&DistMomDistrGrid::intRhoRpw,0.,getPfsigrid()->getPnucleus()->getRange(),1,
-		       &result,1.E-07,3,10,&restimate);
+    // radial integral of r G(r) j_l(p r): a 1D adaptive cubature to 1e-7 relative
+    Ftor_pw F;
+    F.grid = this;
+    numint::mdfunction<numint::vector_d,1> mdf;
+    mdf.func = &Ftor_pw::exec;
+    mdf.param = &F;
+    numint::array<double,1> lower = {{0.}};
+    numint::array<double,1> upper = {{getPfsigrid()->getPnucleus()->getRange()}};
+    numint::vector_d ret(1,0.);
+    unsigned count=0;
+    numint::cube_adaptive(mdf,lower,upper,1.E-14,1.E-07,1E02,1E05,ret,count,0);
+    double result = ret[0];
     rhopwgrid[i] = result*result*2.*getMass()/(sqrt(getMass()*getMass()+p_hit*p_hit)+getMass())*
 		    (getPfsigrid()->getPnucleus()->getJ_array()[getShellindex()]+1)/(4.*PI)*(2./PI);  //(2j+1)/(4pi)*(2/pi)
   }
@@ -635,9 +643,8 @@ void DistMomDistrGrid::constructCtGrid(nucqcd::Rotation & rot){
 //   return;
 // }
 // 
-void DistMomDistrGrid::intRhoRpw(const double r, double *result, va_list ap){
-  
-  *result= r*getPfsigrid()->getPnucleus()->getWave_G(getShellindex(),r)
+double DistMomDistrGrid::intRhoRpw(const double r) const{
+  return r*getPfsigrid()->getPnucleus()->getWave_G(getShellindex(),r)
 	*gsl_sf_bessel_jl(getPfsigrid()->getPnucleus()->getL_array()[getShellindex()],p_hit*r*nucqcd::inv_hbarc);
 }
 // void DistMomDistrGrid::intRhoCosTheta(const double costheta, complex<double> *results, va_list ap){

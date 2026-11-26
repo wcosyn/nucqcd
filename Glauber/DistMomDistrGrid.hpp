@@ -236,12 +236,19 @@ private:
    */
   void intRhoPhiCT(const double phi, std::complex<double> *results, va_list ap);
   
-  /*! function that gets integrated over r, plane-wave thingy
+  /*! integrand of the radial integral of the plane-wave grid: r G(r) j_l(p r) for the shell of the grid, at the momentum p_hit
    * \param r [fm] radial coordinate
-   * \param result result: contains plane wave result
-   * \param ap variable parameter list
-   */
-  void intRhoRpw(const double r, double *result, va_list ap);
+   * \return the integrand */
+  double intRhoRpw(const double r) const;
+  /*! struct for the 1D integrator of the plane-wave grid */
+  struct Ftor_pw {
+    /*! integrand function */
+    static void exec(const numint::array<double,1> &x, void *param, numint::vector_d &ret) {
+      Ftor_pw &p = * (Ftor_pw *) param;
+      ret = numint::vector_d(1, p.grid->intRhoRpw(x[0]));  // the integrator hands over an empty vector
+    }
+    DistMomDistrGrid *grid; /*!< the grid whose plane-wave grid is computed */
+  };
 
   /*! struct that is used for integrators (clean ones)*/
   struct Ftor_one {
