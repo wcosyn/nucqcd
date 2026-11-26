@@ -103,6 +103,11 @@ source `rhopaper_final.tex`, equations `eq:A`, `eq:factorize`, `eq:distormomentu
   azimuth, so for a distribution that does not depend on the azimuth the weight 1 is exact on average. Whether it
   matters for the Glauber distributions (which depend on the angle between pm and the rho) was not studied.
 
+The same equations are in `rhopaper_print.tex` (the latest version, after the journal review) with only cosmetic
+changes (the label alpha on the amplitude, square brackets around the polynomial). The paper's cuts are
+z > 0.9, W > 2 GeV and -0.4 < t < -0.1 GeV²; `getCrosst`/`getCrossz` apply the z and t cuts, but **no W > 2 GeV
+cut**, so the user must choose the nu range of `rhoset` (W² = m_N² + 2 m_N nu - Q²) accordingly.
+
 ## 5. Numerical checks (scratch programs, 2026-11-26; not in the repository)
 
 - (4) against a finite difference of the t-version root `z(t)`: 2000 random points, maximum relative difference
