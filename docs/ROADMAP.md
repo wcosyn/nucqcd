@@ -34,7 +34,7 @@ same PR.
 
 ## Where we are / next up
 
-*Updated 2026-11-26 (after PR #83; the `InclusiveCrossRes` investigation is in an open PR).*
+*Updated 2026-11-26 (after PR #84; the rho t/z fix is in an open PR).*
 
 **Done** (PRs #44-#82, details in the steps below): ROOT decoupling (ROOT is now only used by the test
 `unit_vectors`; the fits run on the standalone Minuit2, #73); LHAPDF structure functions (step 10); He3 fixes; run
@@ -49,9 +49,8 @@ for all Glauber grid variants (#68) and the deduplication of the two thick grids
 
 **Options for the next step** (my recommended order; the author decides):
 1. **Open leads** (step 4, "Open leads (to investigate)"), three of them, all investigations:
-   - the **rho transparency t- versus z-integrals** (`torz` flag of `rhoset`, `RhoTCross::getCrosst`/`getCrossz`:
-     results differing by orders of magnitude since 2012, probably a common factor such as a Jacobian or the
-     nucleus mass; a fix changes values);
+   - ~~the rho transparency t- versus z-integrals~~ (2026-11-26: the z version had the residual nucleus mass instead of
+     the Jacobian |dt/dz|/(2 nu); fixed in the open PR, a full `rhoset` check with Glauber grids is still to do);
    - ~~the `InclusiveCrossRes` FSI part that returns exactly 0~~ (investigated 2026-11-26: not a bug, the
      settings of `increstest` cancel by construction; with `fixprop` 1, `symm` 0 the FSI is ~6% of the plane wave;
      reviving the class is still open, see the item);
@@ -362,7 +361,7 @@ one commit per bug; no `[known-bug]` tests remain.
   (1) compare with the curves of the paper using the settings above, (2) decide the integrator (the nested `rombergerN`
   of `progs/attic/rombergerN.hpp`, or `cube_adaptive`, see the item on `rombergerN`), (3) write a regression test (use
   `fixprop` 1, `symm` 0) before moving it back into the DIS library. Not urgent: the class is not used by anything.
-- [ ] **Rho transparency: t- and z-integrated results disagree (added 2026-11-23, from the author's
+- [x] **Rho transparency: t- and z-integrated results disagree: cause found and fixed (added 2026-11-23, fixed 2026-11-26, from the author's
   memory of ~2012; details may be off).** The rho programs offer two ways to do the integrals, which
   should agree but gave results differing by orders of magnitude, while the Glauber/plane-wave ratios
   (the transparencies) were similar; the cause was never found. What the code and history show:
@@ -385,6 +384,30 @@ one commit per bug; no `[known-bug]` tests remain.
     kinematics, compare plane-wave cross sections first, check the t↔z Jacobian in `RhoTCross`
     analytically (and against `RhoDeuteron`, which was fixed), and check against a plane-wave case
     that can be integrated independently. Any fix changes values and needs the author's OK.
+  - **Cause (found 2026-11-26):** the z-integrated `getCrossz` multiplied by `massX`, the invariant mass of the
+    whole residual nucleus system (about M_A), in `RhoTCross::getfrontfactor`. The Jacobian between the two ways of
+    eliminating the on-shell delta function of the final nucleon (at fixed missing momentum) is |dt/dz| = 2 nu K, with
+    K the mass of the struck nucleon for pm = 0 (and pm-dependent otherwise, K ~ 0.7-1.7 GeV in a random sample), not
+    M_A. The z integrals were therefore a factor ~M_A/m_N ~ A too large, which is the "goes like A" of the 2012 commit
+    messages, and it cancels in the Glauber/plane-wave ratios. The archived `RhoDeuteron` (where the Jacobians were
+    "finally figured out") divides the t version by the off-shell nucleon energy `Eoff`, a nucleon-sized quantity and not
+    M_A, which points the same way (not checked in detail).
+  - **Check:** a Monte Carlo that copies the kinematics, cuts and prefactors of `getCrosst`/`getCrossz` with a Gaussian
+    in place of the Glauber momentum distributions (carbon-like M_A = 11.18 GeV, Q^2 = 1.5 GeV^2, nu = 2.5-3.5 GeV,
+    t in -0.4..-0.1, z in 0.9..1): z/t = 11.66 before; with the exact Jacobian 0.997 (statistical error 0.05%), and
+    0.988 at Q^2 = 2.5, nu = 3.0-3.8. The remaining 0.3-1.2% was not traced (edge singularities of the root
+    solutions in the Monte Carlo, or a small leftover; **not checked**). With massX removed the ratio was 1.03, 1.02,
+    0.98 for three kinematic settings, so a constant mass is not the fix. For a point nucleus (pm -> 0) the author's
+    commented analytic pair in `rhoset.cpp` agrees to 4 digits (0.9996), and its z/t ratio 2 nu M_A is this Jacobian.
+  - **Fix:** `getfrontfactor` takes C0, Cz and Cx and returns `|dt/dz|/(2 nu)` times the elementary factor for z,
+    `q |C0 px - Cz nu px/q - Cx nu (z - pz/q)| / |Cz px - Cx pz|` (derived in the code comment). The t version is
+    unchanged. **Changes values:** every z-integrated rho result (`rhoset` with torz 0) gets smaller by roughly
+    M_A/m_N (about 12 for carbon); the t results and the transparencies do not move. No test covers `RhoTCross`.
+  - **Not verified:** the full `rhoset` run for t and z with the real Glauber distributions (900 s was not enough for
+    carbon with these settings: `rhoset 1|0 1 2.0 2.5 3.5 0. 0 20. 2 20000 1e-3 4`; narrow the nu range and loosen the
+    precision to try again). The absolute normalisation of the t version (it carries no 1/|df/dz| of its own) was not
+    checked against the full delta-function weights; an attempt gave a result too noisy to say anything (heavy tail
+    of 1/K), so only the t-versus-z consistency is established.
 
 ## 5. Low-risk modernization
 
