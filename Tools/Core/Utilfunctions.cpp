@@ -114,6 +114,12 @@ double normr(double r1, double costheta1, double sintheta1, double cosphi1, doub
 //////////////////////////////////////
 
 
+void LUsolve(std::vector<std::vector<double> > &a, std::vector<double> &b){
+  std::vector<double *> rows(a.size());
+  for(size_t i=0;i<a.size();i++) rows[i]=a[i].data();
+  LUsolve(rows.data(),b.data(),static_cast<int>(a.size()));
+}
+
 void LUsolve(double **a, double *b, int order){
   double sum,big,temp,dum;
   int imax=0;
@@ -312,7 +318,7 @@ complex<double> Interp3d(const Grid3D<complex<double> > &grid, double s, double 
 	+ t*(comps*imag(grid[sindex][tindex+1][uindex+1])
 	+ s*imag(grid[sindex+1][tindex+1][uindex+1]))));
 }
-double Interp3d(double ***grid, double s, double t, double u, 
+double Interp3d(const Grid3D<double> &grid, double s, double t, double u, 
 			  double comps, double compt, double compu, int sindex, int tindex, int uindex){
   return compu*(compt*(comps*grid[sindex][tindex][uindex]
 	+ s*grid[sindex+1][tindex][uindex]) 

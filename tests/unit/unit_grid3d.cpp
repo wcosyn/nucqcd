@@ -62,3 +62,28 @@ TEST_CASE("Interp3d on a Grid3D is the trilinear interpolation", "[grid3d]") {
   CHECK_THAT(value.real(), WithinAbs(f(1. + s, 2. + t, 0. + u), 1e-12));
   CHECK_THAT(value.imag(), WithinAbs(2. * f(1. + s, 2. + t, 0. + u), 1e-12));
 }
+
+TEST_CASE("LUsolve for std::vector and for pointers solve the same linear system", "[grid3d][lusolve]") {
+  // A x = b with x = (1, -2, 3)
+  const double A[3][3] = {{4., -1., 2.}, {-1., 5., 1.}, {2., 1., 6.}};
+  std::vector<std::vector<double> > a(3, std::vector<double>(3));
+  std::vector<double> b(3, 0.);
+  double *rows[3];
+  double raw[3][3];
+  double braw[3] = {0., 0., 0.};
+  const double x[3] = {1., -2., 3.};
+  for (int i = 0; i < 3; i++) {
+    for (int j = 0; j < 3; j++) {
+      a[i][j] = raw[i][j] = A[i][j];
+      b[i] += A[i][j] * x[j];
+      braw[i] += A[i][j] * x[j];
+    }
+    rows[i] = raw[i];
+  }
+  LUsolve(a, b);
+  LUsolve(rows, braw, 3);
+  for (int i = 0; i < 3; i++) {
+    CHECK_THAT(b[i], WithinAbs(x[i], 1e-12));
+    CHECK(b[i] == braw[i]);  // the vector form calls the pointer form: the same numbers
+  }
+}

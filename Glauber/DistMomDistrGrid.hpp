@@ -13,6 +13,8 @@
 #include <complex>
 #include <Tools/Core/Vector3.hpp>
 #include <Tools/Core/Matrix.hpp>
+#include <Tools/Core/Grid3D.hpp>
+#include <vector>
 #include <Integrator/numint/numint.hpp>
 #include <Tools/Core/IntegratorFlag.hpp>
 
@@ -47,9 +49,7 @@ public:
   DistMomDistrGrid(const int shell, const double p_max, const int p_grid, const int cth_grid, const int phi_grid,
 				   AbstractFsiCTGrid *pfsi_grid, const double precision, const IntegrationMethod integr, 
 				   const int max_Eval, const double theta_rot, const std::string homedir);
-  ~DistMomDistrGrid(); /*!< Destructor */
-  DistMomDistrGrid(const DistMomDistrGrid &Copy); /*!< Copy constructor */
-  DistMomDistrGrid& operator=(const DistMomDistrGrid&);/*!< assignment overloading */
+  // copying, moving and destroying are the defaults: the grids are std::vectors (until 2026-11 they were raw arrays with hand-written copy code)
   
   int getShellindex() const{return shellindex;} /*!< shell level */
   const std::string getRho_Filename() const{return rho_filename;} /*!< returns filename for regular rho grid */
@@ -89,9 +89,9 @@ public:
   IntegrationMethod getIntegrator() const{return integrator;} /*!< choice of integrator, see the constructor */
   int getMaxEval() const{return maxEval;} /*!< maximum number of evaluations in the integrations */
   double getThetarot() const{return thetarot;} /*!< [rad] rotation angle between the momentum frame and the Glauber frame */
-  double* const getRhopwgrid() const{return rhopwgrid;} /*!< plane-wave momentum distribution grid (depends on |p| only) */
-  double**** const getRhogrid() const{return rhogrid;} /*!< distorted momentum distribution grids (without CT) */
-  double**** const getRhoctgrid() const{return rhoctgrid;} /*!< distorted momentum distribution grids with CT */
+  const std::vector<double>& getRhopwgrid() const{return rhopwgrid;} /*!< plane-wave momentum distribution grid (depends on |p| only) */
+  const std::vector<Grid3D<double> >& getRhogrid() const{return rhogrid;} /*!< distorted momentum distribution grids (without CT), `[grid][p][cos theta][phi]` */
+  const std::vector<Grid3D<double> >& getRhoctgrid() const{return rhoctgrid;} /*!< distorted momentum distribution grids with CT, same indices */
   
   void printRho_grid(int gridindex);  /*!< Prints the rho grid for a certain situation*/
   void printRhopw_grid();  /*!< Prints the rho plane wave grid */
@@ -176,9 +176,9 @@ private:
   int maxEval; /*!< max number of evaluations in the integrations */
   double thetarot; /*!< rotationangle that connects glauberframe with momentumframe*/
         
-  double *rhopwgrid; /*!< plane-wave momentum distribution grid. only depends on norm of p */
-  double ****rhogrid; /*!< non-ct momentum distribution grid */
-  double ****rhoctgrid; /*!< ct momentum distribution grid */
+  std::vector<double> rhopwgrid; /*!< plane-wave momentum distribution grid. only depends on norm of p */
+  std::vector<Grid3D<double> > rhogrid; /*!< non-ct momentum distribution grid, `[grid][p][cos theta][phi]` */
+  std::vector<Grid3D<double> > rhoctgrid; /*!< ct momentum distribution grid, same indices */
     
   void constructpwGrid(); /*!< construct all grids */
   /*! construct all grids 

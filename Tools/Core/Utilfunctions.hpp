@@ -14,6 +14,7 @@
 #include <Tools/Core/ErrorMessage.hpp>
 #include <sstream>
 #include <complex>
+#include <vector>
 #include <Tools/Core/Grid3D.hpp>
 
 namespace nucqcd {
@@ -69,6 +70,8 @@ double normr(double r1, double costheta1, double sintheta1, double cosphi1, doub
  * \param order number of equations
  */
 void LUsolve(double **a, double *b, int order);
+/*! as LUsolve(double **, double *, int) for a square matrix and a right-hand side in std::vector (the matrix is overwritten by its LU decomposition, the right-hand side by the solution) */
+void LUsolve(std::vector<std::vector<double> > &a, std::vector<double> &b);
 
 
 
@@ -111,7 +114,7 @@ void freematrix(double **matrix, int n); /*!< free a n*? matrix on the heap*/
 std::complex<double> Interp3d(const Grid3D<std::complex<double> > &grid, double s, double t, double u, 
 			  double comps, double compt, double compu, int sindex, int tindex, int uindex);
 /// trilinear interpolation in a real 3D grid, see the complex version
-double Interp3d(double ***grid, double s, double t, double u, 
+double Interp3d(const Grid3D<double> &grid, double s, double t, double u, 
 			  double comps, double compt, double compu, int sindex, int tindex, int uindex);
 /*!convert a certain type to a string
  * \tparam T type to convert to string

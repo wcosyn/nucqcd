@@ -9,9 +9,20 @@ using namespace std;
 #include <Tools/Core/constants.hpp>
 #include <Tools/Core/Utilfunctions.hpp>
 #include <cassert>
+#include <vector>
 #include <cmath>
 
 namespace nucqcd {
+
+namespace {
+// A table of measured points: three columns of the same length (the logarithm of the momentum, a value and its sigma); table[j] is a
+// pointer to column j, so that table[j][k] and the pointer arguments of fitdata work as they did for the raw arrays (which leaked)
+struct DataTable {
+  std::vector<double> column[3];
+  void resize(int points) { for (auto &c : column) c.assign(points, 0.); }
+  double *operator[](int j) { return column[j].data(); }
+};
+}  // namespace
 
 
 using namespace std;
@@ -486,11 +497,10 @@ void FastParticle::setPionGlauberData(double mom, double &sigmatotp, double &bet
   //read in all the data
   const string files[6]={dir+"/input/pimp_elastic.dat",dir+"/input/pimp_elastic.reim",dir+"/input/pimp_total.dat",
 			       dir+"/input/pipp_elastic.dat",dir+"/input/pipp_elastic.reim",dir+"/input/pipp_total.dat"};
-  int *lines=new int[6];
-  double ***data = new double**[6];  //data is 3 dim array.  dim1 = 6 files, dim2 = 3 (momentum, y-value, sigma), dim3 = grid
+  std::vector<int> lines(6);
+  std::vector<DataTable> data(6);  //dim1 = 6 files, dim2 = 3 (momentum, y-value, sigma), dim3 = grid
   double dummy,dummy2; //used to read in redundant info etc
   for(int i=0;i<6;i++){
-    data[i] = new double*[3];
     ifstream file(files[i].c_str(),ios::in);
     
     if(file.is_open()){
@@ -500,7 +510,7 @@ void FastParticle::setPionGlauberData(double mom, double &sigmatotp, double &bet
 
       //read in number of data points
       file >> lines[i];
-      for(int j=0;j<3;j++) data[i][j]=new double[lines[i]];
+      data[i].resize(lines[i]);
       
       //read in data points
       for(int k=0;k<lines[i];k++){
@@ -527,14 +537,13 @@ void FastParticle::setPionGlauberData(double mom, double &sigmatotp, double &bet
   //new data for epsilon! extra input
   const string files2[2]={dir+"/input/epspim.inp",dir+"/input/epspip.inp"};
   
-  double ***epsdata = new double**[2];
+  std::vector<DataTable> epsdata(2);
   int lines2[2]={164,134};
   for(int i=0;i<2;i++){
-    epsdata[i] = new double*[3];
     
     ifstream file(files2[i].c_str(),ios::in);    
     if(file.is_open()){
-      for(int j=0;j<3;j++) epsdata[i][j]=new double[lines2[i]];
+      epsdata[i].resize(lines2[i]);
       for(int k=0;k<lines2[i];k++){      
 	file >> dummy;
 	epsdata[i][0][k] = log10(dummy/1000.);
@@ -553,14 +562,13 @@ void FastParticle::setPionGlauberData(double mom, double &sigmatotp, double &bet
   //new data for beta, extra input
   const string files3[2]={dir+"/input/betapim.inp",dir+"/input/betapip.inp"};
 
-  double ***betadata = new double**[2];
+  std::vector<DataTable> betadata(2);
   int lines3[2]={130,96};
   for(int i=0;i<2;i++){
-    betadata[i] = new double*[3];
     
     ifstream file(files3[i].c_str(),ios::in);    
     if(file.is_open()){
-      for(int j=0;j<3;j++) betadata[i][j]=new double[lines3[i]];
+      betadata[i].resize(lines3[i]);
       for(int k=0;k<lines3[i];k++){      
 	file >> dummy;
 	betadata[i][0][k] = log10(dummy/1000.);
@@ -644,13 +652,12 @@ void FastParticle::setPionGlauberData(double mom, double &sigmatotp, double &bet
 
   //eps2, fit to new data
   if(logp<=0.04){
-    double *tempdata=new double[41];
+    std::vector<double> tempdata(41);
     for(int i=0;i<41;i++) tempdata[i]=pow(10.,epsdata[0][0][i])*1000.;
-    a=fitdata(tempdata,epsdata[0][1],epsdata[0][2],0,40,20,chi2);
+    a=fitdata(tempdata.data(),epsdata[0][1],epsdata[0][2],0,40,20,chi2);
     epsn=0.;
     for(int i=0;i<20;i++) epsn+=a[i]*pow(mom,i);
     delete [] a;
-    delete [] tempdata;
   }
 
   else if(logp<=0.57){
@@ -792,28 +799,6 @@ void FastParticle::setPionGlauberData(double mom, double &sigmatotp, double &bet
   betap2=sigmatotp*sigmatotp*(1+epsp*epsp)/(16*PI*sigmaelp);
   //epsp=sqrt((16*PI*sigmaelp*betap*betap)/sigmatotp/sigmatotp-1);
       
-  //maintenance
-  delete []lines; 
-  for(int i=0;i<6;i++){
-    for(int j=0;j<3;j++){
-      delete [] data[i][j];
-    }
-  }
-  for(int i=0;i<6;i++) delete [] data[i];
-  delete [] data;
-  for(int i=0;i<2;i++){
-    for(int j=0;j<3;j++){
-      delete [] epsdata[i][j];
-      delete [] betadata[i][j];
-    }
-  }
-  for(int i=0;i<2;i++) {
-    delete [] epsdata[i];
-    delete [] betadata[i];
-  }
-  delete [] epsdata; delete [] betadata;
-
-  
 }
 
 //used to calc (b-b')^2 for the glauberphase in the ref frame of this particle

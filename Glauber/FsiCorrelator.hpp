@@ -102,8 +102,8 @@ private:
   std::vector<std::vector<double>> corrgridfull; /*!< gamma grid for full density */
   std::vector<std::vector<double>> corrgridproton; /*!< gamma grid for proton density*/
   std::vector<std::vector<double>> corrgridneutron;  /*!< gamma grid for neutron density*/
-  double **functionmatrix; /*!< grid that helps to construct corr grid*/
-  double *x; /*!< grid that helps to construct corr grid*/
+  std::vector<std::vector<double> > functionmatrix; /*!< grid that helps to construct corr grid, only filled while the corr grid is constructed*/
+  std::vector<double> x; /*!< grid that helps to construct corr grid, only filled while the corr grid is constructed*/
   
   MeanFieldNucleusThick *pnucleus; /*!<  the pointer to the MeanFieldNucleusThick instance */
   void setCorrFilename(const std::string dir); /*!< set the filename of the gamma grids */
@@ -114,12 +114,11 @@ private:
   void constructCorrgrid(const double *density, std::vector<std::vector<double>> &corrgrid); 
   void constructMatrixSet(const double *density); /*!< construct matrix used to solve integration equation*/
   void newt(int *check);/*!< newton minimizationmethod for multi-dim */
-  void ConstructJacobian(double **Jacobian);/*!< construct Jacobian for solving integration equation */
-  double ReturnFunction(double *functionvalues);/*!< function that needs minimizing */
+  void ConstructJacobian(std::vector<std::vector<double> > &Jacobian);/*!< construct Jacobian for solving integration equation */
+  double ReturnFunction(std::vector<double> &functionvalues);/*!< function that needs minimizing */
   double ReturnFunction();/*!< function that needs  minimizing */
-  void corrmaintenance(int n, double *functionvalues, double **Jacobian, double *grad, double *xold, double *step); /*!< mem maintenance */
-  void lnsrch(double *xold, double functionold, double *grad, double *step, double *functionnew,
-	    double stpmax, int *check, double *functionvalues);/*!< linesearch minimalizer */
+  void lnsrch(const std::vector<double> &xold, double functionold, const std::vector<double> &grad, std::vector<double> &step, double *functionnew,
+	    double stpmax, int *check, std::vector<double> &functionvalues);/*!< linesearch minimalizer */
 };
 
 }  // namespace nucqcd

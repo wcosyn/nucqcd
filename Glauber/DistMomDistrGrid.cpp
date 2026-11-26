@@ -29,10 +29,7 @@ pgrid(0),
 cthgrid(0),
 phigrid(0),
 pfsigrid(NULL),
-dir(""),
-rhogrid(NULL),
-rhoctgrid(NULL),
-rhopwgrid(NULL){
+dir(""){
 //   cerr << "This DistMomDistrGrid default constructor shouldn't be called!" << endl;
 //   exit(1);
 }
@@ -54,9 +51,6 @@ prec(precision),
 integrator(integr),
 maxEval(max_Eval),
 thetarot(theta_rot),
-rhogrid(NULL),
-rhoctgrid(NULL),
-rhopwgrid(NULL),
 number_of_Grids(pfsi_grid->getNumber_of_grids()){
   
   invpstep=pgrid/p_max;
@@ -64,21 +58,10 @@ number_of_Grids(pfsi_grid->getNumber_of_grids()){
   invphistep=0.5*phigrid/PI;
   if(pfsigrid!=NULL){
     mass = getShellindex()<getPfsigrid()->getPnucleus()->getPLevels()? nucqcd::mass_p:nucqcd::mass_n;
-    rhogrid=new double***[number_of_Grids/2];
-    rhoctgrid=new double***[number_of_Grids/2];
-    for(int i=0;i<number_of_Grids/2;i++){
-      rhogrid[i]=new double**[getPgrid()+1];
-      rhoctgrid[i]=new double**[getPgrid()+1];
-      for(int j=0;j<(getPgrid()+1);j++){
-	rhogrid[i][j]=new double*[getCthgrid()+1];
-	rhoctgrid[i][j]=new double*[getCthgrid()+1];
-	for(int k=0;k<(getCthgrid()+1);k++){
-	  rhogrid[i][j][k]=new double[getPhigrid()+1];
-	  rhoctgrid[i][j][k]=new double[getPhigrid()+1];
-	}
-      }
-    }
-    rhopwgrid = new double[getPgrid()+1];
+    const Grid3D<double> points(getPgrid()+1,getCthgrid()+1,getPhigrid()+1);
+    rhogrid.assign(number_of_Grids/2,points);
+    rhoctgrid.assign(number_of_Grids/2,points);
+    rhopwgrid.assign(getPgrid()+1,0.);
     constructpwGrid();
   }
    //setFilenames(dir);
@@ -87,174 +70,6 @@ number_of_Grids(pfsi_grid->getNumber_of_grids()){
   
 }  
   
-DistMomDistrGrid::~DistMomDistrGrid(){
-  //cout << "Deleting FSI object" << endl;
-  if(rhogrid!=NULL){
-    for(int i=0;i<number_of_Grids/2;i++){
-      for(int j=0;j<(getPgrid()+1);j++){
-	for(int k=0;k<(getCthgrid()+1);k++){
-	  delete [] rhogrid[i][j][k];
-	  delete [] rhoctgrid[i][j][k];
-	}
-	delete [] rhogrid[i][j];
-	delete [] rhoctgrid[i][j];
-      }
-      delete [] rhogrid[i];
-      delete [] rhoctgrid[i];
-    }
-    delete [] rhogrid;
-    delete [] rhoctgrid;
-  
-    delete [] rhopwgrid;
-  }
-}
-
-DistMomDistrGrid::DistMomDistrGrid(const DistMomDistrGrid &Copy):
-shellindex(Copy.getShellindex()),
-rho_filename(Copy.getRho_Filename()),
-rhoct_filename(Copy.getRhoCT_Filename()),
-dir(Copy.getDir()),
-mass(Copy.getMass()),
-pmax(Copy.getPmax()),
-pgrid(Copy.getPgrid()),
-cthgrid(Copy.getCthgrid()),
-phigrid(Copy.getPhigrid()),
-invpstep(Copy.getInvPstep()),
-invcthstep(Copy.getInvCthstep()),
-invphistep(Copy.getInvPhistep()),
-s_interp(Copy.getS_interp()),
-t_interp(Copy.getT_interp()),
-u_interp(Copy.getU_interp()),
-comp_s_interp(Copy.getComp_s_interp()),
-comp_t_interp(Copy.getComp_t_interp()),
-comp_u_interp(Copy.getComp_u_interp()),
-pindex(Copy.getPindex()),
-cthindex(Copy.getCthindex()),
-phiindex(Copy.getPhiindex()),
-pfsigrid(Copy.getPfsigrid()),
-filledgrid(Copy.getFilledgrid()),
-filledctgrid(Copy.getFilledctgrid()),
-filledallgrid(Copy.getFilledallgrid()),
-pvec_hit(Copy.getPvec_hit()),
-p_hit(Copy.getP_hit()),
-costheta_hit(Copy.getCostheta_hit()),
-sintheta_hit(Copy.getSintheta_hit()),
-phi_hit(Copy.getPhi_hit()),
-cosphi_hit(Copy.getCosphi_hit()),
-sinphi_hit(Copy.getSinphi_hit()),
-Upm_bar(Copy.getUpm_bar()),
-prec(Copy.getPrec()),
-integrator(Copy.getIntegrator()),
-maxEval(Copy.getMaxEval()),
-thetarot(Copy.getThetarot()),
-rhogrid(NULL),
-rhoctgrid(NULL),
-rhopwgrid(NULL),
-number_of_Grids(Copy.number_of_Grids){
-  
-  if(pfsigrid!=NULL){
-    rhogrid=new double***[Copy.number_of_Grids/2];
-    rhoctgrid=new double***[Copy.number_of_Grids/2];
-    for(int i=0;i<Copy.number_of_Grids/2;i++){
-      rhogrid[i]=new double**[Copy.getPgrid()+1];
-      rhoctgrid[i]=new double**[Copy.getPgrid()+1];
-      for(int j=0;j<(Copy.getPgrid()+1);j++){
-	rhogrid[i][j]=new double*[Copy.getCthgrid()+1];
-	rhoctgrid[i][j]=new double*[Copy.getCthgrid()+1];
-	for(int k=0;k<(Copy.getCthgrid()+1);k++){
-	  rhogrid[i][j][k]=new double[Copy.getPhigrid()+1];
-	  rhoctgrid[i][j][k]=new double[Copy.getPhigrid()+1];
-	  for(int l=0;l<(Copy.getPhigrid()+1);++l){
-	    rhogrid[i][j][k][l] = Copy.getRhogrid()[i][j][k][l];
-	    rhoctgrid[i][j][k][l] = Copy.getRhoctgrid()[i][j][k][l];
-	  }
-	}
-      }
-    }
-    rhopwgrid = new double[Copy.getPgrid()+1];
-    for(int i=0;i<(Copy.getPgrid()+1);++i) rhopwgrid[i] = Copy.getRhopwgrid()[i];
-  }
-  
-}
-
-
-DistMomDistrGrid& DistMomDistrGrid::operator=(const DistMomDistrGrid& rhs)
-{
-  // Assignment
-  if( this!=&rhs) { // avoid self-assignment
-    shellindex = rhs.getShellindex();
-    rho_filename = rhs.getRho_Filename();
-    rhoct_filename = rhs.getRhoCT_Filename();
-    dir = rhs.getDir();
-    mass = rhs.getMass();
-    pmax = rhs.getPmax();
-    pgrid = rhs.getPgrid();
-    cthgrid = rhs.getCthgrid();
-    phigrid = rhs.getPhigrid();
-    invpstep = rhs.getInvPstep();
-    invcthstep = rhs.getInvCthstep();
-    invphistep = rhs.getInvPhistep();
-    s_interp = rhs.getS_interp();
-    t_interp = rhs.getT_interp();
-    u_interp = rhs.getU_interp();
-    comp_s_interp = rhs.getComp_s_interp();
-    comp_t_interp = rhs.getComp_t_interp();
-    comp_u_interp = rhs.getComp_u_interp();
-    pindex = rhs.getPindex();
-    cthindex = rhs.getCthindex();
-    phiindex = rhs.getPhiindex();
-    pfsigrid = rhs.getPfsigrid();
-    filledgrid = rhs.getFilledgrid();
-    filledctgrid = rhs.getFilledctgrid();
-    filledallgrid = rhs.getFilledallgrid();
-    pvec_hit = rhs.getPvec_hit();
-    p_hit = rhs.getP_hit();
-    costheta_hit = rhs.getCostheta_hit();
-    sintheta_hit = rhs.getSintheta_hit();
-    phi_hit = rhs.getPhi_hit();
-    cosphi_hit = rhs.getCosphi_hit();
-    sinphi_hit = rhs.getSinphi_hit();
-    Upm_bar = rhs.getUpm_bar();
-    prec = rhs.getPrec();
-    integrator = rhs.getIntegrator();
-    maxEval = rhs.getMaxEval();
-    thetarot = rhs.getThetarot();
-    rhogrid = NULL;
-    rhoctgrid = NULL;
-    rhopwgrid = NULL;
-    number_of_Grids=rhs.number_of_Grids;
-    
-    if(pfsigrid!=NULL){
-      rhogrid=new double***[rhs.number_of_Grids/2];
-      rhoctgrid=new double***[rhs.number_of_Grids/2];
-      for(int i=0;i<rhs.number_of_Grids/2;i++){
-	rhogrid[i]=new double**[rhs.getPgrid()+1];
-	rhoctgrid[i]=new double**[rhs.getPgrid()+1];
-	for(int j=0;j<(rhs.getPgrid()+1);j++){
-	  rhogrid[i][j]=new double*[rhs.getCthgrid()+1];
-	  rhoctgrid[i][j]=new double*[rhs.getCthgrid()+1];
-	  for(int k=0;k<(rhs.getCthgrid()+1);k++){
-	    rhogrid[i][j][k]=new double[rhs.getPhigrid()+1];
-	    rhoctgrid[i][j][k]=new double[rhs.getPhigrid()+1];
-	    for(int l=0;l<(rhs.getPhigrid()+1);++l){
-	      rhogrid[i][j][k][l] = rhs.getRhogrid()[i][j][k][l];
-	      rhoctgrid[i][j][k][l] = rhs.getRhoctgrid()[i][j][k][l];
-	    }
-	  }
-	}
-      }
-      rhopwgrid = new double[rhs.getPgrid()+1];
-      for(int i=0;i<(rhs.getPgrid()+1);++i) rhopwgrid[i] = rhs.getRhopwgrid()[i];
-    }
-     
-     
-  }
-
-  return *this;
-}
-
-
-
 //set up inteprolation help variables for r
 void DistMomDistrGrid::setPinterp(const double p){
   if(p>getPmax()){
@@ -319,7 +134,7 @@ double DistMomDistrGrid::getRhopwGridFull_interp(double p){
   if(p>getPmax()){
     throw std::out_of_range(nucqcd::ErrorMessage() << "p out of range in : getRhopwGridFull" << p );
   }
-  return interpolate(rhopwgrid,p,1./getInvPstep(),getPgrid()+1,0); 
+  return interpolate(rhopwgrid.data(),p,1./getInvPstep(),getPgrid()+1,0); 
   
 }
 

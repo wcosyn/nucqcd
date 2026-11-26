@@ -28,8 +28,6 @@ corr_rgrid(rgrid),corr_cthgrid(cthgrid),corr_phigrid(6),pnucleus(inputnucleus)
   corrgridfull.assign(getCorr_rgrid(),std::vector<double>(getCorr_cthgrid(),0.));
   corrgridproton.assign(getCorr_rgrid(),std::vector<double>(getCorr_cthgrid(),0.));
   corrgridneutron.assign(getCorr_rgrid(),std::vector<double>(getCorr_cthgrid(),0.));
-  functionmatrix=NULL;
-  x=NULL;
   ifstream infile(corrfilename.c_str(),ios::in|ios::binary);
   //check if object has been created sometime earlier and read it in
   bool read=false;
@@ -283,20 +281,16 @@ void FsiCorrelator::printCorrGridAll() const{
 void FsiCorrelator::constructCorrgrid(const double *density, std::vector<std::vector<double>> &corrgrid){
 
   cout << "Constructing correlation grid..." << endl;
-  functionmatrix = new double *[TOTALGRIDPNTS];//TOTALGRIDPNTS= getCorr_rgrid()*getCorr_thgrid()
-  for(int i=0;i<TOTALGRIDPNTS;i++) functionmatrix[i] = new double[TOTALGRIDPNTS];
+  functionmatrix.assign(TOTALGRIDPNTS,std::vector<double>(TOTALGRIDPNTS));//TOTALGRIDPNTS= getCorr_rgrid()*getCorr_thgrid()
   cout << "Construct Matrix of the functions..." << endl;
   constructMatrixSet(density);
-  x = new double[TOTALGRIDPNTS];
-  for(int i=0;i<TOTALGRIDPNTS;i++) x[i]=1.;
-  int *check= new int;
-  newt(check);
+  x.assign(TOTALGRIDPNTS,1.);
+  int check=0;
+  newt(&check);
   cout << ReturnFunction() << endl;
-  for(int i=0;i<TOTALGRIDPNTS;i++) delete [] functionmatrix[i];
-  delete [] functionmatrix;
-  if(*check>0) {
-    delete [] x; 
-    delete check;
+  functionmatrix.clear();
+  if(check>0) {
+    x.clear();
     throw std::runtime_error(nucqcd::ErrorMessage() << "no solution found for integration equation" );
   }
   else{
@@ -307,11 +301,12 @@ void FsiCorrelator::constructCorrgrid(const double *density, std::vector<std::ve
       corrgrid[ii][j]=x[i];
     }
     cout << endl << endl;
-    delete [] x;
-    delete check;
+    x.clear();
     return;
   }  
 }
+
+
 
 //////////////////////
 //construct the matrix needed to solve the non-linear set of equations
@@ -400,13 +395,12 @@ void FsiCorrelator::newt(int *check){
   int MAXITS=200;
   double TOLF = 1.0e-7, TOLMIN = 1.0e-06, TOLX = 1.0e-07, STPMX = 100.0;
 
-  double *functionvalues = new double[TOTALGRIDPNTS];
+  std::vector<double> functionvalues(TOTALGRIDPNTS);
   double function = ReturnFunction(functionvalues);
   double test=0.;
   //test if initial guess is zero point
   for(int i=0;i<TOTALGRIDPNTS;i++) if(abs(functionvalues[i])>test) test=abs(functionvalues[i]);
   if(test<TOLF) {
-    delete [] functionvalues;
     cout << "initial point is zero " << test << endl;
     return;
   }
@@ -416,12 +410,11 @@ void FsiCorrelator::newt(int *check){
   double stpmax = STPMX*(sqrt(sum)>float(TOTALGRIDPNTS)? sqrt(sum):float(TOTALGRIDPNTS));
   for(int its=0;its<MAXITS;its++){
     cout << "Entering iteration " << its << endl;
-    double **Jacobian = new double*[TOTALGRIDPNTS];
-    for(int i=0;i<TOTALGRIDPNTS;i++) Jacobian[i] = new double[TOTALGRIDPNTS];
-    double *grad = new double[TOTALGRIDPNTS];
-    double *xold = new double[TOTALGRIDPNTS];
+    std::vector<std::vector<double> > Jacobian(TOTALGRIDPNTS,std::vector<double>(TOTALGRIDPNTS));
+    std::vector<double> grad(TOTALGRIDPNTS);
+    std::vector<double> xold(TOTALGRIDPNTS);
     double functionold;
-    double *step = new double[TOTALGRIDPNTS];
+    std::vector<double> step(TOTALGRIDPNTS);
     cout << "Constructing Jacobian...." << endl;
     ConstructJacobian(Jacobian);
     
@@ -433,7 +426,7 @@ void FsiCorrelator::newt(int *check){
     for (int i=0;i<TOTALGRIDPNTS;i++) {xold[i] = x[i]; step[i] = -functionvalues[i];}
     functionold = function;
     cout << "Solving for step... " << TOTALGRIDPNTS << endl;
-    LUsolve(Jacobian,step,TOTALGRIDPNTS);
+    LUsolve(Jacobian,step);
     // for(int i=0;i<TOTALGRIDPNTS;i++) cout << step[i] << " ";
     cout << "Doing linesearch..." << endl;
     lnsrch(xold,functionold,grad,step,&function,stpmax,check,functionvalues);
@@ -441,7 +434,6 @@ void FsiCorrelator::newt(int *check){
     for(int i=0;i<TOTALGRIDPNTS;i++) if(abs(functionvalues[i])>test) test = abs(functionvalues[i]);
     if(test<TOLF) {
       cout << "Convergence reached on function values " << endl;
-      corrmaintenance(TOTALGRIDPNTS, functionvalues, Jacobian, grad, xold, step);
       *check=0;
       return;
     }
@@ -455,7 +447,6 @@ void FsiCorrelator::newt(int *check){
       }
       *check=(test < TOLMIN ? 1:0);
       cout << "grad f was equal to zero, spurious thingy" << endl;
-      corrmaintenance(TOTALGRIDPNTS, functionvalues, Jacobian, grad, xold, step);
       return;
     }
     test=0.;
@@ -464,21 +455,14 @@ void FsiCorrelator::newt(int *check){
       if(temp>test) test=temp;
     }
     if(test < TOLX) {
-      corrmaintenance(TOTALGRIDPNTS, functionvalues, Jacobian, grad, xold, step); 
       cout << "Convergence reached on dx" << endl;
       return;
     }
-    delete [] grad;
-    delete [] xold;
-    delete [] step;
-    for(int i=0;i<TOTALGRIDPNTS;i++) delete [] Jacobian[i];
-    delete [] Jacobian;
 
   }
   
   cout << "Max iterations reached" << endl;
   *check = 2;
-  delete [] functionvalues;  
   return;
 
 }
@@ -487,7 +471,7 @@ void FsiCorrelator::newt(int *check){
 //Jacobian is contructed, what did i need it for again? :)
 /////////////////
 
-void FsiCorrelator::ConstructJacobian(double **Jacobian){
+void FsiCorrelator::ConstructJacobian(std::vector<std::vector<double> > &Jacobian){
 
   for(int i=0;i<TOTALGRIDPNTS;i++){
     for(int j=0;j<TOTALGRIDPNTS;j++){
@@ -505,7 +489,7 @@ void FsiCorrelator::ConstructJacobian(double **Jacobian){
 //aha, i think i remember, this is the function that needs minimizing!
 /////////////////
 
-double FsiCorrelator::ReturnFunction(double *functionvalues){
+double FsiCorrelator::ReturnFunction(std::vector<double> &functionvalues){
   for(int i=0;i<TOTALGRIDPNTS;i++){
     functionvalues[i]=-1.*2*corr_phigrid;
     for(int j=0;j<TOTALGRIDPNTS;j++){
@@ -519,7 +503,7 @@ double FsiCorrelator::ReturnFunction(double *functionvalues){
 }
 
 double FsiCorrelator::ReturnFunction(){
-  double *functionvalues = new double[TOTALGRIDPNTS];
+  std::vector<double> functionvalues(TOTALGRIDPNTS);
   for(int i=0;i<TOTALGRIDPNTS;i++){
     functionvalues[i]=-1.*2*corr_phigrid;
     for(int j=0;j<TOTALGRIDPNTS;j++){
@@ -528,32 +512,16 @@ double FsiCorrelator::ReturnFunction(){
   }
   double f=0.0;
   for(int i=0;i<TOTALGRIDPNTS;i++) f+=functionvalues[i]*functionvalues[i];
-  delete [] functionvalues;
   f/=2.;
   return f;
-}
-
-///////////////////
-//memory maintenance
-/////////////////////
-
-void FsiCorrelator::corrmaintenance(int n, double *functionvalues, double **Jacobian, double *grad, double *xold, double *step){
-
-  delete [] functionvalues;
-  delete [] grad;
-  delete [] xold;
-  delete [] step;
-  for(int i=0;i<n;i++) delete [] Jacobian[i];
-  delete [] Jacobian;
-  return;
 }
 
 ///////////////
 //taken from numerical recipes, needed in the procedure to solve non-lin set, by minimalizing a testfunction
 ///////////////////////
 
-void FsiCorrelator::lnsrch(double *xold, double functionold, double *grad, double *step, double *functionnew,
-	    double stpmax, int *check, double *functionvalues){
+void FsiCorrelator::lnsrch(const std::vector<double> &xold, double functionold, const std::vector<double> &grad, std::vector<double> &step, double *functionnew,
+	    double stpmax, int *check, std::vector<double> &functionvalues){
 
   double TOLX = 1.0e-07;
   double ALF = 1.0e-04; 

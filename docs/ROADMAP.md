@@ -773,9 +773,27 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   master and the branch both built with `-ffp-contract=off` (scratch builds of all Glauber sources) all 11 probe cache files and
   the probe output are byte-identical. So the logic is the same; cached grids from before stay valid (the file format is
   unchanged, the values differ at 1e-16).
-  Still to do for this item: the 4D `double` arrays of `DistMomDistrGrid` (`rhogrid`, `rhoctgrid`, with hand-written copy
-  code, kept in a `std::map` by `RhoTCross` and `PionTCross`) and the smaller arrays in `FsiCorrelator` and `FastParticle`
-  (part B), and the named print functions (`printFsi_*_grid`, declared in the concrete classes only now, with their per-class header text).
+  **Part B (2026-11-26): `DistMomDistrGrid`, `FsiCorrelator`, `FastParticle`.** `DistMomDistrGrid`: the 4D `rhogrid` and
+  `rhoctgrid` (`double ****`, `[grid][p][cos theta][phi]`) are `std::vector<Grid3D<double>>`, `rhopwgrid` a `std::vector<double>`
+  (the getters return const references; `Interp3d` for `double` takes a `Grid3D`), and the destructor, the copy constructor and
+  the assignment operator (about 160 lines that copied every member by hand; the assignment also did not free the arrays it
+  overwrote) are gone: the class is copied, moved and destroyed by the compiler. `FsiCorrelator`: the Newton solver for the
+  correlation grid (`functionmatrix`, `x`, and the Jacobian, gradient, step vectors of `newt`/`lnsrch`, with their manual
+  `corrmaintenance` frees on every exit) works on `std::vector`s; `LUsolve` got an overload for `std::vector` (it builds the
+  row pointers and calls the pointer version, so the arithmetic is the same; `fitdata` keeps its raw arrays and its `double *`
+  result). `FastParticle::setPionGlauberData` (used by `progs/pionprog` to make the pion table): the local data tables are
+  `std::vector<DataTable>` (a table of three columns; `table[j]` is the pointer to column j, so the 50 uses and the calls of
+  `fitdata` are unchanged); the old arrays were freed on the normal path but leaked when a data file could not be opened.
+  **Checked:** `ctest -LE slow` 140/140 and `ctest -L slow` 11/11 with the 23 cache files identical to master; and, because
+  none of these three has a test of its own, scratch comparisons master against the branch (the probes are not in the
+  repository): `setPionGlauberData` for 30 momenta (all six outputs, 17 digits): identical; `DistMomDistrGrid` with FSI for a
+  rho in carbon (the flow of `RhoTCross`: fill, interpolate for 5 grids at 3 momenta, copy constructor, assignment, a
+  `std::map` entry, assignment over a filled object; 80 values at 17 digits, and the 6 cache files): identical;
+  `FsiCorrelator` for carbon on 6 x 6, 12 x 12 and 20 x 20 grids (the solver only runs when `share/input/CorrGrid.*` is
+  missing, which is never the case for the shipped nuclei, so no test runs it): printed interpolated values, the written cache file
+  (md5) and the log (iteration counts included) identical. New test: `LUsolve` for vectors and for pointers.
+  Still to do for this item: only the named print functions (`printFsi_*_grid`, declared in the concrete classes only now, with their
+  per-class header text, not in the abstract ones; low priority).
   **Found on the way, fixed (2026-11-25, #69):** in the Glauber grids `integrator == 0` (the old
   `rombergerN`) was dead: the `rombergerN` calls were commented out in `GlauberGrid`, `GlauberGridThick`,
   `GlauberDecayGridThick` (and in `DistMomDistrGrid`, `EMQEHadronCurrent`, `RhoDeuteron`), so the results
