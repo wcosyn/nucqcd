@@ -24,6 +24,7 @@ int main(int argc, char *argv[])
   double Ebeam = 5.014;
   int j = atoi(argv[7]);
   int k = atoi(argv[8]);
+  if(!nocuts) RhoTCross::checkWcut(Q2,nu_min);  // the analysis cuts W > 2 GeV (and z > 0.9, t in -0.4..-0.1, applied in RhoTCross)
   
   double *results = new double[NROFRES];
 

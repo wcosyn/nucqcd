@@ -3,10 +3,12 @@
 // each kind: std::invalid_argument, std::out_of_range, std::logic_error, std::runtime_error.
 #include <test_support.hpp>
 
+#include <catch2/matchers/catch_matchers_floating_point.hpp>
 #include <catch2/matchers/catch_matchers_string.hpp>
 
 #include <Tools/Core/ErrorMessage.hpp>
 #include <Tools/Core/IntegratorFlag.hpp>
+#include <Knockout/RhoTCross.hpp>
 #include <Glauber/GlauberDecayGridThick.hpp>
 #include <Glauber/OneGlauberGrid.hpp>
 #include <Glauber/FastParticle.hpp>
@@ -80,4 +82,13 @@ TEST_CASE("the integrator option is 1 or 2; 0 (the old rombergerN) was removed",
   CHECK(integration_method("2") == IntegrationMethod::Adaptive);
   CHECK_THROWS_AS(integration_method("simpson"), std::invalid_argument);
   CHECK_THROWS_AS(integration_method(""), std::invalid_argument);
+}
+
+TEST_CASE("the W > 2 GeV cut of the rho analysis is checked on the lowest nu", "[errors][rho]") {
+  // W^2 = m_p^2 + 2 m_p nu - Q^2
+  CHECK_THAT(RhoTCross::getW(3., 2.), Catch::Matchers::WithinAbs(2.1236, 1.E-4));
+  CHECK(RhoTCross::getW(0.1, 5.) == 0.);  // W^2 < 0
+  CHECK_NOTHROW(RhoTCross::checkWcut(2., 3.));
+  CHECK_THROWS_AS(RhoTCross::checkWcut(2., 2.5), std::invalid_argument);  // W = 1.89 GeV
+  CHECK_THROWS_WITH(RhoTCross::checkWcut(2., 2.5), ContainsSubstring("W > 2"));
 }

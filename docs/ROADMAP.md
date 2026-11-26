@@ -54,7 +54,8 @@ the integration method as an enumeration with one dispatch function, `numint::cu
 1. **Open leads** (step 4, "Open leads (to investigate)"):
    - ~~the rho transparency t- versus z-integrals~~ (2026-11-26: the z version had the residual nucleus mass instead of
      the Jacobian |dt/dz|/(2 nu); fixed in #85, checked with the Glauber distributions for helium, z/t within 2.2%; a carbon
-     or finer-grid check, the effect on the z-version transparencies and the absence of the W > 2 GeV cut are open);
+     or finer-grid check and the effect on the z-version transparencies are open; the W > 2 GeV cut is checked on the input of
+     `rhoset` and `rhosingle`, see the item);
    - ~~the `InclusiveCrossRes` FSI part that returns exactly 0~~ (investigated 2026-11-26: not a bug, the
      settings of `increstest` cancel by construction; with `fixprop` 1, `symm` 0 the FSI is ~6% of the plane wave;
      reviving the class is still open, see the item);
@@ -425,6 +426,12 @@ one commit per bug; no `[known-bug]` tests remain.
     cases (plane wave 1.014) and transparencies from t and z within 0.011. A coarse test (cut edges, quadrature), helium
     only: carbon and a finer grid are still to do if wanted. The "before" value of the unfixed code was not run (the
     Monte Carlo gives the factor).
+  - **W > 2 GeV cut (2026-11-26):** the analysis of the paper also cuts W > 2 GeV, which `getCrosst`/`getCrossz` do not
+    (it is a limit on the nu range at fixed Q^2). `RhoTCross::checkWcut(Q2, nu_min)` (with `getW` and `Wmin`) now throws
+    `std::invalid_argument` when W(nu_min) < 2 GeV, W^2 = m_p^2 + 2 m_p nu - Q^2 (nucleon at rest, proton mass:
+    inferred, to confirm), and `rhoset` and `rhosingle` call it unless `nocuts` is set; unit test in `unit_errors`.
+    Existing calculations whose input violated the cut would now stop: none of the helium test runs did (W = 2.12 GeV at
+    nu = 3.0, Q^2 = 2). `pionT_calc12` (the pion program) has no such check (the pion analysis has other cuts, not looked at).
   - **Not verified:** the absolute normalisation of the t version was compared with the paper's Eq. (13) (it
     matches), not with an independent calculation.
 
