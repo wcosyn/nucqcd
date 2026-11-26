@@ -1,4 +1,4 @@
-/*! \file DeuteronCross.hpp 
+/*! \file InclusiveCross.hpp 
  * \brief Contains declaration of class InclusiveCross, computes deuteron inclusive cross sections
  * \author Wim Cosyn
  * \date 29/08/2012

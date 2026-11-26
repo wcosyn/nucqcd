@@ -1,5 +1,5 @@
-//run ./neutest [p_\mu_parallel [MeV]] [p_\mu_perp] [integrator for flux] [cut in initial nucl momentum] 
-//[cut in final nucl momentum (Pauli blocking motivated)] [plane wave(1) or fsi(0)] [max evaluation in matrix element FT integral=20000 is fine value] [homedir]
+//run ./ddiff_minerva [p_mu_parallel [MeV]] [p_mu_perp [MeV]] [flux integrator] [max initial nucleon momentum [MeV]] [min final nucleon momentum [MeV]] [plane wave (1) or FSI (0)] [max evaluations of the matrix element FT integral, 20000 is a fine value] [enable ROMEA (1/0)] [experiment: miniboone, minerva or t2k] [share dir]
+
 
 //we integrate for miniboone cross section
 //integration happens over incoming neutrino energy folded with flux

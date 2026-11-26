@@ -28,8 +28,8 @@
  * \addtogroup Knockout
  * @{
  */
-#ifndef CROSS_HPP
-#define CROSS_HPP
+#ifndef EMQECROSS_HPP
+#define EMQECROSS_HPP
 
 #include <vector>
 #include <Tools/Kinematics/ElectronKinematics.hpp>

@@ -1,5 +1,5 @@
-/*! \file DeuteronCross.hpp 
- * \brief Contains declaration of class InclusiveCross, computes deuteron inclusive cross sections based on resonance model
+/*! \file InclusiveCrossRes.hpp 
+ * \brief Contains declaration of class InclusiveCrossRes, computes deuteron inclusive cross sections based on resonance model
  * \author Wim Cosyn
  * \date 29/08/2012
  * 

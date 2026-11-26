@@ -7,8 +7,8 @@
  * @{
  */
 
-#ifndef MODEL_HPP
-#define MODEL_HPP
+#ifndef EMQEHADRONCURRENT_HPP
+#define EMQEHADRONCURRENT_HPP
 
 #include <Tools/Core/FourVector.hpp>
 #include <Glauber/MeanFieldNucleusThick.hpp>

@@ -1,4 +1,4 @@
-//run ./neutest [T_\mu [MeV]] [cos(theta_mu)] 
+//run ./neutestint [T_mu_min [MeV]] [cos(theta_mu)_max] [flux integrator] [share dir]
 
 //we integrate for miniboone cross section
 //integration happens over incoming neutrino energy folded with flux

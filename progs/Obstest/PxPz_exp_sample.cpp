@@ -28,7 +28,7 @@ using namespace std;
 #include <Glauber/NucleonEMOperator.hpp>
 using namespace nucqcd;
 
-//run ./observables [Q2 [MeV^2]] [omega] [missing momentum]
+//run ./PxPz_exp_sample [nucleus] [nucleus shell] [medium modifications: 0 no, 1 CQM, 2 QSM] [with density output as well (1/0)] [filename that has the exp kinematics sample]
 int main(int argc, char *argv[])
 {
 

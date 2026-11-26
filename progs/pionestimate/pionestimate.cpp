@@ -20,7 +20,7 @@ using namespace std;
 #include <Glauber/DistMomDistrGrid.hpp>
 using namespace nucqcd;
 
-//run ./pionest [nucleus] [one doublepion=0, two pions=1] 
+//run ./pionestimate [nucleus] [one doublepion=0, two pions=1] [homedir] 
 //estimates effect of taking collinear pions in rho transparency calculations
 //we start from 3 GeV rho along z axis, which can decay to two pions...
 
