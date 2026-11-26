@@ -14,198 +14,60 @@ using namespace std;
 namespace nucqcd {
 
 
-//constructor, calls abstractfsigrid's constructor
 GlauberDecayGridThick::GlauberDecayGridThick(const int r_grid, const int cth_grid, const int phi_grid, MeanFieldNucleusThick * pnucl,
                                              double prec, int integrator, string dir):AbstractFsiGrid(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir),
 AbstractFsiCTGrid(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir),
 AbstractFsiGridThick(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir),
-AbstractFsiCTDecayGridThick(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir), fsi_grid(NULL), fsi_ct_grid(NULL), treshold(NULL) {
-
-  if (fsi_grid == NULL) {
-    //cout << "Mem reservation for fsi_grid" << endl;
-    fsi_grid = new complex < double >****[4];
-    for (int i = 0; i < 4; i++) {
-      fsi_grid[i] = new complex < double >***[2];
-      for (int j = 0; j < 2; j++) {
-        fsi_grid[i][j] = new complex < double >**[getRgrid() + 1];
-        for (int k = 0; k < (getRgrid() + 1); k++) {
-          fsi_grid[i][j][k] = new complex < double >*[getCthgrid() + 1];
-          for (int l = 0; l < (getCthgrid() + 1); l++) {
-            fsi_grid[i][j][k][l] = new complex < double >[getPhigrid() + 1];
-          }
-        }
-      }
-    }
-  }
-  else {
-    throw std::logic_error(nucqcd::ErrorMessage() << "fsi_grid should not be initialized more than once!!!!" );
-  }
-  //ct grid
-  if (fsi_ct_grid == NULL) {
-    //cout << "Mem reservation for fsi_ct_grid" << endl;
-    fsi_ct_grid = new complex < double >****[4];
-    for (int i = 0; i < 4; i++) {
-      fsi_ct_grid[i] = new complex < double >***[2];
-      for (int j = 0; j < 2; j++) {
-        fsi_ct_grid[i][j] = new complex < double >**[getRgrid() + 1];
-        for (int k = 0; k < (getRgrid() + 1); k++) {
-          fsi_ct_grid[i][j][k] = new complex < double >*[getCthgrid() + 1];
-          for (int l = 0; l < (getCthgrid() + 1); l++) {
-            fsi_ct_grid[i][j][k][l] = new complex < double >[getPhigrid() + 1];
-          }
-        }
-      }
-    }
-  }
-  else {
-    throw std::logic_error(nucqcd::ErrorMessage() << "fsi_ct_grid should not be initialized more than once!!!!" );
-  }
+AbstractFsiCTDecayGridThick(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir),
+GlauberThickGridCommon(4, r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir) {
 }
 
-//destructor
 GlauberDecayGridThick::~GlauberDecayGridThick() {
-  if (fsi_grid != NULL) {
-    for (int i = 0; i < 4; i++) {
-      for (int j = 0; j < 2; j++) {
-        for (int k = 0; k < (getRgrid() + 1); k++) {
-          for (int l = 0; l < (getCthgrid() + 1); l++) {
-            delete[]fsi_grid[i][j][k][l];
-            delete[]fsi_ct_grid[i][j][k][l];
-          }
-          delete[]fsi_grid[i][j][k];
-          delete[]fsi_ct_grid[i][j][k];
-        }
-        delete[]fsi_grid[i][j];
-        delete[]fsi_ct_grid[i][j];
-      }
-      delete[]fsi_grid[i];
-      delete[]fsi_ct_grid[i];
-    }
-    delete[]fsi_grid;
-    delete[]fsi_ct_grid;
-  }
 }
+
+
 
 //interpolation of the grid after r,th,phi have been set
 complex < double >GlauberDecayGridThick::getFsiGridFull_interp() {
-  if (!filledallgrid) {
-    throw std::logic_error(nucqcd::ErrorMessage() << "You have to fill the grids first!" );
-  }
-  return pow(getInterp(fsi_grid[0][0]), getPnucleusthick()->getN() - getNeutronKnockout())
-    * pow(getInterp(fsi_grid[0][1]), getPnucleusthick()->getZ() - getProtonKnockout());
+  return interpolateVariant(fsi_grid, 0);
 }
 
 //interpolation of the grid after r,th,phi have been set
 complex < double >GlauberDecayGridThick::getFsiCtGridFull_interp() {
-  if (!filledallgrid) {
-    throw std::logic_error(nucqcd::ErrorMessage() << "You have to fill the grids first!" );
-  }
-  return pow(getInterp(fsi_ct_grid[0][0]), getPnucleusthick()->getN() - getNeutronKnockout())
-    * pow(getInterp(fsi_ct_grid[0][1]), getPnucleusthick()->getZ() - getProtonKnockout());
+  return interpolateVariant(fsi_ct_grid, 0);
 }
 
 //interpolation of the grid after r,th,phi have been set
 complex < double >GlauberDecayGridThick::getFsiSrcGridFull_interp() {
-  if (!filledallgrid) {
-    throw std::logic_error(nucqcd::ErrorMessage() << "You have to fill the grids first!" );
-  }
-  return pow(getInterp(fsi_grid[1][0]), getPnucleusthick()->getN() - getNeutronKnockout())
-    * pow(getInterp(fsi_grid[1][1]), getPnucleusthick()->getZ() - getProtonKnockout());
+  return interpolateVariant(fsi_grid, 1);
 }
 
 //interpolation of the grid after r,th,phi have been set
 complex < double >GlauberDecayGridThick::getFsiSrcCtGridFull_interp() {
-  if (!filledallgrid) {
-    throw std::logic_error(nucqcd::ErrorMessage() << "You have to fill the grids first!" );
-  }
-  return pow(getInterp(fsi_ct_grid[1][0]), getPnucleusthick()->getN() - getNeutronKnockout())
-    * pow(getInterp(fsi_ct_grid[1][1]), getPnucleusthick()->getZ() - getProtonKnockout());
+  return interpolateVariant(fsi_ct_grid, 1);
 }
 
 //interpolation of the grid after r,th,phi have been set
 complex < double >GlauberDecayGridThick::getFsiDecayGridFull_interp() {
-  if (!filledallgrid) {
-    throw std::logic_error(nucqcd::ErrorMessage() << "You have to fill the grids first!" );
-  }
-  return pow(getInterp(fsi_grid[2][0]), getPnucleusthick()->getN() - getNeutronKnockout())
-    * pow(getInterp(fsi_grid[2][1]), getPnucleusthick()->getZ() - getProtonKnockout());
+  return interpolateVariant(fsi_grid, 2);
 }
 
 //interpolation of the grid after r,th,phi have been set
 complex < double >GlauberDecayGridThick::getFsiCtDecayGridFull_interp() {
-  if (!filledallgrid) {
-    throw std::logic_error(nucqcd::ErrorMessage() << "You have to fill the grids first!" );
-  }
-  return pow(getInterp(fsi_ct_grid[2][0]), getPnucleusthick()->getN() - getNeutronKnockout())
-    * pow(getInterp(fsi_ct_grid[2][1]), getPnucleusthick()->getZ() - getProtonKnockout());
+  return interpolateVariant(fsi_ct_grid, 2);
 }
 
 //interpolation of the grid after r,th,phi have been set
 complex < double >GlauberDecayGridThick::getFsiSrcDecayGridFull_interp() {
-  if (!filledallgrid) {
-    throw std::logic_error(nucqcd::ErrorMessage() << "You have to fill the grids first!" );
-  }
-  return pow(getInterp(fsi_grid[3][0]), getPnucleusthick()->getN() - getNeutronKnockout())
-    * pow(getInterp(fsi_grid[3][1]), getPnucleusthick()->getZ() - getProtonKnockout());
+  return interpolateVariant(fsi_grid, 3);
 }
 
 //interpolation of the grid after r,th,phi have been set
 complex < double >GlauberDecayGridThick::getFsiSrcCtDecayGridFull_interp() {
-  if (!filledallgrid) {
-    throw std::logic_error(nucqcd::ErrorMessage() << "You have to fill the grids first!" );
-  }
-  return pow(getInterp(fsi_ct_grid[3][0]), getPnucleusthick()->getN() - getNeutronKnockout())
-    * pow(getInterp(fsi_ct_grid[3][1]), getPnucleusthick()->getZ() - getProtonKnockout());
+  return interpolateVariant(fsi_ct_grid, 3);
 }
 
-complex < double >GlauberDecayGridThick::getFsiGridN_interp(int grid) {
-  switch (grid) {
-    case (0):
-      return getFsiGridFull_interp();
-      break;
-    case (1):
-      return getFsiSrcGridFull_interp();
-      break;
-    case (2):
-      return getFsiDecayGridFull_interp();
-      break;
-    case (3):
-      return getFsiSrcDecayGridFull_interp();
-      break;
-    case (4):
-      return getFsiCtGridFull_interp();
-      break;
-    case (5):
-      return getFsiSrcCtGridFull_interp();
-      break;
-    case (6):
-      return getFsiCtDecayGridFull_interp();
-      break;
-    case (7):
-      return getFsiSrcCtDecayGridFull_interp();
-      break;
-    default:
-      throw std::invalid_argument(nucqcd::ErrorMessage() << "grid number not supported" );
-  }
-}
 
-void GlauberDecayGridThick::print_grid(int grid) {
-  printKnockout();
-  for (int i = 0; i <= getRgrid(); i++) {
-    double r = float (i) * getPnucleusthick()->getRange() / getRgrid();
-    for (int j = 0; j <= getCthgrid(); j++) {
-      double costheta = -2. * j / getCthgrid() + 1.;
-      for (int k = 0; k <= getPhigrid(); k++) {
-        double phi = (getAllinplane()? 1. : 2.) * PI * k / getPhigrid();
-        if (std::isnan(phi))
-          phi = 0.;
-        setinterp(r, costheta, phi);
-        complex < double >value = getFsiGridN_interp(grid); // I moved the switch statement inside this loop. As we are printing to the terminal, efficiency is of little concern.
-        cout << r << " " << costheta << " " << phi * nucqcd::rad_to_deg << " " << real(value) << " " << imag(value) << endl;
-      }
-    }
-  }
-}
 
 void GlauberDecayGridThick::printFsi_grid() {
   cout << "Printing Glauberarray for " << getFsi_Filename() << endl;
@@ -252,183 +114,7 @@ void GlauberDecayGridThick::setFilenames(string dir) {
   AbstractFsiCTDecayGridThick::setFilenames(dir + "Gl.");
 }
 
-//calc both fsi and fsi+ct grid
-void GlauberDecayGridThick::constructAllGrids() {
-  //mem reservation for the grids, index [shelllevel][mindex(postive only due to symmetry][rgrid][thgrid][phgrid]
-  //fsi grid
-  //mem reservation for treshold array
-  if (treshold == NULL) {
-    //cout << "Mem reservation for treshold array" << endl;
-    treshold = new int *[getCthgrid() + 1];
-    for (int i = 0; i <= getCthgrid(); i++) {
-      treshold[i] = new int[getPhigrid() + 1];
-      for (int j = 0; j <= getPhigrid(); j++)
-        treshold[i][j] = 0;
-    }
-  }
-  else {
-    throw std::logic_error(nucqcd::ErrorMessage() << "Treshold should only be initialized once!" );
-  }
-  //fill the arrays!
-  for (int i = 0; i <= getRgrid(); i++) {
-    r_hit = float (i) * getPnucleusthick()->getRange() / getRgrid();
-    //if(r_hit==0.) r_hit=0.001;
-    for (int j = 0; j <= getCthgrid(); j++) {
-      costheta_hit = -2. * j / getCthgrid() + 1.;
-      //sincos(theta_hit,&sintheta_hit,&costheta_hit);
-      sintheta_hit = sqrt(1. - costheta_hit * costheta_hit);
-      for (int k = 0; k <= getPhigrid(); k++) {
-        phi_hit = (getAllinplane()? 1. : 2.) * PI * k / getPhigrid();
-        if (std::isnan(phi_hit))
-          phi_hit = 0.;
-        sincos(phi_hit, &sinphi_hit, &cosphi_hit);
-        if (treshold[j][k] == 0) {  //if treshold is true, we're close enough to one and we don't have to compute everything again and again 
-          for (size_t it = 0; it < getParticles().size(); it++) {
-            getParticles()[it].setHitcoord(r_hit, costheta_hit, sintheta_hit, cosphi_hit, sinphi_hit);
-          }
-          calcGlauberphasesBoth(i, j, k);
-          //treshold check
-          if (abs(pow(fsi_ct_grid[0][0][i][j][k], getPnucleusthick()->getN()) * pow(fsi_ct_grid[0][1][i][j][k], getPnucleusthick()->getZ())) > 0.999999
-              && abs(pow(fsi_ct_grid[1][0][i][j][k], getPnucleusthick()->getN()) * pow(fsi_ct_grid[1][1][i][j][k], getPnucleusthick()->getZ())) > 0.999999
-              && abs(pow(fsi_ct_grid[2][0][i][j][k], getPnucleusthick()->getN()) * pow(fsi_ct_grid[2][1][i][j][k], getPnucleusthick()->getZ())) > 0.999999
-              && abs(pow(fsi_ct_grid[3][0][i][j][k], getPnucleusthick()->getN()) * pow(fsi_ct_grid[3][1][i][j][k], getPnucleusthick()->getZ())) > 0.999999
-              && abs(pow(fsi_grid[0][0][i][j][k], getPnucleusthick()->getN()) * pow(fsi_grid[0][1][i][j][k], getPnucleusthick()->getZ())) > 0.999999
-              && abs(pow(fsi_grid[1][0][i][j][k], getPnucleusthick()->getN()) * pow(fsi_grid[1][1][i][j][k], getPnucleusthick()->getZ())) > 0.999999
-              && abs(pow(fsi_grid[2][0][i][j][k], getPnucleusthick()->getN()) * pow(fsi_grid[2][1][i][j][k], getPnucleusthick()->getZ())) > 0.999999
-              && abs(pow(fsi_grid[3][0][i][j][k], getPnucleusthick()->getN()) * pow(fsi_grid[3][1][i][j][k], getPnucleusthick()->getZ())) > 0.999999) {
-            treshold[j][k] = 1;
-            if (j == 0 || j == getCthgrid()) {
-              for (int ll = 1; ll <= getPhigrid(); ll++)
-                treshold[j][ll] = 1;
-            }
-          }
-          //r=0 symmetry shortcut
-          if (i == 0) {
-            for (j = 0; j <= getCthgrid(); j++) {
-              for (k = 0; k <= getPhigrid(); k++) {
-                for (int src = 0; src < 4; src++) {
-                  for (int proton = 0; proton < 2; proton++) {
-                    fsi_grid[src][proton][i][j][k] = fsi_grid[src][proton][0][0][0];
-                    fsi_ct_grid[src][proton][i][j][k] = fsi_ct_grid[src][proton][0][0][0];
-                  }
-                }
-              }
-            }
-          }
-          //theta=0 or Pi symmetry shortcut
-          else if (j == 0 || j == getCthgrid()) {
-            for (k = 1; k <= getPhigrid(); k++) {
-              for (int src = 0; src < 4; src++) {
-                for (int proton = 0; proton < 2; proton++) {
-                  fsi_grid[src][proton][i][j][k] = fsi_grid[src][proton][i][j][0];
-                  fsi_ct_grid[src][proton][i][j][k] = fsi_ct_grid[src][proton][i][j][0];
-                }
-              }
-            }
-          }
-        }
-        //treshold reached, fill with 1s
-        else {
-          for (int s = 0; s < 4; s++) {
-            for (int mm = 0; mm < 2; mm++) {
-              fsi_grid[s][mm][i][j][k] = 1.;
-              fsi_ct_grid[s][mm][i][j][k] = 1.;
-            }
-          }
-        }
-      }
-    }
-  }
-  //mem cleanup
-  for (int i = 0; i <= getCthgrid(); i++)
-    delete[]treshold[i];
-  delete[]treshold;
-  treshold = NULL;
-}
 
-//calc only ct grid
-void GlauberDecayGridThick::constructCtGrid() {
-  //mem reservation for treshold array
-  if (treshold == NULL) {
-    cout << "Mem reservation for treshold array" << endl;
-    treshold = new int *[getCthgrid() + 1];
-    for (int i = 0; i <= getCthgrid(); i++) {
-      treshold[i] = new int[getPhigrid() + 1];
-      for (int j = 0; j <= getPhigrid(); j++)
-        treshold[i][j] = 0;
-    }
-  }
-  else {
-    throw std::logic_error(nucqcd::ErrorMessage() << "Treshold should only be initialized once!" );
-  }
-//fill the arrays!
-  for (int i = 0; i <= getRgrid(); i++) {
-    r_hit = float (i) * getPnucleusthick()->getRange() / getRgrid();
-    //if(r_hit==0.) r_hit=0.001;
-    for (int j = 0; j <= getCthgrid(); j++) {
-      costheta_hit = -2. * j / getCthgrid() + 1.;
-      //sincos(theta_hit,&sintheta_hit,&costheta_hit);
-      sintheta_hit = sqrt(1. - costheta_hit * costheta_hit);
-      for (int k = 0; k <= getPhigrid(); k++) {
-        phi_hit = (getAllinplane()? 1. : 2.) * PI * k / getPhigrid();
-        if (std::isnan(phi_hit))
-          phi_hit = 0.;
-        sincos(phi_hit, &sinphi_hit, &cosphi_hit);
-        if (treshold[j][k] == 0) {  //if treshold is true, we're close enough to one and we don't have to compute everything again and again 
-          for (size_t it = 0; it < getParticles().size(); it++) {
-            getParticles()[it].setHitcoord(r_hit, costheta_hit, sintheta_hit, cosphi_hit, sinphi_hit);
-          }
-          calcGlauberphasesCt(i, j, k);
-          if (abs(pow(fsi_ct_grid[0][0][i][j][k], getPnucleusthick()->getN()) * pow(fsi_ct_grid[0][1][i][j][k], getPnucleusthick()->getZ())) > 0.999999
-              && abs(pow(fsi_ct_grid[1][0][i][j][k], getPnucleusthick()->getN()) * pow(fsi_ct_grid[1][1][i][j][k], getPnucleusthick()->getZ())) > 0.999999
-              && abs(pow(fsi_ct_grid[2][0][i][j][k], getPnucleusthick()->getN()) * pow(fsi_ct_grid[2][1][i][j][k], getPnucleusthick()->getZ())) > 0.999999
-              && abs(pow(fsi_ct_grid[3][0][i][j][k], getPnucleusthick()->getN()) * pow(fsi_ct_grid[3][1][i][j][k], getPnucleusthick()->getZ())) > 0.999999) {
-            treshold[j][k] = 1;
-            if (j == 0 || j == getCthgrid()) {
-              for (int ll = 1; ll <= getPhigrid(); ll++)
-                treshold[j][ll] = 1;
-            }
-          }
-          //r=0 symmetry shortcut
-          if (i == 0) {
-            for (j = 0; j <= getCthgrid(); j++) {
-              for (k = 0; k <= getPhigrid(); k++) {
-                for (int src = 0; src < 4; src++) {
-                  for (int proton = 0; proton < 2; proton++) {
-                    fsi_ct_grid[src][proton][i][j][k] = fsi_ct_grid[src][proton][0][0][0];
-                  }
-                }
-              }
-            }
-          }
-          //theta=0 or Pi symmetry shortcut
-          else if (j == 0 || j == getCthgrid()) {
-            for (k = 1; k <= getPhigrid(); k++) {
-              for (int src = 0; src < 4; src++) {
-                for (int proton = 0; proton < 2; proton++) {
-                  fsi_ct_grid[src][proton][i][j][k] = fsi_ct_grid[src][proton][i][j][0];
-                }
-              }
-            }
-          }
-        }
-        //treshold reached, fill with 1s
-        else {
-          for (int s = 0; s < 4; s++) {
-            for (int mm = 0; mm < 2; mm++) {
-              fsi_ct_grid[s][mm][i][j][k] = 1.;
-            }
-          }
-        }
-      }
-    }
-  }
-  //mem cleanup
-  for (int i = 0; i <= getCthgrid(); i++)
-    delete[]treshold[i];
-  delete[]treshold;
-  treshold = NULL;
-}
 
 //calc glauberphases for one gridpoint
 void GlauberDecayGridThick::calcGlauberphasesBoth(const int i, const int j, const int k){
@@ -560,137 +246,12 @@ void GlauberDecayGridThick::calcGlauberphasesCt(const int i, const int j, const 
   }
 }
 
-//readin fsi grid
-void GlauberDecayGridThick::readinFsiGrid(ifstream & infile) {
-  if(infile.peek() == std::ifstream::traits_type::eof()){
-    cerr << "File is empty " << getFsi_Filename() << endl;
-    assert(1==0);
-  }
-  
-  if (fsi_grid != NULL) {
-    for (int i = 0; i < 4; i++) {
-      for (int j = 0; j < 2; j++) {
-        for (int k = 0; k < (getRgrid() + 1); k++) {
-          for (int l = 0; l < (getCthgrid() + 1); l++) {
-            for (int mm = 0; mm < (getPhigrid() + 1); mm++) {
-              infile.read(reinterpret_cast < char *>(&fsi_grid[i][j][k][l][mm]), sizeof(complex < double >));
-            }
-          }
-        }
-      }
-    }
-  }
-  else {
-    throw std::logic_error(nucqcd::ErrorMessage() << "fsi_grid not initialized!!!!" );
-  }
-}
 
-//readin fsi+ct grid
-void GlauberDecayGridThick::readinFsiCtGrid(ifstream & infile) {
-  if(infile.peek() == std::ifstream::traits_type::eof()){
-    cerr << "File is empty " << getFsi_Filename() << endl;
-    assert(1==0);
-  }
-  
-  if (fsi_ct_grid != NULL) {
-    for (int i = 0; i < 4; i++) {
-      for (int j = 0; j < 2; j++) {
-        for (int k = 0; k < (getRgrid() + 1); k++) {
-          for (int l = 0; l < (getCthgrid() + 1); l++) {
-            for (int mm = 0; mm < (getPhigrid() + 1); mm++) {
-              infile.read(reinterpret_cast < char *>(&fsi_ct_grid[i][j][k][l][mm]), sizeof(complex < double >));
-            }
-          }
-        }
-      }
-    }
-  }
-  else {
-    throw std::logic_error(nucqcd::ErrorMessage() << "fsi_ct_grid not initialized!!!!" );
-  }
-}
 
-//write fsi grid to file
-void GlauberDecayGridThick::writeoutFsiGrid(ofstream & outfile) {
-  for (int i = 0; i < 4; i++) {
-    for (int j = 0; j < 2; j++) {
-      for (int k = 0; k < (getRgrid() + 1); k++) {
-        for (int l = 0; l < (getCthgrid() + 1); l++) {
-          for (int mm = 0; mm < (getPhigrid() + 1); mm++) {
-            outfile.write(reinterpret_cast < char *>(&fsi_grid[i][j][k][l][mm]), sizeof(complex < double >));
-          }
-        }
-      }
-    }
-  }
-}
 
-//write fsi+ct grid to file
-void GlauberDecayGridThick::writeoutFsiCtGrid(ofstream & outfile) {
-  for (int i = 0; i < 4; i++) {
-    for (int j = 0; j < 2; j++) {
-      for (int k = 0; k < (getRgrid() + 1); k++) {
-        for (int l = 0; l < (getCthgrid() + 1); l++) {
-          for (int mm = 0; mm < (getPhigrid() + 1); mm++) {
-            outfile.write(reinterpret_cast < char *>(&fsi_ct_grid[i][j][k][l][mm]), sizeof(complex < double >));
-          }
-        }
-      }
-    }
-  }
-}
 
-// void GlauberDecayGridThick::intGlauberR(const double r, complex < double >*results, va_list ap) {
-//   int proton = va_arg(ap, int);
-//   double *pthetaestimate = va_arg(ap, double *);
-//   double *pphiestimate = va_arg(ap, double *);
 // 
-//   getFsiCorrelator().setRinterp(r);
-// //   rombergerN(this, &GlauberDecayGridThick::intGlauberCosTheta, -1., 1., 8, results, getPrec(), 3, 8, pthetaestimate, r, proton, pphiestimate);
-//   double dens = getPnucleusthick()->getDensity(r, proton);
-//   for (int i = 0; i < 8; i++)
-//     results[i] *= dens;
-// }
 // 
-// void GlauberDecayGridThick::intGlauberCosTheta(const double costheta, complex < double >*results, va_list ap) {
-//   double r = va_arg(ap, double);
-//   int proton = va_arg(ap, int);
-//   double *pphiestimate = va_arg(ap, double *);
-// 
-//   double sintheta = sqrt(1. - costheta * costheta);
-//   double src = getFsiCorrelator().getCorrGrid_interp(costheta, proton);
-//   rombergerN(this, &GlauberDecayGridThick::intGlauberPhi, 0., 2. * PI, 8, results, getPrec(), 3, 5, pphiestimate, r, costheta, sintheta, proton);
-//   //cout << r << " " << acos(costheta)*nucqcd::rad_to_deg << " " << getFsiCorrelator()->getRindex() << endl;
-//   results[1] *= src;
-//   results[3] *= src;
-//   results[5] *= src;
-//   results[7] *= src;
-// }
-// 
-// void GlauberDecayGridThick::intGlauberPhi(const double phi, complex < double >*results, va_list ap) {
-//   double r = va_arg(ap, double);
-//   double costheta = va_arg(ap, double);
-//   double sintheta = va_arg(ap, double);
-//   int proton = va_arg(ap, int);
-// 
-//   double cosphi, sinphi;
-//   sincos(phi, &sinphi, &cosphi);
-//   results[0] = results[2] = results[4] = results[6] = 1.;
-// 
-//   for (size_t it = 0; it < getParticles().size(); it++) {
-//     double zmom = getParticles()[it].calcZ(r, costheta, sintheta, cosphi, sinphi);
-//     bool check = (zmom > getParticles()[it].getHitz());
-//     if (getParticles()[it].getIncoming())
-//       check = !check;
-//     if (check) {
-//       complex < double >temp = getParticles()[it].getScatterfront(proton)
-//         * exp(-getParticles()[it].getBdist(r, costheta, sintheta, cosphi, sinphi, zmom)
-//               / (2. * getParticles()[it].getBetasq(proton)));
-//       results[0] *= 1. - temp;
-//       results[2] *= 1. - temp * getParticles()[it].getDecay_sigma(zmom, proton);
-//       results[4] *= 1. - temp * getParticles()[it].getCTsigma(zmom);
-//       results[6] *= 1. - temp * getParticles()[it].getDecay_sigma(zmom, proton) * getParticles()[it].getCTsigma(zmom);
-//     }
 //   }
 //   double gr = getFsiCorrelator().correlation(normr(r, costheta, sintheta, cosphi, sinphi, r_hit, costheta_hit, sintheta_hit, cosphi_hit, sinphi_hit));
 //   results[1] = results[0] * gr;
@@ -699,51 +260,8 @@ void GlauberDecayGridThick::writeoutFsiCtGrid(ofstream & outfile) {
 //   results[7] = results[6] * gr;
 // }
 // 
-// void GlauberDecayGridThick::intGlauberRCT(const double r, complex < double >*results, va_list ap) {
-//   int proton = va_arg(ap, int);
-//   double *pthetaestimate = va_arg(ap, double *);
-//   double *pphiestimate = va_arg(ap, double *);
-//   getFsiCorrelator().setRinterp(r);
-//   rombergerN(this, &GlauberDecayGridThick::intGlauberCosThetaCT, -1., 1., 4, results, getPrec(), 3, 8, pthetaestimate, r, proton, pphiestimate);
-//   double dens = getPnucleusthick()->getDensity(r, proton);
-//   for (int i = 0; i < 4; i++)
-//     results[i] *= dens;
-// }
 // 
-// void GlauberDecayGridThick::intGlauberCosThetaCT(const double costheta, complex < double >*results, va_list ap) {
-//   double r = va_arg(ap, double);
-//   int proton = va_arg(ap, int);
-//   double *pphiestimate = va_arg(ap, double *);
 // 
-//   double sintheta = sqrt(1. - costheta * costheta);
-//   double src = getFsiCorrelator().getCorrGrid_interp(costheta, proton);
-//   rombergerN(this, &GlauberDecayGridThick::intGlauberPhiCT, 0., 2. * PI, 4, results, getPrec(), 3, 5, pphiestimate, r, costheta, sintheta, proton);
-//   results[1] *= src;
-//   results[3] *= src;
-// }
-// 
-// void GlauberDecayGridThick::intGlauberPhiCT(const double phi, complex < double >*results, va_list ap) {
-//   double r = va_arg(ap, double);
-//   double costheta = va_arg(ap, double);
-//   double sintheta = va_arg(ap, double);
-//   int proton = va_arg(ap, int);
-// 
-//   double cosphi, sinphi;
-//   sincos(phi, &sinphi, &cosphi);
-//   results[0] = results[2] = 1.;
-// 
-//   for (size_t it = 0; it < getParticles().size(); it++) {
-//     double zmom = getParticles()[it].calcZ(r, costheta, sintheta, cosphi, sinphi);
-//     bool check = (zmom > getParticles()[it].getHitz());
-//     if (getParticles()[it].getIncoming())
-//       check = !check;
-//     if (check) {
-//       complex < double >temp = getParticles()[it].getScatterfront(proton)
-//         * exp(-getParticles()[it].getBdist(r, costheta, sintheta, cosphi, sinphi, zmom)
-//               / (2. * getParticles()[it].getBetasq(proton)));
-//       results[0] *= 1. - temp * getParticles()[it].getCTsigma(zmom);
-//       results[2] *= 1. - temp * getParticles()[it].getDecay_sigma(zmom, proton) * getParticles()[it].getCTsigma(zmom);
-//     }
 //   }
 //   double gr = getFsiCorrelator().correlation(normr(r, costheta, sintheta, cosphi, sinphi, r_hit, costheta_hit, sintheta_hit, cosphi_hit, sinphi_hit));
 //   results[1] = results[0] * gr;
@@ -873,45 +391,16 @@ void GlauberDecayGridThick::klaas_int_bound_ct(numint::vector_d & results, doubl
   return;
 }
 
-// void GlauberDecayGridThick::intGlauberb_bound(const double b, double *results, va_list ap) {
-//   int proton = va_arg(ap, int);
-//   double *pthetaestimate = va_arg(ap, double *);
-//   double *pphiestimate = va_arg(ap, double *);
-//   double ceiling = sqrt(getPnucleus()->getRange() * getPnucleus()->getRange() - b * b);
-//   double bottom;
-//   //because of Heaviside function, bottom limit is z
-//   if (getParticles()[0].getHitz() >= -ceiling)
-//     bottom = getParticles()[0].getHitz();
-//   //if limit because of data range is more limiting
-//   else
-//     bottom = -ceiling;
-//   if (ceiling < bottom) {       //due to rounding errors
-//     for (int i = 0; i < 8; i++)
-//       results[i] = 0.;
-//     return;
-//   }
-//   rombergerN(this, &GlauberDecayGridThick::intGlauberz_bound, bottom, ceiling, 8, results, getPrec(), 3, 10, pthetaestimate, b, proton, pphiestimate);
 //   for (int i = 0; i < 8; i++)
 //     results[i] *= b * exp(-(b * b + getParticles()[0].getHitbnorm() * getParticles()[0].getHitbnorm())
 //                           / (2. * getParticles()[0].getBetasq(proton)));
 // }
 // 
-// void GlauberDecayGridThick::intGlauberz_bound(const double z, double *results, va_list ap) {
-//   double b = va_arg(ap, double);
-//   int proton = va_arg(ap, int);
-//   double *pphiestimate = va_arg(ap, double *);
-//   double r = sqrt(b * b + z * z);
-//   if (r > getPnucleus()->getRange()) {
-//     for (int i = 0; i < 8; i++)
-//       results[i] = 0.;
-//     return;
-//   }
 //   double costheta = z / r;
 //   double sintheta = b / r;
 //   double dens = getPnucleusthick()->getDensity(r, proton) / (r * r);
 //   double src = getFsiCorrelator().getCorrGrid_interp(r, costheta, proton);
 //   double intresults[2] = { 0., 0. };
-//   rombergerN(this, &GlauberDecayGridThick::intGlauberPhi_bound, 0., 2. * PI, 2, results, getPrec(), 3, 10, pphiestimate, b, r, costheta, sintheta, proton);
 //   //cout << r << " " << acos(costheta)*nucqcd::rad_to_deg << " " << getFsiCorrelator()->getRindex() << endl;
 //   double ct = getParticles()[0].getCTsigma(z);
 //   double decay = getParticles()[0].getDecay_sigma(z, proton);
@@ -927,59 +416,17 @@ void GlauberDecayGridThick::klaas_int_bound_ct(numint::vector_d & results, doubl
 //     results[i] *= dens;
 // }
 // 
-// void GlauberDecayGridThick::intGlauberPhi_bound(const double phi, double *results, va_list ap) {
-//   double b = va_arg(ap, double);
-//   double r = va_arg(ap, double);
-//   double costheta = va_arg(ap, double);
-//   double sintheta = va_arg(ap, double);
-//   int proton = va_arg(ap, int);
 // 
-//   double cosphi, sinphi;
-//   sincos(phi, &sinphi, &cosphi);
-//   results[0] = exp(b * getParticles()[0].getHitbnorm() * cosphi / getParticles()[0].getBetasq(proton));
-//   results[1] = results[0] * getFsiCorrelator().correlation(normr(r, costheta, sintheta, cosphi, sinphi, r_hit, costheta_hit, sintheta_hit, cosphi_hit, sinphi_hit));
-// 
-// }
-// 
-// void GlauberDecayGridThick::intGlauberb_bound_ct(const double b, double *results, va_list ap) {
-//   int proton = va_arg(ap, int);
-//   double *pthetaestimate = va_arg(ap, double *);
-//   double *pphiestimate = va_arg(ap, double *);
-//   double ceiling = sqrt(getPnucleus()->getRange() * getPnucleus()->getRange() - b * b);
-//   double bottom;
-//   //because of Heaviside function, bottom limit is z
-//   if (getParticles()[0].getHitz() >= -ceiling)
-//     bottom = getParticles()[0].getHitz();
-//   //if limit because of data range is more limiting
-//   else
-//     bottom = -ceiling;
-//   if (ceiling < bottom) {       //due to rounding errors
-//     for (int i = 0; i < 4; i++)
-//       results[i] = 0.;
-//     return;
-//   }
-//   rombergerN(this, &GlauberDecayGridThick::intGlauberz_bound_ct, bottom, ceiling, 4, results, getPrec(), 3, 8, pthetaestimate, b, proton, pphiestimate);
 //   for (int i = 0; i < 4; i++)
 //     results[i] *= b * exp(-(b * b + getParticles()[0].getHitbnorm() * getParticles()[0].getHitbnorm())
 //                           / (2. * getParticles()[0].getBetasq(proton)));
 // }
 // 
-// void GlauberDecayGridThick::intGlauberz_bound_ct(const double z, double *results, va_list ap) {
-//   double b = va_arg(ap, double);
-//   int proton = va_arg(ap, int);
-//   double *pphiestimate = va_arg(ap, double *);
-//   double r = sqrt(b * b + z * z);
-//   if (r > getPnucleus()->getRange()) {
-//     for (int i = 0; i < 4; i++)
-//       results[i] = 0.;
-//     return;
-//   }
 //   double costheta = z / r;
 //   double sintheta = b / r;
 //   double dens = getPnucleusthick()->getDensity(r, proton);
 //   double src = getFsiCorrelator().getCorrGrid_interp(r, costheta, proton);
 //   double intresults = 0.;
-//   rombergerN(this, &GlauberDecayGridThick::intGlauberPhi_bound, 0., 2. * PI, 1, &intresults, getPrec(), 3, 5, pphiestimate, b, r, costheta, sintheta, proton);
 //   //cout << r << " " << acos(costheta)*nucqcd::rad_to_deg << " " << getFsiCorrelator()->getRindex() << endl;
 //   double ct = getParticles()[0].getCTsigma(z);
 //   double decay = getParticles()[0].getDecay_sigma(z, proton);
@@ -991,18 +438,6 @@ void GlauberDecayGridThick::klaas_int_bound_ct(numint::vector_d & results, doubl
 //     results[i] *= dens / (r * r);
 // }
 // 
-// void GlauberDecayGridThick::intGlauberPhi_bound_ct(const double phi, double *results, va_list ap) {
-//   double b = va_arg(ap, double);
-//   double r = va_arg(ap, double);
-//   double costheta = va_arg(ap, double);
-//   double sintheta = va_arg(ap, double);
-//   int proton = va_arg(ap, int);
-//   double cosphi, sinphi;
-//   sincos(phi, &sinphi, &cosphi);
-//   *results = exp(b * getParticles()[0].getHitbnorm() * cosphi / getParticles()[0].getBetasq(proton))
-//     * getFsiCorrelator().correlation(normr(r, costheta, sintheta, cosphi, sinphi, r_hit, costheta_hit, sintheta_hit, cosphi_hit, sinphi_hit));
-//   results[0] = exp(b * getParticles()[0].getHitbnorm() * cosphi / getParticles()[0].getBetasq(proton));
-// }
 
 }  // namespace nucqcd
 

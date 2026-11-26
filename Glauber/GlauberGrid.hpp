@@ -93,42 +93,6 @@ private:
   virtual void writeoutFsiGrid(std::ofstream &outfile); /*!< write out both the fsi and the fsi+ct grids */
   virtual void writeoutFsiCtGrid(std::ofstream &outfile); /*!< write out only the fsi+ct grids */
   
-  /*! function that gets integrated over r, both fsi and fsi+ct grid output
-   * \param r [fm] radial coordinate
-   * \param results result: contains the glauberphases (fsi and fsi+ct) for a gridpoint
-   * \param ap variable parameter list
-   */
-  void intGlauberR(const double r, std::complex<double> *results, va_list ap);
-  /*! function that gets integrated over cos(theta), both fsi and fsi+ct grid output
-   * \param costheta [] cos of theta coordinate
-   * \param results result: contains the glauberphases (fsi and fsi+ct) for a gridpoint
-   * \param ap variable parameter list
-   */
-  void intGlauberCosTheta(const double costheta, std::complex<double> *results, va_list ap);
-  /*! function that gets integrated over phi, both fsi and fsi+ct grid output
-   * \param phi [rad] phi coordinate
-   * \param results result: contains the glauberphases (fsi and fsi+ct) for a gridpoint
-   * \param ap variable parameter list
-   */
-  void intGlauberPhi(const double phi, std::complex<double> *results, va_list ap);
-  /*! function that gets integrated over r, only fsi+ct grid output
-   * \param r [fm] radial coordinate
-   * \param results result: contains the glauberphases (fsi+ct) for a gridpoint
-   * \param ap variable parameter list
-   */
-  void intGlauberRCT(const double r, std::complex<double> *results, va_list ap);
-  /*! function that gets integrated over cos(theta), only fsi+ct grid output
-   * \param costheta [] cos of theta coordinate
-   * \param results result: contains the glauberphases (fsi+ct) for a gridpoint
-   * \param ap variable parameter list
-   */
-  void intGlauberCosThetaCT(const double costheta, std::complex<double> *results, va_list ap);
-  /*! function that gets integrated over phi, only fsi+ct grid output
-   * \param phi [rad] phi coordinate
-   * \param results result: contains the glauberphases (fsi+Ct) for a gridpoint
-   * \param ap variable parameter list
-   */
-  void intGlauberPhiCT(const double phi, std::complex<double> *results, va_list ap);
   
   /*! struct that is used for integrators */
   struct Ftor_one {

@@ -32,7 +32,7 @@ namespace nucqcd {
  * 
 
  */
-class AbstractFsiCTGridThick : public AbstractFsiGridThick, public AbstractFsiCTGrid{
+class AbstractFsiCTGridThick : public AbstractFsiGridThick, public virtual AbstractFsiCTGrid{
   
 public:
   /*! Constructor

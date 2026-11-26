@@ -28,7 +28,7 @@ same PR.
 | 6 | Structural refactors | 🔶 done: constants macros (#41), `NuclStructure` merge (#42), code layout items 1–4 (`Tools` split #52, prefixed includes and `.hpp` #53), `Model`/`Cross` renamed (#53); MPI retired (#54); namespace `nucqcd` (#65); integrator benchmark (#61, keep `cube_romb` and `cube_adaptive`), precision reporting (#62); CRLF to LF (#66); long files split (#70), integrator option 0 removed (#69); model selection (#72), long `TKinematics2to3` functions (#74); `T*` classes renamed (#76); to do: Glauber grid dedup and speed |
 | 7 | Unbundle Cuba and cubature | 🔶 Cuba done (#67); cubature (a maintenance question only, see the benchmark) to do |
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
-| 9 | Decouple from ROOT where possible | ✅ done: phases 1–5 (#44, #45, #50, #55, #56, #58), phase 6: GPD generators (#59) and the fits on the standalone Minuit2 (#73); the two long `TKinematics2to3` functions split (#74) and the crash they showed fixed (#75); the `T*` classes renamed (#76; the names in this file before that are the old ones). ROOT is only used by the test `unit_vectors` |
+| 9 | Decouple from ROOT where possible | ✅ done: phases 1–5 (#44, #45, #50, #55, #56, #58), phase 6: GPD generators (#59) and the fits on the standalone Minuit2 (#73); the two long `TKinematics2to3` functions split (#74) and the crash they showed fixed (#75); the `T*` classes renamed (#76; the names in this file before that are the old ones); the two thick Glauber grids share their code (#77). ROOT is only used by the test `unit_vectors` |
 | 10 | LHAPDF interface for the nucleon structure functions | ✅ done (#46), including MSTW through LHAPDF |
 | 11 | Run bookkeeping (provenance) for all programs | ✅ done: design and `RunLog` (#49), `Bookkeep` replaced in its 8 programs (#51), `RunLog` in all other non-attic programs (#64) |
 
@@ -36,7 +36,7 @@ same PR.
 
 *Updated 2026-11-25.*
 
-**Done recently** (PRs #44–#76): ROOT decoupling phases 1–3; step 10 (LHAPDF);
+**Done recently** (PRs #44–#77): ROOT decoupling phases 1–3; step 10 (LHAPDF);
 He3 fixes; step 11 part 1 (`RunLog`); step 6 code layout: `Tools` split into Core, Kinematics,
 WaveFunctions and StructureFunctions (#52), then includes as paths from the repository root, `.hpp`
 as the only extension, and `Model`/`Cross` renamed to `EMQEHadronCurrent`/`EMQECross` (#53); MPI
@@ -608,7 +608,7 @@ Do these one at a time, running the full test suite (including `slow`) after eac
      explicit `nucqcd::` qualifications in the libraries (redundant now, harmless). No values change: all
      tests including `slow` pass with unchanged references; `make doc` gives no warnings (the Doxygen groups
      of `EMQECross.hpp` and `WeakQECross.hpp` had to be closed outside the namespace).
-- [ ] **Glauber grid hierarchy:** deduplicate it. `GlauberGridThick` and `GlauberDecayGridThick` are
+- [~] **Glauber grid hierarchy:** deduplicate it. **Done for the two thick grids (2026-11-25, #77), the abstract classes are not touched.** `GlauberGridThick` and `GlauberDecayGridThick` are
   largely copy-pasted, as are the {plain, Thick} × {CT, Decay} abstract classes.
   **Safety net done (2026-11-25, #68):** `reg_glauber_variants` [slow, ~90 s] covers what the other tests
   did not: `GlauberGrid` (the thin-nucleus grid only works off axis, it throws "use OneGlauberGrid" for a
@@ -624,6 +624,29 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   the adaptive-integration sampling (values within the precision, not bitwise). The dedup therefore needs
   a shared implementation parameterized on the number of variants, with the grids and file names left as
   they are; the test above must stay bitwise equal. Not started.
+  **Dedup of `GlauberGridThick` and `GlauberDecayGridThick` (#77):** the two classes differed only in the
+  number of variants in the first index of the grid arrays (2: RMSGA, +SRC; 4: also +decay) and in the integral
+  of one grid point; everything else was copied. New `Glauber/GlauberThickGridCommon` (a class that derives
+  virtually from `AbstractFsiCTGrid`, so that it can override its pure virtual functions) holds, for a number
+  of variants given to its constructor, the two arrays (allocation, destruction), `constructAllGrids` and
+  `constructCtGrid` (one loop `constructGrids(ctOnly)`), `readinFsiGrid`/`readinFsiCtGrid`/`writeoutFsiGrid`/
+  `writeoutFsiCtGrid`, `getFsiGridN_interp`, `print_grid` and `interpolateVariant` (the proton and neutron
+  factors of one variant). The two classes keep what differs: `calcGlauberphases*`, the integrands
+  `klaas_int_*`, the file names, and the named interpolation and print functions, now one line each. To
+  make it possible `AbstractFsiCTGridThick` inherits `AbstractFsiCTGrid` virtually (as
+  `AbstractFsiCTDecayGrid` already did). The loops are the old ones, including their quirk (the r = 0 shortcut
+  reuses the loop variables j and k, which ends the loops). Also removed: the integrand functions that only
+  the old `rombergerN` branches called (declared in `GlauberGrid`, `GlauberGridThick`, `GlauberDecayGridThick`,
+  `OneGlauberGrid`; in `OneGlauberGrid` they were live code, unreachable since option 0 is gone, which also
+  removes its hard-coded `rombergerN` uses), the commented-out copies of them, and the commented
+  `rombergerN` calls. Lines: `GlauberGridThick.cpp` 1104 → 519, `GlauberDecayGridThick.cpp` 1008 → 443,
+  `OneGlauberGrid.cpp` 278 → 185, `GlauberGrid.cpp` 754 → 664, plus the headers (about 250 lines) and the new
+  class (about 250). **Checked:** all 23 cache files that `reg_glauber_variants` and `reg_glauber_grid`
+  write (thin, thick, decay: along z and off axis) are byte-identical before and after (the cache file format
+  is unchanged), the references of both tests pass, all other tests unchanged. One output change: the
+  decay grid's `constructCtGrid` printed "Mem reservation for treshold array" to stdout; it no longer does.
+  Still to do for this item: the eight abstract classes (`AbstractFsi[CT][Decay][Thick]Grid`), one layer per
+  named grid with four interpolation wrappers each, and the 5D raw pointer arrays.
   **Found on the way, fixed (2026-11-25, #69):** in the Glauber grids `integrator == 0` (the old
   `rombergerN`) was dead: the `rombergerN` calls were commented out in `GlauberGrid`, `GlauberGridThick`,
   `GlauberDecayGridThick` (and in `DistMomDistrGrid`, `EMQEHadronCurrent`, `RhoDeuteron`), so the results
@@ -677,7 +700,7 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   and cross-section classes no longer has the `rombergerN` option 0 (removed in #69, see "Glauber grid
   hierarchy"; 1: `numint::cube_romb`, 2: `cube_adaptive`; the tests use 2). Hard-coded uses have to be replaced, which changes values
   (author's OK per class): `rombergerN` in `InclusiveCrossRes` (6), `RhoDeuteron` (8), `RhoTCross`
-  (4), `OneGlauberGrid` (4), `DistMomDistrGrid` (1) and the programs `rhodint`, `rhoset`;
+  (4), `OneGlauberGrid` (4: gone with its unreachable integrands in #77), `DistMomDistrGrid` (1) and the programs `rhodint`, `rhoset`;
   `cube_romb` in `Model.cpp:744` and `progs/momdistr/momdistr.cpp`. Then remove
   `Integrator/numint/cube_romb.cpp` (and `cube_tr`/`fubini`/`vfubini` if unused) and its tests in
   `unit_numint`, and simplify the `integrator` flag (an enum, see "Model selection" below).
