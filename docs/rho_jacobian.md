@@ -75,28 +75,33 @@ system (about `M_A`), in this place. That made the z integrals too large by abou
 `massi = M_A`) the old factor is right, which is probably how it came about; the analytic pair that is commented out in
 `progs/RhoTransparency/rhoset.cpp` (`0.5 Erho/q` for t, `nu M_A Erho/q` for z) is this case.
 
-## 4. What the weights are, and a remaining question
+## 4. Comparison with the paper, and what the "4 kappa" was
 
-Equations (2) and (3) give the weights of the delta-function-derived integrand, `W_t = 1/(8 q kappa)` and
-`W_z = nu/(4 tau)`. The code does not use these. It uses `1/(2q)` (t) and `(nu/q) K = nu kappa/tau` (z, after the fix),
-which are `4 kappa` times `W_t` and `W_z`. The two code weights are consistent with each other, so t and z agree.
+The cross section implemented in `RhoTCross` is Eq. (13) of W. Cosyn and J. Ryckebusch, Phys. Rev. C 87, 064608
+(2013), arXiv:1301.1904 (equation numbers and formulas as transcribed from the arXiv HTML version by a helper;
+**not checked by me against the PDF**):
 
-Units: the delta-function weights are in GeV^-2, the code weights in GeV^-1 (t) and GeV (z), so the factor `4 kappa`
-carries one power of a mass. That is expected if the code absorbs the nucleon-state normalisation and flux factors
-(for example `1/(2 E_N)` and `1/(4 sqrt(lambda))`) into the prefactors, and a factor of about `4 massi` fits that
-pattern; **this was not derived or checked against the author's formula**. The units cannot tell `massX` from `K` (both
-are masses), only that the extra z factor must be a mass; the numerical `|dt/dz|` does that. What remains open is only
-the pm dependence of `kappa` (about +-12% for pm up to 0.2 GeV): if the absorbed normalisation is a constant, the code
-differs from the delta-function weights by that much; if it already carries that pm dependence, it does not.
+    d sigma^{eA}/(dE_e' dOmega_e' dt dphi_rho) = sum_alpha ∫ d³pm  alpha_EM/(4 (2 pi)²) · E_e' rho^D_alpha(pm)
+        · [s² - 2 s (m_N² - Q²) + (m_N² + Q²)²] / [q E_e Q² (1 - eps) m_N²] · (d sigma/d|t|)_0 e^{-beta t},   beta = 6 GeV^-2.
 
-There is an independent check of the delta-function weights. Integrating over the azimuth φ at fixed `pm`, `theta`,
-`nu`, `t` must give the Lorentz-invariant two-body phase space of the photon-nucleon system (go to its CM frame, where
-`d³p_ρ/(2E_ρ) delta(f) = |p*|/(4 sqrt(s)) dΩ*`, `dt = 2 |q*||p*| dcosθ*`, `|q*| = sqrt(λ)/(2 sqrt(s))`):
-
-    ∮ dφ Σ_roots W_t = pi / (2 sqrt(λ)),   λ = s² - 2 s (m_N² - Q²) + (m_N² + Q²)²,     (5)
-
-for `t` inside the physical range of that `s` (zero outside). `λ` is exactly the polynomial in the front factor of
-`getfrontfactor`. Equation (5) tests the derivation of `df/dz` (both the formula and the root structure).
+- The prefactor of `getCrosst` is this one: `alpha (Ebeam-nu)/(2 (2 pi)² Ebeam Q² (1-eps)) · 1/(2q)` equals
+  `alpha/(4 (2 pi)²) · E_e'/(q E_e Q² (1-eps))`, and `getfrontfactor` is the bracket with `m_N²` and `e^{6t}`. So the
+  **t version is the paper's formula**. The paper has no z integral and no t-z Jacobian (z only appears as the cut
+  z > 0.9), so the z version needs the Jacobian of section 3, which is what the fix supplies.
+- Eq. (12) of the paper, `d sigma^{gamma* N}/(d|t| dphi*) = m_N²/(8 pi² λ) · |M|²` (spinors normalised to
+  `ubar u = 1`), is the standard two-body cross section; the `1/λ` is the flux/phase space (`λ` the polynomial above),
+  and `m_N²` comes from the spinor normalisation. That is why Eq. (13) contains `λ/m_N²` and no separate `1/sqrt(λ)`
+  flux factor, and why the weights `W_t`, `W_z` of section 2, which are only the phase-space part, differ from the
+  code's weights by a factor that includes masses (the `4 kappa` of an earlier version of this note, which compared
+  only the phase-space part; it is not an error).
+- What remains: Eq. (12) is differential in the CM azimuth phi* (about the gamma* N axis), Eq. (13) in the lab azimuth
+  phi_rho (about q), and the code gives each of the two roots the weight 1, i.e. it treats `dphi* = dphi_rho`.
+  From (5), the exact weight per root is `|dphi*/dphi_rho| = 4 sqrt(λ) W_t = sqrt(λ)/(2 q kappa)` (my derivation;
+  the identification of the integrands root by root follows from (5) but was not checked separately). Numerically this
+  has mean 1.015 over roots with z > 0.9 (pm uniform in 0-0.33 GeV, nu 2.5-3.5 GeV, Q² 1.5 GeV², t in -0.4..-0.1) with
+  large excursions at the edges of the root structure (min 0, max 42), and it integrates to exactly 1 over a full
+  azimuth, so for a distribution that does not depend on the azimuth the weight 1 is exact on average. Whether it
+  matters for the Glauber distributions (which depend on the angle between pm and the rho) was not studied.
 
 ## 5. Numerical checks (scratch programs, 2026-11-26; not in the repository)
 
@@ -104,11 +109,7 @@ for `t` inside the physical range of that `s` (zero outside). `λ` is exactly th
   0.7% (finite-difference noise near the edges of the root structure).
 - (5): the two sides agree to 0.3% in three kinematic points with an allowed `t` (4e6 azimuth points; the integrable
   `1/sqrt` edges make the sum converge slowly from below); outside the allowed range both root sets are empty.
-- Code weight against (5): the t weight of the code integrates over the azimuth to `4 kappa_avg` times `pi/(2 sqrt(λ))`,
-  with `4 kappa_avg` (the azimuthal harmonic mean of kappa) = 3.65-3.70 GeV at pm ~ 0.01-0.02 GeV (`4 massi` = 3.69 GeV)
-  and 3.3-4.2 GeV for pm = 0.09-0.2 GeV. So the t weight (and with the fix the z weight) is the invariant weight times about `4 massi` (an overall constant that
-  might be a convention absorbed elsewhere, **not checked**) times a pm-dependent factor of up to about ±12%
-  (**the author should decide** whether the normalisation conventions explain it, or whether both weights should follow
-  the delta-function weights, which would change the t results too, by up to that factor).
+- Code t weight against (5): integrates over the azimuth to `4 kappa_avg` times `pi/(2 sqrt(λ))`, `4 kappa_avg` = 3.3-4.2 GeV
+  (3.69 GeV = `4 massi` at pm -> 0). Explained in section 4: the code weights are not the bare phase-space weights.
 - Monte Carlo with the code's kinematics and cuts and a Gaussian momentum distribution: z/t = 11.66 with `massX`,
   0.997 with (4) at Q² = 1.5 GeV², nu 2.5-3.5 GeV; 0.988 at Q² = 2.5 GeV², nu 3.0-3.8 GeV.

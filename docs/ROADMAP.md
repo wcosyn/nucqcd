@@ -404,12 +404,13 @@ one commit per bug; no `[known-bug]` tests remain.
     `q |C0 px - Cz nu px/q - Cx nu (z - pz/q)| / |Cz px - Cx pz|` (derived in the code comment). The t version is
     unchanged. **Changes values:** every z-integrated rho result (`rhoset` with torz 0) gets smaller by roughly
     M_A/m_N (about 12 for carbon); the t results and the transparencies do not move. No test covers `RhoTCross`.
-  - **Open question for the author (found 2026-11-26, `docs/rho_jacobian.md` section 4):** the weights of both versions
-    (`1/(2q)` for t, `(nu/q) K` for z) are `4 kappa` times the weights that follow from the delta function (checked against
-    the Lorentz-invariant two-body phase space), with `kappa = |C0 - Cz nu/q - Cx nu (z - pz/q)/px|`, which is `massi` at
-    pm = 0. By units this is one power of a mass, probably nucleon normalisation and flux factors absorbed in the
-    prefactors (`4 massi` fits; not derived). Open is only whether the +-12% pm dependence of kappa (pm up to 0.2 GeV)
-    is also absorbed; if not, correcting it would change both t and z results. Not changed here.
+  - **Normalisation (checked against the paper, 2026-11-26, `docs/rho_jacobian.md` section 4):** the prefactor and front
+    factor of `getCrosst` are Eq. (13) of Cosyn and Ryckebusch, Phys. Rev. C 87, 064608 (2013), arXiv:1301.1904 (formulas
+    from the HTML version through a helper, not checked against the PDF), so the t version is the reference; the paper
+    has no z integral or t-z Jacobian. The code gives each root of the on-shell condition the weight 1, i.e. treats
+    `dphi* = dphi_rho`; the exact weight is `sqrt(lambda)/(2 q kappa)` (mean 1.015, large excursions at the edges, exactly 1
+    when integrated over the azimuth). Not changed; whether it matters with the azimuth-dependent Glauber distributions
+    was not studied.
   - **Not verified:** the full `rhoset` run for t and z with the real Glauber distributions (900 s was not enough for
     carbon with these settings: `rhoset 1|0 1 2.0 2.5 3.5 0. 0 20. 2 20000 1e-3 4`; narrow the nu range and loosen the
     precision to try again). The absolute normalisation of the t version (it carries no 1/|df/dz| of its own) was not
