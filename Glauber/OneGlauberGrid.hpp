@@ -54,7 +54,7 @@ public:
 		 double prec, IntegrationMethod integrator, std::string dir);
   virtual ~OneGlauberGrid();/*!< Destructor */
   /*! 2d interpolation of a grid after a certain coordinate (r,costheta) has been set! */
-  virtual std::complex<double> getInterp(std::complex<double> ***grid);  
+  virtual std::complex<double> getInterp(const Grid3D<std::complex<double> > &grid);  
   /*! add particle subject to isi/fsi, checks to see the vector only contains max one particle 
    *\param newparticle pointer to instance of FastParticle you want to add*/
   virtual void addParticle(FastParticle& newparticle);

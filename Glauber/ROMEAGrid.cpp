@@ -26,36 +26,12 @@ extern"C"{
 ROMEAGrid::ROMEAGrid(const int r_grid, const int cth_grid, const int phi_grid, MeanFieldNucleus * pnucl,
                          double prec, IntegrationMethod integrator, fit_type opticalfit, string dir)
   :AbstractFsiGrid(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir),
-  opticalsize(1000),opticalstep(pnucl->getRange()/1000.),fit(opticalfit),fsi_grid(NULL),treshold(NULL){
+  opticalsize(1000),opticalstep(pnucl->getRange()/1000.),fit(opticalfit),fsi_grid(getRgrid()+1,getCthgrid()+1,getPhigrid()+1){
 
-  //mem reservation for the grids, index [rgrid][thgrid][phgrid]
-  //fsi grid
-  if (fsi_grid == NULL) {
-    //cout << "Mem reservation for fsi_grid" << endl;
-    fsi_grid = new complex < double >**[getRgrid() + 1];
-    for (int k = 0; k < (getRgrid() + 1); k++) {
-      fsi_grid[k] = new complex < double >*[getCthgrid() + 1];
-      for (int l = 0; l < (getCthgrid() + 1); l++) {
-	fsi_grid[k][l] = new complex < double >[getPhigrid() + 1];
-      }
-    }
-  }
-  else {
-    throw std::logic_error(nucqcd::ErrorMessage() << "fsi_grid should not be initialized more than once!!!!");
-  }
 }
 
 //destructor
 ROMEAGrid::~ROMEAGrid() {
-  if (fsi_grid != NULL) {
-    for (int k = 0; k < (getRgrid() + 1); k++) {
-      for (int l = 0; l < (getCthgrid() + 1); l++) {
-	delete[]fsi_grid[k][l];
-      }
-      delete[]fsi_grid[k];
-    }
-    delete[]fsi_grid;
-  }
 }
 
 //interpolation of the grid (number 0, the only one) after r,cth,phi have been set
@@ -109,7 +85,7 @@ void ROMEAGrid::setFilenames(string dir) {
 //calc both fsi and fsi+ct grid
 void ROMEAGrid::constructAllGrids() {
   //fill the opticalpotential array
-  opticalpotential = new complex<double>*[getParticles().size()];
+  opticalpotential.assign(getParticles().size(), std::vector<complex<double> >(opticalsize));
   double r[opticalsize]; double VV[opticalsize];double VS[opticalsize]; double WV[opticalsize]; double WS[opticalsize];
   for(int i=0;i<opticalsize;i++) r[i]=getPnucleus()->getRange()/opticalsize*i;
   for(size_t it=0;it<getParticles().size();it++){
@@ -117,7 +93,6 @@ void ROMEAGrid::constructAllGrids() {
       cerr << "In ROMEA only ISI/FSI for nucleons!!!" <<endl;
       assert(1==0);
     }
-    opticalpotential[it]=new complex<double>[opticalsize];
     double p=getParticles()[it].getP();
     double nucleons=getPnucleus()->getA()-getProtonKnockout()-getNeutronKnockout();
 //     cout << nucleons << " " << fit << endl;
@@ -127,19 +102,8 @@ void ROMEAGrid::constructAllGrids() {
       /2./getParticles()[it].getMass();
   }
 //    for(int i=0;i<opticalsize;i++) cout << r[i] << " " << opticalpotential[0][i] << " " << VV[i] << endl;
-  //mem reservation for treshold array
-  if (treshold == NULL) {
-    //cout << "Mem reservation for treshold array" << endl;
-    treshold = new int *[getCthgrid() + 1];
-    for (int i = 0; i <= getCthgrid(); i++) {
-      treshold[i] = new int[getPhigrid() + 1];
-      for (int j = 0; j <= getPhigrid(); j++)
-        treshold[i][j] = 0;
-    }
-  }
-  else {
-    throw std::logic_error(nucqcd::ErrorMessage() << "Treshold should only be initialized once!" );
-  }
+  //the threshold: a point where the factor is one makes the points at larger r with the same angles one too
+  std::vector<std::vector<int> > treshold(getCthgrid() + 1, std::vector<int>(getPhigrid() + 1, 0));
   
   //fill the arrays!
   for (int i = 0; i <= getRgrid(); i++) {
@@ -191,13 +155,8 @@ void ROMEAGrid::constructAllGrids() {
       }
     }
   }
-  //mem cleanup
-  for (int i = 0; i <= getCthgrid(); i++)
-    delete[]treshold[i];
-  delete[]treshold;
-  treshold = NULL;
-  for(size_t it=0;it<getParticles().size();it++) delete [] opticalpotential[it];
-  delete[] opticalpotential;
+  //the optical potential is only needed while the grid is computed
+  opticalpotential.clear();
 }
 
 //readin fsi grid
@@ -207,17 +166,12 @@ void ROMEAGrid::readinFsiGrid(ifstream & infile) {
     assert(1==0);
   }
   
-  if (fsi_grid != NULL) {
-    for (int k = 0; k < (getRgrid() + 1); k++) {
-      for (int l = 0; l < (getCthgrid() + 1); l++) {
-	for (int mm = 0; mm < (getPhigrid() + 1); mm++) {
-	  infile.read(reinterpret_cast < char *>(&fsi_grid[k][l][mm]), sizeof(complex < double >));
-	}
+  for (int k = 0; k < (getRgrid() + 1); k++) {
+    for (int l = 0; l < (getCthgrid() + 1); l++) {
+      for (int mm = 0; mm < (getPhigrid() + 1); mm++) {
+        infile.read(reinterpret_cast < char *>(&fsi_grid[k][l][mm]), sizeof(complex < double >));
       }
     }
-  }
-  else {
-    throw std::logic_error(nucqcd::ErrorMessage() << "fsi_grid not initialized!!!!" );
   }
 }
 
@@ -273,7 +227,7 @@ void ROMEAGrid::klaas_one_bound(numint::vector_z & results, double z, ROMEAGrid 
   double r=sqrt(z*z+grid.getParticles()[it].getHitbnorm()*grid.getParticles()[it].getHitbnorm());
   if (r > grid.getPnucleus()->getRange())
     return;
-  results[0]= interpolate(grid.getOpticalpotential()[it],r,grid.getOpticalstep(),grid.getOpticalsize(),0);
+  results[0]= interpolate(grid.getOpticalpotential()[it].data(),r,grid.getOpticalstep(),grid.getOpticalsize(),0);
 }
 
 }  // namespace nucqcd

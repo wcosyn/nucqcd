@@ -51,6 +51,7 @@
 #include <Tools/Core/Vector3.hpp>
 
 #include <Glauber/FastParticle.hpp>
+#include <Tools/Core/Grid3D.hpp>
 #include <Tools/Core/IntegratorFlag.hpp>
 #include <Glauber/MeanFieldNucleus.hpp>
 
@@ -102,9 +103,9 @@ public:
   AbstractFsiGrid(const int r_grid, const int cth_grid, const int phi_grid, MeanFieldNucleus *pnucl, 
 		  double prec, IntegrationMethod integrator, std::string dir);
   virtual ~AbstractFsiGrid(); /*!< Destructor */
-  // Not copyable: the derived grids own their (up to 5-dimensional) grid arrays as raw pointers and
-  // have no copy operations, so a copy would delete them twice. Converting the arrays to owning
-  // containers belongs with the refactor of the grid hierarchy (docs/ROADMAP.md, step 6).
+  // Not copyable. The Glauber grids own their arrays as Grid3D (Tools/Core/Grid3D.hpp) since 2026-11, so copying them would no
+  // longer free anything twice, but nothing copies them and their other members (FsiCorrelator, ...) were not checked;
+  // DistMomDistrGrid still has raw arrays (docs/ROADMAP.md, step 6, "Glauber grid hierarchy").
   AbstractFsiGrid(const AbstractFsiGrid&) = delete;
   AbstractFsiGrid& operator=(const AbstractFsiGrid&) = delete;
   
@@ -276,7 +277,7 @@ public:
    ,pure virtual function!!*/
   virtual std::complex<double> getFsiGridN_interp(const int grid)=0;
   /*! 3d interpolation of a grid after a certain coordinate (r,costheta,phi) has been set! */
-  virtual std::complex<double> getInterp(std::complex<double> ***grid);  //3d interpolation of grid
+  virtual std::complex<double> getInterp(const Grid3D<std::complex<double> > &grid);  //3d interpolation of grid
   
   
   virtual void fillGrids();  /*!< fills the fsi grids that are used for interpolation */

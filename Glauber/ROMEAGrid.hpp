@@ -13,6 +13,8 @@
 
 #include <Glauber/AbstractFsiGrid.hpp>
 #include <Integrator/numint/numint.hpp>
+#include <Tools/Core/Grid3D.hpp>
+#include <vector>
 
 namespace nucqcd {
 
@@ -86,15 +88,14 @@ public:
   virtual std::complex<double> getFsiGridN_interp(const int grid); /*!returns the value of the fsi grid for a certain situation at coordinate (r,theta,phi) that has been set previously*/
   virtual void printFsi_grid();/*!< Prints the FSI grid for a certain situation of ejected particles*/
   virtual void print_grid(int gridindex);/*!< Prints the FSI grid for a certain situation of ejected particles*/
-  std::complex<double> ** getOpticalpotential() {return opticalpotential;} /*!< returns pointer to the start of the opticalpotential array */
+  const std::vector<std::vector<std::complex<double> > > & getOpticalpotential() const {return opticalpotential;} /*!< returns the optical potential of every particle (only filled while the grid is computed): the start of the opticalpotential array */
   double getOpticalstep(){return opticalstep;} /*!< [fm] stepsize in the grid opticalpotential */
   int getOpticalsize(){return opticalsize;} /*!< size in elements of the grid opticalpotential */
   virtual void constructAllGrids(); /*!< construct the optical fsi grid */
  
 protected:
-  std::complex<double> ***fsi_grid; /*!< grid that contains the fsi factor */
-  int ** treshold; /*!< array that checks if calculated glauberphases are close to one, then doesn't compute them for larger r, to save computing time*/
-  std::complex<double> **opticalpotential; /*!< grid that contains the central part of the optical potential */
+  Grid3D<std::complex<double> > fsi_grid; /*!< grid that contains the fsi factor, `[r][cos theta][phi]` */
+  std::vector<std::vector<std::complex<double> > > opticalpotential; /*!< grid that contains the central part of the optical potential */
   double opticalstep; /*!< [fm] stepsize in the grid opticalpotential */
   int opticalsize; /*!< size in elements of the grid opticalpotential */
   int fit; /*!< type of fit used for the optical potential */

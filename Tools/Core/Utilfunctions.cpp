@@ -293,7 +293,7 @@ void intTest(double r, complex<double> *results, va_list ap){
 }
 
 
-complex<double> Interp3d(complex<double> ***grid, double s, double t, double u, 
+complex<double> Interp3d(const Grid3D<complex<double> > &grid, double s, double t, double u, 
 			  double comps, double compt, double compu, int sindex, int tindex, int uindex){
   return complex<double>(compu*(compt*(comps*real(grid[sindex][tindex][uindex])
 	+ s*real(grid[sindex+1][tindex][uindex])) 

@@ -18,79 +18,22 @@ namespace nucqcd {
 //constructor, calls abstractfsigrid's constructor
 GlauberGrid::GlauberGrid(const int r_grid, const int cth_grid, const int phi_grid, MeanFieldNucleus * pnucl,
                          double prec, IntegrationMethod integrator, string dir):
-AbstractFsiCTGrid(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir), fsi_grid(NULL), fsi_ct_grid(NULL), treshold(NULL) {
+AbstractFsiCTGrid(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir) {
 
-  //mem reservation for the grids, index [shelllevel][mindex(postive only due to symmetry][rgrid][thgrid][phgrid]
-  //fsi grid
-  if (fsi_grid == NULL) {
-    //cout << "Mem reservation for fsi_grid" << endl;
-    fsi_grid = new complex < double >****[getPnucleus()->getTotalLevels() + 1];
-    for (int i = 0; i < (getPnucleus()->getTotalLevels() + 1); i++) {
-      if (i == getPnucleus()->getTotalLevels())
-        fsi_grid[i] = new complex < double >***[1];
-      else
-        fsi_grid[i] = new complex < double >***[(getPnucleus()->getJ_array()[i] + 1) / 2];
-      for (int j = 0; j < (i == getPnucleus()->getTotalLevels()? 1 : ((getPnucleus()->getJ_array()[i] + 1) / 2)); j++) {
-        fsi_grid[i][j] = new complex < double >**[getRgrid() + 1];
-        for (int k = 0; k < (getRgrid() + 1); k++) {
-          fsi_grid[i][j][k] = new complex < double >*[getCthgrid() + 1];
-          for (int l = 0; l < (getCthgrid() + 1); l++) {
-            fsi_grid[i][j][k][l] = new complex < double >[getPhigrid() + 1];
-          }
-        }
-      }
-    }
-  }
-  else {
-    throw std::logic_error(nucqcd::ErrorMessage() << "fsi_grid should not be initialized more than once!!!!" );
-  }
-  //ct grid
-  if (fsi_ct_grid == NULL) {
-    //cout << "Mem reservation for fsi_ct_grid" << endl;
-    fsi_ct_grid = new complex < double >****[getPnucleus()->getTotalLevels() + 1];
-    for (int i = 0; i < (getPnucleus()->getTotalLevels() + 1); i++) {
-      if (i == getPnucleus()->getTotalLevels())
-        fsi_ct_grid[i] = new complex < double >***[1];
-      else
-        fsi_ct_grid[i] = new complex < double >***[(getPnucleus()->getJ_array()[i] + 1) / 2];
-      for (int j = 0; j < (i == getPnucleus()->getTotalLevels()? 1 : ((getPnucleus()->getJ_array()[i] + 1) / 2)); j++) {
-        fsi_ct_grid[i][j] = new complex < double >**[getRgrid() + 1];
-        for (int k = 0; k < (getRgrid() + 1); k++) {
-          fsi_ct_grid[i][j][k] = new complex < double >*[getCthgrid() + 1];
-          for (int l = 0; l < (getCthgrid() + 1); l++) {
-            fsi_ct_grid[i][j][k][l] = new complex < double >[getPhigrid() + 1];
-          }
-        }
-      }
-    }
-  }
-  else {
-    throw std::logic_error(nucqcd::ErrorMessage() << "fsi_ct_grid should not be initialized more than once!!!!" );
+  //the grids, index [shelllevel][mindex (positive only due to symmetry)][rgrid][thgrid][phgrid]; the last shell holds the product of all
+  const int shells = getPnucleus()->getTotalLevels() + 1;
+  const Grid3D<complex<double> > points(getRgrid() + 1, getCthgrid() + 1, getPhigrid() + 1);
+  fsi_grid.resize(shells);
+  fsi_ct_grid.resize(shells);
+  for (int i = 0; i < shells; i++) {
+    const int mvalues = (i == getPnucleus()->getTotalLevels() ? 1 : ((getPnucleus()->getJ_array()[i] + 1) / 2));
+    fsi_grid[i].assign(mvalues, points);
+    fsi_ct_grid[i].assign(mvalues, points);
   }
 }
 
 //destructor
 GlauberGrid::~GlauberGrid() {
-  if (fsi_grid != NULL) {
-    for (int i = 0; i < (getPnucleus()->getTotalLevels() + 1); i++) {
-      for (int j = 0; j < (i == getPnucleus()->getTotalLevels()? 1 : ((getPnucleus()->getJ_array()[i] + 1) / 2)); j++) {
-        for (int k = 0; k < (getRgrid() + 1); k++) {
-          for (int l = 0; l < (getCthgrid() + 1); l++) {
-            delete[]fsi_grid[i][j][k][l];
-            delete[]fsi_ct_grid[i][j][k][l];
-          }
-          delete[]fsi_grid[i][j][k];
-          delete[]fsi_ct_grid[i][j][k];
-        }
-        delete[]fsi_grid[i][j];
-        delete[]fsi_ct_grid[i][j];
-      }
-      delete[]fsi_grid[i];
-      delete[]fsi_ct_grid[i];
-    }
-    delete[]fsi_grid;
-    delete[]fsi_ct_grid;
-  }
 }
 
 //interpolation of grid number grid (0: RMSGA, 1: RMSGA+CT) after r,cth,phi have been set
@@ -150,19 +93,8 @@ void GlauberGrid::setFilenames(string dir) {
 
 //calc both fsi and fsi+ct grid
 void GlauberGrid::constructAllGrids() {
-  //mem reservation for treshold array
-  if (treshold == NULL) {
-    //cout << "Mem reservation for treshold array" << endl;
-    treshold = new int *[getCthgrid() + 1];
-    for (int i = 0; i <= getCthgrid(); i++) {
-      treshold[i] = new int[getPhigrid() + 1];
-      for (int j = 0; j <= getPhigrid(); j++)
-        treshold[i][j] = 0;
-    }
-  }
-  else {
-    throw std::logic_error(nucqcd::ErrorMessage() << "Treshold should only be initialized once!" );
-  }
+  //the threshold: a point where all factors are one makes the points at larger r with the same angles one too
+  std::vector<std::vector<int> > treshold(getCthgrid() + 1, std::vector<int>(getPhigrid() + 1, 0));
   
   //fill the arrays!
   for (int i = 0; i <= getRgrid(); i++) {
@@ -285,27 +217,12 @@ void GlauberGrid::constructAllGrids() {
       }
     }
   }
-  //mem cleanup
-  for (int i = 0; i <= getCthgrid(); i++)
-    delete[]treshold[i];
-  delete[]treshold;
-  treshold = NULL;
 }
 
 //calc only ct grid
 void GlauberGrid::constructCtGrid() {
-  //mem reservation for treshold
-  if (treshold == NULL) {
-    treshold = new int *[getCthgrid() + 1];
-    for (int i = 0; i <= getCthgrid(); i++) {
-      treshold[i] = new int[getPhigrid() + 1];
-      for (int j = 0; j <= getPhigrid(); j++)
-        treshold[i][j] = 0;
-    }
-  }
-  else {
-    throw std::logic_error(nucqcd::ErrorMessage() << "Treshold should only be initialized once!" );
-  }
+  //the threshold: a point where all factors are one makes the points at larger r with the same angles one too
+  std::vector<std::vector<int> > treshold(getCthgrid() + 1, std::vector<int>(getPhigrid() + 1, 0));
   //fill ct array!
   for (int i = 0; i <= getRgrid(); i++) {
     r_hit = float (i) * getPnucleus()->getRange() / getRgrid();
@@ -408,10 +325,6 @@ void GlauberGrid::constructCtGrid() {
       }
     }
   }
-  for (int i = 0; i <= getCthgrid(); i++)
-    delete[]treshold[i];
-  delete[]treshold;
-  treshold = NULL;
 }
 
 //calc glauberphases for one gridpoint
@@ -488,7 +401,7 @@ void GlauberGrid::readinFsiGrid(ifstream & infile) {
     assert(1==0);
   }
   
-  if (fsi_grid != NULL) {
+  if (!fsi_grid.empty()) {
     for (int i = 0; i < (getPnucleus()->getTotalLevels() + 1); i++) {
       for (int j = 0; j < (i == getPnucleus()->getTotalLevels()? 1 : ((getPnucleus()->getJ_array()[i] + 1) / 2)); j++) {
         for (int k = 0; k < (getRgrid() + 1); k++) {
@@ -512,7 +425,7 @@ void GlauberGrid::readinFsiCtGrid(ifstream & infile) {
     cerr << "File is empty " << getFsi_Ct_Filename() << endl;
     assert(1==0);
   }
-  if (fsi_ct_grid != NULL) {
+  if (!fsi_ct_grid.empty()) {
     for (int i = 0; i < (getPnucleus()->getTotalLevels() + 1); i++) {
       for (int j = 0; j < (i == getPnucleus()->getTotalLevels()? 1 : ((getPnucleus()->getJ_array()[i] + 1) / 2)); j++) {
         for (int k = 0; k < (getRgrid() + 1); k++) {

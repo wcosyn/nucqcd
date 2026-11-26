@@ -14,6 +14,7 @@
 #include <Tools/Core/ErrorMessage.hpp>
 #include <sstream>
 #include <complex>
+#include <Tools/Core/Grid3D.hpp>
 
 namespace nucqcd {
 
@@ -107,7 +108,7 @@ void freematrix(double **matrix, int n); /*!< free a n*? matrix on the heap*/
 // 	+ s*grid[sindex+1][tindex+1][uindex+1]));
 // }
 /// trilinear interpolation in a 3D grid: weights s, t, u (and comps = 1-s, ...) between the points with indices (sindex, tindex, uindex) and the next ones
-std::complex<double> Interp3d(std::complex<double> ***grid, double s, double t, double u, 
+std::complex<double> Interp3d(const Grid3D<std::complex<double> > &grid, double s, double t, double u, 
 			  double comps, double compt, double compu, int sindex, int tindex, int uindex);
 /// trilinear interpolation in a real 3D grid, see the complex version
 double Interp3d(double ***grid, double s, double t, double u, 
