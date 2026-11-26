@@ -88,42 +88,6 @@ private:
    */
   double calcCross_coh(nucqcd::Vector3 &pDvec);
   //   Kinematics2to2 *pkin;
-  /*! function that gets integrated over pm, all different fsi outputs, incoherent cross section fixed t
-   * \param pm [MeV] radial coordinate
-   * \param results  result: contains the cross section 
-   * \param ap variable parameter list
-   */
-  void intPmt(const double pm, double *results, va_list ap);
-  /*! function that gets integrated over cos(theta), all different fsi outputs, incoherent cross section fixed t
-   * \param costheta [] cos of theta coordinate
-   * \param results  result: contains the cross section 
-   * \param ap variable parameter list
-   */
-  void intCosThetat(const double costheta, double *results, va_list ap);
-  /*! function that gets integrated over phi, all different fsi outputs, incoherent cross section fixed t
-   * \param phi [rad] phi coordinate
-   * \param results  result: contains the cross section 
-   * \param ap variable parameter list
-   */
-  void intPhit(const double phi, double *results, va_list ap);
-  /*! function that gets integrated over pm, all different fsi outputs, incoherent cross section fixed z
-   * \param pm [MeV] radial coordinate
-   * \param results  result: contains the cross section 
-   * \param ap variable parameter list
-   */
-  void intPmz(const double pm, double *results, va_list ap);
-  /*! function that gets integrated over cos(theta), all different fsi outputs, incoherent cross section fixed z
-   * \param costheta [] cos of theta coordinate
-   * \param results  result: contains the cross section 
-   * \param ap variable parameter list
-   */
-  void intCosThetaz(const double costheta, double *results, va_list ap);
-  /*! function that gets integrated over phi, all different fsi outputs, incoherent cross section fixed z
-   * \param phi [rad] phi coordinate
-   * \param results  result: contains the cross section 
-   * \param ap variable parameter list
-   */
-  void intPhiz(const double phi, double *results, va_list ap);
   
   /*! function that gets integrated over pm, all different fsi outputs, coherent cross section
    * \param pm [MeV] radial coordinate

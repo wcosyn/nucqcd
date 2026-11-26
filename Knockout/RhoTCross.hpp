@@ -103,42 +103,6 @@ private:
   std::vector<std::unique_ptr<GlauberDecayGridThick>> pfsigrid; /*!< array of Glauber FSI grid, one for each shell level */
 //   Kinematics2to2 *pkin;
 //  FastParticle *prho;
-  /*! function that gets integrated over pm, all different fsi outputs / fixed t calculations
-   * \param pm [MeV] radial coordinate
-   * \param results result: contains the cross section 
-   * \param ap variable parameter list
-   */
-  void intPmt(const double pm, double *results, va_list ap);
-  /*! function that gets integrated over cos(theta),  all different fsi outputs / fixed t calculations
-   * \param costheta [] cos of theta coordinate
-   * \param results result: contains the cross section 
-   * \param ap variable parameter list
-   */
-  void intCosThetat(const double costheta, double *results, va_list ap);
-  /*! function that gets integrated over phi,  all different fsi outputs / fixed t calculations
-   * \param phi [rad] phi coordinate 
-   * \param results result: contains the cross section 
-   * \param ap variable parameter list
-   */
-  void intPhit(const double phi, double *results, va_list ap);
-  /*! function that gets integrated over pm, all different fsi outputs / fixed z calculations
-   * \param pm [MeV] radial coordinate
-   * \param results result: contains the cross section 
-   * \param ap variable parameter list
-   */
-  void intPmz(const double pm, double *results, va_list ap);
-  /*! function that gets integrated over cos(theta),  all different fsi outputs  / fixed z calculations
-   * \param costheta [] cos of theta coordinate
-   * \param results result: contains the cross section 
-   * \param ap variable parameter list
-   */
-  void intCosThetaz(const double costheta, double *results, va_list ap);
-  /*! function that gets integrated over phi,  all different fsi outputs  / fixed z calculations
-   * \param phi [rad] phi coordinate
-   * \param results result: contains the cross section 
-   * \param ap variable parameter list
-   */
-  void intPhiz(const double phi, double *results, va_list ap);
   /*!Calculates an array of momentum distributions for all different FSI situations
    * \param results [fm^3] distorted momentum distributions
    * \param prho [MeV] rho momentum
