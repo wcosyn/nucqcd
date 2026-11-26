@@ -132,3 +132,31 @@ cut**, so the user must choose the nu range of `rhoset` (W² = m_N² + 2 m_N nu 
   (3.69 GeV = `4 massi` at pm -> 0). Explained in section 4: the code weights are not the bare phase-space weights.
 - Monte Carlo with the code's kinematics and cuts and a Gaussian momentum distribution: z/t = 11.66 with `massX`,
   0.997 with (4) at Q² = 1.5 GeV², nu 2.5-3.5 GeV; 0.988 at Q² = 2.5 GeV², nu 3.0-3.8 GeV.
+
+## 6. Full comparison with the Glauber distributions (2026-11-26)
+
+A small scratch driver (not in the repository: a Gauss-Legendre loop that calls `RhoTCross::getCrosst` over (nu, t)
+and `RhoTCross::getCrossz` over (nu, z)) with the real `RhoTCross`: nucleus 0 (He), Q² = 2 GeV², nu = 3.0-3.2 GeV,
+Ebeam = 4.023 GeV, t in -0.4..-0.1 GeV², z in 0.9..1, `usersigma` = 20 mb, rho particle type 4, `p_dil` = 0, cuts on,
+inner `cube_adaptive` with maxEval = 3000 at precision 1e-3, **2 x 3 Gauss-Legendre points** per version (about 32
+minutes each on one core, the cost is the `DistMomDistrGrid` per rho-angle bin). Indices as in the README of the
+paper's calculation directory (0 RMSGA, 1 +SRC, 2 +decay, 3 +SRC+decay, 4 +CT, 5 +CT+SRC, 6 +CT+decay, 7 the works,
+8 plane wave). Integrated results (arbitrary units, common factors as in the code) and ratios:
+
+| Index | Case | t integral | z integral | z/t | T from t | T from z |
+|---|---|---|---|---|---|---|
+| 0 | RMSGA | 1.5224e-07 | 1.5559e-07 | 1.022 | 0.802 | 0.808 |
+| 1 | RMSGA+SRC | 1.5296e-07 | 1.5621e-07 | 1.021 | 0.806 | 0.812 |
+| 2 | RMSGA+Decay | 1.2764e-07 | 1.2889e-07 | 1.010 | 0.672 | 0.670 |
+| 3 | RMSGA+SRC+Decay | 1.2811e-07 | 1.2927e-07 | 1.009 | 0.675 | 0.672 |
+| 4 | RMSGA+CT | 1.6422e-07 | 1.6645e-07 | 1.014 | 0.865 | 0.865 |
+| 5 | RMSGA+CT+SRC | 1.6427e-07 | 1.6647e-07 | 1.013 | 0.865 | 0.865 |
+| 6 | RMSGA+CT+Decay | 1.4312e-07 | 1.4299e-07 | 0.999 | 0.754 | 0.743 |
+| 7 | RMSGA+CT+SRC+Decay | 1.4294e-07 | 1.4281e-07 | 0.999 | 0.753 | 0.742 |
+| 8 | plane wave | 1.8986e-07 | 1.9248e-07 | 1.014 | 1 | 1 |
+
+With the old `massX` the z column would be larger by about `M_A/massi` (about 4 for helium; inferred from the Monte
+Carlo, the unfixed code was not run here). Caveats: the 2 x 3 grid is very coarse and some points are exactly zero
+because of the cuts (one t point and one z point in the run), so a 1-2% difference can be quadrature and cut-edge
+effects: this shows that the factor ~A is gone, not that the remaining 1-2% is zero. Helium only. The nu range was
+chosen so that W² = m_N² + 2 m_N nu - Q² stays above 4 GeV² (W > 2 GeV, which the code does not cut on).

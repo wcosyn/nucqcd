@@ -34,7 +34,7 @@ same PR.
 
 ## Where we are / next up
 
-*Updated 2026-11-26 (after PR #84; the rho t/z fix is in an open PR).*
+*Updated 2026-11-26 (after PR #84; the rho t/z fix is PR #85).*
 
 **Done** (PRs #44-#82, details in the steps below): ROOT decoupling (ROOT is now only used by the test
 `unit_vectors`; the fits run on the standalone Minuit2, #73); LHAPDF structure functions (step 10); He3 fixes; run
@@ -50,7 +50,7 @@ for all Glauber grid variants (#68) and the deduplication of the two thick grids
 **Options for the next step** (my recommended order; the author decides):
 1. **Open leads** (step 4, "Open leads (to investigate)"), three of them, all investigations:
    - ~~the rho transparency t- versus z-integrals~~ (2026-11-26: the z version had the residual nucleus mass instead of
-     the Jacobian |dt/dz|/(2 nu); fixed in the open PR, a full `rhoset` check with Glauber grids is still to do);
+     the Jacobian |dt/dz|/(2 nu); fixed in the open PR, checked with the Glauber distributions for helium, z/t within 2.2%);
    - ~~the `InclusiveCrossRes` FSI part that returns exactly 0~~ (investigated 2026-11-26: not a bug, the
      settings of `increstest` cancel by construction; with `fixprop` 1, `symm` 0 the FSI is ~6% of the plane wave;
      reviving the class is still open, see the item);
@@ -416,11 +416,13 @@ one commit per bug; no `[known-bug]` tests remain.
     `dphi* = dphi_rho`; the exact weight is `sqrt(lambda)/(2 q kappa)` (mean 1.015, large excursions at the edges, exactly 1
     when integrated over the azimuth). Not changed; whether it matters with the azimuth-dependent Glauber distributions
     was not studied.
-  - **Not verified:** the full `rhoset` run for t and z with the real Glauber distributions (900 s was not enough for
-    carbon with these settings: `rhoset 1|0 1 2.0 2.5 3.5 0. 0 20. 2 20000 1e-3 4`; narrow the nu range and loosen the
-    precision to try again). The absolute normalisation of the t version (it carries no 1/|df/dz| of its own) was not
-    checked against the full delta-function weights; an attempt gave a result too noisy to say anything (heavy tail
-    of 1/K), so only the t-versus-z consistency is established.
+  - **Full comparison with the Glauber distributions (2026-11-26, `docs/rho_jacobian.md` section 6):** helium, Q² = 2 GeV²,
+    nu = 3.0-3.2 GeV, 2 x 3 Gauss-Legendre points per version, real `RhoTCross`: z/t = 0.999-1.022 for all nine
+    cases (plane wave 1.014) and transparencies from t and z within 0.011. A coarse test (cut edges, quadrature), helium
+    only: carbon and a finer grid are still to do if wanted. The "before" value of the unfixed code was not run (the
+    Monte Carlo gives the factor).
+  - **Not verified:** the absolute normalisation of the t version was compared with the paper's Eq. (13) (it
+    matches), not with an independent calculation.
 
 ## 5. Low-risk modernization
 
