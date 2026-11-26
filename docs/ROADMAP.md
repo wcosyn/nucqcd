@@ -1004,7 +1004,7 @@ Do these one at a time, running the full test suite (including `slow`) after eac
     `DIS/DeuteronCross.hpp` and the `\mainpage`/`\defgroup Glauber` text in `Glauber/AbstractFsiGrid.hpp`.
   - **Not covered by the crawl:** the Fortran files, `progs/attic`, `tests/`, the Python scripts apart from the usage
     check, and comments inside function bodies; a reader pass of the remaining `progs/deepsdis` files (many are variants
-    of each other) is worth doing. The `GPD_Partons` headers were read: only `Deut_GPD_T_set.hpp` was wrong.
+    of each other) is worth doing. Only the `\brief` lines of the `GPD_Partons` headers were checked (one wrong: `Deut_GPD_T_set.hpp`), not the rest of their comments.
 
 ## 7. Unbundle Cuba (and cubature)
 
