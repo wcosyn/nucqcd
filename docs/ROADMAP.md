@@ -58,7 +58,8 @@ for all Glauber grid variants (#68) and the deduplication of the two thick grids
 2. **Glauber grids:** the off-axis speed (every point hits the evaluation cap; `cube_romb` was 5x faster at 1e-3;
    variants change values within the precision and need the author's OK), and the rest of the hierarchy dedup
    (the eight abstract classes with four interpolation wrappers per named grid, the 5D raw pointer arrays).
-3. **Smaller items:** the hard-coded absolute paths in some programs (step 6, copy-paste leftovers), unbundle cubature (step 7, maintenance only, no accuracy gain per the benchmark), the PDG
+3. **Smaller items:** the integration method as an enumeration with one dispatch function (step 6, planned, not
+   started), the hard-coded absolute paths in some programs (step 6, copy-paste leftovers), unbundle cubature (step 7, maintenance only, no accuracy gain per the benchmark), the PDG
    constants update (changes values), the long Glauber files (`GlauberGrid.cpp`, `DistMomDistrGrid.cpp`, ...),
    `SolvePhotonAndParticle1` (134 lines), reporting the Suave bug to the Cuba authors, a format string that gives
    no scenario at all is still accepted (step 6, long functions), `Resonance` stays in the DIS library although
@@ -1005,6 +1006,27 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   - **Not covered by the crawl:** the Fortran files, `progs/attic`, `tests/`, the Python scripts apart from the usage
     check, and comments inside function bodies; a reader pass of the remaining `progs/deepsdis` files (many are variants
     of each other) is worth doing. Only the `\brief` lines of the `GPD_Partons` headers were checked (one wrong: `Deut_GPD_T_set.hpp`), not the rest of their comments.
+
+- [ ] **Integration method as an enumeration with one dispatch function (added 2026-11-26, not started).** The choice
+  between `numint::cube_romb` and `numint::cube_adaptive` is an `int integrator` (1 or 2) in the constructors of the
+  Glauber grids, `RhoTCross`, `PionTCross`, the EM/Weak QE classes and some programs, validated by
+  `checked_integrator_flag` (`Tools/Core/IntegratorFlag.hpp`) and then dispatched by `if (integrator == 1) cube_romb(...)
+  else cube_adaptive(...)` at about 80 places in 15 files (76 `cube_romb` and 106 `cube_adaptive` calls in all, some
+  without the flag). `cube_adaptive` takes two more arguments (minimum and maximum number of evaluations) with about 14
+  different pairs hard-coded at the call sites (`1E03,maxEval`, `5E02,maxEval`, `2E03,2E06`, `1E04,1E07`, ...);
+  `Knockout/DQEinclusive` has a separate five-value flag (0 adaptive cubature, 1-4 Cuhre, Suave, Vegas and Divonne of
+  Cuba); the integer is part of the grid cache file names (`integr2`, `intgr2`). Plan, in the style of "Model selection"
+  (#72): (1) `enum class IntegrationMethod { Romberg = 1, Adaptive = 2 }` with one parse function that accepts the
+  names and the integers 1 and 2 (the command lines of the programs keep working), replacing `checked_integrator_flag`;
+  (2) a small options struct (method, relative precision, minimum and maximum evaluations) and one
+  `numint::cube(options, f, lower, upper, result, neval)` that hides the signature difference, so that each `if/else`
+  block becomes one line; templated over the dimension and the result type like the routines it calls;
+  (3) keep the integer in the cache file names (no cached grid goes stale) and the evaluation caps of each call site
+  as they are, only named (changing them is a precision decision for the author); (4) `DQEinclusive`'s Cuba flag later
+  or left alone. The routines called and their arguments stay the same, so results should stay bit-identical:
+  `ctest -LE slow` and `ctest -L slow` (the Glauber grid regression tests) are the check. Two PRs: the enumeration,
+  options and dispatch with the Glauber classes first, then Knockout and the programs. Strategy objects with virtual
+  functions were considered and rejected as more machinery than two methods need.
 
 ## 7. Unbundle Cuba (and cubature)
 
