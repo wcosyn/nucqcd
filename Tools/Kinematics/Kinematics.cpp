@@ -91,11 +91,9 @@ using std::vector;
 //_____________________________________________________________________
 
 //_____________________________________________________________________
-Kinematics::Kinematics(const char* name, const char* title,
-			 int isospin, const char *format, 
+Kinematics::Kinematics(int isospin, const char *format, 
 			 double var1, double var2)
-  : fName(name),fTitle(title)
-  ,fFormat(0)
+  : fFormat(0)
   ,fIsospin(isospin)
   ,fNVars(2)
   ,fMp(0.0)
@@ -157,11 +155,9 @@ Kinematics::Kinematics(const char* name, const char* title,
 }
 
 //_____________________________________________________________________
-Kinematics::Kinematics(const char* name, const char* title,
-			 int isospin, const char *format, 
+Kinematics::Kinematics(int isospin, const char *format, 
 			 double var1, double var2, double var3)
-  : fName(name),fTitle(title)
-  ,fFormat(0)
+  : fFormat(0)
   ,fIsospin(isospin)
   ,fNVars(3)
   ,fMp(0.0)
@@ -224,11 +220,9 @@ Kinematics::Kinematics(const char* name, const char* title,
 }
 
 //_____________________________________________________________________
-Kinematics::Kinematics(const char* name, const char* title,
-			 int isospin, const char *format, 
+Kinematics::Kinematics(int isospin, const char *format, 
 			 double var1, double var2, double var3, double var4)
-  : fName(name),fTitle(title)
-  ,fFormat(0)
+  : fFormat(0)
   ,fIsospin(isospin)
   ,fNVars(4)
   ,fMp(0.0)
@@ -291,8 +285,7 @@ Kinematics::Kinematics(const char* name, const char* title,
 
 //_____________________________________________________________________
 Kinematics::Kinematics(const Kinematics& toCopy)
-  : fName(toCopy.fName),fTitle(toCopy.fTitle)
-  ,fFormat(0)
+  : fFormat(0)
   ,fIsospin(toCopy.fIsospin)
   ,fNVars(toCopy.fNVars)
   ,fMp(toCopy.fMp)
@@ -354,13 +347,10 @@ void Kinematics::InitializeArrays()
 }
 
 //_____________________________________________________________________
-Kinematics* Kinematics::Clone(const char *newname) const
+Kinematics* Kinematics::Clone() const
 {
   // Virtual copy constructor
-  // If newname is specified, this will be the name of the new object.
-  Kinematics *clone = new Kinematics(*this);
-  if (newname && std::strlen(newname)) clone->SetName(newname);
-  return clone;
+  return new Kinematics(*this);
 }
 
 //_____________________________________________________________________
@@ -376,10 +366,6 @@ Kinematics& Kinematics::operator=(const Kinematics& toCopy)
   // Assignment
   if( this!=&toCopy ) { // avoid self-assignment
 
-    fName=toCopy.fName;
-
-    fTitle=toCopy.fTitle;
-    
     fIsospin = toCopy.fIsospin;
     fNVars = toCopy.fNVars;
     fMp = toCopy.fMp;
@@ -1677,7 +1663,7 @@ int Kinematics::GetNumberOfVariables() const
 void Kinematics::Print(const char* option) const
 {
   // Print info about the object and the current kinematics.
-  cout << GetName() << ": " << GetTitle()
+  cout << "Kinematics"
        << "\n****************************************************\n"
        << "Point " << (fIsPhysical ? "on " : "out of ") << "physical plane\n\n"
        << "Q^2   =\t" << std::setw(12) << fQsquared            
@@ -1699,7 +1685,7 @@ void Kinematics::Print(const char* option) const
 int Kinematics::VariableInfo() const
 {
   // Print info about the range that has been given to the variables.
-  cout << GetName() << ": " << GetTitle()
+  cout << "Kinematics"
        << "\n****************************************************\n";
 
   for(int var=0; var<fNVars; ++var) {

@@ -36,14 +36,11 @@ void Kinematics2to3::InitializeSubsystems()
 {
   // Create and set the KY-, KN- and YN-subsystems.
 
-  if(!fKYsystem) fKYsystem = new Kinematics2to2("fKYsystem","KY CM subsystem",
-						 fMd,fMk,fMy,"s:t:qsquared",
+  if(!fKYsystem) fKYsystem = new Kinematics2to2(fMd,fMk,fMy,"s:t:qsquared",
 						 0.0,0.0,0.0);
-  if(!fKNsystem) fKNsystem = new Kinematics2to2("fKNsystem","KN CM subsystem",
-						 fMd,fMk,fMn,"s:t:qsquared",
+  if(!fKNsystem) fKNsystem = new Kinematics2to2(fMd,fMk,fMn,"s:t:qsquared",
 						 0.0,0.0,0.0);
-  if(!fYNsystem) fYNsystem = new Kinematics2to2("fYNsystem","YN CM subsystem",
-						 fMd,fMn,fMy,"s:t:qsquared",
+  if(!fYNsystem) fYNsystem = new Kinematics2to2(fMd,fMn,fMy,"s:t:qsquared",
 						 0.0,0.0,0.0);
 }
 

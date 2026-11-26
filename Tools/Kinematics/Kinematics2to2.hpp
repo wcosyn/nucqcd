@@ -20,12 +20,10 @@ class Kinematics2to2 : public Kinematics
 {
  public:
   /*! constructor
-   * \param name,title ROOT name and title
    * \param mN,mK,mY [MeV] masses of the target N, the meson K and the baryon Y
    * \param formatString format string with the three independent variables, see Kinematics::SetFormat
    * \param var1,var2,var3 initial values of the independent variables */
-  Kinematics2to2(const char *name,const char *title,
-		  double mN, double mK, double mY,
+  Kinematics2to2(double mN, double mK, double mY,
 		  const char *formatString,
 		  double var1,double var2,double var3);
   

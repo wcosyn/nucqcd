@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 //     for(int i=1;i<100;i++){      
 //       double x=0.01*i;
 //       cout << x << " " << sqrt(Q2*(1./x-1.)+nucqcd::mass_n*nucqcd::mass_n)*1.E-03 << " " ;
-//       //Kinematics2to2 kin("","",nucqcd::mass_d,nucqcd::mass_p,Wprime,"qsquared:wlab:pklab",1.8E06,nu,pr);
+//       //Kinematics2to2 kin(nucqcd::mass_d,nucqcd::mass_p,Wprime,"qsquared:wlab:pklab",1.8E06,nu,pr);
 //       double teller=0.,fsi1=0.,fsi2=0.,fsioff1=0.,fsioff2=0.,fsioffsuppr1=0.,fsioffsuppr2=0.,noemer=0.;
 //       for(int proton=0;proton<=1;++proton){
 // 	InclusiveCross Dinc(proton,strucname,wf,*elec,resonances,symm,4);
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 //     exit(1);
     for(int i=(Q2>4.E05?14:8);i<50;i++){      
       double x=0.02*i;
-      //Kinematics2to2 kin("","",nucqcd::mass_d,nucqcd::mass_p,Wprime,"qsquared:wlab:pklab",1.8E06,nu,pr);
+      //Kinematics2to2 kin(nucqcd::mass_d,nucqcd::mass_p,Wprime,"qsquared:wlab:pklab",1.8E06,nu,pr);
       double teller=0.,fsi1=0.,fsi2=0.,fsioff1=0.,fsioff2=0.,fsioffsuppr1=0.,fsioffsuppr2=0.,noemer=1.;
       double azz=0.,azzfsi1=0.,azzfsi2=0.,azzfsioff1=0.,azzfsioff2=0.,azzfsioffsuppr1=0.,azzfsioffsuppr2=0.;
       for(int proton=0;proton<=1;++proton){

@@ -38,39 +38,27 @@ namespace nucqcd {
  */
 class Kinematics
 {
-  std::string fName;  ///< name (formerly from the ROOT base class TNamed)
-  std::string fTitle; ///< title
-
- public:
-  const char *GetName() const { return fName.c_str(); }  ///< name
-  const char *GetTitle() const { return fTitle.c_str(); } ///< title
-  void SetName(const char *name) { fName = name; }        ///< sets the name
-  void SetTitle(const char *title) { fTitle = title; }    ///< sets the title
-
  public:
   /*! constructor with 2 independent variables
-   * \param name,title ROOT name and title \param isospin isospin channel, see SetIsospin
+   * \param isospin isospin channel, see SetIsospin
    * \param formatString format string with the 2 independent variables, see SetFormat
    * \param var1,var2 initial values of the independent variables, in the order of the format string */
-  Kinematics(const char *name,const char *title,
-	      int isospin,const char *formatString,
+  Kinematics(int isospin,const char *formatString,
 	      double var1,double var2);
   /*! constructor with 3 independent variables
-   * \param name,title ROOT name and title \param isospin isospin channel, see SetIsospin
+   * \param isospin isospin channel, see SetIsospin
    * \param formatString format string with the 3 independent variables, see SetFormat
    * \param var1,var2,var3 initial values of the independent variables, in the order of the format string */
-  Kinematics(const char *name,const char *title,
-	      int isospin,const char *formatString,
+  Kinematics(int isospin,const char *formatString,
 	      double var1,double var2,double var3);
   /*! constructor with 4 independent variables
-   * \param name,title ROOT name and title \param isospin isospin channel, see SetIsospin
+   * \param isospin isospin channel, see SetIsospin
    * \param formatString format string with the 4 independent variables, see SetFormat
    * \param var1,var2,var3,var4 initial values of the independent variables, in the order of the format string */
-  Kinematics(const char *name,const char *title,
-	      int isospin,const char *formatString,
+  Kinematics(int isospin,const char *formatString,
 	      double var1,double var2,double var3,double var4);
   Kinematics(const Kinematics&); ///< copy constructor
-  virtual Kinematics* Clone(const char *newname ="") const; ///< virtual copy constructor \param newname name of the copy (optional)
+  virtual Kinematics* Clone() const; ///< virtual copy constructor
   virtual ~Kinematics(); ///< destructor
   Kinematics& operator=(const Kinematics&); ///< assignment
   bool          operator==(const Kinematics&) const; ///< same isospin channel, format and independent variables

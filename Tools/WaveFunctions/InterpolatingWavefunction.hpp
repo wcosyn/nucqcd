@@ -32,7 +32,7 @@ class InterpolatingWavefunction : public WavefunctionImplementation
   virtual ~InterpolatingWavefunction(); ///< destructor
 
   /// virtual copy constructor
-  virtual InterpolatingWavefunction *Clone(const char* ="") const
+  virtual InterpolatingWavefunction *Clone() const
   { return new InterpolatingWavefunction(*this); }
 
   void           SetUr(int n,double *r, double *list); ///< adds n tabulated values of the S wave u (L=0) in coordinate space: r [fm], values [fm^-1/2]

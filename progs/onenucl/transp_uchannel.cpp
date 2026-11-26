@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
   //   for(int j=0;j<=20;j++){
   //     double costheta = -1+2.*i/20.;
   //     double phi = 2.*PI*j/20.;
-  //     Kinematics2to3 kin("","",7,Kinematics2to3::kN,"qsquared:wlab:pn:thn:kycosthkcm:kyphikcm",Q2,omega,EN,thetaN,costheta,phi,
+  //     Kinematics2to3 kin(7,Kinematics2to3::kN,"qsquared:wlab:pn:thn:kycosthkcm:kyphikcm",Q2,omega,EN,thetaN,costheta,phi,
   //               Nucleus.getMassA(), nucqcd::mass_p, nucqcd::mass_pi0, Nucleus.getMassA_min_proton()+Nucleus.getExcitation()[1]);
   //     if(kin.IsPhysical()){
   //       double pm=kin.GetPy();
@@ -240,7 +240,7 @@ void adap_intpiCM(numint::vector_d & results, double costhetapiCM, double phipiC
     // N is the outgoing nucleon
     // K is the pion
     // Y is the A-1 residual nucleus
-    Kinematics2to3 kin("","",7,Kinematics2to3::kN,"qsquared:wlab:pn:thn:kycosthkcm:kyphikcm",Q2,omega,EN,thetaN,costhetapiCM,phipiCM,
+    Kinematics2to3 kin(7,Kinematics2to3::kN,"qsquared:wlab:pn:thn:kycosthkcm:kyphikcm",Q2,omega,EN,thetaN,costhetapiCM,phipiCM,
                 pNucleus->getMassA(), nucqcd::mass_p, nucqcd::mass_pi0, pNucleus->getMassA_min_proton()+pNucleus->getExcitation()[shell]);
 
     if(!kin.IsPhysical()){
@@ -366,7 +366,7 @@ void int_r3(numint::vector_z & results, double r, double costheta, double phi, M
 
 // // find cm scatt angles so that missing momentum stays below 300 MeV 
 // void getBound(double &high, double &low, MeanFieldNucleusThick &nucleus, double Q2, double omega, int shell){
-//   Kinematics2to2 kin("","",nucleus.getMassA(),
+//   Kinematics2to2 kin(nucleus.getMassA(),
 // 		      (shell<nucleus.getPLevels()? nucleus.getMassA_min_proton(): nucleus.getMassA_min_neutron())+nucleus.getExcitation()[shell],
 // 		      nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,(high+low)/2.);
 //   double pm=kin.GetPklab();

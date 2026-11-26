@@ -67,7 +67,7 @@ void InclusiveCrossRes::int_costheta_incl(double costheta, double *result, va_li
   double qvec=sqrt(Q2+pow(Q2/(2.*massi*x),2.));
   double nu=Q2/(2.*massi*x);
   double Wx=sqrt(nucqcd::mass_d*nucqcd::mass_d-Q2+massr*massr+2.*nucqcd::mass_d*(nu-Er)-2.*nu*Er+2.*qvec*prnorm*costheta);
-  Kinematics2to2 kin("","",nucqcd::mass_d,massr,Wx,"qsquared:wlab:pklab",Q2,nu,prnorm);
+  Kinematics2to2 kin(nucqcd::mass_d,massr,Wx,"qsquared:wlab:pklab",Q2,nu,prnorm);
   double structfactor=structure.getInclStructure(kin,nucqcd::mass_d-Er);
   if(structfactor==0.) {*result=0.; return; }
   //no phi integration, symmetry is already used in getInclStructure()
@@ -147,12 +147,12 @@ void InclusiveCrossRes::int_costheta_incl_fsi(double costheta, double *results, 
   Wxprime2=nucqcd::mass_d*nucqcd::mass_d-Q2+massr*massr+2.*nucqcd::mass_d*(nu-Er)-2.*nu*Er+2.*qvec*prnorm*costheta;
   Kinematics2to2 *kin1=NULL,*kin2=NULL;
 //   if(fixprop) {
-//     kin1 = new Kinematics2to2("","",nucqcd::mass_d,massr,sqrt(getResonance_vec()[res1].getMass2()),"qsquared:wlab:pklab",Q2,nu,prnorm);
-//     kin2 = new Kinematics2to2("","",nucqcd::mass_d,massr,sqrt(getResonance_vec()[res2].getMass2()),"qsquared:wlab:pklab",Q2,nu,prnorm);
+//     kin1 = new Kinematics2to2(nucqcd::mass_d,massr,sqrt(getResonance_vec()[res1].getMass2()),"qsquared:wlab:pklab",Q2,nu,prnorm);
+//     kin2 = new Kinematics2to2(nucqcd::mass_d,massr,sqrt(getResonance_vec()[res2].getMass2()),"qsquared:wlab:pklab",Q2,nu,prnorm);
 //   }
 //   else {
-    kin1= new Kinematics2to2("","",nucqcd::mass_d,massr,sqrt(Wxprime2),"qsquared:wlab:pklab",Q2,nu,prnorm);
-    kin2 = new Kinematics2to2("","",nucqcd::mass_d,massr,sqrt(Wxprime2),"qsquared:wlab:pklab",Q2,nu,prnorm);
+    kin1= new Kinematics2to2(nucqcd::mass_d,massr,sqrt(Wxprime2),"qsquared:wlab:pklab",Q2,nu,prnorm);
+    kin2 = new Kinematics2to2(nucqcd::mass_d,massr,sqrt(Wxprime2),"qsquared:wlab:pklab",Q2,nu,prnorm);
 //   }
   double structfactor1=structure.getInclStructure(*kin1,nucqcd::mass_d-Er);
   double structfactor2=structure.getInclStructure(*kin2,nucqcd::mass_d-Er);

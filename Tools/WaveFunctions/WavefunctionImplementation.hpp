@@ -30,7 +30,7 @@ class WavefunctionImplementation
   virtual ~WavefunctionImplementation(); ///< destructor
 
   // pure virtual copy constructor
-  virtual WavefunctionImplementation *Clone(const char* ="") const =0; ///< virtual copy constructor
+  virtual WavefunctionImplementation *Clone() const =0; ///< virtual copy constructor
 
   // L=0 wave in configuration space (pure virtual)
   virtual double GetUr(double r) const =0; ///< [fm^-1/2] S wave u (L=0) in coordinate space \param r [fm]

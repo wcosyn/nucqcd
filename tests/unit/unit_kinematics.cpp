@@ -20,7 +20,7 @@ using Catch::Matchers::WithinRel;
 TEST_CASE("Kinematics2to2 for A(e,e'p): conservation laws", "[kinematics]") {
   // 12C(e,e'p) 11B: target A, residual A-1 ("meson"), ejected proton ("hyperon")
   const double mA = 11177.93, mA1 = 10255.10, Q2 = 1.0e06, omega = 600., pm = 150.;
-  Kinematics2to2 kin("", "", mA, mA1, nucqcd::mass_p, "qsquared:wlab:pklab", Q2, omega, pm);
+  Kinematics2to2 kin(mA, mA1, nucqcd::mass_p, "qsquared:wlab:pklab", Q2, omega, pm);
   CHECK_THAT(kin.GetQsquared(), WithinRel(Q2, 1e-12));
   CHECK_THAT(kin.GetWlab(), WithinRel(omega, 1e-12));
   CHECK_THAT(kin.GetPklab(), WithinRel(pm, 1e-10));
@@ -54,10 +54,10 @@ TEST_CASE("ElectronKinematics: scattering angle reproduces Q^2", "[kinematics]")
 // Until 2026-11 the check on the number of variables read (n<2) && (n>4), which is never true.
 TEST_CASE("Kinematics rejects format strings without 2, 3 or 4 variables", "[kinematics]") {
   const double mA = 11177.93, mA1 = 10255.10;
-  CHECK_THROWS_AS(Kinematics2to2("", "", mA, mA1, nucqcd::mass_p, "qsquared", 1.e06, 600., 150.), std::invalid_argument);
-  CHECK_THROWS_AS(Kinematics2to2("", "", mA, mA1, nucqcd::mass_p, "qsquared:wlab:pklab:costhkcm:phi", 1.e06, 600., 150.),
+  CHECK_THROWS_AS(Kinematics2to2(mA, mA1, nucqcd::mass_p, "qsquared", 1.e06, 600., 150.), std::invalid_argument);
+  CHECK_THROWS_AS(Kinematics2to2(mA, mA1, nucqcd::mass_p, "qsquared:wlab:pklab:costhkcm:phi", 1.e06, 600., 150.),
                   std::invalid_argument);
-  CHECK_NOTHROW(Kinematics2to2("", "", mA, mA1, nucqcd::mass_p, "qsquared:wlab:pklab", 1.e06, 600., 150.));
+  CHECK_NOTHROW(Kinematics2to2(mA, mA1, nucqcd::mass_p, "qsquared:wlab:pklab", 1.e06, 600., 150.));
 }
 
 TEST_CASE("Kinematics2to3WithLabAngles for A(e,e'pn): solutions and conservation laws", "[kinematics]") {
@@ -68,7 +68,7 @@ TEST_CASE("Kinematics2to3WithLabAngles for A(e,e'pn): solutions and conservation
   // string should provide 6 independent variables".
   const double mA = 11177.93, mA2 = mA - nucqcd::mass_p - nucqcd::mass_n + 30.;
   const double Q2 = 1631389.67942, omega = 580., pn = 1000., thn = 10. * nucqcd::deg_to_rad, thk = 40. * nucqcd::deg_to_rad;
-  Kinematics2to3WithLabAngles kin("", "", 7, Kinematics2to3::kN, "qsquared:wlab:pn:thn:thk:phik", Q2, omega, pn,
+  Kinematics2to3WithLabAngles kin(7, Kinematics2to3::kN, "qsquared:wlab:pn:thn:thk:phik", Q2, omega, pn,
                                    thn, thk, PI, mA, nucqcd::mass_p, nucqcd::mass_n, mA2);
   REQUIRE(kin.GetNumberOfSolutions() >= 1);
   CHECK(kin.IsPhysical());
@@ -105,7 +105,7 @@ TEST_CASE("Kinematics2to3: azimuthal angles with the standard axis convention", 
   // the first particle of the format fixes the axes: with kK that is the kaon (phik is then zero by
   // definition and phin is the input)
   for (auto ac : {Kinematics2to3::kN, Kinematics2to3::kK}) {
-    Kinematics2to3WithLabAngles kin("", "", 7, ac,
+    Kinematics2to3WithLabAngles kin(7, ac,
                                      ac == Kinematics2to3::kK ? "qsquared:wlab:pk:thk:thn:phin" : "qsquared:wlab:pn:thn:thk:phik",
                                      1631389.67942, 580., 1000., 10. * nucqcd::deg_to_rad, 40. * nucqcd::deg_to_rad, 2.5, mA, nucqcd::mass_p, nucqcd::mass_n, mA2);
     REQUIRE(kin.GetNumberOfSolutions() >= 1);
@@ -120,16 +120,16 @@ TEST_CASE("Format strings and variable names are case insensitive, empty tokens 
   // Since 2026-11 the parsing uses std::string instead of ROOT's TString (roadmap step 9, phase 3);
   // the behaviour of TString::Tokenize (no empty tokens) and of the case-insensitive comparisons is kept.
   const double mA = 11177.93, mA1 = 10255.10, Q2 = 1.0e06, omega = 600., pm = 150.;
-  Kinematics2to2 ref("", "", mA, mA1, nucqcd::mass_p, "qsquared:wlab:pklab", Q2, omega, pm);
-  Kinematics2to2 upper("", "", mA, mA1, nucqcd::mass_p, "QSquared::WLAB:pkLab:", Q2, omega, pm);
+  Kinematics2to2 ref(mA, mA1, nucqcd::mass_p, "qsquared:wlab:pklab", Q2, omega, pm);
+  Kinematics2to2 upper(mA, mA1, nucqcd::mass_p, "QSquared::WLAB:pkLab:", Q2, omega, pm);
   CHECK(upper.GetPklab() == ref.GetPklab());
   CHECK(upper.GetCosthklab() == ref.GetCosthklab());
   CHECK(upper.GetVarName(2) == "wlab");
-  CHECK_THROWS_AS(Kinematics2to2("", "", mA, mA1, nucqcd::mass_p, "qsquared:wlab:nonsense", Q2, omega, pm),
+  CHECK_THROWS_AS(Kinematics2to2(mA, mA1, nucqcd::mass_p, "qsquared:wlab:nonsense", Q2, omega, pm),
                   std::invalid_argument);
 
   const double mA2 = mA - nucqcd::mass_p - nucqcd::mass_n + 30.;
-  Kinematics2to3WithLabAngles k3("", "", 7, Kinematics2to3::kN, "QSQUARED:wlab:Pn:thn:THK:phik", 1631389.67942, 580.,
+  Kinematics2to3WithLabAngles k3(7, Kinematics2to3::kN, "QSQUARED:wlab:Pn:thn:THK:phik", 1631389.67942, 580.,
                                   1000., 10. * nucqcd::deg_to_rad, 40. * nucqcd::deg_to_rad, PI, mA, nucqcd::mass_p,
                                   nucqcd::mass_n, mA2);
   REQUIRE(k3.GetNumberOfSolutions() >= 1);
@@ -145,7 +145,7 @@ TEST_CASE("Kinematics2to3: variables by name (GetVar, GetVarArray, GetPhysicalVa
   // it was checked against the old code on all 152 names, including GetVarArray and GetPhysicalVarArray
   const double mA = 11177.93, mA2 = mA - nucqcd::mass_p - nucqcd::mass_n + 30.;
   const double Q2 = 1631389.67942, omega = 580., pn = 1000., thn = 10. * nucqcd::deg_to_rad, thk = 40. * nucqcd::deg_to_rad;
-  Kinematics2to3WithLabAngles lab("", "", 7, Kinematics2to3::kN, "qsquared:wlab:pn:thn:thk:phik", Q2, omega, pn, thn,
+  Kinematics2to3WithLabAngles lab(7, Kinematics2to3::kN, "qsquared:wlab:pn:thn:thk:phik", Q2, omega, pn, thn,
                                    thk, PI, mA, nucqcd::mass_p, nucqcd::mass_n, mA2);
   REQUIRE(lab.GetNumberOfSolutions() >= 1);
   Kinematics2to3 k(lab.GetSolution(0));
@@ -171,7 +171,7 @@ TEST_CASE("Kinematics2to3: format strings of the three scenarios reproduce the s
   // old code on 900k random format strings, bitwise but for 14 angles within 1e-8 of 0 or pi): an event is
   // built from lab angles, then rebuilt from other sets of variables: an energy and angles in the CM of the
   // (2+3) subsystem (scenario 1), and mandelstam variables (scenario 3)
-  Kinematics2to3WithLabAngles lab("", "", 1, Kinematics2to3::kN, "qsquared:wlab:pn:thn:thk:phik", 2.e5, 1800., 300., 1.0,
+  Kinematics2to3WithLabAngles lab(1, Kinematics2to3::kN, "qsquared:wlab:pn:thn:thk:phik", 2.e5, 1800., 300., 1.0,
                                    0.7, 1.0);
   REQUIRE(lab.GetNumberOfSolutions() >= 1);
   const Kinematics2to3 &ev = lab.GetSolution(0);
@@ -183,16 +183,16 @@ TEST_CASE("Kinematics2to3: format strings of the three scenarios reproduce the s
   };
   // scenario 1: wlab, pn and thn fix the first particle, the nucleon (the axis convention kN), the kaon's
   // angles are in the KY CM
-  same_event(Kinematics2to3("", "", 1, Kinematics2to3::kN, "qsquared:wlab:pn:thn:kythkcm:kyphikcm", ev.GetVar("qsquared"),
+  same_event(Kinematics2to3(1, Kinematics2to3::kN, "qsquared:wlab:pn:thn:kythkcm:kyphikcm", ev.GetVar("qsquared"),
                              ev.GetVar("wlab"), ev.GetVar("pn"), ev.GetVar("thn"), ev.GetVar("kythkcm"), ev.GetVar("kyphikcm")));
   // scenario 3: s_tot, t_gN, t_gK, t_dY, s_KY
-  same_event(Kinematics2to3("", "", 1, Kinematics2to3::kN, "qsquared:stot:tgn:tgk:tdy:sky", ev.GetVar("qsquared"),
+  same_event(Kinematics2to3(1, Kinematics2to3::kN, "qsquared:stot:tgn:tgk:tdy:sky", ev.GetVar("qsquared"),
                              ev.GetVar("stot"), ev.GetVar("tgn"), ev.GetVar("tgk"), ev.GetVar("tdy"), ev.GetVar("sky")));
 }
 
 TEST_CASE("Kinematics2to3: format strings that make no sense are refused", "[kinematics]") {
   auto make = [](Kinematics2to3::EAxisConvention ac, const char *format) {
-    return Kinematics2to3("", "", 1, ac, format, 2.e5, 1800., 300., 0.5, 0.5, 0.5);
+    return Kinematics2to3(1, ac, format, 2.e5, 1800., 300., 0.5, 0.5, 0.5);
   };
   // the same energy twice, a particle's energy and its momentum, an unknown name, no Q^2
   CHECK_THROWS_WITH(make(Kinematics2to3::kN, "qsquared:wlab:klab:pn:thn:phik"), ContainsSubstring("Format string is not sane!"));
@@ -211,7 +211,7 @@ TEST_CASE("Kinematics2to3: a format string without all variables of its scenario
   // until 2026-11 these were accepted and UpdateKinematics dereferenced a null pointer: Q^2 twice, two
   // energies and no angle, ... (found by trying 900k format strings; each crashed)
   auto make = [](Kinematics2to3::EAxisConvention ac, const char *format) {
-    return Kinematics2to3("", "", 1, ac, format, 2.e5, 1800., 300., 0.5, 0.5, 0.5);
+    return Kinematics2to3(1, ac, format, 2.e5, 1800., 300., 0.5, 0.5, 0.5);
   };
   for (const auto &c : {std::make_pair(Kinematics2to3::kN, "qsquared:ey:ykcosthycm:wlab:ykphiycm:en"),
                         std::make_pair(Kinematics2to3::kY, "qsquared:qsquared:ey:wkn:nkphikcm:tgk"),

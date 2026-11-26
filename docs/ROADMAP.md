@@ -28,7 +28,7 @@ same PR.
 | 6 | Structural refactors | 🔶 done: constants macros (#41), `NuclStructure` merge (#42), code layout items 1–4 (`Tools` split #52, prefixed includes and `.hpp` #53), `Model`/`Cross` renamed (#53); MPI retired (#54); namespace `nucqcd` (#65); integrator benchmark (#61, keep `cube_romb` and `cube_adaptive`), precision reporting (#62); CRLF to LF (#66); long files split (#70), integrator option 0 removed (#69); model selection (#72), long `TKinematics2to3` functions (#74); `T*` classes renamed (#76); to do: Glauber grid dedup and speed |
 | 7 | Unbundle Cuba and cubature | 🔶 Cuba done (#67); cubature (a maintenance question only, see the benchmark) to do |
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
-| 9 | Decouple from ROOT where possible | ✅ done: phases 1–5 (#44, #45, #50, #55, #56, #58), phase 6: GPD generators (#59) and the fits on the standalone Minuit2 (#73); the two long `TKinematics2to3` functions split (#74) and the crash they showed fixed (#75); the `T*` classes renamed (#76; the names in this file before that are the old ones); the two thick Glauber grids share their code (#77). ROOT is only used by the test `unit_vectors` |
+| 9 | Decouple from ROOT where possible | ✅ done: phases 1–5 (#44, #45, #50, #55, #56, #58), phase 6: GPD generators (#59) and the fits on the standalone Minuit2 (#73); the two long `TKinematics2to3` functions split (#74) and the crash they showed fixed (#75); the `T*` classes renamed (#76; the names in this file before that are the old ones); the two thick Glauber grids share their code (#77); the `TNamed` leftovers (names, titles, `Clone(name)`) removed (#78). ROOT is only used by the test `unit_vectors` |
 | 10 | LHAPDF interface for the nucleon structure functions | ✅ done (#46), including MSTW through LHAPDF |
 | 11 | Run bookkeeping (provenance) for all programs | ✅ done: design and `RunLog` (#49), `Bookkeep` replaced in its 8 programs (#51), `RunLog` in all other non-attic programs (#64) |
 
@@ -36,7 +36,7 @@ same PR.
 
 *Updated 2026-11-25.*
 
-**Done recently** (PRs #44–#77): ROOT decoupling phases 1–3; step 10 (LHAPDF);
+**Done recently** (PRs #44–#78): ROOT decoupling phases 1–3; step 10 (LHAPDF);
 He3 fixes; step 11 part 1 (`RunLog`); step 6 code layout: `Tools` split into Core, Kinematics,
 WaveFunctions and StructureFunctions (#52), then includes as paths from the repository root, `.hpp`
 as the only extension, and `Model`/`Cross` renamed to `EMQEHadronCurrent`/`EMQECross` (#53); MPI
@@ -800,8 +800,19 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   would have collided with the new class, is `OnShellPoint`. **Not renamed:** `TMPI` (the attic copy in
   `progs/attic/mpi`), and the ROOT classes in the comments. **This ROADMAP and `docs/HISTORY.md` still use
   the old names where they describe what was done before this rename** (PR numbers #1-#75 refer to the old
-  names). Left for later: the `GetName`/`GetTitle`/`SetName`/`SetTitle` members that `TNamed` left in
-  `Kinematics`, `Kinematics2to3` and `Deuteron::Wavefunction` (a name and title nobody uses?).
+  names). **The `TNamed` leftovers are gone too (2026-11-25, #78):** `Kinematics`, `Kinematics2to2`,
+  `Kinematics2to3` and `Kinematics2to3WithLabAngles` had a name and a title (members, `GetName`, `GetTitle`,
+  `SetName`, `SetTitle`, and the first two arguments of every constructor) that nothing used: 134 of the
+  constructor calls (libraries, programs, tests) passed `"", ""`, three more were the names of the KY, KN and
+  YN subsystems and `transp_eli` ("kinematics_name"), and the only readers were the first line of the two
+  `Print`/`VariableInfo` outputs. The arguments and members are removed (a script took the two leading string
+  literals out of the 134 calls, the compiler checked the rest); the output of `Kinematics::Print` and
+  `Kinematics2to3::VariableInfo` now starts with the class name instead of "name: title". The virtual
+  `Clone(const char *newname)` of ROOT's `TObject` (17 declarations: the kinematics, `Spinor` and its
+  subclasses, `MeanFieldSpinor`, `ElectronKinematics`, `LeptonKinematics` and the wave function
+  implementations) is `Clone()`: nobody passed a name. `Deuteron::Wavefunction` keeps its name
+  (`GetName`: "CDBonn", "Paris", ..., which names the parametrization in an error message and is tested in
+  `unit_stringutil` and `unit_models`) and loses the title, `SetName` and `SetTitle`.
   Checked: full build with `BUILD_PROGS` and PARTONS, `ctest -LE slow` 133/133, `ctest -L slow` 11/11,
   `make doc` no warnings, all with unchanged references.
 - [~] **Very long files and functions** (files split 2026-11-25, #70; functions not): the files were split

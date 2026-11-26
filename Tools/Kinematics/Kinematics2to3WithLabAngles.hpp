@@ -23,8 +23,7 @@ class Kinematics2to3WithLabAngles : public Kinematics2to3
 {
  public:
   /*! constructor, arguments as for Kinematics2to3::Kinematics2to3 */
-  Kinematics2to3WithLabAngles(const char *name, const char *title,
-			       int isospin, EAxisConvention ac, 
+  Kinematics2to3WithLabAngles(int isospin, EAxisConvention ac, 
 			       const char *format,
 			       double var1, double var2, double var3,
 			       double var4, double var5, double var6,

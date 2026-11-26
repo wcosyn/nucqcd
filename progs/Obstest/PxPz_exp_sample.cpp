@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
         ElectronKinematics *elec = ElectronKinematics::CreateWithBeamEnergy(Ein);
         EMQECross obs(*elec,&nucleus,prec,integrator,homedir,screening,scr);
         //mass Amin1 is tweaked to correspond to exp sample Emiss
-        Kinematics2to2 kin("","",nucleus.getMassA(),Emiss_sample-nucqcd::mass_p+nucleus.getMassA(),
+        Kinematics2to2 kin(nucleus.getMassA(),Emiss_sample-nucqcd::mass_p+nucleus.getMassA(),
 	    	nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
 
         // cout << "q|omega|nucl_p|nucl_thetaq|pm|pm_thetaq|";

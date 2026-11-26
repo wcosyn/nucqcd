@@ -364,7 +364,7 @@ int main(int argc, char *argv[])
 //     cout << E_in << " " << omega << " " << Q2*1.E-06 << " " << x <<  endl;
     for(int shell=0;shell<Nucleus.getTotalLevels();shell++) {
       //lowest p_m is always at theta_cm -1
-      Kinematics2to2 kin("","",Nucleus.getMassA(),
+      Kinematics2to2 kin(Nucleus.getMassA(),
 			  (shell<Nucleus.getPLevels()? Nucleus.getMassA_min_proton(): Nucleus.getMassA_min_neutron())
 			  +Nucleus.getExcitation()[shell],
 			  shell<Nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,-1.);
@@ -401,7 +401,7 @@ int main(int argc, char *argv[])
 //     cout << E_in << " " << omega << " " << Q2*1.E-06 << " " << x <<  endl;
     for(int shell=0;shell<Nucleus.getTotalLevels();shell++) {
       //lowest p_m is always at theta_cm -1
-      Kinematics2to2 kin("","",Nucleus.getMassA(),
+      Kinematics2to2 kin(Nucleus.getMassA(),
 			  (shell<Nucleus.getPLevels()? Nucleus.getMassA_min_proton(): Nucleus.getMassA_min_neutron())
 			  +Nucleus.getExcitation()[shell],
 			  shell<Nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,-1.);
@@ -439,7 +439,7 @@ int main(int argc, char *argv[])
 //     cout << E_in << " " << omega << " " << Q2*1.E-06 << " " << x <<  endl;
     for(int shell=0;shell<Nucleus.getTotalLevels();shell++) {
       //lowest p_m is always at theta_cm -1
-      Kinematics2to2 kin("","",Nucleus.getMassA(),
+      Kinematics2to2 kin(Nucleus.getMassA(),
 			  (shell<Nucleus.getPLevels()? Nucleus.getMassA_min_proton(): Nucleus.getMassA_min_neutron())
 			  +Nucleus.getExcitation()[shell],
 			  shell<Nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,-1.);
@@ -477,7 +477,7 @@ int main(int argc, char *argv[])
 //     cout << E_in << " " << omega << " " << Q2*1.E-06 << " " << x <<  endl;
     for(int shell=0;shell<Nucleus.getTotalLevels();shell++) {
       //lowest p_m is always at theta_cm -1
-      Kinematics2to2 kin("","",Nucleus.getMassA(),
+      Kinematics2to2 kin(Nucleus.getMassA(),
 			  (shell<Nucleus.getPLevels()? Nucleus.getMassA_min_proton(): Nucleus.getMassA_min_neutron())
 			  +Nucleus.getExcitation()[shell],
 			  shell<Nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,-1.);
@@ -556,7 +556,7 @@ void adap_intPm(numint::vector_d & results, double E_out, double costhetamu, dou
   pObs.getPlepton()->SetBeamEnergy(E_in);
   for(int shell=0;shell<nucleus.getTotalLevels();shell++) {
     if(costhetacm<cthmax[shell]){
-      Kinematics2to2 kin("","",nucleus.getMassA(),
+      Kinematics2to2 kin(nucleus.getMassA(),
 			  (shell<nucleus.getPLevels()? nucleus.getMassA_min_proton(): nucleus.getMassA_min_neutron())
 			  +nucleus.getExcitation()[shell],
 			  shell<nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,costhetacm);
@@ -589,7 +589,7 @@ double getBound(double &high, double &low, MeanFieldNucleusThick &nucleus, Lepto
   double tempmin=500.;
   double costhmin=-1.;
   for(int i=0;i<=1000;i++){ //loop over all com angles
-    Kinematics2to2 kin("","",nucleus.getMassA(),
+    Kinematics2to2 kin(nucleus.getMassA(),
 			(shell<nucleus.getPLevels()? nucleus.getMassA_min_proton(): nucleus.getMassA_min_neutron())
 			+nucleus.getExcitation()[shell],
 			shell<nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,-1.+i*0.002);
@@ -600,14 +600,14 @@ double getBound(double &high, double &low, MeanFieldNucleusThick &nucleus, Lepto
   double temptemp=costhmin;//com costheta value where the min initial nucl momentum is
 //   cout << costhmin << " " << tempmin << endl;
   if(tempmin<300.){
-    Kinematics2to2 kin1("","",nucleus.getMassA(),
+    Kinematics2to2 kin1(nucleus.getMassA(),
 			(shell<nucleus.getPLevels()? nucleus.getMassA_min_proton(): nucleus.getMassA_min_neutron())
 			+nucleus.getExcitation()[shell],
 			shell<nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,1.);
     high=1;
     if(kin1.GetPklab()>300.) high=getMax(high,temptemp,nucleus,lepton,Q2,omega,shell);
     temptemp=costhmin;
-    Kinematics2to2 kinmin1("","",nucleus.getMassA(),
+    Kinematics2to2 kinmin1(nucleus.getMassA(),
 			(shell<nucleus.getPLevels()? nucleus.getMassA_min_proton(): nucleus.getMassA_min_neutron())
 			+nucleus.getExcitation()[shell],
 			shell<nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,-1.);
@@ -622,7 +622,7 @@ double getBound(double &high, double &low, MeanFieldNucleusThick &nucleus, Lepto
 double getMin(double &high, double &low, MeanFieldNucleusThick &nucleus, LeptonKinematics &lepton,
 	      double Q2, double omega, int shell){
   
-  Kinematics2to2 kin("","",nucleus.getMassA(),
+  Kinematics2to2 kin(nucleus.getMassA(),
 		      (shell<nucleus.getPLevels()? nucleus.getMassA_min_proton(): nucleus.getMassA_min_neutron())
 		      +nucleus.getExcitation()[shell],
 		      shell<nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,(high+low)/2.);
@@ -638,7 +638,7 @@ double getMin(double &high, double &low, MeanFieldNucleusThick &nucleus, LeptonK
 double getMax(double &high, double &low, MeanFieldNucleusThick &nucleus, LeptonKinematics &lepton,
 	      double Q2, double omega, int shell){
   
-  Kinematics2to2 kin("","",nucleus.getMassA(),
+  Kinematics2to2 kin(nucleus.getMassA(),
 		      (shell<nucleus.getPLevels()? nucleus.getMassA_min_proton(): nucleus.getMassA_min_neutron())
 		      +nucleus.getExcitation()[shell],
 		      shell<nucleus.getPLevels()?nucqcd::mass_n:nucqcd::mass_p,"qsquared:wlab:costhkcm",Q2,omega,(high+low)/2.);

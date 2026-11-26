@@ -58,7 +58,7 @@ class Spinor
   Spinor(const Spinor&); ///< copy constructor
   virtual ~Spinor(); ///< destructor
   Spinor& operator=(const Spinor&); ///< assignment
-  virtual Spinor* Clone(const char* ="") const; ///< virtual copy constructor
+  virtual Spinor* Clone() const; ///< virtual copy constructor
 
   operator const Matrix<4,1>&() const { return *fComponent; } ///< the four components as a 4x1 matrix
   /// outer product of the spinor (4x1) with a 1xK matrix
@@ -181,7 +181,7 @@ class VSpinor : public Spinor
   VSpinor(const VSpinor&); ///< copy constructor
   virtual ~VSpinor(); ///< destructor
   VSpinor& operator=(const VSpinor&); ///< assignment
-  virtual VSpinor* Clone(const char* ="") const; ///< virtual copy constructor
+  virtual VSpinor* Clone() const; ///< virtual copy constructor
 
 
 }; // class VSpinor
@@ -196,7 +196,7 @@ class HelicitySpinor : public Spinor
   HelicitySpinor(const HelicitySpinor&); ///< copy constructor
   virtual ~HelicitySpinor(); ///< destructor
   HelicitySpinor& operator=(const HelicitySpinor&); ///< assignment
-  virtual HelicitySpinor* Clone(const char* ="") const; ///< virtual copy constructor
+  virtual HelicitySpinor* Clone() const; ///< virtual copy constructor
 
   static nucqcd::LorentzRotation HelicityTransformation(const nucqcd::LorentzVector&); ///< helicity transformation \f$ h(p) = r_z(\phi) r_y(\theta) l_z(|\vec p|/p^0) \f$ (Leader, section 1.2.2)
   static Spinor::LorentzRotation HelicitySpinorTransformation(const nucqcd::LorentzVector&); ///< helicity transformation h(p) in spinor space
@@ -222,7 +222,7 @@ class HelicityVSpinor : public Spinor
   HelicityVSpinor(const HelicityVSpinor&); ///< copy constructor
   virtual ~HelicityVSpinor(); ///< destructor
   HelicityVSpinor& operator=(const HelicityVSpinor&); ///< assignment
-  virtual HelicityVSpinor* Clone(const char* ="") const; ///< virtual copy constructor
+  virtual HelicityVSpinor* Clone() const; ///< virtual copy constructor
 
  private:
   void ToHelicityVSpinor(const Polarization::State&, const double phi); ///< rotates the Pauli spinors to the helicity basis

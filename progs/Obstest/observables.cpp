@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 //   string homedir="/home/wim/Code/share";
 // 
 //   MeanFieldNucleusThick Carbon(nucleus,homedir);
-//   Kinematics2to2 kin("","",Carbon.getMassA(),Carbon.getMassA_min_proton(),nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
+//   Kinematics2to2 kin(Carbon.getMassA(),Carbon.getMassA_min_proton(),nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
 //   ElectronKinematics *elec = ElectronKinematics::CreateWithBeamEnergy(Ein);
 //   EMQECross obs(*elec,&Carbon,prec,integrator,homedir,screening,scr);
 //   double free=obs.getElCross(kin,2,PI)*nucqcd::hbarc*nucqcd::hbarc;
@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
     double pm=i*5.;
   
   
-    Kinematics2to2 kin("","",Carbon.getMassA(),Carbon.getMassA_min_proton()+Carbon.getExcitation()[shell]
+    Kinematics2to2 kin(Carbon.getMassA(),Carbon.getMassA_min_proton()+Carbon.getExcitation()[shell]
 		,nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
     if(kin.IsPhysical()&&kin.GetPYlab()<801.6&&kin.GetPYlab()>534.4){
         EMQECross obs(*elec,&Carbon,prec,integrator,homedir,screening,scr);

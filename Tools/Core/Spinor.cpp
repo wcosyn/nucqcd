@@ -130,7 +130,7 @@ Spinor& Spinor::operator=(const Spinor& rhs)
 }
 
 //_____________________________________________________________________
-Spinor* Spinor::Clone(const char*) const
+Spinor* Spinor::Clone() const
 {
   // Virtual copy constructor
   return new Spinor(*this);
@@ -460,7 +460,7 @@ VSpinor& VSpinor::operator=(const VSpinor& rhs)
 }
 
 //_____________________________________________________________________
-VSpinor* VSpinor::Clone(const char*) const
+VSpinor* VSpinor::Clone() const
 {
   // Virtual copy constructor
   return new VSpinor(*this);
@@ -538,7 +538,7 @@ HelicitySpinor& HelicitySpinor::operator=(const HelicitySpinor& rhs)
 }
 
 //_____________________________________________________________________
-HelicitySpinor* HelicitySpinor::Clone(const char*) const
+HelicitySpinor* HelicitySpinor::Clone() const
 {
   // Virtual copy constructor
   return new HelicitySpinor(*this);
@@ -640,7 +640,7 @@ HelicityVSpinor& HelicityVSpinor::operator=(const HelicityVSpinor& rhs)
 }
 
 //_____________________________________________________________________
-HelicityVSpinor* HelicityVSpinor::Clone(const char*) const
+HelicityVSpinor* HelicityVSpinor::Clone() const
 {
   // Virtual copy constructor
   return new HelicityVSpinor(*this);

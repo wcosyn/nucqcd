@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
   string homedir=nucqcd::share_dir;
 
   MeanFieldNucleusThick Carbon(nucleus,homedir);
-  Kinematics2to2 kin("","",Carbon.getMassA(),Carbon.getMassA_min_proton(),nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
+  Kinematics2to2 kin(Carbon.getMassA(),Carbon.getMassA_min_proton(),nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
 //   ElectronKinematics *elec = ElectronKinematics::CreateWithBeamEnergy(4627.);  //Monaghan Data
   ElectronKinematics *elec = ElectronKinematics::CreateWithBeamEnergy(3245.); //Dutta Data
   EMQECross obs(*elec,&Carbon,prec,integrator,homedir,screening,scr);
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 //   cout << sqrt(Q2+omega*omega) << " " << crossp << " " << crosss << endl;
 
   MeanFieldNucleusThick Fe(3,homedir);
-  Kinematics2to2 kin2("","",Fe.getMassA(),Fe.getMassA_min_proton(),nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
+  Kinematics2to2 kin2(Fe.getMassA(),Fe.getMassA_min_proton(),nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
   EMQECross obs2(*elec,&Fe,prec,integrator,homedir,screening,scr);
   obs2.getDiffCross(kin2, 2, 0, 0, 0, 1, 0, 0.,2E04,1,0,1.,1.);
   obs2.getDiffCross(kin2, 2, 0, 0, 0, 1, 1, 0.,2E04,1,0,1.,1.);

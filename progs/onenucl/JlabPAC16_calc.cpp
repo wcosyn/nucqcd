@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
     double pw=0.;
     for(int plevel=0;plevel<obs[i].getPnucl()->getPLevels();plevel++){
       cout << i << " " << plevel << endl;
-      Kinematics2to2 kin("","",obs[i].getPnucl()->getMassA(),obs[i].getPnucl()->getMassA_min_proton()+(obs[i].getPnucl()->getExcitation())[plevel]
+      Kinematics2to2 kin(obs[i].getPnucl()->getMassA(),obs[i].getPnucl()->getMassA_min_proton()+(obs[i].getPnucl()->getExcitation())[plevel]
                           ,nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
 //       cout << kin.GetPYlab() << " " << acos(kin.GetCosthYlab()) << endl;
       cross+=obs[i].getDiffCross(kin,2,thick,0,0,0,plevel,phi,maxEval,1,0,1.,1.);

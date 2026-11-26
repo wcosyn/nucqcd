@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
   double pm=i*10.;
   
   
-    Kinematics2to2 kin("","",nucleus.getMassA(),nucleus.getMassA_min_proton()+nucleus.getExcitation()[shell]
+    Kinematics2to2 kin(nucleus.getMassA(),nucleus.getMassA_min_proton()+nucleus.getExcitation()[shell]
 		,nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
     // cout << i << endl;
     if(kin.IsPhysical()){

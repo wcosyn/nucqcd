@@ -29,7 +29,7 @@ class YukawaWavefunction : public WavefunctionImplementation
   YukawaWavefunction& operator=(const YukawaWavefunction&); ///< assignment
   virtual ~YukawaWavefunction(); ///< destructor
 
-  virtual YukawaWavefunction *Clone(const char* ="") const { return new YukawaWavefunction(*this); } ///< virtual copy constructor
+  virtual YukawaWavefunction *Clone() const { return new YukawaWavefunction(*this); } ///< virtual copy constructor
 
   virtual double GetUr(double r) const; ///< [fm^-1/2] S wave u (L=0) in coordinate space \param r [fm]
   virtual double GetWr(double r) const; ///< [fm^-1/2] D wave w (L=2) in coordinate space \param r [fm]

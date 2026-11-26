@@ -31,11 +31,10 @@ namespace nucqcd {
 
 
 //_____________________________________________________________________
-Kinematics2to2::Kinematics2to2(const char *name,const char *title,
-				 double mN, double mK, double mY,
+Kinematics2to2::Kinematics2to2(double mN, double mK, double mY,
 				 const char *formatString,
 				 double var1,double var2,double var3)
-: Kinematics(name,title,1,formatString,var1,var2,var3)
+: Kinematics(1,formatString,var1,var2,var3)
 {
   // Constructor
   //
