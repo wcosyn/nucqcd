@@ -18,6 +18,7 @@ nucqcd_add_library(Glauber
     GlauberGrid.cpp
     GlauberGridThick.cpp
     GlauberDecayGridThick.cpp
+    GlauberThickGridCommon.cpp
     OneGlauberGrid.cpp
     MeanFieldSpinor.cpp
     DistMomDistrGrid.cpp

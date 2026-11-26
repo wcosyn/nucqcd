@@ -78,36 +78,6 @@ private:
   virtual void setFilenames(std::string dir);
   
   
-  /*! function that gets integrated over b, both fsi and fsi+ct grid output
-   * \param b [fm] radial coordinate, cylindrical!!
-   * \param results result: contains the glauberphases (fsi and fsi+ct) for a gridpoint
-   * \param ap variable parameter list
-   */
-  void intGlauberB(const double b, double *results, va_list ap);
-  /*! function that gets integrated over z, both fsi and fsi+ct grid output
-   * \param z [fm] z coordinate, cylindrical!!
-   * \param results result: contains the glauberphases (fsi and fsi+ct) for a gridpoint
-   * \param ap variable parameter list
-   */
-  void intGlauberZ(const double z, double *results, va_list ap);
-  /*! function that gets integrated over phi
-   * \param phi [rad] phi coordinate, cylindrical!!!
-   * \param result result: contains the glauberphases for a gridpoint
-   * \param ap variable parameter list
-   */
-  void intGlauberPhi(const double phi, double *result, va_list ap);
-  /*! function that gets integrated over b, both fsi and fsi+ct grid output
-   * \param b [fm] radial coordinate, cylindrical!!
-   * \param results result: contains the glauberphases (fsi+ct) for a gridpoint
-   * \param ap variable parameter list
-   */
-  void intGlauberBCT(const double b, double *results, va_list ap);
-  /*! function that gets integrated over z, only fsi+ct grid output
-   * \param z [fm] z coordinate, cylindrical!!
-   * \param results result: contains the glauberphases (fsi+ct) for a gridpoint
-   * \param ap variable parameter list
-   */
-  void intGlauberZCT(const double z, double *results, va_list ap);
   
   /*! struct that is used for integrators (clean ones)*/
   struct Ftor_one {

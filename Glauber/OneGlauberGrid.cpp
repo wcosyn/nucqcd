@@ -129,104 +129,11 @@ void OneGlauberGrid::calcGlauberphasesCt(const int i, const int j, const int k){
 }
 
 
-void OneGlauberGrid::intGlauberB(const double b, double *results, va_list ap){
-  int level = va_arg(ap,int);
-  int m = va_arg(ap,int);
-  double *pthetaestimate = va_arg(ap,double*);
-  double *pphiestimate = va_arg(ap,double*);
-  
-  double ceiling=sqrt(getPnucleus()->getRange()*getPnucleus()->getRange() - b*b);
-  double bottom;
-  //because of Heaviside function, bottom limit is z
-  if(getParticles()[0].getHitz()>=-ceiling) bottom = getParticles()[0].getHitz();
-  //if limit because of data range is more limiting
-  else bottom = -ceiling;
-  if(ceiling<bottom)  { //due to rounding errors
-    results[0]= results[1] = 0.;
-    return;
-  }
-  /** \f$ \int d^2 b -> \int db b \int phi_{b}  \f$
-   *  note that the following tricks have been applied.
-   *  \f$ (\vec{b'}-\vec{b})^{2} = b'^2 + b^2 - 2 b b' \cos \phi_{b'} = ( b' - b)^{2} + 2 bb'( 1 - \cos \phi) = (b' - b)^{2} + 4 bb' \sin^{2} \phi/2 \f$
-   *  \f$ \phi -> 2\phi \f$ , integration boundaries change from \f$ [0,2\pi]\f$ to \f$[0,\pi]\f$, introduce factor 2 in front 
-   *  \f$ 2*\int_{0}^{\pi} d \phi exp( 4bb' sin^{2} \phi) \f$
-   *  Split integral in \f$ [0,pi/2] \f$ and \f$ [pi/2,pi] \f$, with substitution \f$ \phi -> \pi - \phi \f$, one can show that 2 terms are equal \f$( \sin(\pi + \phi) = - \sin(\phi) ) \f$
-   *  \f$ 4*\int_{0}^{\pi/2} d \phi \exp( 4bb' \sin^{2} \phi)\f$ (this explains factor 4 in front)
-   */
-  double phiint=0;
-  rombergerN(this,&OneGlauberGrid::intGlauberPhi,0.,PI/2.,1,&phiint,getPrec(),3,10,pphiestimate,b,level);
-  rombergerN(this,&OneGlauberGrid::intGlauberZ,bottom+1.E-08,ceiling-1.E-08,2,results,getPrec(),3,10,pthetaestimate,b, level,m);
-  phiint*=4.*b*exp(-power(b-getParticles()[0].getHitbnorm(),2.)
-			      /(2.*getParticles()[0].getBetasq(level,getPnucleus())));
-  results[0]*=phiint;
-  results[1]*=phiint;
-}
-
-void OneGlauberGrid::intGlauberZ(const double z, double *results, va_list ap){
-  double b = va_arg(ap,double);
-  int level = va_arg(ap,int);
-  int m = va_arg(ap,int);
-  
-  double r=sqrt(b*b+z*z);
-  double costheta=z/r;
-  
-  double temp=power(getPnucleus()->getWave_F(level,r)/r,2)*getPnucleus()->getYminkappacos(level,m,costheta)
-	      +power(getPnucleus()->getWave_G(level,r)/r,2)*getPnucleus()->getYkappacos(level,m,costheta);
-  results[0]=temp;
-  results[1]=temp*getParticles()[0].getCTsigma(z);
 
 
-}
-
-void OneGlauberGrid::intGlauberPhi(const double phi, double *result, va_list ap){
-  double b = va_arg(ap,double);
-  int level = va_arg(ap,int);
-  
-  *result=exp(-b*getParticles()[0].getHitbnorm()/getParticles()[0].getBetasq(level,getPnucleus())*2.
-	     *power(sin(phi),2.));
-  
-  
-}
 
 
-void OneGlauberGrid::intGlauberBCT(const double b, double *result, va_list ap){
-  int level = va_arg(ap,int);
-  int m = va_arg(ap,int);
-  double *pthetaestimate = va_arg(ap,double*);
-  double *pphiestimate = va_arg(ap,double*);
-  
-  double ceiling=sqrt(getPnucleus()->getRange()*getPnucleus()->getRange() - b*b);
-  double bottom;
-  //because of Heaviside function, bottom limit is z
-  if(getParticles()[0].getHitz()>=-ceiling) bottom = getParticles()[0].getHitz();
-  //if limit because of data range is more limiting
-  else bottom = -ceiling;
-  if(ceiling<bottom)  { //due to rounding errors
-    *result = 0.;
-    return;
-  }
-  
-  double phiint=0;
-  rombergerN(this,&OneGlauberGrid::intGlauberPhi,0.,PI/2.,1,&phiint,getPrec(),3,8,pphiestimate,b,level);
-  rombergerN(this,&OneGlauberGrid::intGlauberZCT,bottom+1.E-08,ceiling-1.E-08,1,result,getPrec(),3,8,pthetaestimate,b, level,m);
-  phiint*=4.*b*exp(-power(b-getParticles()[0].getHitbnorm(),2.)
-			      /(2.*getParticles()[0].getBetasq(level,getPnucleus())));
-  *result*=phiint;
-}
 
-void OneGlauberGrid::intGlauberZCT(const double z, double *result, va_list ap){
-  double b = va_arg(ap,double);
-  int level = va_arg(ap,int);
-  int m = va_arg(ap,int);
-  
-  double r=sqrt(b*b+z*z);
-  double costheta=z/r;
-  
-  double temp=power(getPnucleus()->getWave_F(level,r)/r,2)*getPnucleus()->getYminkappacos(level,m,costheta)
-	      +power(getPnucleus()->getWave_G(level,r)/r,2)*getPnucleus()->getYkappacos(level,m,costheta);
-  *result=temp*getParticles()[0].getCTsigma(z);
-  
-}
 
 void OneGlauberGrid::klaas_one_bound(numint::vector_d & results, double b, double z, double phi, OneGlauberGrid & grid, 
 		   int level, int m){
