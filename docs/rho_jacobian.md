@@ -78,8 +78,8 @@ system (about `M_A`), in this place. That made the z integrals too large by abou
 ## 4. Comparison with the paper, and what the "4 kappa" was
 
 The cross section implemented in `RhoTCross` is Eq. (13) of W. Cosyn and J. Ryckebusch, Phys. Rev. C 87, 064608
-(2013), arXiv:1301.1904 (equation numbers and formulas as transcribed from the arXiv HTML version by a helper;
-**not checked by me against the PDF**):
+(2013), arXiv:1301.1904, in the equation numbering of the arXiv version (formulas checked against the author's TeX
+source `rhopaper_final.tex`, equations `eq:A`, `eq:factorize`, `eq:distormomentum`, `eq:elem`, `eq:cross`):
 
     d sigma^{eA}/(dE_e' dOmega_e' dt dphi_rho) = sum_alpha ∫ d³pm  alpha_EM/(4 (2 pi)²) · E_e' rho^D_alpha(pm)
         · [s² - 2 s (m_N² - Q²) + (m_N² + Q²)²] / [q E_e Q² (1 - eps) m_N²] · (d sigma/d|t|)_0 e^{-beta t},   beta = 6 GeV^-2.

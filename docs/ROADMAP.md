@@ -406,7 +406,7 @@ one commit per bug; no `[known-bug]` tests remain.
     M_A/m_N (about 12 for carbon); the t results and the transparencies do not move. No test covers `RhoTCross`.
   - **Normalisation (checked against the paper, 2026-11-26, `docs/rho_jacobian.md` section 4):** the prefactor and front
     factor of `getCrosst` are Eq. (13) of Cosyn and Ryckebusch, Phys. Rev. C 87, 064608 (2013), arXiv:1301.1904 (formulas
-    from the HTML version through a helper, not checked against the PDF), so the t version is the reference; the paper
+    checked against the author's TeX source), so the t version is the reference; the paper
     has no z integral or t-z Jacobian. The code gives each root of the on-shell condition the weight 1, i.e. treats
     `dphi* = dphi_rho`; the exact weight is `sqrt(lambda)/(2 q kappa)` (mean 1.015, large excursions at the edges, exactly 1
     when integrated over the azimuth). Not changed; whether it matters with the azimuth-dependent Glauber distributions
