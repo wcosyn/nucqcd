@@ -36,6 +36,19 @@ particle_type(particletype){
 }
 
 
+double RhoTCross::getW(double nu, double Q2){
+  const double W2 = nucqcd::mass_p_GeV*nucqcd::mass_p_GeV+2.*nucqcd::mass_p_GeV*nu-Q2;
+  return W2>0.? std::sqrt(W2): 0.;
+}
+
+void RhoTCross::checkWcut(double Q2, double nu_min){
+  const double W = getW(nu_min,Q2);
+  if(W<Wmin)
+    throw std::invalid_argument(nucqcd::ErrorMessage() << "nu_min = " << nu_min << " GeV at Q2 = " << Q2
+      << " GeV^2 gives W = " << W << " GeV, below the cut W > " << Wmin << " GeV of the analysis (W^2 = m_p^2 + 2 m_p nu - Q2): raise nu_min, "
+      << "lower Q2, or switch the cuts off");
+}
+
 //input in GeV!!!!
 //cross section is obtained in units GeV.  dsigma/dt(t=0) is unspecified in the formula (dimensions energy^-4).
 void RhoTCross::getCrosst(double *results, const double Ebeam, const double Q2, const double nu, const double t){

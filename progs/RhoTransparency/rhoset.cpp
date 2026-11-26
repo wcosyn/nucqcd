@@ -79,6 +79,7 @@ int main(int argc, char *argv[])
 //   int maxEval2 = atoi(argv[11]);
   string homedir=nucqcd::share_dir;
   double Ebeam = 4.023;
+  if(!nocuts) RhoTCross::checkWcut(Q2,nu_min);  // the analysis cuts W > 2 GeV (and z > 0.9, t in -0.4..-0.1, applied in RhoTCross)
   
 
   RhoTCross test = RhoTCross(nucleus,330,homedir,nocuts,1,usersigma,prec,IntegrationMethod::Adaptive,maxEval,p_dil,ptype);  

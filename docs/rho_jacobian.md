@@ -119,8 +119,11 @@ source `rhopaper_final.tex`, equations `eq:A`, `eq:factorize`, `eq:distormomentu
 
 The same equations are in `rhopaper_print.tex` (the latest version, after the journal review) with only cosmetic
 changes (the label alpha on the amplitude, square brackets around the polynomial). The paper's cuts are
-z > 0.9, W > 2 GeV and -0.4 < t < -0.1 GeV²; `getCrosst`/`getCrossz` apply the z and t cuts, but **no W > 2 GeV
-cut**, so the user must choose the nu range of `rhoset` (W² = m_N² + 2 m_N nu - Q²) accordingly.
+z > 0.9, W > 2 GeV and -0.4 < t < -0.1 GeV²; `getCrosst`/`getCrossz` apply the z and t cuts, but not the W cut,
+which is a limit on the nu range at fixed Q²: since 2026-11-26 `rhoset` and `rhosingle` check it on the input
+(`RhoTCross::checkWcut(Q2, nu_min)`, W² = m_p² + 2 m_p nu - Q² for a nucleon at rest, W growing with nu, so the lowest nu
+decides) and throw `std::invalid_argument` if W(nu_min) < 2 GeV, unless the cuts are switched off (`nocuts`).
+The use of the proton mass (and not the average nucleon mass) is inferred (the difference is below 1e-3 GeV²): to confirm.
 
 ## 5. Numerical checks (scratch programs, 2026-11-26; not in the repository)
 
@@ -159,4 +162,4 @@ With the old `massX` the z column would be larger by about `M_A/massi` (about 4 
 Carlo, the unfixed code was not run here). Caveats: the 2 x 3 grid is very coarse and some points are exactly zero
 because of the cuts (one t point and one z point in the run), so a 1-2% difference can be quadrature and cut-edge
 effects: this shows that the factor ~A is gone, not that the remaining 1-2% is zero. Helium only. The nu range was
-chosen so that W² = m_N² + 2 m_N nu - Q² stays above 4 GeV² (W > 2 GeV, which the code does not cut on).
+chosen so that W² = m_N² + 2 m_N nu - Q² stays above 4 GeV² (W > 2 GeV; the programs now check this, see the remark on the cuts above).

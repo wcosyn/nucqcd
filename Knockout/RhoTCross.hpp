@@ -85,6 +85,22 @@ public:
   const MeanFieldNucleusThick& getNucleusthick() const{return nucleusthick;} /*!< the nucleus */
   int getNocuts() const{return nocuts;} /*!< experimental cuts in t or z applied? */
   
+  /*! Minimum W [GeV] of the analysis of the E02-110 data (Cosyn and Ryckebusch, Phys. Rev. C 87, 064608 (2013)), together
+   * with z = E_rho/nu > 0.9 and -0.4 < t < -0.1 GeV^2; the z and t cuts are applied in getCrosst/getCrossz, the W cut
+   * has to be respected by the nu range of the caller, see checkWcut */
+  static constexpr double Wmin = 2.;
+  /*! W of the photon-nucleon system for a nucleon at rest, \f$W=\sqrt{m_p^2+2 m_p\nu-Q^2}\f$, the W of the experimental cut
+   * (proton mass, inferred: to confirm)
+   * \param nu [GeV] virtual photon energy
+   * \param Q2 [GeV^2] Q^2
+   * \return [GeV] W, 0 if \f$m_p^2+2 m_p\nu-Q^2<0\f$ */
+  static double getW(double nu, double Q2);
+  /*! Checks that a range of nu at fixed Q^2 passes the cut W > Wmin. W grows with nu, so the lowest nu decides.
+   * \param Q2 [GeV^2] Q^2
+   * \param nu_min [GeV] lowest nu of the integration
+   * \throw std::invalid_argument if getW(nu_min, Q2) < Wmin */
+  static void checkWcut(double Q2, double nu_min);
+
 private:
   std::string homedir; /*!< share dir where all input is located */
   double pmax; /*!< maximum p_miss in integrations*/
