@@ -703,8 +703,32 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   against a high-precision reference. If they are removed: the `integrator` flag of the grid
   and cross-section classes no longer has the `rombergerN` option 0 (removed in #69, see "Glauber grid
   hierarchy"; 1: `numint::cube_romb`, 2: `cube_adaptive`; the tests use 2). Hard-coded uses have to be replaced, which changes values
-  (author's OK per class): `rombergerN` in `InclusiveCrossRes` (6), `RhoDeuteron` (8), `RhoTCross`
-  (4), `OneGlauberGrid` (4: gone with its unreachable integrands in #77), `DistMomDistrGrid` (1) and the programs `rhodint`, `rhoset`;
+  (author's OK per class). **Survey and first step (2026-11-25, #80):** of the 25 uses, 12 were dead: the
+  nested chains `intPm*` → `intCosTheta*` → `intPhi*` of `RhoTCross` (6 functions) and of `RhoDeuteron`
+  (t and z, 6 functions) were only called by the `integrator == 0` branches removed in #69 (and
+  `OneGlauberGrid` in #77); they are deleted (no value changes; `RhoTCross` has no `rombergerN` left).
+  **What is left, all live:**
+  | where | what | shape |
+  |---|---|---|
+  | `RhoDeuteron::calcCross_coh` (4 calls), `intPmcoh`, `intCosThetacoh` | coherent rho production on the deuteron: 4 spin combinations of a complex 3D integral over the spectator momentum (pm, cos θ, φ) | nested, precision `integration_prec`, 3-7 Romberg steps per level; no `integrator` flag |
+  | `InclusiveCrossRes` (6 calls: `int_pr`, `int_costheta_incl`, `int_pr_fsi`, `int_costheta_incl_fsi`, `int_qt`, `int_qphi`) | inclusive DIS on the deuteron with resonances, without and with FSI; used by `threeres` and `increstest` | nested 2 levels (no FSI) and 4 levels (FSI: pr, cos θ, qt, qφ), the limits of cos θ depend on pr (a cut), precision `integration_prec` (times 1e-3 without FSI); no test covers it |
+  | `DistMomDistrGrid::constructpwGrid` (1 call, `intRhoRpw`) | the plane-wave momentum distribution grid: a 1D radial integral for each grid point | 1D, precision 1e-7, 3-10 Romberg steps |
+  | `rhoset`, `rhodint` (2 calls each) | the outer integrals of the rho cross section over nu and over t or z | 2 levels, function-pointer callbacks, `integration_prec`; `torz` flag (see the open lead "Rho transparency: t- and z-integrated results disagree") |
+  | `progs/benchmark/integrators.cpp` | `rombergerN` as method 0 of the benchmark | keep until the function is removed, then drop the method (the results stay in `docs/integrator_benchmark.md`) |
+  **Alternatives** for each live use (to decide with the author, they differ in how much of the code
+  changes and in what the values do): (a) *keep the nested structure, change the driver* to `numint`'s 1D
+  Romberg: the least change to the physics code (the integrands stay), values move at the level of the
+  stopping rule; (b) *one multi-dimensional call* of `cube_adaptive` (or `cube_romb`) over the nested
+  variables, as in the Glauber grids and the A(e,e'p) amplitudes: fewer evaluations for smooth
+  integrands (benchmark: up to 1000x), but the limits of `InclusiveCrossRes` depend on pr (a
+  non-rectangular domain: needs a change of variables) and cuts inside the integrand are where
+  `cube_adaptive` was the least reliable in the benchmark; (c) *GSL's adaptive 1D routines*
+  (`gsl_integration_qag`/`cquad`), nested: robust against cuts, an error estimate per level, a new
+  dependency use in `Tools` (GSL is already required); (d) *keep `rombergerN`* for the nested 1D chains and
+  only move it into `Integrator/numint` as a documented legacy routine, so that the question "which
+  integrator" stays open for the old programs. A regression test with the current values (a few
+  kinematic points of each of the four cases) should be written first, so that the effect of any
+  replacement is measured, not guessed: none of the four has one today.
   `cube_romb` in `Model.cpp:744` and `progs/momdistr/momdistr.cpp`. Then remove
   `Integrator/numint/cube_romb.cpp` (and `cube_tr`/`fubini`/`vfubini` if unused) and its tests in
   `unit_numint`, and simplify the `integrator` flag (an enum, see "Model selection" below).
