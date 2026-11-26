@@ -5,7 +5,7 @@
 
 using namespace std;
 
-#include <Knockout/RhoDeuteron.hpp>
+#include <progs/attic/rhodeuteron/RhoDeuteron.hpp>
 #include "TMPI.hpp"
 #include <stdio.h>
 using namespace nucqcd;

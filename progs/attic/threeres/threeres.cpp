@@ -12,7 +12,7 @@ using namespace std;
 #include <Tools/Kinematics/Kinematics2to2.hpp>
 #include <Tools/Kinematics/ElectronKinematics.hpp>
 #include <Tools/StructureFunctions/NuclStructure.hpp>
-#include <DIS/InclusiveCrossRes.hpp>
+#include <progs/attic/threeres/InclusiveCrossRes.hpp>
 #include <DIS/Resonance.hpp>
 using namespace nucqcd;
 

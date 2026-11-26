@@ -1,4 +1,5 @@
-#include <DIS/InclusiveCrossRes.hpp>
+#include <progs/attic/threeres/InclusiveCrossRes.hpp>
+#include <progs/attic/rombergerN.hpp>
 #include <DIS/Resonance.hpp>
 #include <Tools/Core/AuxFunction.hpp>
 

@@ -6,7 +6,6 @@ nucqcd_add_library(Knockout
     EMQECross.cpp
     RhoTCross.cpp
     PionTCross.cpp
-    RhoDeuteron.cpp
     WeakQEHadronCurrent.cpp
     WeakQECross.cpp
     DQEinclusive.cpp

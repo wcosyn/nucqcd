@@ -6,7 +6,8 @@
 
 using namespace std;
 
-#include <Knockout/RhoDeuteron.hpp>
+#include <progs/attic/rhodeuteron/RhoDeuteron.hpp>
+#include <progs/attic/rombergerN.hpp>
 #include <Tools/Core/Utilfunctions.hpp>
 #include <string>
 using namespace nucqcd;

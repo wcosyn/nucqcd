@@ -1,5 +1,5 @@
 // Benchmark of the integrators used in nucqcd (roadmap step 6, "Remove the integrators rombergerN and
-// cube_romb?"): rombergerN (nested 1D Romberg, Tools/Core/Utilfunctions.hpp), numint::cube_romb,
+// cube_romb?"): rombergerN (nested 1D Romberg, now progs/attic/rombergerN.hpp), numint::cube_romb,
 // numint::cube_adaptive (Integrator/adaptive/cubature.c) and Cuba's Cuhre (numint::cuhre), at
 // requested relative precisions 1e-3, 1e-5, 1e-7.
 //  Part A: test integrands with known values in 3D: smooth, a step (sphere boundary inside the box), a
@@ -16,6 +16,7 @@
 // from a cache.
 #include <Integrator/numint/numint.hpp>
 #include <Tools/Core/Utilfunctions.hpp>
+#include <progs/attic/rombergerN.hpp>  // the archived routine, method 0 of the benchmark
 #include <Tools/Core/constants.hpp>
 #include <Tools/Core/RunLog.hpp>
 #include <Tools/Kinematics/ElectronKinematics.hpp>

@@ -9,7 +9,6 @@
 #include <Tools/Core/IntegratorFlag.hpp>
 #include <Glauber/GlauberDecayGridThick.hpp>
 #include <Glauber/OneGlauberGrid.hpp>
-#include <Knockout/RhoDeuteron.hpp>
 #include <Glauber/FastParticle.hpp>
 #include <Glauber/GlauberGridThick.hpp>
 #include <Tools/Core/Matrix.hpp>
@@ -78,5 +77,4 @@ TEST_CASE("the integrator option is 1 or 2; 0 (the old rombergerN) was removed",
   CHECK_THROWS_AS(GlauberGridThick(4, 4, 1, &carbon, 1.E-03, 0, dir), std::invalid_argument);
   CHECK_THROWS_AS(GlauberDecayGridThick(4, 4, 1, &carbon, 1.E-03, 0, dir), std::invalid_argument);
   CHECK_THROWS_AS(OneGlauberGrid(4, 4, &carbon, 1.E-03, 0, dir), std::invalid_argument);
-  CHECK_THROWS_AS(RhoDeuteron("paris", 400., true, 0, 1.E-03, 2000, false), std::invalid_argument);
 }

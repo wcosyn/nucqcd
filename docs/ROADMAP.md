@@ -25,7 +25,7 @@ same PR.
 | 3 | Rename the repository | ✅ done (PR #7, tagged-poldeut PRs #1 and #2) |
 | 4 | Bug fixes | ✅ done: listed bugs (PRs #8, #9, #12); found later: stale FSI+CT grid (#18), kinematics (#19, #20, #33), DoubleNModel/Pair (#21, then moved to the attic in #22), π⁻ Glauber parameters (#28), TDeuteron errors (#31), He3 spin sum (#47) and factor A in `He3Cross` (#48), `TMPI` not compiling with MPI-3 (fixed in the attic with step 6, "Retire MPI", #54), `RunLog` reading freed memory at `exit()` (#57), `cube_romb` overflow beyond 10 levels in 3D (#60). New bugs found later are added here |
 | 5 | Low-risk modernization | ✅ done: `-fopenmp`, Fortran interop (#11), constants (#13, #14), grid cache (#15–#17), ownership (#23), exceptions (#24), Doxygen (#10, #25–#30, #32, #34–#39: no warnings left) |
-| 6 | Structural refactors | 🔶 done: constants macros (#41), `NuclStructure` merge (#42), code layout (`Tools` split #52, prefixed includes and `.hpp` #53, namespace `nucqcd` #65, the `T*` classes renamed #76, the `TNamed` leftovers #78), `Model`/`Cross` renamed (#53), MPI retired (#54), integrator benchmark (#61), precision reporting (#62), integrator option 0 removed (#69), CRLF to LF (#66), long files split (#70), `GetVar*` table (#71), model names as enumerations (#72), the long `TKinematics2to3` functions split (#74) and the crash they showed fixed (#75), the thick Glauber grids deduplicated (#77); to do: the abstract Glauber grid classes, the off-axis grid speed, the hard-coded `rombergerN`, the long Glauber files |
+| 6 | Structural refactors | 🔶 done: constants macros (#41), `NuclStructure` merge (#42), code layout (`Tools` split #52, prefixed includes and `.hpp` #53, namespace `nucqcd` #65, the `T*` classes renamed #76, the `TNamed` leftovers #78), `Model`/`Cross` renamed (#53), MPI retired (#54), integrator benchmark (#61), precision reporting (#62), integrator option 0 removed (#69), CRLF to LF (#66), long files split (#70), `GetVar*` table (#71), model names as enumerations (#72), the long `TKinematics2to3` functions split (#74) and the crash they showed fixed (#75), the thick Glauber grids deduplicated (#77); `rombergerN` removed from the libraries (#82); to do: the abstract Glauber grid classes, the off-axis grid speed, the long Glauber files |
 | 7 | Unbundle Cuba and cubature | 🔶 Cuba done (#67); cubature (a maintenance question only, see the benchmark) to do |
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
 | 9 | Decouple from ROOT where possible | ✅ done: phases 1–5 (#44, #45, #50, #55, #56, #58), phase 6: GPD generators (#59) and the fits on the standalone Minuit2 (#73). ROOT is only used by the test `unit_vectors` |
@@ -54,9 +54,8 @@ grid variants (#68) and the deduplication of the two thick grids (#77).
 2. **Glauber grids:** the off-axis speed (every point hits the evaluation cap; `cube_romb` was 5x faster at 1e-3;
    variants change values within the precision and need the author's OK), and the rest of the hierarchy dedup
    (the eight abstract classes with four interpolation wrappers per named grid, the 5D raw pointer arrays).
-3. **The hard-coded `rombergerN`** (`InclusiveCrossRes`, `RhoDeuteron`, `RhoTCross`, `DistMomDistrGrid`, the
-   programs `rhodint` and `rhoset`): replace it by `cube_romb` or `cube_adaptive` case by case (values change,
-   the author's OK per class); the item "Remove the integrators `rombergerN` and `cube_romb`?" in step 6 has the list.
+3. ~~The hard-coded `rombergerN`~~ (done, #81 and #82: archived what was abandoned, replaced the one live
+   library use, `rombergerN` moved to `progs/attic`; `cube_romb` stays).
 4. **Smaller items:** unbundle cubature (step 7, maintenance only, no accuracy gain per the benchmark), the PDG
    constants update (changes values), the long Glauber files (`GlauberGrid.cpp`, `DistMomDistrGrid.cpp`, ...),
    `SolvePhotonAndParticle1` (134 lines), reporting the Suave bug to the Cuba authors, a format string that gives
@@ -683,7 +682,7 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   accuracy. Next: find out which part of the off-axis integrand is hard (the cut at the hit point, the
   profile function's oscillations?), consider a better variable choice, `cube_romb` for these grids, or
   parallel grid points.
-- [ ] **Remove the integrators `rombergerN` and `cube_romb`?** (added 2026-11-23). The author
+- [x] **Remove the integrators `rombergerN` and `cube_romb`?** (`rombergerN` removed 2026-11-25, #82; `cube_romb` stays) (added 2026-11-23). The author
   remembers the adaptive integrators doing better, especially for multidimensional integrands with
   non-trivial boundaries or cuts inside the integrand. **Benchmark done 2026-11-23
   (`docs/integrator_benchmark.md`, `progs/benchmark/integrators.cpp`, #61): the memory is not
@@ -707,19 +706,27 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   nested chains `intPm*` → `intCosTheta*` → `intPhi*` of `RhoTCross` (6 functions) and of `RhoDeuteron`
   (t and z, 6 functions) were only called by the `integrator == 0` branches removed in #69 (and
   `OneGlauberGrid` in #77); they are deleted (no value changes; `RhoTCross` has no `rombergerN` left).
-  **What is left** (corrected after looking at what is built and what the programs select, same day):
-  | where | what | status |
-  |---|---|---|
-  | `DistMomDistrGrid::constructpwGrid` (1 call, `intRhoRpw`) | the plane-wave momentum distribution grid: a 1D radial integral for each grid point (precision 1e-7, 3-10 Romberg steps) | **live** (library) |
-  | `RhoDeuteron::calcCross_coh` (4 calls), `intPmcoh`, `intCosThetacoh` | coherent rho production on the deuteron: 4 spin combinations of a nested complex 3D integral over the spectator momentum (`integration_prec`) | live, but only reached from `rhodint`, which was "never used for actual calculations" |
-  | `rhoset`, `rhodint` (3 calls each) | the outer integrals over nu and over t or z, in the program's own `integrator == 0` branch: **a user option, not hard-coded**: the programs already have branches 1 and 2 (`cube_romb`, `cube_adaptive`) | live option; remove the branch as in #69 |
-  | `InclusiveCrossRes` (6 calls) | inclusive deuteron DIS with resonances, without and with FSI (nested 2 and 4 levels; used by `threeres` and `increstest`) | **not built and does not compile**: `DIS/CMakeLists.txt` has it commented out ("only used the Romberg routines, no longer used"), `progs/threeres` is not in `progs/CMakeLists.txt` ("old, never properly used"), and the file fails (`DeuteronStructure` has a different constructor, `rombergerN` is not declared in it). The header cites W. Cosyn, W. Melnitchouk and M. Sargsian, Phys. Rev. C 89, 014612 (2014), so it may have produced that paper. **Decision for the author:** move it with `threeres` to `progs/attic` as it is, or delete it (git history keeps it) |
-  | `progs/benchmark/integrators.cpp` | `rombergerN` as method 0 of the benchmark | drop the method when `rombergerN` goes (the results stay in `docs/integrator_benchmark.md`) |
-  **Regression test written (2026-11-25, #81):** `reg_rombergern_users` (fast, 2 s) records the values of the two library users with
-  `rombergerN`: the plane-wave grid of `DistMomDistrGrid` (carbon s and p shells, 9 momenta each) and
-  the coherent cross section of `RhoDeuteron` (`getCrossz_coh`, `getCrosst_coh` at 12 kinematic points, 10
-  of them non-zero; the z values near 0.92 and 0.95 are zero because of the t cut). `InclusiveCrossRes` cannot be tested (it does not compile).
-  **Alternatives** for each live use (to decide with the author, they differ in how much of the code
+  **Outcome (2026-11-25, #81, #82; the author chose: archive what is abandoned, replace the rest):**
+  - `RhoDeuteron` (rho production on the deuteron, an abandoned calculation) moved from `Knockout` to
+    `progs/attic/rhodeuteron` with `rhodint` (from `progs/RhoTransparency`); both still build. `rhod`
+    (`progs/attic/mpi`, built only with MPI, not compiled on this computer) includes it from there.
+  - `InclusiveCrossRes` (6 `rombergerN` calls; the resonance model for inclusive DIS, W. Cosyn, W. Melnitchouk and
+    M. Sargsian, Phys. Rev. C 89, 014612 (2014); already not built and no longer compiling: `DIS/CMakeLists.txt` had it
+    commented out, `DeuteronStructure` has a different constructor now) moved with `threeres` and `increstest` to
+    `progs/attic/threeres`, not built (its `CMakeLists.txt` says so). `DIS/Resonance` stays in the DIS library.
+  - `DistMomDistrGrid::constructpwGrid` (the plane-wave momentum distribution grid, the only live library use):
+    the 1D radial integral is now a 1D `numint::cube_adaptive` call (1e-7 relative). The regression test
+    `reg_distmomdistr_pw` (carbon s and p shells, 9 momenta each, recorded with `rombergerN` in #81) passes at
+    1e-6 relative, so the values moved by less than that.
+  - `rhoset`: the `integrator == 0` branch (its own option, the nested `rombergerN`) and its helper functions
+    `nuint`/`tzint` are removed, as option 0 was in the classes (#69); the program checks the flag
+    (`checked_integrator_flag`). 1 and 2 (`cube_romb`, `cube_adaptive`) were already there and are unchanged.
+  - `rombergerN` itself left `Tools/Core/Utilfunctions.hpp` for `progs/attic/rombergerN.hpp`, which the archived
+    `RhoDeuteron`, `rhodint` and `InclusiveCrossRes` include; so does the benchmark (`progs/benchmark/integrators.cpp`,
+    method 0, so that `docs/integrator_benchmark.md` stays reproducible). Nothing in the libraries uses it.
+  - Tests: `reg_rombergern_users` became `reg_distmomdistr_pw` (the `RhoDeuteron` case goes with the archive);
+    the `RhoDeuteron` check was removed from `unit_errors`, the `InclusiveCrossRes` assertion from `unit_ownership`.
+  **Alternatives that were considered** for the live uses (they differ in how much of the code
   changes and in what the values do): (a) *keep the nested structure, change the driver* to `numint`'s 1D
   Romberg: the least change to the physics code (the integrands stay), values move at the level of the
   stopping rule; (b) *one multi-dimensional call* of `cube_adaptive` (or `cube_romb`) over the nested
