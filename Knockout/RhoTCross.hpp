@@ -127,9 +127,13 @@ private:
    * \param mN [GeV] mass of nucleon that interacts with photon
    * \param t [GeV^2] momentum transfer squared
    * \param torz t [1] or z[0] integrations
+   * \param C0 [GeV] energy of the photon plus struck nucleon (only used for the z integration)
+   * \param Cz [GeV] z component of the photon plus struck nucleon momentum (only used for z)
+   * \param Cx [GeV] x component of the photon plus struck nucleon momentum (only used for z)
+   * \return [GeV^2] elementary cross section factor, times the Jacobian |dt/dz|/(2 nu) [GeV] for the z integration
    */
   double getfrontfactor(double nu, double qvec, double Erho, double prho, double pzrho, double pxrho,
-				 double s, double Q2, double mN, double t, bool torz);
+				 double s, double Q2, double mN, double t, bool torz, double C0, double Cz, double Cx);
   /*! struct that is used for integrators (clean ones)*/
   struct Ftor_rho {
 

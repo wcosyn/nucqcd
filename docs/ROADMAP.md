@@ -34,7 +34,7 @@ same PR.
 
 ## Where we are / next up
 
-*Updated 2026-11-26 (after PR #83; the `InclusiveCrossRes` investigation is in an open PR).*
+*Updated 2026-11-26 (after PR #84; the rho t/z fix is PR #85).*
 
 **Done** (PRs #44-#82, details in the steps below): ROOT decoupling (ROOT is now only used by the test
 `unit_vectors`; the fits run on the standalone Minuit2, #73); LHAPDF structure functions (step 10); He3 fixes; run
@@ -49,9 +49,8 @@ for all Glauber grid variants (#68) and the deduplication of the two thick grids
 
 **Options for the next step** (my recommended order; the author decides):
 1. **Open leads** (step 4, "Open leads (to investigate)"), three of them, all investigations:
-   - the **rho transparency t- versus z-integrals** (`torz` flag of `rhoset`, `RhoTCross::getCrosst`/`getCrossz`:
-     results differing by orders of magnitude since 2012, probably a common factor such as a Jacobian or the
-     nucleus mass; a fix changes values);
+   - ~~the rho transparency t- versus z-integrals~~ (2026-11-26: the z version had the residual nucleus mass instead of
+     the Jacobian |dt/dz|/(2 nu); fixed in the open PR, checked with the Glauber distributions for helium, z/t within 2.2%);
    - ~~the `InclusiveCrossRes` FSI part that returns exactly 0~~ (investigated 2026-11-26: not a bug, the
      settings of `increstest` cancel by construction; with `fixprop` 1, `symm` 0 the FSI is ~6% of the plane wave;
      reviving the class is still open, see the item);
@@ -59,7 +58,8 @@ for all Glauber grid variants (#68) and the deduplication of the two thick grids
 2. **Glauber grids:** the off-axis speed (every point hits the evaluation cap; `cube_romb` was 5x faster at 1e-3;
    variants change values within the precision and need the author's OK), and the rest of the hierarchy dedup
    (the eight abstract classes with four interpolation wrappers per named grid, the 5D raw pointer arrays).
-3. **Smaller items:** unbundle cubature (step 7, maintenance only, no accuracy gain per the benchmark), the PDG
+3. **Smaller items:** the comment and header-guard cleanup of step 6 (copy-paste leftovers, including a duplicate
+   `MODEL_HPP` guard), unbundle cubature (step 7, maintenance only, no accuracy gain per the benchmark), the PDG
    constants update (changes values), the long Glauber files (`GlauberGrid.cpp`, `DistMomDistrGrid.cpp`, ...),
    `SolvePhotonAndParticle1` (134 lines), reporting the Suave bug to the Cuba authors, a format string that gives
    no scenario at all is still accepted (step 6, long functions), `Resonance` stays in the DIS library although
@@ -362,7 +362,7 @@ one commit per bug; no `[known-bug]` tests remain.
   (1) compare with the curves of the paper using the settings above, (2) decide the integrator (the nested `rombergerN`
   of `progs/attic/rombergerN.hpp`, or `cube_adaptive`, see the item on `rombergerN`), (3) write a regression test (use
   `fixprop` 1, `symm` 0) before moving it back into the DIS library. Not urgent: the class is not used by anything.
-- [ ] **Rho transparency: t- and z-integrated results disagree (added 2026-11-23, from the author's
+- [x] **Rho transparency: t- and z-integrated results disagree: cause found and fixed (added 2026-11-23, fixed 2026-11-26, from the author's
   memory of ~2012; details may be off).** The rho programs offer two ways to do the integrals, which
   should agree but gave results differing by orders of magnitude, while the Glauber/plane-wave ratios
   (the transparencies) were similar; the cause was never found. What the code and history show:
@@ -385,6 +385,45 @@ one commit per bug; no `[known-bug]` tests remain.
     kinematics, compare plane-wave cross sections first, check the t↔z Jacobian in `RhoTCross`
     analytically (and against `RhoDeuteron`, which was fixed), and check against a plane-wave case
     that can be integrated independently. Any fix changes values and needs the author's OK.
+  - **Cause (found 2026-11-26):** the z-integrated `getCrossz` multiplied by `massX`, the invariant mass of the
+    whole residual nucleus system (about M_A), in `RhoTCross::getfrontfactor`. The Jacobian between the two ways of
+    eliminating the on-shell delta function of the final nucleon (at fixed missing momentum) is |dt/dz| = 2 nu K, with
+    K = `massi` = M_A - M_(A-1) - E_exc, the off-shell energy of the struck nucleon (0.922 GeV for carbon, not the
+    on-shell m_N), for pm = 0 and a pm- and angle-dependent mass otherwise (K ~ 0.7-1.7 GeV in a random sample), not
+    M_A. The derivation is in `docs/rho_jacobian.md`. The z integrals were therefore a factor ~M_A/m_N ~ A too large, which is the "goes like A" of the 2012 commit
+    messages, and it cancels in the Glauber/plane-wave ratios. The archived `RhoDeuteron` (where the Jacobians were
+    "finally figured out") divides the t version by the off-shell nucleon energy `Eoff`, a nucleon-sized quantity and not
+    M_A, which points the same way (not checked in detail).
+  - **Which results were affected:** only the z branch of `getfrontfactor` changed, so the t-integrated results, and
+    with them the published transparencies (the last calculations integrated over t, per the README of the paper's
+    directory), are unchanged; the absolute z-integrated cross sections were too large by ~M_A/massi. The
+    transparencies of the z version barely noticed (a ratio of RMSGA to PWA over the same range, and `massX` was nearly
+    constant); how much they move with the corrected factor was not quantified.
+  - **Check:** a Monte Carlo that copies the kinematics, cuts and prefactors of `getCrosst`/`getCrossz` with a Gaussian
+    in place of the Glauber momentum distributions (carbon-like M_A = 11.18 GeV, Q^2 = 1.5 GeV^2, nu = 2.5-3.5 GeV,
+    t in -0.4..-0.1, z in 0.9..1): z/t = 11.66 before; with the exact Jacobian 0.997 (statistical error 0.05%), and
+    0.988 at Q^2 = 2.5, nu = 3.0-3.8. The remaining 0.3-1.2% was not traced (edge singularities of the root
+    solutions in the Monte Carlo, or a small leftover; **not checked**). With massX removed the ratio was 1.03, 1.02,
+    0.98 for three kinematic settings, so a constant mass is not the fix. For a point nucleus (pm -> 0) the author's
+    commented analytic pair in `rhoset.cpp` agrees to 4 digits (0.9996), and its z/t ratio 2 nu M_A is this Jacobian.
+  - **Fix:** `getfrontfactor` takes C0, Cz and Cx and returns `|dt/dz|/(2 nu)` times the elementary factor for z,
+    `q |C0 px - Cz nu px/q - Cx nu (z - pz/q)| / |Cz px - Cx pz|` (derived in the code comment). The t version is
+    unchanged. **Changes values:** every z-integrated rho result (`rhoset` with torz 0) gets smaller by roughly
+    M_A/m_N (about 12 for carbon); the t results and the transparencies do not move. No test covers `RhoTCross`.
+  - **Normalisation (checked against the paper, 2026-11-26, `docs/rho_jacobian.md` section 4):** the prefactor and front
+    factor of `getCrosst` are Eq. (13) of Cosyn and Ryckebusch, Phys. Rev. C 87, 064608 (2013), arXiv:1301.1904 (formulas
+    checked against the author's TeX source), so the t version is the reference; the paper
+    has no z integral or t-z Jacobian. The code gives each root of the on-shell condition the weight 1, i.e. treats
+    `dphi* = dphi_rho`; the exact weight is `sqrt(lambda)/(2 q kappa)` (mean 1.015, large excursions at the edges, exactly 1
+    when integrated over the azimuth). Not changed; whether it matters with the azimuth-dependent Glauber distributions
+    was not studied.
+  - **Full comparison with the Glauber distributions (2026-11-26, `docs/rho_jacobian.md` section 6):** helium, Q² = 2 GeV²,
+    nu = 3.0-3.2 GeV, 2 x 3 Gauss-Legendre points per version, real `RhoTCross`: z/t = 0.999-1.022 for all nine
+    cases (plane wave 1.014) and transparencies from t and z within 0.011. A coarse test (cut edges, quadrature), helium
+    only: carbon and a finer grid are still to do if wanted. The "before" value of the unfixed code was not run (the
+    Monte Carlo gives the factor).
+  - **Not verified:** the absolute normalisation of the t version was compared with the paper's Eq. (13) (it
+    matches), not with an independent calculation.
 
 ## 5. Low-risk modernization
 
@@ -934,6 +973,35 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   Still to do: the 1.0-1.2k-line `GlauberGridThick.cpp`, `GlauberDecayGridThick.cpp`, `GlauberGrid.cpp`,
   `DistMomDistrGrid.cpp` (with the grid dedup above), and `SolvePhotonAndParticle1` (134 lines) could be
   split further.
+
+- [ ] **Comments that belong to another file (copy-paste leftovers), crawl of 2026-11-26.** A scripted crawl of the
+  tracked C++ files outside `progs/attic` and `tests/` (file tags, header guards, the first comment block of every
+  file against the file name, usage lines against the program name), reading the hits by hand; what had been cleaned in
+  earlier items is not repeated. **To fix (comments and guards only, no behaviour change except the first point):**
+  - **Header guard collision:** `Knockout/EMQEHadronCurrent.hpp` and `Knockout/WeakQEHadronCurrent.hpp` both use
+    `MODEL_HPP` (left over from the `Model` rename); a translation unit that includes both silently loses the second
+    one (none does today). `Knockout/EMQECross.hpp` still uses `CROSS_HPP`. Rename to `EMQEHADRONCURRENT_HPP`,
+    `WEAKQEHADRONCURRENT_HPP`, `EMQECROSS_HPP`.
+  - **Wrong `\file` tag or brief:** `Glauber/NucleonWeakOperator.hpp` (`\file NucleonEMOperator.hpp`, brief "class
+    NucleonEMoperator"), `DIS/InclusiveCross.hpp` (`\file DeuteronCross.hpp`; the same in the archived
+    `progs/attic/threeres/InclusiveCrossRes.hpp`), `Tools/WaveFunctions/YukawaWavefunction.cpp` (first line says
+    `WavefunctionImplementation.cpp`).
+  - **Usage lines naming another program** (the program was copied from it): `progs/neutrinoQE/ddiff.cpp`,
+    `ddiff_minerva.cpp`, `ddiff_minerva_N.cpp`, `neutestint.cpp` (`./neutest`, no such target; `neutestfixEin.cpp`
+    names itself), `progs/Obstest/Ca_dens.cpp`, `Nucl_dens_profile.cpp`, `PxPz_exp_sample.cpp` (`./observables`, a
+    different program in the same directory), `progs/F2_largex_fit/F2_bootstrap.cpp` (`bin/F2_fit`),
+    `progs/onenucl/A_QE_cross.cpp` (`./onenucl`), `progs/pionestimate/pionestimate.cpp` (`./pionest`). The usage
+    lines of the neutrino programs also give the arguments of the program they were copied from; check them against
+    the `argv` handling.
+  - **Same description in two programs:** `progs/deepsdis/b1_calc.cpp` and `b1_calc_comp.cpp`;
+    `progs/Obstest/Ca_dens.cpp` and `Nucl_dens_profile.cpp` (both "density profiles for Calcium").
+  - **Stale absolute paths:** `progs/deepsdis/fitscript.py` calls `/home/wim/Code/trunk/bin/...` (`bonusextrapolate`,
+    `bonusextrapolate2`, `parabfit`).
+  - **Library-wide Doxygen blocks that sit in one class header** (low priority): the `\defgroup DIS` text in
+    `DIS/DeuteronCross.hpp` and the `\mainpage`/`\defgroup Glauber` text in `Glauber/AbstractFsiGrid.hpp`.
+  - **Not covered by the crawl:** the Fortran files, `progs/attic`, `tests/`, the Python scripts apart from the usage
+    check, and comments inside function bodies; a second pass with a reader (not a script) over the `GPD_Partons` and
+    `progs/deepsdis` files is worth doing, since their headers are copies of each other.
 
 ## 7. Unbundle Cuba (and cubature)
 
