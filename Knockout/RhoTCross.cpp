@@ -197,14 +197,13 @@ double RhoTCross::getfrontfactor(double nu, double qvec, double Erho, double prh
   //elementary rho production cross section parametrized as exponential e^{beta*t}
   double elementary = (s*s-2.*s*(mN*mN-Q2)+pow(mN*mN+Q2,2.))/(mN*mN)*exp(t*6.);
   if(torz) return elementary;
-  //z integration: the integrand has to carry the Jacobian |dt/dz|/(2 nu) between the two ways of eliminating the
+  //z integration: the integrand has to carry the Jacobian K = |dt/dz|/(2 nu) between the two ways of eliminating the
   //on-shell delta function of the final nucleon, f(z,t) = (C-p_rho)^2-mN^2 = 0 with C = (C0,Cx,0,Cz) the four-momentum
-  //of the struck nucleon plus photon, at fixed missing momentum.  With pz(z,t) = (A+z nu^2)/q, A=(t+Q2-m_rho^2)/2 and
-  //px = sqrt(E^2-pz^2-m_rho^2):
-  //  df/dt = (Cz-Cx pz/px)/q,   df/dz = -2 nu (C0-Cz nu/q-Cx nu (z-pz/q)/px),
-  //so |dt/dz|/(2 nu) = q |C0 px-Cz nu px/q-Cx nu (z-pz/q)| / |Cz px-Cx pz|.
-  //For pm=0 this is the mass of the struck nucleon. (Until 2026-11 the mass of the residual nucleus system stood here,
-  //which made the z integrals a factor ~A too large compared to the t integrals.)
+  //of the struck nucleon plus photon, at fixed missing momentum:
+  //  K = q |C0 px-Cz nu px/q-Cx nu (z-pz/q)| / |Cz px-Cx pz|.
+  //For pm=0 this is C0-nu = massi, the off-shell energy M_A-M_(A-1)-E_exc of the struck nucleon (not the on-shell mN).
+  //Derivation and checks: docs/rho_jacobian.md.  (Until 2026-11 the mass of the residual nucleus system, ~M_A, stood
+  //here, which made the z integrals a factor ~A too large compared to the t integrals.)
   double z = Erho/nu;
   double den = std::abs(Cz*pxrho-Cx*pzrho);
   if(den<1.E-12) return 0.;

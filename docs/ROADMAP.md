@@ -387,8 +387,9 @@ one commit per bug; no `[known-bug]` tests remain.
   - **Cause (found 2026-11-26):** the z-integrated `getCrossz` multiplied by `massX`, the invariant mass of the
     whole residual nucleus system (about M_A), in `RhoTCross::getfrontfactor`. The Jacobian between the two ways of
     eliminating the on-shell delta function of the final nucleon (at fixed missing momentum) is |dt/dz| = 2 nu K, with
-    K the mass of the struck nucleon for pm = 0 (and pm-dependent otherwise, K ~ 0.7-1.7 GeV in a random sample), not
-    M_A. The z integrals were therefore a factor ~M_A/m_N ~ A too large, which is the "goes like A" of the 2012 commit
+    K = `massi` = M_A - M_(A-1) - E_exc, the off-shell energy of the struck nucleon (0.922 GeV for carbon, not the
+    on-shell m_N), for pm = 0 and a pm- and angle-dependent mass otherwise (K ~ 0.7-1.7 GeV in a random sample), not
+    M_A. The derivation is in `docs/rho_jacobian.md`. The z integrals were therefore a factor ~M_A/m_N ~ A too large, which is the "goes like A" of the 2012 commit
     messages, and it cancels in the Glauber/plane-wave ratios. The archived `RhoDeuteron` (where the Jacobians were
     "finally figured out") divides the t version by the off-shell nucleon energy `Eoff`, a nucleon-sized quantity and not
     M_A, which points the same way (not checked in detail).
@@ -403,6 +404,11 @@ one commit per bug; no `[known-bug]` tests remain.
     `q |C0 px - Cz nu px/q - Cx nu (z - pz/q)| / |Cz px - Cx pz|` (derived in the code comment). The t version is
     unchanged. **Changes values:** every z-integrated rho result (`rhoset` with torz 0) gets smaller by roughly
     M_A/m_N (about 12 for carbon); the t results and the transparencies do not move. No test covers `RhoTCross`.
+  - **Open question for the author (found 2026-11-26, `docs/rho_jacobian.md` section 4):** the weights of both versions
+    (`1/(2q)` for t, `(nu/q) K` for z) are `4 kappa` times the weights that follow from the delta function (checked against
+    the Lorentz-invariant two-body phase space), with `kappa = |C0 - Cz nu/q - Cx nu (z - pz/q)/px|`, which is `massi` at
+    pm = 0 and varies by about +-12% for pm up to 0.2 GeV. The overall `4 massi` may be a convention absorbed elsewhere
+    (not checked); the pm dependence would change both t and z results if corrected. Not changed here.
   - **Not verified:** the full `rhoset` run for t and z with the real Glauber distributions (900 s was not enough for
     carbon with these settings: `rhoset 1|0 1 2.0 2.5 3.5 0. 0 20. 2 20000 1e-3 4`; narrow the nu range and loosen the
     precision to try again). The absolute normalisation of the t version (it carries no 1/|df/dz| of its own) was not
