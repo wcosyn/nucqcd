@@ -1,4 +1,5 @@
 #include <Tools/Core/IntegratorFlag.hpp>
+#include <Integrator/numint/cube.hpp>
 #include <Knockout/PionTCross.hpp>
 #include <Tools/Core/AuxFunction.hpp>
 #include <Tools/Core/Rotation.hpp>
@@ -10,7 +11,7 @@ namespace nucqcd {
 using namespace std;
 
 PionTCross::PionTCross(const int nucleus, const double p_max, const std::string dir,
-  const bool user_set, const double user_sigma, const double precision, const int integr, const int max_Eval
+  const bool user_set, const double user_sigma, const double precision, IntegrationMethod integr, const int max_Eval
 ):
 homedir(dir),
 pmax(p_max),
@@ -18,7 +19,7 @@ userset(user_set),
 usersigma(user_sigma),
 nucleusthick(nucleus,dir),
 prec(precision),
-integrator(nucqcd::checked_integrator_flag(integr)),
+integrator(integr),
 abserror(1.E-012),
 maxEval(max_Eval){
 
@@ -50,8 +51,7 @@ void PionTCross::getCross(double *results, const double Ebeam, const double Eout
     mdf.func = &Ftor_pion::exec;
     mdf.param = &F;
     F.f=PionTCross::dist_momdistr_integral;
-    if(integrator==1) res = numint::cube_romb(mdf,lower,upper,abserror,1.E-03,ret,count,0);
-    else res = numint::cube_adaptive(mdf,lower,upper,abserror,1.E-03,1E03,maxEval,ret,count,0);
+    res = numint::cube({integrator, abserror, 1.E-03, 1000, maxEval}, mdf, lower, upper, ret, count, 0);
     for(int i=0;i<nrofcross;++i) results[i]=ret[i];
   for(int i=0;i<nrofcross;i++) results[i]*= 1.;
 }

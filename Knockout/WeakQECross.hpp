@@ -45,7 +45,7 @@ public:
    * \param lepton contains all the lepton kinematics
    * \param pnucl pointer to a MF nucleus instance
    * \param prec precision you want in the integrations
-   * \param integrator which integrator (1:numint::cube_romb, 2:numint::cube_adaptive (0, the old rombergerN, was removed)
+   * \param integrator which integrator: numint::IntegrationMethod::Romberg (numint::cube_romb) or numint::IntegrationMethod::Adaptive (numint::cube_adaptive); the integers 1 and 2 convert with nucqcd::integration_method()
    * \param dir std::string that contains dir with all input, should be the ./share subdir of the project!
   * \param charged neutral weak current [0] or charged weak current [1]
    * \param M_A_in [MeV] value of axial mass
@@ -57,7 +57,7 @@ public:
    * \param enable_ROMEA enable ROMEA FSI for slow nucleons
    */
   WeakQECross(LeptonKinematics *lepton, MeanFieldNucleusThick *pnucl, 
-	double prec, int integrator, std::string dir, bool charged, double M_A_in, bool user_sigma, bool enable_ROMEA,
+	double prec, IntegrationMethod integrator, std::string dir, bool charged, double M_A_in, bool user_sigma, bool enable_ROMEA,
 	double gA_s=-0.19, double r_s2=0., 
 	double mu_s=0., double sigma_screening=0.);
     /*! Constructor for weak neutral current processes.
@@ -66,7 +66,7 @@ public:
    * \param elec contains all the electron kinematics
    * \param pnucl pointer to a MF nucleus instance
    * \param prec precision you want in the integrations
-   * \param integrator which integrator (1:numint::cube_romb, 2:numint::cube_adaptive (0, the old rombergerN, was removed)
+   * \param integrator which integrator: numint::IntegrationMethod::Romberg (numint::cube_romb) or numint::IntegrationMethod::Adaptive (numint::cube_adaptive); the integers 1 and 2 convert with nucqcd::integration_method()
    * \param dir std::string that contains dir with all input, should be the ./share subdir of the project!
   * \param charged neutral weak current [0] or charged weak current [1]
    * \param M_A_in [MeV] value of axial mass
@@ -78,7 +78,7 @@ public:
    * \param enable_ROMEA enable ROMEA FSI for slow nucleons
    */
   WeakQECross(ElectronKinematics *elec, MeanFieldNucleusThick *pnucl, 
-	double prec, int integrator, std::string dir, bool charged, double M_A_in, bool user_sigma, bool enable_ROMEA,
+	double prec, IntegrationMethod integrator, std::string dir, bool charged, double M_A_in, bool user_sigma, bool enable_ROMEA,
 	double gA_s=-0.19, double r_s2=0., 
 	double mu_s=0., double sigma_screening=0.);
   ~WeakQECross(); /*!< Destructor */
@@ -165,7 +165,7 @@ public:
 private:
   std::string homedir; /*!< Contains dir with all input */
   double prec; /*!< precision you want in the integrations */
-  double integrator; /*!< choice of integrator */
+  IntegrationMethod integrator; /*!< choice of integrator */
   LeptonKinematics *lepton; /*!<  kinematics */
   ElectronKinematics *electron; /*!< NC lepton kinematics */
   MeanFieldNucleusThick *pnucl; /*!< pointer to nucleus */

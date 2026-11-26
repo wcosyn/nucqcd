@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
   //create objects for nucleus, kinematics and cross section
   MeanFieldNucleusThick Nucleus(atoi(argv[1]),homedir);
   ElectronKinematics *elec = ElectronKinematics::CreateWithBeamEnergy(Ein);
-  EMQECross obs(*elec,&Nucleus,prec, 2, homedir, userset, screening);
+  EMQECross obs(*elec,&Nucleus,prec, IntegrationMethod::Adaptive, homedir, userset, screening);
 
   //arrays to collect results
   //all levels (glauber, pw) + total proton + total neutron    

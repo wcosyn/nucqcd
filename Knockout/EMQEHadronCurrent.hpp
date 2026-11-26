@@ -35,13 +35,13 @@ public:
     /*! Constructor
    * \param pnucleus pointer to a MF nucleus instance
    * \param prec precision you want in the integrations
-   * \param integrator which integrator (1:numint::cube_romb, 2:numint::cube_adaptive (0, the old rombergerN, was removed)
+   * \param integrator which integrator: numint::IntegrationMethod::Romberg (numint::cube_romb) or numint::IntegrationMethod::Adaptive (numint::cube_adaptive); the integers 1 and 2 convert with nucqcd::integration_method()
    * \param dir string that contains dir with all input, should be the ./share subdir of the project!
    * \param max_Eval max # of function evaluations in the coordinate integration
    * \param user_sigma does the user want to change sigma?
    * \param sigma_screening [%] screening change of sigma
    */
-  EMQEHadronCurrent(MeanFieldNucleusThick *pnucleus, double prec, int integrator, std::string dir, int max_Eval,
+  EMQEHadronCurrent(MeanFieldNucleusThick *pnucleus, double prec, IntegrationMethod integrator, std::string dir, int max_Eval,
 	bool user_sigma, double sigma_screening=0.);
   ~EMQEHadronCurrent(); /*!< Destructor */
 //   void setSRC(int setSRC) {SRC=setSRC;} /*!< sets SRC in the Glauber FSI */
@@ -118,7 +118,7 @@ public:
   GlauberGridThick* getThickGrid() {return &gridthick;} /*!< Glauber grid with thickness (SRC), see gridthick */
   int getShell() const{return shell;} /*!< shell index of the knocked-out nucleon in the current calculation */
   int getM() const{return mm;} /*!< \f$ 2m_j \f$ of the knocked-out nucleon in the current calculation */
-  int getIntegrator() const{return integrator;} /*!< choice of integrator */
+  IntegrationMethod getIntegrator() const{return integrator;} /*!< choice of integrator */
   MeanFieldNucleusThick* getPnucleus() {return pnucl;} /*!< the nucleus */
   const Matrix<1,4> & getBarcontract0up() const{return barcontract0up;} /*!< bar spinor of the outgoing nucleon (spin up) contracted with the current, polarization vector (1,0,0,0): time component J^0 */
   const Matrix<1,4> & getBarcontractminup() const{return barcontractminup;} /*!< bar spinor of the outgoing nucleon (spin up) contracted with the current, transverse polarization, helicity -1 with respect to q */
@@ -132,7 +132,7 @@ public:
   
 private:
   double prec; /*!< precision in the integrations */
-  int integrator; /*!< choice of integrator */
+  IntegrationMethod integrator; /*!< choice of integrator */
   AbstractFsiCTGrid *grid; /*!< pointer to Glauber Grid */
   MeanFieldNucleusThick *pnucl; /*!<  pointer to nucleus */
   NucleonEMOperator *J; /*!<  pointer to nucleon formfactor instance */

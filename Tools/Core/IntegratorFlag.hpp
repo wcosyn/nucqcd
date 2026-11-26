@@ -1,5 +1,5 @@
 /*! \file IntegratorFlag.hpp
- * \brief Validation of the `integrator` option of the Glauber and Knockout classes
+ * \brief The `integrator` option of the Glauber and Knockout classes: IntegrationMethod and its conversion from an integer or a name
  */
 #ifndef INTEGRATORFLAG_HPP
 #define INTEGRATORFLAG_HPP
@@ -39,12 +39,6 @@ inline IntegrationMethod integration_method(const std::string &name) {
   if (lower == "romberg" || lower == "1") return IntegrationMethod::Romberg;
   if (lower == "adaptive" || lower == "2") return IntegrationMethod::Adaptive;
   throw std::invalid_argument(nucqcd::ErrorMessage() << "integration method must be \"romberg\" (1) or \"adaptive\" (2), got \"" << name << "\"");
-}
-
-/*! Validation of an `integrator` option that is still an integer (the Knockout classes, until they take an
- * IntegrationMethod). \param integrator the option \return \p integrator \throw std::invalid_argument as integration_method(int) */
-inline int checked_integrator_flag(int integrator) {
-  return numint::method_flag(integration_method(integrator));
 }
 
 }  // namespace nucqcd

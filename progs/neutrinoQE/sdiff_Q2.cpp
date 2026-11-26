@@ -57,7 +57,7 @@ struct Ftor {  //Carbon
   double *cthmax;
   double Q2;
   double prec;
-  int integrator;
+  IntegrationMethod integrator;
   string homedir;
   int maxEval;
   bool charged;
@@ -70,7 +70,7 @@ struct Ftor {  //Carbon
   string exp;
   void (*f)(numint::vector_d &, double E_omega, double costhetacm, double E_in, 
             MeanFieldNucleusThick &pNucleus, string lepton_id, int current, double *cthmax, double Q2,
-            double prec, int integrator, string homedir, int maxEval, bool charged, bool screening, bool enable_romea,
+            double prec, IntegrationMethod integrator, string homedir, int maxEval, bool charged, bool screening, bool enable_romea,
             double max_initial_nucl_mom, double min_final_nucl_mom, int pw, string exp
            );
 
@@ -126,7 +126,7 @@ double getMax(double &high, double &low, MeanFieldNucleusThick &nucleus, LeptonK
 // integration over missing momentum + over T_mu(=E_out+C)
 void adap_intPm(numint::vector_d &, double omega, double costhetacm, double E_in,
 		            MeanFieldNucleusThick &pNucleus, string lepton_id, int current, double *cthmax, double Q2,
-		            double prec, int integrator, string homedir, int maxEval, bool charged, bool screening, bool enable_romea,
+		            double prec, IntegrationMethod integrator, string homedir, int maxEval, bool charged, bool screening, bool enable_romea,
                             double max_initial_nucl_mom, double min_final_nucl_mom, int pw, string exp
                );
 
@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
   bool screening=0;//atoi(argv[4]);
   int nucleus=1;//atoi(argv[6]);                     
   double prec=1.E-04;//atof(argv[7]);   //1.E-5
-  int integrator=2;//
+  IntegrationMethod integrator=IntegrationMethod::Adaptive;//
   int fluxintegrator=atoi(argv[2]);
 //int thick=0;//atoi(argv[9]);
   int maxEval=20000;//atoi(argv[10]);
@@ -427,7 +427,7 @@ int main(int argc, char *argv[])
 //integrandum carbon
 void adap_intPm(numint::vector_d & results, double omega, double costhetacm, double E_in,
 	 MeanFieldNucleusThick &nucleus, string lepton_id, int current, double *cthmax, double Q2,
-	 double prec, int integrator, string homedir, int maxEval, bool charged, bool screening,
+	 double prec, IntegrationMethod integrator, string homedir, int maxEval, bool charged, bool screening,
          bool enable_romea, double max_initial_nucl_mom, 
                 double min_final_nucl_mom, int pw, string exp){	  
 

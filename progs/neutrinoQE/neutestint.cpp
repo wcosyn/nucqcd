@@ -319,7 +319,7 @@ int main(int argc, char *argv[])
   bool screening=0;//atoi(argv[4]);
   int nucleus=1;//atoi(argv[6]);
   double prec=1.E-05;//atof(argv[7]);
-  int integrator=2;//
+  IntegrationMethod integrator=IntegrationMethod::Adaptive;//
   int fluxintegrator=atoi(argv[3]);
   int thick=0;//atoi(argv[9]);
   int maxEval=20000;//atoi(argv[10]);

@@ -1,4 +1,5 @@
 #include <Tools/Core/IntegratorFlag.hpp>
+#include <Integrator/numint/cube.hpp>
 #include <Knockout/EMQECross.hpp>
 #include <Tools/Core/ErrorMessage.hpp>
 
@@ -14,9 +15,9 @@ namespace nucqcd {
 
 using namespace std;
 
-EMQECross::EMQECross(ElectronKinematics &elec, MeanFieldNucleusThick *pnucleus, double precision, int integr,
+EMQECross::EMQECross(ElectronKinematics &elec, MeanFieldNucleusThick *pnucleus, double precision, IntegrationMethod integr,
 	     string dir, bool user_sigma, double sigma_screening)
-:homedir(dir),electron(elec),pnucl(pnucleus),reacmodel(NULL), prec(precision),integrator(nucqcd::checked_integrator_flag(integr)),
+:homedir(dir),electron(elec),pnucl(pnucleus),reacmodel(NULL), prec(precision),integrator(integr),
 usersigma(user_sigma),sigmascreening(sigma_screening){
   
 }
@@ -425,30 +426,26 @@ void EMQECross::getDensr(std::vector<double> &densr, const Kinematics2to2 &tk, c
     getPhid(phidd,tk,shellindex,2*(i/2)+1,2*(i%2)-1,thick,maxEval);
     for(int j=0;j<total;j++) {phid[i][j]=phidd[j];}
   }
-  if(integrator==1||integrator==2){
 
-    numint::array<double,2> lower = {{-1.,0.}};
-    numint::array<double,2> upper = {{1.,2.*PI}};
-    EMQECross::Ftor_densr F;
-    F.cross = this;
-    F.total = total;
-    F.grid = grid;
-    F.pm = pm;
-    F.spinorup = spinoroutup;
-    F.spinordown = spinoroutdown;
-    F.r = r;
-    F.phid=phid;
-    F.shell = shellindex;
-    numint::mdfunction<numint::vector_d,2> mdf;
-    mdf.func = &Ftor_densr::exec;
-    mdf.param = &F;
-    densr = vector<double>(total,0.);
-    F.f=EMQECross::klaas_densr;
+  numint::array<double,2> lower = {{-1.,0.}};
+  numint::array<double,2> upper = {{1.,2.*PI}};
+  EMQECross::Ftor_densr F;
+  F.cross = this;
+  F.total = total;
+  F.grid = grid;
+  F.pm = pm;
+  F.spinorup = spinoroutup;
+  F.spinordown = spinoroutdown;
+  F.r = r;
+  F.phid=phid;
+  F.shell = shellindex;
+  numint::mdfunction<numint::vector_d,2> mdf;
+  mdf.func = &Ftor_densr::exec;
+  mdf.param = &F;
+  densr = vector<double>(total,0.);
+  F.f=EMQECross::klaas_densr;
 
-    if(integrator==1) res = numint::cube_romb(mdf,lower,upper,1.E-08,prec,densr,count,0);
-    else res = numint::cube_adaptive(mdf,lower,upper,1.E-08,prec,1E02,maxEval,densr,count,0);
-  }      
-  else {throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented " << integrator );}
+  res = numint::cube({integrator, 1.E-08, prec, 100, maxEval}, mdf, lower, upper, densr, count, 0);
   
   delete grid;
   for(int i=0;i<2*abs(getPnucl()->getKappas()[shellindex]);i++) delete [] phid[i];
@@ -520,31 +517,27 @@ void EMQECross::getDensr_ctheta(std::vector<double> &densr, const Kinematics2to2
     getPhid(phidd,tk,shellindex,i/2,2*(i%2)-1,thick,maxEval);
     for(int j=0;j<total;j++) phid[i][j]=phidd[j];
   }
-  if(integrator==1||integrator==2){
 
-    numint::array<double,1> lower = {{0.}};
-    numint::array<double,1> upper = {{2.*PI}};
-    EMQECross::Ftor_densr_ctheta F;
-    F.cross = this;
-    F.total = total;
-    F.grid = grid;
-    F.pm = pm;
-    F.spinorup = spinoroutup;
-    F.spinordown = spinoroutdown;
-    F.r = r;
-    F.ctheta=denscostheta;
-    F.phid=phid;
-    F.shell = shellindex;
-    numint::mdfunction<numint::vector_d,1> mdf;
-    mdf.func = &Ftor_densr_ctheta::exec;
-    mdf.param = &F;
-    densr = vector<double>(total,0.);
-    F.f=EMQECross::klaas_densr_ctheta;
+  numint::array<double,1> lower = {{0.}};
+  numint::array<double,1> upper = {{2.*PI}};
+  EMQECross::Ftor_densr_ctheta F;
+  F.cross = this;
+  F.total = total;
+  F.grid = grid;
+  F.pm = pm;
+  F.spinorup = spinoroutup;
+  F.spinordown = spinoroutdown;
+  F.r = r;
+  F.ctheta=denscostheta;
+  F.phid=phid;
+  F.shell = shellindex;
+  numint::mdfunction<numint::vector_d,1> mdf;
+  mdf.func = &Ftor_densr_ctheta::exec;
+  mdf.param = &F;
+  densr = vector<double>(total,0.);
+  F.f=EMQECross::klaas_densr_ctheta;
 
-    if(integrator==1) res = numint::cube_romb(mdf,lower,upper,1.E-08,prec,densr,count,0);
-    else res = numint::cube_adaptive(mdf,lower,upper,1.E-08,prec,1E02,maxEval,densr,count,0);
-  }      
-  else {throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented " << integrator );}
+  res = numint::cube({integrator, 1.E-08, prec, 100, maxEval}, mdf, lower, upper, densr, count, 0);
   
   delete grid;
   for(int i=0;i<2*abs(getPnucl()->getKappas()[shellindex]);i++) delete [] phid[i];
@@ -610,28 +603,24 @@ void EMQECross::getPhid(std::vector<complex<double> > &phid, const Kinematics2to
   int res=90;
   unsigned count=0;
   int total=thick?5:3; //in thickness we need 5 diff FSI results, otherwise 3
-  if(integrator==1||integrator==2){
 
-    numint::array<double,3> lower = {{0.,-1.,0.}};
-    numint::array<double,3> upper = {{pnucl->getRange(),1.,2.*PI}};
-    EMQECross::Ftor_phid F;
-    F.cross = this;
-    F.total = total;
-    F.grid = grid;
-    F.pm = pm;
-    F.spinor = spinorout;
-    F.shell = shellindex;
-    F.m = m;
-    numint::mdfunction<numint::vector_z,3> mdf;
-    mdf.func = &Ftor_phid::exec;
-    mdf.param = &F;
-    phid = vector<complex<double> >(total,0.);
-    F.f=EMQECross::klaas_phid;
+  numint::array<double,3> lower = {{0.,-1.,0.}};
+  numint::array<double,3> upper = {{pnucl->getRange(),1.,2.*PI}};
+  EMQECross::Ftor_phid F;
+  F.cross = this;
+  F.total = total;
+  F.grid = grid;
+  F.pm = pm;
+  F.spinor = spinorout;
+  F.shell = shellindex;
+  F.m = m;
+  numint::mdfunction<numint::vector_z,3> mdf;
+  mdf.func = &Ftor_phid::exec;
+  mdf.param = &F;
+  phid = vector<complex<double> >(total,0.);
+  F.f=EMQECross::klaas_phid;
 
-    if(integrator==1) res = numint::cube_romb(mdf,lower,upper,1.E-08,prec,phid,count,0);
-    else res = numint::cube_adaptive(mdf,lower,upper,1.E-08,prec,1E03,maxEval,phid,count,0);
-  }      
-  else {throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented " << integrator );}
+  res = numint::cube({integrator, 1.E-08, prec, 1000, maxEval}, mdf, lower, upper, phid, count, 0);
   
   delete grid;
 

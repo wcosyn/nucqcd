@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
   MeanFieldNucleusThick Nucleus(atoi(argv[1]),homedir);
   //Kinematics2to2 kin(.getMassA(),Carbon.getMassA_min_proton(),nucqcd::mass_p,"qsquared:wlab:pklab",atof(argv[1]),atof(argv[2]),atof(argv[3]));
   ElectronKinematics *elec = ElectronKinematics::CreateWithBeamEnergy(Ein);
-  EMQECross obs(*elec,&Nucleus,prec, 2, homedir, userset, screening);
+  EMQECross obs(*elec,&Nucleus,prec, IntegrationMethod::Adaptive, homedir, userset, screening);
 
 //   double k=sqrt(Q2+omega*omega);
 //   double Eout=Ein-omega;

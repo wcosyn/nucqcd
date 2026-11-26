@@ -80,8 +80,4 @@ TEST_CASE("the integrator option is 1 or 2; 0 (the old rombergerN) was removed",
   CHECK(integration_method("2") == IntegrationMethod::Adaptive);
   CHECK_THROWS_AS(integration_method("simpson"), std::invalid_argument);
   CHECK_THROWS_AS(integration_method(""), std::invalid_argument);
-  // the Knockout classes still take an integer and validate it with checked_integrator_flag
-  CHECK(checked_integrator_flag(1) == 1);
-  CHECK(checked_integrator_flag(2) == 2);
-  CHECK_THROWS_AS(checked_integrator_flag(0), std::invalid_argument);
 }

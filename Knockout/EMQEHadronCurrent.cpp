@@ -1,4 +1,5 @@
 #include <Tools/Core/IntegratorFlag.hpp>
+#include <Integrator/numint/cube.hpp>
 #include <Knockout/EMQEHadronCurrent.hpp>
 #include <Tools/Core/ErrorMessage.hpp>
 #include <Glauber/MeanFieldSpinor.hpp>
@@ -11,9 +12,9 @@ using namespace std;
 
 
 
-EMQEHadronCurrent::EMQEHadronCurrent(MeanFieldNucleusThick *pnucleus, double precision, int integr, string dir,
+EMQEHadronCurrent::EMQEHadronCurrent(MeanFieldNucleusThick *pnucleus, double precision, IntegrationMethod integr, string dir,
 	      int max_Eval, bool user_sigma, double sigma_screening)
-:pnucl(pnucleus), prec(precision), integrator(nucqcd::checked_integrator_flag(integr)), homedir(dir), maxEval(max_Eval),
+:pnucl(pnucleus), prec(precision), integrator(integr), homedir(dir), maxEval(max_Eval),
 usersigma(user_sigma), sigmascreening(sigma_screening),
 gridthick(GlauberGridThick(120,36,5,pnucleus,precision,IntegrationMethod::Adaptive,dir)),
 onegrid(OneGlauberGrid(120,36,pnucleus,precision,IntegrationMethod::Adaptive,dir)){
@@ -210,33 +211,29 @@ void EMQEHadronCurrent::getMatrixEl(Kinematics2to2 &tk, Matrix<2,3> & matrixel, 
   
   int res=90;
   unsigned count=0;
-  if (integrator==1||integrator==2){
 
-    numint::array<double,3> lower = {{0.,-1.,0.}};
-    numint::array<double,3> upper = {{pnucl->getRange(),1.,2.*PI}};
-    EMQEHadronCurrent::Ftor_one F;
-    F.model = this;
-    F.SRC = SRC;
-    F.pw = pw;
-    numint::mdfunction<numint::vector_z,3> mdf;
-    mdf.func = &Ftor_one::exec;
-    mdf.param = &F;
-    numint::vector_z ret(12,0.);
-    F.f=EMQEHadronCurrent::klaas_one_amp;
-    if(integrator==1) res = numint::cube_romb(mdf,lower,upper,1.E-08,prec,ret,count,0);
-    else res = numint::cube_adaptive(mdf,lower,upper,1.E-08,prec,1E03,maxEval,ret,count,0);
-    if(CT){
-      for(int j=0;j<2;++j){
+  numint::array<double,3> lower = {{0.,-1.,0.}};
+  numint::array<double,3> upper = {{pnucl->getRange(),1.,2.*PI}};
+  EMQEHadronCurrent::Ftor_one F;
+  F.model = this;
+  F.SRC = SRC;
+  F.pw = pw;
+  numint::mdfunction<numint::vector_z,3> mdf;
+  mdf.func = &Ftor_one::exec;
+  mdf.param = &F;
+  numint::vector_z ret(12,0.);
+  F.f=EMQEHadronCurrent::klaas_one_amp;
+  res = numint::cube({integrator, 1.E-08, prec, 1000, maxEval}, mdf, lower, upper, ret, count, 0);
+  if(CT){
+    for(int j=0;j<2;++j){
 	for(int i=0;i<3;i++) matrixel(j,i)=ret[j*6+2*i+1];
-      }
     }
-    else{
-      for(int j=0;j<2;++j){
+  }
+  else{
+    for(int j=0;j<2;++j){
 	for(int i=0;i<3;i++) matrixel(j,i)=ret[j*6+2*i];
-      }
     }
-  }      
-  else {throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented " << integrator );}
+  }
       
 //   cout << shellindex << " " << m << " ";
 //   for(int i=0;i<6;i++) cout << matrixel(i/3,i%3) << " ";
@@ -297,7 +294,6 @@ void EMQEHadronCurrent::getAllMatrixElMult(Kinematics2to2 &tk, Matrix<2,3> *matr
       int res=90;
       unsigned count=0;
       int total=thick?5:3; //in thickness we need 5 diff FSI results, otherwise 3
-      if (integrator==1||integrator==2){
 
 	numint::array<double,3> lower = {{0.,-1.,0.}};
 	numint::array<double,3> upper = {{pnucl->getRange(),1.,2.*PI}};
@@ -310,11 +306,8 @@ void EMQEHadronCurrent::getAllMatrixElMult(Kinematics2to2 &tk, Matrix<2,3> *matr
 	mdf.param = &F;
 	numint::vector_z ret(total,0.);
 	F.f=EMQEHadronCurrent::klaas_mult_amp;
-	if(integrator==1) res = numint::cube_romb(mdf,lower,upper,1.E-08,prec,ret,count,0);
-	else res = numint::cube_adaptive(mdf,lower,upper,1.E-08,prec,1E03,maxEval,ret,count,0);
+	res = numint::cube({integrator, 1.E-08, prec, 1000, maxEval}, mdf, lower, upper, ret, count, 0);
 	for(int k=0;k<total;++k) matrixel[k](spinout,photopol) = ret[k];
-      }      
-      else {throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented " << integrator );}
 //       cout << shellindex << " " << m << " " << spinout << " " << photopol << " " << matrixel[0](spinout,photopol) << 
 // 	" " << matrixel[1](spinout,photopol) << " " << matrixel[total-1](spinout,photopol) << " " << res << " " << count << endl;
     }
@@ -399,19 +392,18 @@ void EMQEHadronCurrent::getAllMatrixEl(Kinematics2to2 &tk, Matrix<2,3> *matrixel
   //   }
     int total=thick?5:3; //in thickness we need 5 diff FSI results, otherwise 3
     
-    if(integrator==1||integrator==2){
 
-      numint::array<double,3> lower = {{0.,-1.,0.}};
-      numint::array<double,3> upper = {{pnucl->getRange(),1.,2.*PI}};
-      EMQEHadronCurrent::Ftor_one F;
-      F.model = this;
-      F.SRC = thick;
-      F.pw = total;
-      numint::mdfunction<numint::vector_z,3> mdf;
-      mdf.func = &Ftor_one::exec;
-      mdf.param = &F;
-      numint::vector_z ret(total*6,0.);
-      F.f=EMQEHadronCurrent::klaas_all_amp;
+    numint::array<double,3> lower = {{0.,-1.,0.}};
+    numint::array<double,3> upper = {{pnucl->getRange(),1.,2.*PI}};
+    EMQEHadronCurrent::Ftor_one F;
+    F.model = this;
+    F.SRC = thick;
+    F.pw = total;
+    numint::mdfunction<numint::vector_z,3> mdf;
+    mdf.func = &Ftor_one::exec;
+    mdf.param = &F;
+    numint::vector_z ret(total*6,0.);
+    F.f=EMQEHadronCurrent::klaas_all_amp;
 
   //     numint::array<double,1> lower = {{0.,}};
   //     numint::array<double,1> upper = {{pnucl->getRange()}};
@@ -425,15 +417,12 @@ void EMQEHadronCurrent::getAllMatrixEl(Kinematics2to2 &tk, Matrix<2,3> *matrixel
   //     numint::vector_z ret(total*6,0.);
   //     F.f=EMQEHadronCurrent::klaas_all_radial;
 
-      if(integrator==1) res = numint::cube_romb(mdf,lower,upper,1.E-08,prec,ret,count,0);
-      else res = numint::cube_adaptive(mdf,lower,upper,1.E-08,prec,1E03,maxEval,ret,count,0);
-      for(int k=0;k<total;++k){
+    res = numint::cube({integrator, 1.E-08, prec, 1000, maxEval}, mdf, lower, upper, ret, count, 0);
+    for(int k=0;k<total;++k){
 	for(int j=0;j<2;++j){
 	  for(int i=0;i<3;i++) matrixel[k](j,i)=ret[j*total*3+total*i+k];
 	}
-      }
-    }      
-    else {throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented " << integrator );}
+    }
 	
   //   cout << shellindex << " " << m << " ";
   //   for(int i=0;i<6;i++) cout << matrixel[0](i/3,i%3) << " ";
@@ -448,41 +437,37 @@ void EMQEHadronCurrent::getAllMatrixEl(Kinematics2to2 &tk, Matrix<2,3> *matrixel
    int res=90;
     unsigned count=0;
     int total=thick?5:3; //in thickness we need 5 diff FSI results, otherwise 3    
-    if(integrator==1||integrator==2){
 
-      numint::array<double,3> lower = {{0.,-1.,0.}};
-      numint::array<double,3> upper = {{pnucl->getRange(),1.,2.*PI}};
-      EMQEHadronCurrent::Ftor_medium F;
-      F.model = this;
-      F.thick = thick;
-      F.total = total;
-      F.spindown=Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),
+    numint::array<double,3> lower = {{0.,-1.,0.}};
+    numint::array<double,3> upper = {{pnucl->getRange(),1.,2.*PI}};
+    EMQEHadronCurrent::Ftor_medium F;
+    F.model = this;
+    F.thick = thick;
+    F.total = total;
+    F.spindown=Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),
 				      Spinor::Polarization(0.,0.,Spinor::Polarization::kDown),Spinor::kUnity));
-      F.spinup=Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),
+    F.spinup=Spinor::Bar(Spinor(pf,tk.GetHyperonMass(),
 				    Spinor::Polarization(0.,0.,Spinor::Polarization::kUp),Spinor::kUnity));
-      F.medium=medium;
-      F.current=current;
-      F.q=q;
-      F.pi=pi;
-      F.pf=pf;
-      F.polmin=polVectorMin;
-      F.polplus=polVectorPlus;
-      F.pol0=polVector0;
-      numint::mdfunction<numint::vector_z,3> mdf;
-      mdf.func = &Ftor_medium::exec;
-      mdf.param = &F;
-      numint::vector_z ret(total*6,0.);
-      F.f=EMQEHadronCurrent::klaas_all_amp_medium;
+    F.medium=medium;
+    F.current=current;
+    F.q=q;
+    F.pi=pi;
+    F.pf=pf;
+    F.polmin=polVectorMin;
+    F.polplus=polVectorPlus;
+    F.pol0=polVector0;
+    numint::mdfunction<numint::vector_z,3> mdf;
+    mdf.func = &Ftor_medium::exec;
+    mdf.param = &F;
+    numint::vector_z ret(total*6,0.);
+    F.f=EMQEHadronCurrent::klaas_all_amp_medium;
 
-      if(integrator==1) res = numint::cube_romb(mdf,lower,upper,1.E-08,prec,ret,count,0);
-      else res = numint::cube_adaptive(mdf,lower,upper,1.E-08,prec,1E03,maxEval,ret,count,0);
-      for(int k=0;k<total;++k){
+    res = numint::cube({integrator, 1.E-08, prec, 1000, maxEval}, mdf, lower, upper, ret, count, 0);
+    for(int k=0;k<total;++k){
 	for(int j=0;j<2;++j){
 	  for(int i=0;i<3;i++) matrixel[k](j,i)=ret[j*total*3+total*i+k];
 	}
-      }
-    }      
-    else {throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented " << integrator );}
+    }
     
     
     
@@ -721,8 +706,7 @@ void EMQEHadronCurrent::klaas_all_radial(numint::vector_z & results, double r,
 //   numint::vector_z ret(total*6,0.);
   F.f=EMQEHadronCurrent::klaas_all_angular;
   unsigned count=0;
-  if(model.getIntegrator()==1) numint::cube_romb(mdf,lower,upper,1.E-08,model.getPrec(),results,count,0);
-  else numint::cube_adaptive(mdf,lower,upper,1.E-08,model.getPrec(),1E03,2E06,results,count,0);
+  numint::cube({model.getIntegrator(), 1.E-08, model.getPrec(), 1000, 2000000}, mdf, lower, upper, results, count, 0);
   for(int i=0;i<total*6;++i) results[i]*=r;  
   return;
 }

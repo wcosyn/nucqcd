@@ -38,7 +38,7 @@ TEST_CASE("Nuclear plane-wave charged-current QE on carbon", "[weakqe]") {
   const std::string dir = nucqcd_test::share_dir();
   MeanFieldNucleusThick carbon(MeanFieldNucleus::C, dir);
   std::unique_ptr<LeptonKinematics> muon(LeptonKinematics::CreateWithBeamEnergy(LeptonKinematics::muon, 1500.));
-  WeakQECross cc(muon.get(), &carbon, 1.E-05, 2, dir, true, M_A, false, false);
+  WeakQECross cc(muon.get(), &carbon, 1.E-05, IntegrationMethod::Adaptive, dir, true, M_A, false, false);
   for (double pm : {50., 200.}) {
     // proton shells: antineutrino CC knocks out a neutron
     Kinematics2to2 kin(carbon.getMassA(), carbon.getMassA_min_proton(), nucqcd::mass_n, "qsquared:wlab:pklab", 0.5E06,
@@ -61,7 +61,7 @@ TEST_CASE("Nuclear plane-wave neutral-current QE on carbon", "[weakqe]") {
   const std::string dir = nucqcd_test::share_dir();
   MeanFieldNucleusThick carbon(MeanFieldNucleus::C, dir);
   std::unique_ptr<ElectronKinematics> elec(ElectronKinematics::CreateWithBeamEnergy(1500.));
-  WeakQECross nc(elec.get(), &carbon, 1.E-05, 2, dir, false, M_A, false, false);
+  WeakQECross nc(elec.get(), &carbon, 1.E-05, IntegrationMethod::Adaptive, dir, false, M_A, false, false);
   Kinematics2to2 kin(carbon.getMassA(), carbon.getMassA_min_proton(), nucqcd::mass_p, "qsquared:wlab:pklab", 0.5E06,
                       350., 50.);
   for (int shell = 0; shell < carbon.getPLevels(); shell++) {

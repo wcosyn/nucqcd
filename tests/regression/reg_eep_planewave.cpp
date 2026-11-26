@@ -22,7 +22,7 @@ void check_nucleus(const char *name) {
   const std::string dir = nucqcd_test::share_dir();
   MeanFieldNucleusThick nucl(MeanFieldNucleus::TypeNames.at(name), dir);
   std::unique_ptr<ElectronKinematics> elec(ElectronKinematics::CreateWithBeamEnergy(3245.));
-  EMQECross obs(*elec, &nucl, 1.E-05, 2, dir, false, 1.);
+  EMQECross obs(*elec, &nucl, 1.E-05, IntegrationMethod::Adaptive, dir, false, 1.);
   for (double pm : {50., 150., 250.}) {
     Kinematics2to2 kin(nucl.getMassA(), nucl.getMassA_min_proton(), nucqcd::mass_p, "qsquared:wlab:pklab", 1.8E06,
                         1000., pm);

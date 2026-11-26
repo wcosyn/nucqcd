@@ -324,7 +324,7 @@ void part_b() {
         MeanFieldNucleusThick carbon(MeanFieldNucleus::C, share);
         std::unique_ptr<ElectronKinematics> elec(ElectronKinematics::CreateWithBeamEnergy(3245.));
         Kinematics2to2 kin(carbon.getMassA(), carbon.getMassA_min_proton(), nucqcd::mass_p, "qsquared:wlab:pklab", 1.8E06, 1000., 150.);
-        EMQECross obs(*elec, &carbon, prec, integrator, share, false, 1.);
+        EMQECross obs(*elec, &carbon, prec, integration_method(integrator), share, false, 1.);
         return std::vector<double>{obs.getDiffCross(kin, 2, 0, 0, 0, 1, shell, 0., 2000000, true, false, 1., 1.)};
       };
     };
@@ -357,7 +357,7 @@ void part_c() {
   MeanFieldNucleusThick carbon(MeanFieldNucleus::C, share);
   std::unique_ptr<ElectronKinematics> elec(ElectronKinematics::CreateWithBeamEnergy(3245.));
   Kinematics2to2 kin(carbon.getMassA(), carbon.getMassA_min_proton(), nucqcd::mass_p, "qsquared:wlab:pklab", 1.8E06, 1000., 150.);
-  EMQECross obs(*elec, &carbon, 1e-5, 2, share, false, 1.);
+  EMQECross obs(*elec, &carbon, 1e-5, IntegrationMethod::Adaptive, share, false, 1.);
   for (int shell = 0; shell < carbon.getPLevels(); ++shell)
     for (int pw : {1, 0}) {
       obs.getDiffCross(kin, 2, pw ? 0 : 1, 0, 0, pw, shell, 0., 20000, true, false, 1., 1.);  // fills the grid once
