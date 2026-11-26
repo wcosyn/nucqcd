@@ -79,8 +79,15 @@ system (about `M_A`), in this place. That made the z integrals too large by abou
 
 Equations (2) and (3) give the weights of the delta-function-derived integrand, `W_t = 1/(8 q kappa)` and
 `W_z = nu/(4 tau)`. The code does not use these. It uses `1/(2q)` (t) and `(nu/q) K = nu kappa/tau` (z, after the fix),
-which are `4 kappa` times `W_t` and `W_z`. The two code weights are consistent with each other, so t and z agree,
-but both differ from the delta-function weights by the same factor `4 kappa`, which is pm dependent.
+which are `4 kappa` times `W_t` and `W_z`. The two code weights are consistent with each other, so t and z agree.
+
+Units: the delta-function weights are in GeV^-2, the code weights in GeV^-1 (t) and GeV (z), so the factor `4 kappa`
+carries one power of a mass. That is expected if the code absorbs the nucleon-state normalisation and flux factors
+(for example `1/(2 E_N)` and `1/(4 sqrt(lambda))`) into the prefactors, and a factor of about `4 massi` fits that
+pattern; **this was not derived or checked against the author's formula**. The units cannot tell `massX` from `K` (both
+are masses), only that the extra z factor must be a mass; the numerical `|dt/dz|` does that. What remains open is only
+the pm dependence of `kappa` (about +-12% for pm up to 0.2 GeV): if the absorbed normalisation is a constant, the code
+differs from the delta-function weights by that much; if it already carries that pm dependence, it does not.
 
 There is an independent check of the delta-function weights. Integrating over the azimuth φ at fixed `pm`, `theta`,
 `nu`, `t` must give the Lorentz-invariant two-body phase space of the photon-nucleon system (go to its CM frame, where
@@ -101,7 +108,7 @@ for `t` inside the physical range of that `s` (zero outside). `λ` is exactly th
   with `4 kappa_avg` (the azimuthal harmonic mean of kappa) = 3.65-3.70 GeV at pm ~ 0.01-0.02 GeV (`4 massi` = 3.69 GeV)
   and 3.3-4.2 GeV for pm = 0.09-0.2 GeV. So the t weight (and with the fix the z weight) is the invariant weight times about `4 massi` (an overall constant that
   might be a convention absorbed elsewhere, **not checked**) times a pm-dependent factor of up to about ±12%
-  (**the author should decide** whether to replace both weights by the delta-function weights; this would change the
-  t results too, by that factor).
+  (**the author should decide** whether the normalisation conventions explain it, or whether both weights should follow
+  the delta-function weights, which would change the t results too, by up to that factor).
 - Monte Carlo with the code's kinematics and cuts and a Gaussian momentum distribution: z/t = 11.66 with `massX`,
   0.997 with (4) at Q² = 1.5 GeV², nu 2.5-3.5 GeV; 0.988 at Q² = 2.5 GeV², nu 3.0-3.8 GeV.

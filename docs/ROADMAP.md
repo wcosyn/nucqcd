@@ -407,8 +407,9 @@ one commit per bug; no `[known-bug]` tests remain.
   - **Open question for the author (found 2026-11-26, `docs/rho_jacobian.md` section 4):** the weights of both versions
     (`1/(2q)` for t, `(nu/q) K` for z) are `4 kappa` times the weights that follow from the delta function (checked against
     the Lorentz-invariant two-body phase space), with `kappa = |C0 - Cz nu/q - Cx nu (z - pz/q)/px|`, which is `massi` at
-    pm = 0 and varies by about +-12% for pm up to 0.2 GeV. The overall `4 massi` may be a convention absorbed elsewhere
-    (not checked); the pm dependence would change both t and z results if corrected. Not changed here.
+    pm = 0. By units this is one power of a mass, probably nucleon normalisation and flux factors absorbed in the
+    prefactors (`4 massi` fits; not derived). Open is only whether the +-12% pm dependence of kappa (pm up to 0.2 GeV)
+    is also absorbed; if not, correcting it would change both t and z results. Not changed here.
   - **Not verified:** the full `rhoset` run for t and z with the real Glauber distributions (900 s was not enough for
     carbon with these settings: `rhoset 1|0 1 2.0 2.5 3.5 0. 0 20. 2 20000 1e-3 4`; narrow the nu range and loosen the
     precision to try again). The absolute normalisation of the t version (it carries no 1/|df/dz| of its own) was not
