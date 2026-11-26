@@ -58,7 +58,8 @@ for all Glauber grid variants (#68) and the deduplication of the two thick grids
 2. **Glauber grids:** the off-axis speed (every point hits the evaluation cap; `cube_romb` was 5x faster at 1e-3;
    variants change values within the precision and need the author's OK), and the rest of the hierarchy dedup
    (the eight abstract classes with four interpolation wrappers per named grid, the 5D raw pointer arrays).
-3. **Smaller items:** unbundle cubature (step 7, maintenance only, no accuracy gain per the benchmark), the PDG
+3. **Smaller items:** the comment and header-guard cleanup of step 6 (copy-paste leftovers, including a duplicate
+   `MODEL_HPP` guard), unbundle cubature (step 7, maintenance only, no accuracy gain per the benchmark), the PDG
    constants update (changes values), the long Glauber files (`GlauberGrid.cpp`, `DistMomDistrGrid.cpp`, ...),
    `SolvePhotonAndParticle1` (134 lines), reporting the Suave bug to the Cuba authors, a format string that gives
    no scenario at all is still accepted (step 6, long functions), `Resonance` stays in the DIS library although
@@ -972,6 +973,35 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   Still to do: the 1.0-1.2k-line `GlauberGridThick.cpp`, `GlauberDecayGridThick.cpp`, `GlauberGrid.cpp`,
   `DistMomDistrGrid.cpp` (with the grid dedup above), and `SolvePhotonAndParticle1` (134 lines) could be
   split further.
+
+- [ ] **Comments that belong to another file (copy-paste leftovers), crawl of 2026-11-26.** A scripted crawl of the
+  tracked C++ files outside `progs/attic` and `tests/` (file tags, header guards, the first comment block of every
+  file against the file name, usage lines against the program name), reading the hits by hand; what had been cleaned in
+  earlier items is not repeated. **To fix (comments and guards only, no behaviour change except the first point):**
+  - **Header guard collision:** `Knockout/EMQEHadronCurrent.hpp` and `Knockout/WeakQEHadronCurrent.hpp` both use
+    `MODEL_HPP` (left over from the `Model` rename); a translation unit that includes both silently loses the second
+    one (none does today). `Knockout/EMQECross.hpp` still uses `CROSS_HPP`. Rename to `EMQEHADRONCURRENT_HPP`,
+    `WEAKQEHADRONCURRENT_HPP`, `EMQECROSS_HPP`.
+  - **Wrong `\file` tag or brief:** `Glauber/NucleonWeakOperator.hpp` (`\file NucleonEMOperator.hpp`, brief "class
+    NucleonEMoperator"), `DIS/InclusiveCross.hpp` (`\file DeuteronCross.hpp`; the same in the archived
+    `progs/attic/threeres/InclusiveCrossRes.hpp`), `Tools/WaveFunctions/YukawaWavefunction.cpp` (first line says
+    `WavefunctionImplementation.cpp`).
+  - **Usage lines naming another program** (the program was copied from it): `progs/neutrinoQE/ddiff.cpp`,
+    `ddiff_minerva.cpp`, `ddiff_minerva_N.cpp`, `neutestint.cpp` (`./neutest`, no such target; `neutestfixEin.cpp`
+    names itself), `progs/Obstest/Ca_dens.cpp`, `Nucl_dens_profile.cpp`, `PxPz_exp_sample.cpp` (`./observables`, a
+    different program in the same directory), `progs/F2_largex_fit/F2_bootstrap.cpp` (`bin/F2_fit`),
+    `progs/onenucl/A_QE_cross.cpp` (`./onenucl`), `progs/pionestimate/pionestimate.cpp` (`./pionest`). The usage
+    lines of the neutrino programs also give the arguments of the program they were copied from; check them against
+    the `argv` handling.
+  - **Same description in two programs:** `progs/deepsdis/b1_calc.cpp` and `b1_calc_comp.cpp`;
+    `progs/Obstest/Ca_dens.cpp` and `Nucl_dens_profile.cpp` (both "density profiles for Calcium").
+  - **Stale absolute paths:** `progs/deepsdis/fitscript.py` calls `/home/wim/Code/trunk/bin/...` (`bonusextrapolate`,
+    `bonusextrapolate2`, `parabfit`).
+  - **Library-wide Doxygen blocks that sit in one class header** (low priority): the `\defgroup DIS` text in
+    `DIS/DeuteronCross.hpp` and the `\mainpage`/`\defgroup Glauber` text in `Glauber/AbstractFsiGrid.hpp`.
+  - **Not covered by the crawl:** the Fortran files, `progs/attic`, `tests/`, the Python scripts apart from the usage
+    check, and comments inside function bodies; a second pass with a reader (not a script) over the `GPD_Partons` and
+    `progs/deepsdis` files is worth doing, since their headers are copies of each other.
 
 ## 7. Unbundle Cuba (and cubature)
 
