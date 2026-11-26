@@ -703,7 +703,7 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   against a high-precision reference. If they are removed: the `integrator` flag of the grid
   and cross-section classes no longer has the `rombergerN` option 0 (removed in #69, see "Glauber grid
   hierarchy"; 1: `numint::cube_romb`, 2: `cube_adaptive`; the tests use 2). Hard-coded uses have to be replaced, which changes values
-  (author's OK per class). **Survey and first step (2026-11-25, #80):** of the 25 uses, 12 were dead: the
+  (author's OK per class). **Survey and first step (2026-11-25, #80):** of the 25 calls in the libraries and the programs, 6 (in 12 functions) were dead: the
   nested chains `intPm*` → `intCosTheta*` → `intPhi*` of `RhoTCross` (6 functions) and of `RhoDeuteron`
   (t and z, 6 functions) were only called by the `integrator == 0` branches removed in #69 (and
   `OneGlauberGrid` in #77); they are deleted (no value changes; `RhoTCross` has no `rombergerN` left).
@@ -713,7 +713,7 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   | `RhoDeuteron::calcCross_coh` (4 calls), `intPmcoh`, `intCosThetacoh` | coherent rho production on the deuteron: 4 spin combinations of a complex 3D integral over the spectator momentum (pm, cos θ, φ) | nested, precision `integration_prec`, 3-7 Romberg steps per level; no `integrator` flag |
   | `InclusiveCrossRes` (6 calls: `int_pr`, `int_costheta_incl`, `int_pr_fsi`, `int_costheta_incl_fsi`, `int_qt`, `int_qphi`) | inclusive DIS on the deuteron with resonances, without and with FSI; used by `threeres` and `increstest` | nested 2 levels (no FSI) and 4 levels (FSI: pr, cos θ, qt, qφ), the limits of cos θ depend on pr (a cut), precision `integration_prec` (times 1e-3 without FSI); no test covers it |
   | `DistMomDistrGrid::constructpwGrid` (1 call, `intRhoRpw`) | the plane-wave momentum distribution grid: a 1D radial integral for each grid point | 1D, precision 1e-7, 3-10 Romberg steps |
-  | `rhoset`, `rhodint` (2 calls each) | the outer integrals of the rho cross section over nu and over t or z | 2 levels, function-pointer callbacks, `integration_prec`; `torz` flag (see the open lead "Rho transparency: t- and z-integrated results disagree") |
+  | `rhoset`, `rhodint` (3 calls each: nu, and t or z) | the outer integrals of the rho cross section over nu and over t or z | 2 levels, function-pointer callbacks, `integration_prec`; `torz` flag (see the open lead "Rho transparency: t- and z-integrated results disagree") |
   | `progs/benchmark/integrators.cpp` | `rombergerN` as method 0 of the benchmark | keep until the function is removed, then drop the method (the results stay in `docs/integrator_benchmark.md`) |
   **Alternatives** for each live use (to decide with the author, they differ in how much of the code
   changes and in what the values do): (a) *keep the nested structure, change the driver* to `numint`'s 1D
