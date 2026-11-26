@@ -16,7 +16,6 @@ namespace nucqcd {
 //constructor, calls glaubergrid's constructor
 OneGlauberGrid::OneGlauberGrid(const int r_grid, const int cth_grid, MeanFieldNucleus *pnucl, 
 			       double prec, IntegrationMethod integrator, string dir):
-AbstractFsiGrid(r_grid,cth_grid,0,pnucl,prec,integrator,dir),
 GlauberGrid(r_grid,cth_grid,0,pnucl,prec,integrator,dir){
 }
 

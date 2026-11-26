@@ -732,8 +732,28 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   write (thin, thick, decay: along z and off axis) are byte-identical before and after (the cache file format
   is unchanged), the references of both tests pass, all other tests unchanged. One output change: the
   decay grid's `constructCtGrid` printed "Mem reservation for treshold array" to stdout; it no longer does.
-  Still to do for this item: the eight abstract classes (`AbstractFsi[CT][Decay][Thick]Grid`), one layer per
-  named grid with four interpolation wrappers each, and the 5D raw pointer arrays.
+  **The abstract classes (2026-11-26):** the seven classes `AbstractFsiGrid`, `AbstractFsiCTGrid` and the five between
+  them and the Glauber classes (`AbstractFsiGridThick`, `AbstractFsiDecayGridThick`, `AbstractFsiCTGridThick`,
+  `AbstractFsiCTDecayGrid`, `AbstractFsiCTDecayGridThick`: 10 files, one named interface per variant, each with four
+  interpolation wrappers, repeated, in a diamond of virtual bases; `GlauberDecayGridThick` could not even call
+  `getFsiDecayGridFull_interp3` without a cast, it was ambiguous) are now two. `AbstractFsiGrid` has the enumeration
+  `GridVariant` (bit 0 SRC, bit 1 decay, bit 2 CT; the value is the grid number of `GlauberDecayGridThick`), a virtual
+  `getGridNumber(variant)` (-1 if the class has no such grid; default: only `Fsi`), `hasVariant`, and the 40 named
+  functions (`getFsi[Ct|Src|SrcCt|Decay|...]GridFull_interp[|vec|3|2|1]`) as inline one-liners that call
+  `getFsiGridN_interp*` with the grid number of the variant (a variant that the class does not have throws
+  `std::logic_error`; before, it did not compile). The call sites (about 60) are unchanged. `GlauberThickGridCommon`
+  took over the `FsiCorrelator`, the thick nucleus, `number_of_grids` (2 x variants), the grid numbers and the `Thick.`
+  prefix of the file names (`GlauberDecayGridThick` adds its decay string itself); `GlauberGrid` and `ROMEAGrid` moved
+  the bodies of their named interpolations into `getFsiGridN_interp`. The inheritance is a single chain
+  (`AbstractFsiGrid` <- `AbstractFsiCTGrid` <- `GlauberThickGridCommon` <- the thick classes), no virtual bases. The
+  `dynamic_cast`s to the thick abstract classes in `EMQEHadronCurrent` and `WeakQEHadronCurrent` are gone (the grid
+  pointer has the functions now). 1022 lines removed, 197 added. **Checked:** a probe (before and after, scratch
+  program) that builds each concrete class with a tiny grid and prints `number_of_grids`, the cache file names, all named
+  interpolations and `getFsiGridN_interp` at a point (12 digits) is identical (71 lines), and so are the 11 cache files
+  it writes (names and md5); `ctest -L slow` with the 23 cache files of the two Glauber regression tests: identical names
+  and md5 to master; `ctest -LE slow` 136/136.
+  Still to do for this item: the 5D raw pointer arrays (`fsi_grid`, `fsi_ct_grid`, in the Glauber classes), and the
+  named print functions (`printFsi_*_grid`, declared in the concrete classes only now, with their per-class header text).
   **Found on the way, fixed (2026-11-25, #69):** in the Glauber grids `integrator == 0` (the old
   `rombergerN`) was dead: the `rombergerN` calls were commented out in `GlauberGrid`, `GlauberGridThick`,
   `GlauberDecayGridThick` (and in `DistMomDistrGrid`, `EMQEHadronCurrent`, `RhoDeuteron`), so the results

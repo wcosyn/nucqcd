@@ -175,27 +175,15 @@ void AbstractFsiGrid::setinterp(const double phi)
 }
 
 //interpolation functions
-complex<double> AbstractFsiGrid::getFsiGridFull_interpvec(const nucqcd::Vector3 &rvec){
-  return getFsiGridFull_interp3(rvec.Mag(),rvec.CosTheta(),rvec.Phi());
+int AbstractFsiGrid::variantNumber(GridVariant variant) const{
+  const int number=getGridNumber(variant);
+  if(number<0){
+    static const char *names[]={"FSI","FSI+SRC","FSI+decay","FSI+SRC+decay","FSI+CT","FSI+SRC+CT","FSI+CT+decay","FSI+SRC+CT+decay"};
+    throw std::logic_error(nucqcd::ErrorMessage() << "this grid class has no " << names[static_cast<int>(variant)] << " grid");
+  }
+  return number;
 }
 
-complex<double> AbstractFsiGrid::getFsiGridFull_interp3(const double r, const double costheta, const double phi){
-  setinterp(r,costheta,phi);
-  return getFsiGridFull_interp();
-}
-
-complex<double> AbstractFsiGrid::getFsiGridFull_interp2(const double costheta, const double phi){
-  setinterp(costheta,phi);
-  return getFsiGridFull_interp();
-}
-
-complex<double> AbstractFsiGrid::getFsiGridFull_interp1(const double phi){
-  setinterp(phi);
-  return getFsiGridFull_interp();
-}
-
-
-//interpolation functions
 complex<double> AbstractFsiGrid::getFsiGridN_interpvec(const int grid, const nucqcd::Vector3 &rvec){
   return getFsiGridN_interp3(grid, rvec.Mag(),rvec.CosTheta(),rvec.Phi());
 }

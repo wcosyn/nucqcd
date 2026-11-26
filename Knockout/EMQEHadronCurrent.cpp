@@ -562,8 +562,8 @@ void EMQEHadronCurrent::getAllMatrixEl(Kinematics2to2 &tk, Matrix<2,3> *matrixel
 //   results[10]=results[11]= barcontractplusup*wave*exp_pr;
 //   if(!pw){
 //     if(SRC){
-//       complex<double> src=dynamic_cast<AbstractFsiGridThick *>(grid)->getFsiSrcGridFull_interp1(phi);
-//       complex<double> srcct=dynamic_cast<AbstractFsiCTGridThick *>(grid)->getFsiSrcCtGridFull_interp1(phi);
+//       complex<double> src=grid->getFsiSrcGridFull_interp1(phi);
+//       complex<double> srcct=grid->getFsiSrcCtGridFull_interp1(phi);
 //       for(int i=0;i<6;i++){
 // 	results[2*i]*=src;
 // 	results[2*i+1]*=srcct;
@@ -600,10 +600,8 @@ void EMQEHadronCurrent::klaas_one_amp(numint::vector_z & results, double r, doub
   results[10]=results[11]= exp_pr*(model.getBarcontractplusup()*wave);
   if(!pw){
     if(SRC){
-      complex<double> src=dynamic_cast<AbstractFsiGridThick *>(model.getGrid())
-			      ->getFsiSrcGridFull_interp3(r,costheta,phi);
-      complex<double> srcct=dynamic_cast<AbstractFsiCTGridThick *>(model.getGrid())
-			      ->getFsiSrcCtGridFull_interp3(r,costheta,phi);
+      complex<double> src=model.getGrid()->getFsiSrcGridFull_interp3(r,costheta,phi);
+      complex<double> srcct=model.getGrid()->getFsiSrcCtGridFull_interp3(r,costheta,phi);
       for(int i=0;i<6;i++){
 	results[2*i]*=src;
 	results[2*i+1]*=srcct;

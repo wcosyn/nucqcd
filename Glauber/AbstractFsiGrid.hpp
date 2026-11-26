@@ -9,11 +9,12 @@
  * [MeanFieldNucleus, MeanFieldNucleusThick] <BR>
  * - A class for correlated FSI calculations containing all the needed functions and a grid for the gamma functions. <BR>
  * [FsiCorrelator]<BR>
- * - Six abstract classes (one for a general FSI grid, one that adds a CT grid, one for a general thickness FSI grid and 
- * one that adds a thickness CT grid, one with thickness and decay , and with with thickness CT Decay). <BR>
- * [AbstractFsiGrid, AbstractFsiCTGrid, AbstractFsiGridThick, AbstractFsiCTGridThick, AbstractFsiCTDecayGridThick]<BR>
- * - Three glauber classes : one without thickness, two with (also adds SRC to the ISI/FSI, one adds decay properties for ejected particles). <BR>
- * [GlauberGrid, GlauberGridThick, GlauberDecayGridThick] <BR>
+ * - Two abstract classes: one for a general FSI grid (with the interface for all the variants of a grid: FSI, SRC, decay, CT, see GridVariant),
+ * one that adds the color transparency grid. (Until 2026-11 there were seven, one layer for every variant.) <BR>
+ * [AbstractFsiGrid, AbstractFsiCTGrid]<BR>
+ * - Three glauber classes : one without thickness, two with (also adds SRC to the ISI/FSI, one adds decay properties for ejected particles), the two
+ * with thickness sharing GlauberThickGridCommon. <BR>
+ * [GlauberGrid, GlauberGridThick, GlauberDecayGridThick, GlauberThickGridCommon] <BR>
  * - A special class for the glauber grid of one particle, exploiting the symmetry along the z-axis (no phi dependence).  <BR>
  * [OneGlauberGrid] <BR>
  * - A class for spinors that represent the MF wave function of a nucleon in a certain nucleus at a coordinate. <BR>
@@ -55,6 +56,21 @@
 
 namespace nucqcd {
 
+
+/*! The variants of a Glauber grid: which of the factors short-range correlations (SRC), decay of the ejected particle (decay)
+ * and color transparency (CT) are included, besides the FSI factor (Fsi). The value of an enumerator is the grid number
+ * of GlauberDecayGridThick, the class with all of them (getFsiGridN_interp): bit 0 SRC, bit 1 decay, bit 2 CT. See
+ * AbstractFsiGrid::getGridNumber for which of them a class has. */
+enum class GridVariant {
+  Fsi = 0,         /*!< FSI */
+  Src = 1,         /*!< FSI+SRC */
+  Decay = 2,       /*!< FSI+decay */
+  SrcDecay = 3,    /*!< FSI+SRC+decay */
+  Ct = 4,          /*!< FSI+CT */
+  SrcCt = 5,       /*!< FSI+SRC+CT */
+  CtDecay = 6,     /*!< FSI+CT+decay */
+  SrcCtDecay = 7   /*!< FSI+SRC+CT+decay */
+};
 
 /*! \brief An abstract class for a ISI/FSI grid
  * 
@@ -156,20 +172,96 @@ public:
   /*! sets the interpolation index and weight in phi (r and cos(theta) set before) \param phi [rad] azimuthal angle */
   void setinterp(const double phi);
   
-  /*!returns the value of the fsi grid for a certain situation at coordinate (r,theta,phi) that has been set previously
-   ,pure virtual function!!*/
-  virtual std::complex<double> getFsiGridFull_interp()=0;
-  
-  //interpolation functions, one without arguments is a pure virtual function
-  /*!returns the value of the fsi grid for a certain situation at coordinate (r,costheta,phi) */
-  std::complex<double> getFsiGridFull_interpvec(const nucqcd::Vector3 &rvec);
-  /*!returns the value of the fsi grid for a certain situation at coordinate (r,costheta,phi) */
-  std::complex<double> getFsiGridFull_interp3(const double r, const double costheta, const double phi); 
-  /*!returns the value of the fsi grid for a certain situation at coordinate (costheta,phi), r has been set previously */
-  std::complex<double> getFsiGridFull_interp2(const double costheta, const double phi);
-  /*!returns the value of the fsi grid for a certain situation at coordinate (phi), r&theta have been set previously */
-  std::complex<double> getFsiGridFull_interp1(const double phi);
+  /*! The grid number (as in getFsiGridN_interp) of a variant of this class, -1 if it has no such grid. The default is a
+   * class with only the plain FSI grid. Overridden by the classes with more grids.
+   * \param variant the variant */
+  virtual int getGridNumber(GridVariant variant) const { return variant == GridVariant::Fsi ? 0 : -1; }
+  /*! \return true if this class has a grid for the variant, see getGridNumber */
+  bool hasVariant(GridVariant variant) const { return getGridNumber(variant) >= 0; }
 
+  // The named interpolation functions: one for every variant, with the point set before (no argument), with the point
+  // as a vector, as (r,costheta,phi), as (costheta,phi) (r set before) and as phi (r and costheta set before). They are
+  // the interpolation of getFsiGridN_interp with the grid number of the variant.
+  /** @name The FSI grid */
+  /** @{ */
+  /*! FSI grid at the point set with setinterp
+   * \throw std::logic_error if this class has no such grid (see getGridNumber) */
+  std::complex<double> getFsiGridFull_interp() { return getFsiGridN_interp(variantNumber(GridVariant::Fsi)); }
+  std::complex<double> getFsiGridFull_interpvec(const nucqcd::Vector3 &rvec) { return getFsiGridN_interpvec(variantNumber(GridVariant::Fsi), rvec); } /*!< FSI grid at the point rvec */
+  std::complex<double> getFsiGridFull_interp3(const double r, const double costheta, const double phi) { return getFsiGridN_interp3(variantNumber(GridVariant::Fsi), r, costheta, phi); } /*!< FSI grid at (r,costheta,phi) */
+  std::complex<double> getFsiGridFull_interp2(const double costheta, const double phi) { return getFsiGridN_interp2(variantNumber(GridVariant::Fsi), costheta, phi); } /*!< FSI grid at (costheta,phi), r set before */
+  std::complex<double> getFsiGridFull_interp1(const double phi) { return getFsiGridN_interp1(variantNumber(GridVariant::Fsi), phi); } /*!< FSI grid at phi, r and costheta set before */
+  /** @} */
+  /** @name The FSI+CT grid */
+  /** @{ */
+  /*! FSI+CT grid at the point set with setinterp
+   * \throw std::logic_error if this class has no such grid (see getGridNumber) */
+  std::complex<double> getFsiCtGridFull_interp() { return getFsiGridN_interp(variantNumber(GridVariant::Ct)); }
+  std::complex<double> getFsiCtGridFull_interpvec(const nucqcd::Vector3 &rvec) { return getFsiGridN_interpvec(variantNumber(GridVariant::Ct), rvec); } /*!< FSI+CT grid at the point rvec */
+  std::complex<double> getFsiCtGridFull_interp3(const double r, const double costheta, const double phi) { return getFsiGridN_interp3(variantNumber(GridVariant::Ct), r, costheta, phi); } /*!< FSI+CT grid at (r,costheta,phi) */
+  std::complex<double> getFsiCtGridFull_interp2(const double costheta, const double phi) { return getFsiGridN_interp2(variantNumber(GridVariant::Ct), costheta, phi); } /*!< FSI+CT grid at (costheta,phi), r set before */
+  std::complex<double> getFsiCtGridFull_interp1(const double phi) { return getFsiGridN_interp1(variantNumber(GridVariant::Ct), phi); } /*!< FSI+CT grid at phi, r and costheta set before */
+  /** @} */
+  /** @name The FSI+SRC grid */
+  /** @{ */
+  /*! FSI+SRC grid at the point set with setinterp
+   * \throw std::logic_error if this class has no such grid (see getGridNumber) */
+  std::complex<double> getFsiSrcGridFull_interp() { return getFsiGridN_interp(variantNumber(GridVariant::Src)); }
+  std::complex<double> getFsiSrcGridFull_interpvec(const nucqcd::Vector3 &rvec) { return getFsiGridN_interpvec(variantNumber(GridVariant::Src), rvec); } /*!< FSI+SRC grid at the point rvec */
+  std::complex<double> getFsiSrcGridFull_interp3(const double r, const double costheta, const double phi) { return getFsiGridN_interp3(variantNumber(GridVariant::Src), r, costheta, phi); } /*!< FSI+SRC grid at (r,costheta,phi) */
+  std::complex<double> getFsiSrcGridFull_interp2(const double costheta, const double phi) { return getFsiGridN_interp2(variantNumber(GridVariant::Src), costheta, phi); } /*!< FSI+SRC grid at (costheta,phi), r set before */
+  std::complex<double> getFsiSrcGridFull_interp1(const double phi) { return getFsiGridN_interp1(variantNumber(GridVariant::Src), phi); } /*!< FSI+SRC grid at phi, r and costheta set before */
+  /** @} */
+  /** @name The FSI+SRC+CT grid */
+  /** @{ */
+  /*! FSI+SRC+CT grid at the point set with setinterp
+   * \throw std::logic_error if this class has no such grid (see getGridNumber) */
+  std::complex<double> getFsiSrcCtGridFull_interp() { return getFsiGridN_interp(variantNumber(GridVariant::SrcCt)); }
+  std::complex<double> getFsiSrcCtGridFull_interpvec(const nucqcd::Vector3 &rvec) { return getFsiGridN_interpvec(variantNumber(GridVariant::SrcCt), rvec); } /*!< FSI+SRC+CT grid at the point rvec */
+  std::complex<double> getFsiSrcCtGridFull_interp3(const double r, const double costheta, const double phi) { return getFsiGridN_interp3(variantNumber(GridVariant::SrcCt), r, costheta, phi); } /*!< FSI+SRC+CT grid at (r,costheta,phi) */
+  std::complex<double> getFsiSrcCtGridFull_interp2(const double costheta, const double phi) { return getFsiGridN_interp2(variantNumber(GridVariant::SrcCt), costheta, phi); } /*!< FSI+SRC+CT grid at (costheta,phi), r set before */
+  std::complex<double> getFsiSrcCtGridFull_interp1(const double phi) { return getFsiGridN_interp1(variantNumber(GridVariant::SrcCt), phi); } /*!< FSI+SRC+CT grid at phi, r and costheta set before */
+  /** @} */
+  /** @name The FSI+decay grid */
+  /** @{ */
+  /*! FSI+decay grid at the point set with setinterp
+   * \throw std::logic_error if this class has no such grid (see getGridNumber) */
+  std::complex<double> getFsiDecayGridFull_interp() { return getFsiGridN_interp(variantNumber(GridVariant::Decay)); }
+  std::complex<double> getFsiDecayGridFull_interpvec(const nucqcd::Vector3 &rvec) { return getFsiGridN_interpvec(variantNumber(GridVariant::Decay), rvec); } /*!< FSI+decay grid at the point rvec */
+  std::complex<double> getFsiDecayGridFull_interp3(const double r, const double costheta, const double phi) { return getFsiGridN_interp3(variantNumber(GridVariant::Decay), r, costheta, phi); } /*!< FSI+decay grid at (r,costheta,phi) */
+  std::complex<double> getFsiDecayGridFull_interp2(const double costheta, const double phi) { return getFsiGridN_interp2(variantNumber(GridVariant::Decay), costheta, phi); } /*!< FSI+decay grid at (costheta,phi), r set before */
+  std::complex<double> getFsiDecayGridFull_interp1(const double phi) { return getFsiGridN_interp1(variantNumber(GridVariant::Decay), phi); } /*!< FSI+decay grid at phi, r and costheta set before */
+  /** @} */
+  /** @name The FSI+CT+decay grid */
+  /** @{ */
+  /*! FSI+CT+decay grid at the point set with setinterp
+   * \throw std::logic_error if this class has no such grid (see getGridNumber) */
+  std::complex<double> getFsiCtDecayGridFull_interp() { return getFsiGridN_interp(variantNumber(GridVariant::CtDecay)); }
+  std::complex<double> getFsiCtDecayGridFull_interpvec(const nucqcd::Vector3 &rvec) { return getFsiGridN_interpvec(variantNumber(GridVariant::CtDecay), rvec); } /*!< FSI+CT+decay grid at the point rvec */
+  std::complex<double> getFsiCtDecayGridFull_interp3(const double r, const double costheta, const double phi) { return getFsiGridN_interp3(variantNumber(GridVariant::CtDecay), r, costheta, phi); } /*!< FSI+CT+decay grid at (r,costheta,phi) */
+  std::complex<double> getFsiCtDecayGridFull_interp2(const double costheta, const double phi) { return getFsiGridN_interp2(variantNumber(GridVariant::CtDecay), costheta, phi); } /*!< FSI+CT+decay grid at (costheta,phi), r set before */
+  std::complex<double> getFsiCtDecayGridFull_interp1(const double phi) { return getFsiGridN_interp1(variantNumber(GridVariant::CtDecay), phi); } /*!< FSI+CT+decay grid at phi, r and costheta set before */
+  /** @} */
+  /** @name The FSI+SRC+decay grid */
+  /** @{ */
+  /*! FSI+SRC+decay grid at the point set with setinterp
+   * \throw std::logic_error if this class has no such grid (see getGridNumber) */
+  std::complex<double> getFsiSrcDecayGridFull_interp() { return getFsiGridN_interp(variantNumber(GridVariant::SrcDecay)); }
+  std::complex<double> getFsiSrcDecayGridFull_interpvec(const nucqcd::Vector3 &rvec) { return getFsiGridN_interpvec(variantNumber(GridVariant::SrcDecay), rvec); } /*!< FSI+SRC+decay grid at the point rvec */
+  std::complex<double> getFsiSrcDecayGridFull_interp3(const double r, const double costheta, const double phi) { return getFsiGridN_interp3(variantNumber(GridVariant::SrcDecay), r, costheta, phi); } /*!< FSI+SRC+decay grid at (r,costheta,phi) */
+  std::complex<double> getFsiSrcDecayGridFull_interp2(const double costheta, const double phi) { return getFsiGridN_interp2(variantNumber(GridVariant::SrcDecay), costheta, phi); } /*!< FSI+SRC+decay grid at (costheta,phi), r set before */
+  std::complex<double> getFsiSrcDecayGridFull_interp1(const double phi) { return getFsiGridN_interp1(variantNumber(GridVariant::SrcDecay), phi); } /*!< FSI+SRC+decay grid at phi, r and costheta set before */
+  /** @} */
+  /** @name The FSI+SRC+CT+decay grid */
+  /** @{ */
+  /*! FSI+SRC+CT+decay grid at the point set with setinterp
+   * \throw std::logic_error if this class has no such grid (see getGridNumber) */
+  std::complex<double> getFsiSrcCtDecayGridFull_interp() { return getFsiGridN_interp(variantNumber(GridVariant::SrcCtDecay)); }
+  std::complex<double> getFsiSrcCtDecayGridFull_interpvec(const nucqcd::Vector3 &rvec) { return getFsiGridN_interpvec(variantNumber(GridVariant::SrcCtDecay), rvec); } /*!< FSI+SRC+CT+decay grid at the point rvec */
+  std::complex<double> getFsiSrcCtDecayGridFull_interp3(const double r, const double costheta, const double phi) { return getFsiGridN_interp3(variantNumber(GridVariant::SrcCtDecay), r, costheta, phi); } /*!< FSI+SRC+CT+decay grid at (r,costheta,phi) */
+  std::complex<double> getFsiSrcCtDecayGridFull_interp2(const double costheta, const double phi) { return getFsiGridN_interp2(variantNumber(GridVariant::SrcCtDecay), costheta, phi); } /*!< FSI+SRC+CT+decay grid at (costheta,phi), r set before */
+  std::complex<double> getFsiSrcCtDecayGridFull_interp1(const double phi) { return getFsiGridN_interp1(variantNumber(GridVariant::SrcCtDecay), phi); } /*!< FSI+SRC+CT+decay grid at phi, r and costheta set before */
+  /** @} */
 
   //interpolation functions, one without arguments is a pure virtual function
   /*!returns the value of a grid of choice for a certain situation at coordinate (r,costheta,phi) */
@@ -246,6 +338,9 @@ private:
   std::vector<int> knockoutlevels; /*!< the vector with all the shell index values of knocked out nucleons */
   std::vector<int> knockoutm; /*!<  the vector with all the m values of knocked out nucleons */
   
+  /*! the grid number of a variant \throw std::logic_error if this class has no such grid */
+  int variantNumber(GridVariant variant) const;
+
   //pure virtual functions!!!
   virtual void constructAllGrids()=0; /*!< construct all grids */
   virtual void readinFsiGrid(std::ifstream &infile)=0; /*!< read in all grids */

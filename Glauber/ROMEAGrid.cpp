@@ -58,30 +58,16 @@ ROMEAGrid::~ROMEAGrid() {
   }
 }
 
-//interpolation of the grid after r,cth,phi have been set
-complex < double >ROMEAGrid::getFsiGridFull_interp() {
-  if (!filledgrid) {
-    throw std::logic_error(nucqcd::ErrorMessage() << "You have to fill the grids first!" );
-  }
-  //sanity check to see that the right amount of knocked out nucleons end up in the final state!
-  //if((getTotalProtonOut()==getProtonKnockout())&&(getTotalNeutronOut()==getNeutronKnockout())){
-  complex < double >result = getInterp(fsi_grid);
-  return result;
-//   }
-//   else{
-//     cerr << "Mismatch between number of knocked out nucleons end number in final state!!!" << endl;
-//     exit(1);
-//   }
-}
-
+//interpolation of the grid (number 0, the only one) after r,cth,phi have been set
 complex<double> ROMEAGrid::getFsiGridN_interp(const int grid){
-   if (grid==0) return getFsiGridFull_interp();
-  else {
+  if (grid != 0) {
     cerr << "gridindex out of range" << endl;
     assert(1==0);
   }
- 
-  
+  if (!filledgrid) {
+    throw std::logic_error(nucqcd::ErrorMessage() << "You have to fill the grids first!" );
+  }
+  return getInterp(fsi_grid);
 }
 void ROMEAGrid::printFsi_grid() {
   cout << "Printing ROMEAarray for " << getFsi_Filename() << endl;

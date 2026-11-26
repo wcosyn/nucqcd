@@ -17,35 +17,11 @@ namespace nucqcd {
 
 
 GlauberGridThick::GlauberGridThick(const int r_grid, const int cth_grid, const int phi_grid, MeanFieldNucleusThick * pnucl,
-                                   double prec, IntegrationMethod integrator, string dir):AbstractFsiGrid(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir),
-AbstractFsiCTGrid(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir),
-AbstractFsiCTGridThick(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir),
+                                   double prec, IntegrationMethod integrator, string dir):
 GlauberThickGridCommon(2, r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir) {
 }
 
 GlauberGridThick::~GlauberGridThick() {
-}
-
-
-
-//interpolation of the grid after r,th,phi have been set
-complex < double >GlauberGridThick::getFsiGridFull_interp() {
-  return interpolateVariant(fsi_grid, 0);
-}
-
-//interpolation of the grid after r,th,phi have been set
-complex < double >GlauberGridThick::getFsiCtGridFull_interp() {
-  return interpolateVariant(fsi_ct_grid, 0);
-}
-
-//interpolation of the grid after r,th,phi have been set
-complex < double >GlauberGridThick::getFsiSrcGridFull_interp() {
-  return interpolateVariant(fsi_grid, 1);
-}
-
-//interpolation of the grid after r,th,phi have been set
-complex < double >GlauberGridThick::getFsiSrcCtGridFull_interp() {
-  return interpolateVariant(fsi_ct_grid, 1);
 }
 
 
@@ -67,7 +43,7 @@ void GlauberGridThick::printFsi_src_ct_grid() {
 
 //set filenames, don't forget to add ending "/" to dir if necessary!!!
 void GlauberGridThick::setFilenames(string dir) {
-  AbstractFsiCTGridThick::setFilenames(dir + "Gl.");
+  GlauberThickGridCommon::setFilenames(dir + "Gl.");
 }
 
 void GlauberGridThick::getFsiphaseAll(vector < complex < double > >&phases, double rhit, double costhetahit, double phihit) {

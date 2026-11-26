@@ -31,7 +31,7 @@ namespace nucqcd {
 (use getFsiGridFull_interp3() for instance) <BR>
  * 
  */
-class AbstractFsiCTGrid : public virtual AbstractFsiGrid{
+class AbstractFsiCTGrid : public AbstractFsiGrid{
 public:
   /*! Constructor
    * \param r_grid gridsize in r 
@@ -48,20 +48,6 @@ public:
 
   const std::string getFsi_Ct_Filename() const;/*!< returns filename for regular fsi+ct grid */
 
-  virtual void printFsi_ct_grid()=0; /*!< Prints the FSI+CT grid for a certain situation, pure virtual function!! */
-
-  /*!returns the value of the fsi+ct grid for a certain situation at coordinate (r,costheta,phi) */
-  std::complex<double> getFsiCtGridFull_interpvec(const nucqcd::Vector3 &rvec);
-  /*!returns the value of the fsi+ct grid for a certain situation at coordinate (r,costheta,phi) */
-  std::complex<double> getFsiCtGridFull_interp3(const double r, const double costheta, const double phi);
-  /*!returns the value of the fsi+ct grid for a certain situation at coordinate (costheta,phi), r has been set previously */
-  std::complex<double> getFsiCtGridFull_interp2(const double costheta, const double phi);
-  /*!returns the value of the fsi+ct grid for a certain situation at coordinate (phi), r&theta have been set previously */
-  std::complex<double> getFsiCtGridFull_interp1(const double phi);
-  /*!returns the value of the fsi+ct grid for a certain situation at coordinate (r,theta,phi) that has been set previously
-   ,pure virtual function!!*/
-  virtual std::complex<double> getFsiCtGridFull_interp()=0;
-  
   virtual void fillGrids();  /*!< fills the fsi grids that are used for interpolation */
   virtual void updateGrids();  /*!< updates the fsi grids that are used for interpolation */
 

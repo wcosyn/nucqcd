@@ -17,7 +17,7 @@ namespace nucqcd {
 
 //constructor, calls abstractfsigrid's constructor
 GlauberGrid::GlauberGrid(const int r_grid, const int cth_grid, const int phi_grid, MeanFieldNucleus * pnucl,
-                         double prec, IntegrationMethod integrator, string dir):AbstractFsiGrid(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir),
+                         double prec, IntegrationMethod integrator, string dir):
 AbstractFsiCTGrid(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir), fsi_grid(NULL), fsi_ct_grid(NULL), treshold(NULL) {
 
   //mem reservation for the grids, index [shelllevel][mindex(postive only due to symmetry][rgrid][thgrid][phgrid]
@@ -93,52 +93,26 @@ GlauberGrid::~GlauberGrid() {
   }
 }
 
-//interpolation of the grid after r,cth,phi have been set
-complex < double >GlauberGrid::getFsiGridFull_interp() {
-  if (!filledallgrid) {
-    throw std::logic_error(nucqcd::ErrorMessage() << "You have to fill the grids first!" );
-  }
-  //sanity check to see that the right amount of knocked out nucleons end up in the final state!
-  //if((getTotalProtonOut()==getProtonKnockout())&&(getTotalNeutronOut()==getNeutronKnockout())){
-  complex < double >result = getInterp(fsi_grid[getPnucleus()->getTotalLevels()][0]);
-  for (size_t it = 0; it < getKnockoutLevels().size(); it++) {
-    result /= getInterp(fsi_grid[getKnockoutLevels()[it]][(abs(getKnockoutM()[it]) - 1) / 2]);
-  }
-  return result;
-//   }
-//   else{
-//     cerr << "Mismatch between number of knocked out nucleons end number in final state!!!" << endl;
-//     exit(1);
-//   }
-}
-
-//interpolation of the grid after r,th,phi have been set
-complex < double >GlauberGrid::getFsiCtGridFull_interp() {
-  if (!filledallgrid) {
-    throw std::logic_error(nucqcd::ErrorMessage() << "You have to fill the grids first!" );
-  }
-  //sanity check to see that the right amount of knocked out nucleons end up in the final state!
-//   if((getTotalProtonOut()==getProtonKnockout())&&(getTotalNeutronOut()==getNeutronKnockout())){
-  complex < double >result = getInterp(fsi_ct_grid[getPnucleus()->getTotalLevels()][0]);
-  for (size_t it = 0; it < getKnockoutLevels().size(); it++) {
-    result /= getInterp(fsi_ct_grid[getKnockoutLevels()[it]][(abs(getKnockoutM()[it]) - 1) / 2]);
-  }
-  return result;
-//   }
-//   else{
-//     cerr << "Mismatch between number of knocked out nucleons end number in final state!!!" << endl;
-//     exit(1);
-//   }
-}
-
-//interpolation of the grid after r,cth,phi have been set
+//interpolation of grid number grid (0: RMSGA, 1: RMSGA+CT) after r,cth,phi have been set
 complex < double >GlauberGrid::getFsiGridN_interp(int grid) {
-  if (grid < getNumber_of_grids()) {
-    return (grid == 0 ? getFsiGridFull_interp() : getFsiCtGridFull_interp());
-  }
-  else {
+  if (grid != 0 && grid != 1) {
     throw std::invalid_argument(nucqcd::ErrorMessage() << "grid number not supported!" );
   }
+  if (!filledallgrid) {
+    throw std::logic_error(nucqcd::ErrorMessage() << "You have to fill the grids first!" );
+  }
+  auto &array = (grid == 0 ? fsi_grid : fsi_ct_grid);
+  complex < double >result = getInterp(array[getPnucleus()->getTotalLevels()][0]);
+  for (size_t it = 0; it < getKnockoutLevels().size(); it++) {
+    result /= getInterp(array[getKnockoutLevels()[it]][(abs(getKnockoutM()[it]) - 1) / 2]);
+  }
+  return result;
+}
+
+int GlauberGrid::getGridNumber(GridVariant variant) const {
+  if (variant == GridVariant::Fsi) return 0;
+  if (variant == GridVariant::Ct) return 1;
+  return -1;
 }
 
 void GlauberGrid::printFsi_grid() {
