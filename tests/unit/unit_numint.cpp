@@ -1,7 +1,7 @@
 // Integrator library: numint quadratures and adaptive cubature against exact integrals.
 #include <test_support.hpp>
 
-#include <Integrator/adaptive/cubature.h>
+#include <cubature/cubature.h>
 #include <Integrator/numint/cube.hpp>
 #include <Integrator/numint/numint.hpp>
 
@@ -20,8 +20,10 @@ void spherical_volume(const numint::array<double, 3> &x, void *, double &ret) {
   ret = x[0] * x[0] * std::sin(x[1]);  // r^2 sin(theta) on [0,1]x[0,pi]x[0,2pi]
 }
 // integrand of progs/attic/integrator/inttest.cpp: r^2 cos^2(phi) + sqrt(phi) on [0,1]x[-1,1]x[0,2pi]
-void cubature_integrand(unsigned, const double *x, void *, unsigned, double *ret) {
+int cubature_integrand(unsigned, const double *x, void *counter, unsigned, double *ret) {
   ret[0] = x[0] * x[0] * std::cos(x[2]) * std::cos(x[2]) + std::sqrt(x[2]);
+  if (counter) ++*static_cast<unsigned long *>(counter);
+  return 0;
 }
 void cubature_integrand_md(const numint::array<double, 3> &x, void *, numint::vector_d &ret) {
   ret = numint::vector_d(1, x[0] * x[0] * std::cos(x[2]) * std::cos(x[2]) + std::sqrt(x[2]));
@@ -59,12 +61,30 @@ TEST_CASE("cube_romb gives the volume of the unit sphere", "[numint]") {
   CHECK_THAT(result, WithinRel(4. * pi / 3., 1e-6));
 }
 
-TEST_CASE("adapt_integrate (adaptive cubature) on the inttest integrand", "[cubature]") {
+TEST_CASE("hcubature (adaptive cubature) on the inttest integrand", "[cubature]") {
   double xmin[3] = {0., -1., 0.}, xmax[3] = {1., 1., 2. * pi};
   double res[1], err[1];
-  const int error = adapt_integrate(1, cubature_integrand, nullptr, 3, xmin, xmax, 100, 0, 0., 1e-8, res, err);
+  const int error = hcubature(1, cubature_integrand, nullptr, 3, xmin, xmax, 0, 0., 1e-8, ERROR_INDIVIDUAL, res, err);
   CHECK(error == 0);
   CHECK_THAT(res[0], WithinRel(cubature_exact, 1e-7));
+}
+
+TEST_CASE("hcubature_minEval (the nucqcd patch) is hcubature with a minimum number of evaluations", "[cubature]") {
+  double xmin[3] = {0., -1., 0.}, xmax[3] = {1., 1., 2. * pi};
+  double res0[1], err0[1], res1[1], err1[1], res2[1], err2[1];
+  unsigned long n0 = 0, n1 = 0, n2 = 0;
+  CHECK(hcubature(1, cubature_integrand, &n0, 3, xmin, xmax, 0, 0., 1e-4, ERROR_INDIVIDUAL, res0, err0) == 0);
+  // minEval = 0 is hcubature: the same result and number of evaluations
+  CHECK(hcubature_minEval(1, cubature_integrand, &n1, 3, xmin, xmax, 0, 0, 0., 1e-4, ERROR_INDIVIDUAL, res1, err1) == 0);
+  CHECK(res1[0] == res0[0]);
+  CHECK(err1[0] == err0[0]);
+  CHECK(n1 == n0);
+  // convergence is only accepted after more than minEval evaluations
+  const size_t minEval = 10 * n0;
+  CHECK(hcubature_minEval(1, cubature_integrand, &n2, 3, xmin, xmax, minEval, 0, 0., 1e-4, ERROR_INDIVIDUAL, res2, err2) == 0);
+  CHECK(n2 > minEval);
+  CHECK(err2[0] < err0[0]);
+  CHECK_THAT(res2[0], WithinRel(cubature_exact, 1e-5));
 }
 
 TEST_CASE("numint::cube_adaptive wrapper around the adaptive cubature", "[cubature]") {

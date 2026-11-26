@@ -4,7 +4,6 @@
 #include <iostream>
 #include <fstream>
 #include <complex>
-#include <Integrator/adaptive/cubature.h>
 #include <cassert>
 
 using namespace std;

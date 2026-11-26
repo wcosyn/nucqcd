@@ -23,7 +23,7 @@
 #include <Integrator/numint/typedef.hpp>
 #include <Integrator/numint/numint_tools.hpp>
 
-#include <Integrator/adaptive/cubature.h>
+#include <cubature/cubature.h>
 
 #include <Integrator/numint/adaptive_stats.hpp>
 
@@ -97,7 +97,7 @@ int cube_adaptive(const mdfunction<T,N> &f, const numint::array<double, N> &a,
 
   struct mdf2ada {
 
-    static void exec(unsigned ndim, const double *x, void *fdata,
+    static int exec(unsigned ndim, const double *x, void *fdata,
                   unsigned fdim, double *fval) {
 
       mdf2ada &p = * (mdf2ada *) fdata;
@@ -109,6 +109,7 @@ int cube_adaptive(const mdfunction<T,N> &f, const numint::array<double, N> &a,
 
       numint2ada(fdim,fval,p.ret);
       p.Ncall++;
+      return 0;  // success (cubature stops when the integrand returns non-zero)
     }
 
     mdfunction<T,N> f;
@@ -129,10 +130,14 @@ int cube_adaptive(const mdfunction<T,N> &f, const numint::array<double, N> &a,
 
   double val[fdim], err[fdim];
 
-  int code = adapt_integrate(fdim, mdf2ada::exec, &F,
-                             N,a.begin(),b.begin(),minEval,
-                             maxEval,epsabs,epsrel,
-                             val,err);
+  // hcubature_minEval is hcubature of cubature 1.0.4 with the minimum number of evaluations of the 2010 adapt_integrate
+  // (cmake/patches/cubature-1.0.4-nucqcd.patch); ERROR_INDIVIDUAL: every component has to reach the precision
+  int code = hcubature_minEval(fdim, mdf2ada::exec, &F,
+                               N,a.begin(),b.begin(),
+                               static_cast<size_t>(minEval < 0 ? 0 : minEval),
+                               static_cast<size_t>(maxEval < 0 ? 0 : maxEval),
+                               epsabs,epsrel,ERROR_INDIVIDUAL,
+                               val,err);
 
 
   adaptive_record(fdim, val, err, epsabs, epsrel, maxEval);

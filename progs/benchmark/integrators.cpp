@@ -1,6 +1,6 @@
 // Benchmark of the integrators used in nucqcd (roadmap step 6, "Remove the integrators rombergerN and
 // cube_romb?"): rombergerN (nested 1D Romberg, now progs/attic/rombergerN.hpp), numint::cube_romb,
-// numint::cube_adaptive (Integrator/adaptive/cubature.c) and Cuba's Cuhre (numint::cuhre), at
+// numint::cube_adaptive (hcubature of cubature, see Integrator/CMakeLists.txt) and Cuba's Cuhre (numint::cuhre), at
 // requested relative precisions 1e-3, 1e-5, 1e-7.
 //  Part A: test integrands with known values in 3D: smooth, a step (sphere boundary inside the box), a
 //          kink, a narrow peak, a non-rectangular domain mapped onto the box, and a Glauber-like
