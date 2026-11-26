@@ -393,6 +393,11 @@ one commit per bug; no `[known-bug]` tests remain.
     messages, and it cancels in the Glauber/plane-wave ratios. The archived `RhoDeuteron` (where the Jacobians were
     "finally figured out") divides the t version by the off-shell nucleon energy `Eoff`, a nucleon-sized quantity and not
     M_A, which points the same way (not checked in detail).
+  - **Which results were affected:** only the z branch of `getfrontfactor` changed, so the t-integrated results, and
+    with them the published transparencies (the last calculations integrated over t, per the README of the paper's
+    directory), are unchanged; the absolute z-integrated cross sections were too large by ~M_A/massi. The
+    transparencies of the z version barely noticed (a ratio of RMSGA to PWA over the same range, and `massX` was nearly
+    constant); how much they move with the corrected factor was not quantified.
   - **Check:** a Monte Carlo that copies the kinematics, cuts and prefactors of `getCrosst`/`getCrossz` with a Gaussian
     in place of the Glauber momentum distributions (carbon-like M_A = 11.18 GeV, Q^2 = 1.5 GeV^2, nu = 2.5-3.5 GeV,
     t in -0.4..-0.1, z in 0.9..1): z/t = 11.66 before; with the exact Jacobian 0.997 (statistical error 0.05%), and

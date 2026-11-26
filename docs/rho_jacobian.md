@@ -19,6 +19,20 @@ paper): **marked for the author to confirm**, in particular the reading of what 
 - **The correction:** in the z case, `getfrontfactor` returns the exact `|dt/dz|/(2 nu)` of equation (4) below instead of
   `massX`. The t version is unchanged.
 
+## Which results were affected
+
+- **Published transparencies: not affected.** The correction changes only the z branch of `getfrontfactor`
+  (`torz` = 0, used by `getCrossz`). For the t branch (`torz` = 1, used by `getCrosst`) the function returns the same
+  value as before, `λ/m_N² e^{6t}`. According to the README of the paper's calculation directory, the last
+  calculations (`rhoset`, with the cuts) integrated over t, so they did not pass through the corrected factor.
+- **Why the transparencies looked fine even in the z version:** the transparency is the ratio of the RMSGA to the PWA
+  cross section, integrated over the same ranges, and the wrong factor multiplied both. The factor `massX` was
+  also nearly constant over the integration region, so it cancelled to a good approximation. How much the z-version
+  transparencies move with the corrected, pm-dependent factor was **not quantified** (it needs a full run with the
+  Glauber distributions in both versions, see the ROADMAP item).
+- **Affected:** absolute z-integrated cross sections (`rhoset` with `torz` 0, `rhosingle` with the z option), which
+  were too large by about `M_A/massi`.
+
 ## 1. Setup
 
 - Photon: energy `nu`, momentum `q = sqrt(Q² + nu²)` along z, `t = (q_γ - p_ρ)²`.
