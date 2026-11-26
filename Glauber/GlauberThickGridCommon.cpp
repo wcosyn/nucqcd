@@ -14,10 +14,10 @@ namespace nucqcd {
 
 GlauberThickGridCommon::GlauberThickGridCommon(int nvariants, int r_grid, int cth_grid, int phi_grid, MeanFieldNucleusThick *pnuclthick,
                                                double prec, IntegrationMethod integrator, std::string dir)
-  : AbstractFsiGrid(r_grid, cth_grid, phi_grid, pnuclthick, prec, integrator, dir),
-    AbstractFsiCTGrid(r_grid, cth_grid, phi_grid, pnuclthick, prec, integrator, dir),
-    variants(nvariants), fsi_grid(NULL), fsi_ct_grid(NULL), treshold(NULL), error(0.) {
-  // (the two virtual bases are initialized by the most derived class; they are named here because they have no default constructor)
+  : AbstractFsiCTGrid(r_grid, cth_grid, phi_grid, pnuclthick, prec, integrator, dir),
+    variants(nvariants), pnucleusthick(pnuclthick), fsicorrelator(pnuclthick, 90, 90, dir),
+    fsi_grid(NULL), fsi_ct_grid(NULL), treshold(NULL), error(0.) {
+  number_of_grids = 2 * nvariants;
   auto allocate = [this]() {
     std::complex<double> *****grid = new complex<double> ****[variants];
     for (int i = 0; i < variants; i++) {
@@ -54,6 +54,17 @@ GlauberThickGridCommon::~GlauberThickGridCommon() {
   };
   release(fsi_grid);
   release(fsi_ct_grid);
+}
+
+int GlauberThickGridCommon::getGridNumber(GridVariant variant) const {
+  const int bits = static_cast<int>(variant);
+  const int srcdecay = bits & 3;  // bit 0 SRC, bit 1 decay
+  if (srcdecay >= variants) return -1;
+  return ((bits & 4) ? variants : 0) + srcdecay;  // bit 2: CT, the CT grids follow the others
+}
+
+void GlauberThickGridCommon::setFilenames(string dir) {
+  AbstractFsiCTGrid::setFilenames(dir + "Thick.");
 }
 
 complex<double> GlauberThickGridCommon::interpolateVariant(std::complex<double> *****array, int variant) {

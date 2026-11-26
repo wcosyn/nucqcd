@@ -16,56 +16,11 @@ namespace nucqcd {
 
 
 GlauberDecayGridThick::GlauberDecayGridThick(const int r_grid, const int cth_grid, const int phi_grid, MeanFieldNucleusThick * pnucl,
-                                             double prec, IntegrationMethod integrator, string dir):AbstractFsiGrid(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir),
-AbstractFsiCTGrid(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir),
-AbstractFsiGridThick(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir),
-AbstractFsiCTDecayGridThick(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir),
+                                             double prec, IntegrationMethod integrator, string dir):
 GlauberThickGridCommon(4, r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir) {
 }
 
 GlauberDecayGridThick::~GlauberDecayGridThick() {
-}
-
-
-
-//interpolation of the grid after r,th,phi have been set
-complex < double >GlauberDecayGridThick::getFsiGridFull_interp() {
-  return interpolateVariant(fsi_grid, 0);
-}
-
-//interpolation of the grid after r,th,phi have been set
-complex < double >GlauberDecayGridThick::getFsiCtGridFull_interp() {
-  return interpolateVariant(fsi_ct_grid, 0);
-}
-
-//interpolation of the grid after r,th,phi have been set
-complex < double >GlauberDecayGridThick::getFsiSrcGridFull_interp() {
-  return interpolateVariant(fsi_grid, 1);
-}
-
-//interpolation of the grid after r,th,phi have been set
-complex < double >GlauberDecayGridThick::getFsiSrcCtGridFull_interp() {
-  return interpolateVariant(fsi_ct_grid, 1);
-}
-
-//interpolation of the grid after r,th,phi have been set
-complex < double >GlauberDecayGridThick::getFsiDecayGridFull_interp() {
-  return interpolateVariant(fsi_grid, 2);
-}
-
-//interpolation of the grid after r,th,phi have been set
-complex < double >GlauberDecayGridThick::getFsiCtDecayGridFull_interp() {
-  return interpolateVariant(fsi_ct_grid, 2);
-}
-
-//interpolation of the grid after r,th,phi have been set
-complex < double >GlauberDecayGridThick::getFsiSrcDecayGridFull_interp() {
-  return interpolateVariant(fsi_grid, 3);
-}
-
-//interpolation of the grid after r,th,phi have been set
-complex < double >GlauberDecayGridThick::getFsiSrcCtDecayGridFull_interp() {
-  return interpolateVariant(fsi_ct_grid, 3);
 }
 
 
@@ -112,7 +67,11 @@ void GlauberDecayGridThick::printFsi_src_ct_decay_grid() {
 
 //set filenames, don't forget to add ending "/" to dir if necessary!!!
 void GlauberDecayGridThick::setFilenames(string dir) {
-  AbstractFsiCTDecayGridThick::setFilenames(dir + "Gl.");
+  GlauberThickGridCommon::setFilenames(dir + "Gl.");
+  // the decay dilation of the (first) ejected particle is part of the file names
+  const string decay = ".Decay" + to_string(lround(getParticles()[0].getDecay_dil()));
+  fsi_ct_filename.insert(fsi_ct_filename.size() - 4, decay);
+  fsi_filename.insert(fsi_filename.size() - 4, decay);
 }
 
 

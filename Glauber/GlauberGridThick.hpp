@@ -15,12 +15,11 @@
 #include <cstdarg>
 #include <Glauber/GlauberThickGridCommon.hpp>
 
-#include <Glauber/AbstractFsiCTGridThick.hpp>
 
 namespace nucqcd {
 
 
-/*! \brief An class for a Glauber ISI/FSI grid using thickness approximation,implements AbstractFsiCTGridThick
+/*! \brief An class for a Glauber ISI/FSI grid using thickness approximation, with the variants FSI, FSI+SRC, FSI+CT and FSI+SRC+CT (see GlauberThickGridCommon)
  * 
  * Four grids are actually calculated.  fsi_grid contains both the regular fsi grid as well as the grid that includes SRC.  
  * Same thing for the fsi_ct_grid
@@ -40,7 +39,7 @@ namespace nucqcd {
  * 2: RMSGA+CT <BR>
  * 3: RMSGA+SRC+CT <BR>
  */
-class GlauberGridThick : public AbstractFsiCTGridThick, public GlauberThickGridCommon{
+class GlauberGridThick : public GlauberThickGridCommon{
 public:
   /*! Constructor
    * \param r_grid gridsize in r 
@@ -54,10 +53,6 @@ public:
   GlauberGridThick(const int r_grid, const int cth_grid, const int phi_grid, MeanFieldNucleusThick *pnuclthick, 
 		   double prec, IntegrationMethod integrator, std::string dir);
   virtual ~GlauberGridThick();/*!< Destructor */
-  virtual std::complex<double> getFsiGridFull_interp(); /*!returns the value of the fsi grid for a certain situation at coordinate (r,theta,phi) that has been set previously*/
-  virtual std::complex<double> getFsiCtGridFull_interp();/*!returns the value of the fsi+ct grid for a certain situation at coordinate (r,theta,phi) that has been set previously*/
-  virtual std::complex<double> getFsiSrcGridFull_interp(); /*!returns the value of the fsi+src grid for a certain situation at coordinate (r,theta,phi) that has been set previously*/
-  virtual std::complex<double> getFsiSrcCtGridFull_interp();/*!returns the value of the fsi+src+ct grid for a certain situation at coordinate (r,theta,phi) that has been set previously*/
 
   virtual void printFsi_grid();/*!< Prints the FSI grid for a certain situation*/
   virtual void printFsi_ct_grid(); /*!< Prints the FSI+CT grid for a certain situation */

@@ -29,26 +29,6 @@ const string AbstractFsiCTGrid::getFsi_Ct_Filename() const{
   return fsi_ct_filename;
 }
 
-//interpolation functions
-complex<double> AbstractFsiCTGrid::getFsiCtGridFull_interpvec(const nucqcd::Vector3 &rvec){
-  return getFsiCtGridFull_interp3(rvec.Mag(),rvec.CosTheta(),rvec.Phi());
-}
-
-complex<double> AbstractFsiCTGrid::getFsiCtGridFull_interp3(const double r, const double costheta, const double phi){
-  setinterp(r,costheta,phi);
-  return getFsiCtGridFull_interp();
-}
-
-complex<double> AbstractFsiCTGrid::getFsiCtGridFull_interp2(const double costheta, const double phi){
-  setinterp(costheta,phi);
-  return getFsiCtGridFull_interp();
-}
-
-
-complex<double> AbstractFsiCTGrid::getFsiCtGridFull_interp1(const double phi){
-  setinterp(phi);
-  return getFsiCtGridFull_interp();
-}
 
 //set filenames
 void AbstractFsiCTGrid::setFilenames(string cachedir){

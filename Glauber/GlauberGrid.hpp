@@ -45,13 +45,13 @@ public:
   GlauberGrid(const int r_grid, const int cth_grid, const int phi_grid, MeanFieldNucleus *pnucl, 
 	      double prec, IntegrationMethod integrator, std::string dir);
   virtual ~GlauberGrid();/*!< Destructor */
-  virtual std::complex<double> getFsiGridFull_interp();   /*!returns the value of the fsi grid for a certain situation at coordinate (r,theta,phi) that has been set previously*/
-  virtual std::complex<double> getFsiCtGridFull_interp(); /*!returns the value of the fsi+ct grid for a certain situation at coordinate (r,theta,phi) that has been set previously*/
   /*!returns the value of the fsi grid for a certain situation at coordinate (r,theta,phi) that has been set previously
    * \param grid 0: RMSGA <BR>
   * 1: RMSGA+CT <BR>
   */
   virtual std::complex<double> getFsiGridN_interp(int grid); 
+  /*! the grid numbers of the variants: 0 for GridVariant::Fsi, 1 for GridVariant::Ct, -1 for the others */
+  virtual int getGridNumber(GridVariant variant) const;
   
   virtual void printFsi_grid();/*!< Prints the FSI grid for a certain situation*/
   virtual void printFsi_ct_grid(); /*!< Prints the FSI+CT grid for a certain situation */

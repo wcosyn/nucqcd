@@ -12,13 +12,12 @@
 #include <cstdarg>
 #include <Glauber/GlauberThickGridCommon.hpp>
 
-#include <Glauber/AbstractFsiCTDecayGridThick.hpp>
 #include <Integrator/numint/numint.hpp>
 
 namespace nucqcd {
 
 
-/*! \brief A class for a Glauber ISI/FSI grid using thickness approximation and including decay of fast particles,implements AbstractFsiCTDecayGridThick
+/*! \brief A class for a Glauber ISI/FSI grid using thickness approximation and including decay of fast particles (all eight variants, see GlauberThickGridCommon)
  * 
  * Eight grids are actually calculated.  fsi_grid contains both the regular fsi grid as well as the grid that includes SRC.
  * Plus a one that includes Decay properties as well for each of those two.  
@@ -45,7 +44,7 @@ namespace nucqcd {
 (use getFsiGridFull_interp3() for instance) <BR>
  * 
  */
-class GlauberDecayGridThick : public AbstractFsiCTDecayGridThick, public GlauberThickGridCommon{
+class GlauberDecayGridThick : public GlauberThickGridCommon{
 public:
   /*! Constructor
    * \param r_grid gridsize in r 
@@ -60,14 +59,6 @@ public:
 		   double prec, IntegrationMethod integrator, std::string dir);
   /*!< Destructor */
   virtual ~GlauberDecayGridThick();
-  virtual std::complex<double> getFsiGridFull_interp(); /*!returns the value of the fsi grid for a certain situation at coordinate (r,theta,phi) that has been set previously*/
-  virtual std::complex<double> getFsiCtGridFull_interp();/*!returns the value of the fsi+ct grid for a certain situation at coordinate (r,theta,phi) that has been set previously*/
-  virtual std::complex<double> getFsiSrcGridFull_interp(); /*!returns the value of the fsi+src grid for a certain situation at coordinate (r,theta,phi) that has been set previously*/
-  virtual std::complex<double> getFsiSrcCtGridFull_interp();/*!returns the value of the fsi+src+ct grid for a certain situation at coordinate (r,theta,phi) that has been set previously*/
-  virtual std::complex<double> getFsiDecayGridFull_interp(); /*!returns the value of the fsi grid for a certain situation at coordinate (r,theta,phi) that has been set previously*/
-  virtual std::complex<double> getFsiCtDecayGridFull_interp();/*!returns the value of the fsi+ct grid for a certain situation at coordinate (r,theta,phi) that has been set previously*/
-  virtual std::complex<double> getFsiSrcDecayGridFull_interp(); /*!returns the value of the fsi+src grid for a certain situation at coordinate (r,theta,phi) that has been set previously*/
-  virtual std::complex<double> getFsiSrcCtDecayGridFull_interp();/*!returns the value of the fsi+src+ct grid for a certain situation at coordinate (r,theta,phi) that has been set previously*/
   
   virtual void printFsi_grid();/*!< Prints the FSI grid for a certain situation*/
   virtual void printFsi_ct_grid(); /*!< Prints the FSI+CT grid for a certain situation */

@@ -441,10 +441,8 @@ void WeakQEHadronCurrent::klaas_one_amp(numint::vector_z & results, double r, do
   results[14]=results[15]= exp_pr*(model.getBarcontractzup()*wave);
   if(!pw){
     if(SRC){
-      complex<double> src=dynamic_cast<AbstractFsiGridThick *>(model.getGrid())
-			      ->getFsiSrcGridFull_interp3(r,costheta,phi);
-      complex<double> srcct=dynamic_cast<AbstractFsiCTGridThick *>(model.getGrid())
-			      ->getFsiSrcCtGridFull_interp3(r,costheta,phi);
+      complex<double> src=model.getGrid()->getFsiSrcGridFull_interp3(r,costheta,phi);
+      complex<double> srcct=model.getGrid()->getFsiSrcCtGridFull_interp3(r,costheta,phi);
       for(int i=0;i<8;i++){
 	results[2*i]*=src;
 	results[2*i+1]*=srcct;
@@ -454,7 +452,7 @@ void WeakQEHadronCurrent::klaas_one_amp(numint::vector_z & results, double r, do
       complex<double> fsi=model.getGrid()->getFsiGridFull_interp3(r,costheta,phi);
       complex<double> fsict(0.);
       if(model.getEnable_ROMEA()) fsict=fsi;
-      else fsict=dynamic_cast<AbstractFsiCTGrid *>(model.getGrid())->getFsiCtGridFull_interp3(r,costheta,phi);
+      else fsict=model.getGrid()->getFsiCtGridFull_interp3(r,costheta,phi);
       for(int i=0;i<8;i++){
 	results[2*i]*=fsi;
 	results[2*i+1]*=fsict;

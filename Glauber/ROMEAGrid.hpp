@@ -83,7 +83,6 @@ public:
   ROMEAGrid(const int r_grid, const int cth_grid, const int phi_grid, MeanFieldNucleus *pnucl, 
 	      double prec, IntegrationMethod integrator, fit_type opticalfit, std::string dir);
   virtual ~ROMEAGrid();/*!< Destructor */
-  virtual std::complex<double> getFsiGridFull_interp();   /*!returns the value of the fsi grid for a certain situation at coordinate (r,theta,phi) that has been set previously*/
   virtual std::complex<double> getFsiGridN_interp(const int grid); /*!returns the value of the fsi grid for a certain situation at coordinate (r,theta,phi) that has been set previously*/
   virtual void printFsi_grid();/*!< Prints the FSI grid for a certain situation of ejected particles*/
   virtual void print_grid(int gridindex);/*!< Prints the FSI grid for a certain situation of ejected particles*/

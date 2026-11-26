@@ -10,11 +10,6 @@ nucqcd_add_library(Glauber
     FastParticle.cpp
     AbstractFsiGrid.cpp
     AbstractFsiCTGrid.cpp
-    AbstractFsiCTDecayGrid.cpp
-    AbstractFsiGridThick.cpp
-    AbstractFsiDecayGridThick.cpp
-    AbstractFsiCTGridThick.cpp
-    AbstractFsiCTDecayGridThick.cpp
     GlauberGrid.cpp
     GlauberGridThick.cpp
     GlauberDecayGridThick.cpp
