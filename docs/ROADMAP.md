@@ -34,9 +34,9 @@ same PR.
 
 ## Where we are / next up
 
-*Updated 2026-11-26 (after PR #87; the integration-method enumeration, part 2, is in an open PR).*
+*Updated 2026-11-26, evening (after PR #88; no PR is open).*
 
-**Done** (PRs #44-#82, details in the steps below): ROOT decoupling (ROOT is now only used by the test
+**Done** (PRs #44-#88, details in the steps below): ROOT decoupling (ROOT is now only used by the test
 `unit_vectors`; the fits run on the standalone Minuit2, #73); LHAPDF structure functions (step 10); He3 fixes; run
 bookkeeping in all programs (step 11, #49, #51, #64); Cuba unbundled (#67); the code layout (`Tools` split, includes
 from the repository root, `.hpp`, namespace `nucqcd`, the `T*` classes renamed, the `TNamed` leftovers removed:
@@ -45,12 +45,16 @@ reporting (#62), the removal of the dead integrator option 0 (#69) and of `rombe
 dead chains removed, `RhoDeuteron` and `InclusiveCrossRes` archived, the plane-wave grid on `cube_adaptive`, the
 routine itself in `progs/attic/rombergerN.hpp`); LF line endings (#66); the two longest files and two long functions
 split (#70, #74) with a crash fix (#75); the `GetVar*` table (#71); model names as enumerations (#72); the safety net
-for all Glauber grid variants (#68) and the deduplication of the two thick grids (#77).
+for all Glauber grid variants (#68) and the deduplication of the two thick grids (#77). Since then (2026-11-26): the
+`InclusiveCrossRes` "FSI returns 0" lead investigated, not a bug (#84); the rho t- versus z-integral bug found and fixed,
+with the derivation in `docs/rho_jacobian.md` (#85); copy-paste comments and a duplicate header guard cleaned up (#86);
+the integration method as an enumeration with one dispatch function, `numint::cube` (#87, #88).
 
 **Options for the next step** (my recommended order; the author decides):
-1. **Open leads** (step 4, "Open leads (to investigate)"), three of them, all investigations:
+1. **Open leads** (step 4, "Open leads (to investigate)"):
    - ~~the rho transparency t- versus z-integrals~~ (2026-11-26: the z version had the residual nucleus mass instead of
-     the Jacobian |dt/dz|/(2 nu); fixed in the open PR, checked with the Glauber distributions for helium, z/t within 2.2%);
+     the Jacobian |dt/dz|/(2 nu); fixed in #85, checked with the Glauber distributions for helium, z/t within 2.2%; a carbon
+     or finer-grid check, the effect on the z-version transparencies and the absence of the W > 2 GeV cut are open);
    - ~~the `InclusiveCrossRes` FSI part that returns exactly 0~~ (investigated 2026-11-26: not a bug, the
      settings of `increstest` cancel by construction; with `fixprop` 1, `symm` 0 the FSI is ~6% of the plane wave;
      reviving the class is still open, see the item);
