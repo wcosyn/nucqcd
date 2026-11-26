@@ -114,3 +114,4 @@ nucqcd_add_test(reg_weakqe            DIR regression LABEL regression LINK Knock
 nucqcd_add_test(reg_glauber_points    DIR regression LABEL regression LINK Glauber cuba)
 nucqcd_add_test(reg_glauber_grid      DIR regression LABEL slow LINK Knockout cuba TIMEOUT 1800)
 nucqcd_add_test(reg_glauber_variants  DIR regression LABEL slow LINK Knockout cuba TIMEOUT 1800)
+nucqcd_add_test(reg_rombergern_users  DIR regression LABEL regression LINK Knockout Glauber cuba)
