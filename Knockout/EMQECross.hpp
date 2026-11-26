@@ -9,8 +9,8 @@
  * [DeuteronMomDistr] <BR>
  * - It has a class to compute amplitudes and cross sections for A(e,e'p) reactions <BR>
  * [EMQEHadronCurrent, EMQECross] <BR>
- * - It has classes to compute rho production on a deuteron and a general nucleus <BR>
- * [RhoDeuteron, RhoTCross] <BR>
+ * - It has a class to compute rho production on a general nucleus (the deuteron version, RhoDeuteron, is archived in progs/attic/rhodeuteron) <BR>
+ * [RhoTCross] <BR>
  * - It has classes to compute weak quasi-elastic knockout on a general nucleus <BR>
  * [WeakQECross, WeakQEHadronCurrent] <BR>
  * -It Has a class to compute the quasi-elastic contribution to inclusive D(e,e') scattering <BR>

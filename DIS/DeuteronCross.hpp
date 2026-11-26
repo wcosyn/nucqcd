@@ -11,8 +11,7 @@
  * [DeuteronCross]<BR>
  * -Has a class that computes inclusive DIS off the deuteron<BR>
  * [InclusiveCross]<BR>
- * -Has a class that computes inclusive DIS off the deuteron in a N resonance model<BR>
- * [InclusiveCrossRes]<BR>
+ * (The class for inclusive DIS off the deuteron in a N resonance model, InclusiveCrossRes, is archived in progs/attic/threeres.)<BR>
  * -Has a class that computes tagged spectators DIS off a He3 target <BR> 
  * [He3Cross] <BR><BR>
  * 

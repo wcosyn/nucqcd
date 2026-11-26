@@ -34,33 +34,36 @@ same PR.
 
 ## Where we are / next up
 
-*Updated 2026-11-25 (after PR #78).*
+*Updated 2026-11-25, end of the day (after PR #82; no PR is open).*
 
-**Done** (PRs #44-#78, details in the steps below): ROOT decoupling (ROOT is now only used by the test
-`unit_vectors`; the fits run on the standalone Minuit2, #73); LHAPDF structure functions (step 10); He3
-fixes; run bookkeeping in all programs (step 11, #49, #51, #64); Cuba unbundled (#67); the code layout
-(`Tools` split, includes from the repository root, `.hpp`, namespace `nucqcd`, the `T*` classes
-renamed, the `TNamed` leftovers removed: #52, #53, #65, #76, #78); MPI retired (#54); the integrator
-benchmark (#61), `cube_romb` overflow (#60), precision reporting (#62) and the removal of the dead integrator
-option 0 (#69); LF line endings (#66); the two longest files and two long functions split (#70, #74) with a
-crash fix (#75); the `GetVar*` table (#71); model names as enumerations (#72); the safety net for all Glauber
-grid variants (#68) and the deduplication of the two thick grids (#77).
+**Done** (PRs #44-#82, details in the steps below): ROOT decoupling (ROOT is now only used by the test
+`unit_vectors`; the fits run on the standalone Minuit2, #73); LHAPDF structure functions (step 10); He3 fixes; run
+bookkeeping in all programs (step 11, #49, #51, #64); Cuba unbundled (#67); the code layout (`Tools` split, includes
+from the repository root, `.hpp`, namespace `nucqcd`, the `T*` classes renamed, the `TNamed` leftovers removed:
+#52, #53, #65, #76, #78); MPI retired (#54); the integrator benchmark (#61), `cube_romb` overflow (#60), precision
+reporting (#62), the removal of the dead integrator option 0 (#69) and of `rombergerN` from the libraries (#80-#82:
+dead chains removed, `RhoDeuteron` and `InclusiveCrossRes` archived, the plane-wave grid on `cube_adaptive`, the
+routine itself in `progs/attic/rombergerN.hpp`); LF line endings (#66); the two longest files and two long functions
+split (#70, #74) with a crash fix (#75); the `GetVar*` table (#71); model names as enumerations (#72); the safety net
+for all Glauber grid variants (#68) and the deduplication of the two thick grids (#77).
 
 **Options for the next step** (my recommended order; the author decides):
-1. **Open leads** (step 4, "Open leads (to investigate)"): the **rho transparency t- versus z-integrals**
-   (`torz` flag of `rhoset`, `RhoTCross::getCrosst`/`getCrossz`: results differing by orders of magnitude since
-   2012, probably a common factor such as a Jacobian or the nucleus mass; a fix changes values) and the
-   **PARTONS setup** on the second computer (`partons.properties` template of `scripts/install_partons.sh`).
+1. **Open leads** (step 4, "Open leads (to investigate)"), three of them, all investigations:
+   - the **rho transparency t- versus z-integrals** (`torz` flag of `rhoset`, `RhoTCross::getCrosst`/`getCrossz`:
+     results differing by orders of magnitude since 2012, probably a common factor such as a Jacobian or the
+     nucleus mass; a fix changes values);
+   - the **`InclusiveCrossRes` FSI part that returns exactly 0** (found 2026-11-25 when trying to revive the
+     archived class: it compiles after a one-line fix, the plane-wave part works; the plan is in the item);
+   - the **PARTONS setup** on the second computer (`partons.properties` template of `scripts/install_partons.sh`).
 2. **Glauber grids:** the off-axis speed (every point hits the evaluation cap; `cube_romb` was 5x faster at 1e-3;
    variants change values within the precision and need the author's OK), and the rest of the hierarchy dedup
    (the eight abstract classes with four interpolation wrappers per named grid, the 5D raw pointer arrays).
-3. ~~The hard-coded `rombergerN`~~ (done, #81 and #82: archived what was abandoned, replaced the one live
-   library use, `rombergerN` moved to `progs/attic`; `cube_romb` stays).
-4. **Smaller items:** unbundle cubature (step 7, maintenance only, no accuracy gain per the benchmark), the PDG
+3. **Smaller items:** unbundle cubature (step 7, maintenance only, no accuracy gain per the benchmark), the PDG
    constants update (changes values), the long Glauber files (`GlauberGrid.cpp`, `DistMomDistrGrid.cpp`, ...),
    `SolvePhotonAndParticle1` (134 lines), reporting the Suave bug to the Cuba authors, a format string that gives
-   no scenario at all is still accepted (step 6, long functions).
-5. **Last:** the license decision (step 8), then the README (currently a stub).
+   no scenario at all is still accepted (step 6, long functions), `Resonance` stays in the DIS library although
+   only the archived class used it.
+4. **Last:** the license decision (step 8), then the README (currently a stub; step 8 lists what it must cover).
 
 **Open choices for the author:** the license (step 8, see the item there); the PDG constants update (changes
 values); whether to unbundle cubature (step 7); which of the open leads to take up first; the README (step 8)
@@ -333,6 +336,24 @@ one commit per bug; no `[known-bug]` tests remain.
   configuration that PARTONS v5 needs (the old file has `environment.configuration.file.path` and
   `grid.directory`). Check what PARTONS v5 needs, fix the template, and decide whether the script
   should replace an outdated file.
+- [ ] **`InclusiveCrossRes`: the FSI part returns exactly 0 (added 2026-11-25).** The resonance model for inclusive
+  DIS on the deuteron (W. Cosyn, W. Melnitchouk and M. Sargsian, Phys. Rev. C 89, 014612 (2014)) was archived in
+  #82 (`progs/attic/threeres`, not built). Trying to revive it: it compiles once the stale constructor call
+  `structure(elec, proton, strucname)` is changed to `structure(proton, strucname)` (`DeuteronStructure` lost its
+  `ElectronKinematics` argument), and then `increstest`, `threeres` and a small driver build. **Plane-wave part works:**
+  `calc_F2Dinc` gives 0.30 (proton, x = 0.3, Q^2 = 5 GeV^2, Paris, Alekhin, resonances 1.4 and 2.4 GeV with
+  coefficients +-1/sqrt(2), beam 5 GeV; 1.7 s per call, with debugging output "blaaa" on stdout; 0.1529 at x = 0.5).
+  **`calc_F2DincFSI` returns exactly 0 for both outputs** at x = 0.3, 0.4 and 0.5, `symm` = 1, 0 and -1, off-shell
+  type 3, `fixprop` 0, `kin_choice` 0 (9-16 s per call), and `increstest 1 3 0 5. paris Alekhin 40. 0. 1.4 2.4`
+  printed no result line in 280 s (its first point is x = 0.025). Unknown whether this is a physics zero for these
+  settings, a change in the library since it last ran (the class was taken out of the DIS build at some point),
+  or a bug in the nested 4-level integrals (`int_pr_fsi`, `int_costheta_incl_fsi`, `int_qt`, `int_qphi`, limits that depend
+  on pr and a cut). Plan: (1) read the FSI chain and see which factor is zero (the resonance amplitudes
+  `Resonance`, the cut on the spectator momentum, the `kin_choice`/`symm` switches); (2) look at the git history of the
+  class and of `DeuteronStructure`/`NuclStructure`/`Resonance` for a change that could zero it, and try the last commit
+  where the library built it; (3) compare with the curves of the paper; (4) then decide the integrator (the nested
+  `rombergerN` of `progs/attic/rombergerN.hpp`, or `cube_adaptive` over the variables, see the item on `rombergerN`)
+  and write a regression test before moving it back into the DIS library. Not urgent: the class is not used by anything.
 - [ ] **Rho transparency: t- and z-integrated results disagree (added 2026-11-23, from the author's
   memory of ~2012; details may be off).** The rho programs offer two ways to do the integrals, which
   should agree but gave results differing by orders of magnitude, while the Glauber/plane-wave ratios
@@ -550,7 +571,7 @@ Do these one at a time, running the full test suite (including `slow`) after eac
 - [ ] **Update the constants to current PDG values** (split off from the item above): several values
   are older PDG values (e.g. the proton mass 938.27231 versus 938.27209 in PDG 2024); updating them
   changes results, so it needs the author's OK.
-- [ ] **Code layout** (sharpened 2026-11-22 with the author). Headers next to their sources is fine and
+- [x] **Code layout** (sharpened 2026-11-22 with the author; all four parts done: #52, #53, #65, and the rename of the `T*` classes #76). Headers next to their sources is fine and
   stays (no general `include/`/`src/` split: that pays off for libraries installed for outside
   projects, which nucqcd's are not, and moving every file would cost the `git blame` history). What
   does not follow good practice, in this order:
@@ -956,8 +977,10 @@ Write this last, after the refactors, so it describes the final layout and uses 
 
 - [ ] Cover:
   - what the code computes, and the libraries and how they depend on each other
-  - dependencies and how to install them (ROOT, GSL, Cuba, and optionally LHAPDF with its PDF sets,
-    PARTONS and MPI; what is still needed of ROOT after step 9)
+  - dependencies and how to install them: GSL, a Fortran compiler, CMake; Cuba and Minuit2 are downloaded and
+    built by CMake (or installed with `scripts/install_cuba.sh`, `scripts/install_minuit2.sh`); optionally LHAPDF
+    with its PDF sets and PARTONS (`scripts/install_partons.sh`), Doxygen; ROOT only for the test `unit_vectors`;
+    MPI only for two archived programs
   - the physics inputs that can be chosen by name: deuteron wave functions, nuclear mean fields, and the
     nucleon structure functions (`NucleonStructure`: CB, SLAC, Alekhin, CTEQ, HMRS, MSTW, `LHAPDF:<set>`,
     and combinations such as `CB+LHAPDF:CT18LO@4`, step 10)
