@@ -12,7 +12,7 @@ The integrators:
 |---|---|---|---|
 | `rombergerN` | `Tools/Core/Utilfunctions.hpp` | 1D Romberg, nested per dimension | relative change < `acc`, or absolute change < `acc`·1e-7, or the result is < 1e-5 of a running `estimate`; at most `max` steps (code: 3 to 8); returns 0 for intervals shorter than 1e-6 |
 | `cube_romb` | `Integrator/numint/cube_romb.cpp` | Romberg on the full N-dim grid, all dimensions refined together | converged, or 12 refinement levels (`EMAXITER`); no limit on evaluations |
-| `cube_adaptive` | `Integrator/numint/numint2adapt.hpp` → `Integrator/adaptive/cubature.c` (S. G. Johnson, 2010, with a local `minEval`) | h-adaptive Genz-Malik cubature | all components below the absolute *or* relative tolerance, or `maxEval` reached; **returns 0 (success) in both cases**, and the wrapper discards the error estimate |
+| `cube_adaptive` | `Integrator/numint/numint2adapt.hpp` → `hcubature` of cubature (until 2026-11 the bundled `Integrator/adaptive/cubature.c`, S. G. Johnson, 2010, with a local `minEval`; now the downloaded 1.0.4 patched to behave the same, see ROADMAP step 7) | h-adaptive Genz-Malik cubature | all components below the absolute *or* relative tolerance, or `maxEval` reached; **returns 0 (success) in both cases**, and the wrapper discards the error estimate |
 | Cuhre | Cuba 4.2.1 via `numint::cuhre` | globally adaptive cubature | converged, or `maxEval` (`fail` = 1) |
 
 ## Part A: test integrands with known values on [0,1]³
@@ -124,6 +124,7 @@ The programs mostly pass 2·10⁴ (`progs/onenucl`, `progs/Obstest`), i.e. 1e-5 
    warning, because the `numint` wrapper of `cube_adaptive` returns 0 and drops the error estimate.
    Worth fixing independently of the integrator choice (see the ROADMAP).
 6. **Unbundling cubature (step 7):** moving to upstream 1.0.4 does not improve accuracy (worse on kinks);
-   it is a maintenance question only. `pcubature` could be considered for smooth integrands.
+   it is a maintenance question only. Done 2026-11-26: the build downloads 1.0.4 (its rule to choose the dimension to split is the difference measured above,
+   it changes results of integrands with steps by 1e-6 to 1e-2; `-DCUBATURE_LEGACY_SPLIT=yes` selects the 2010 rule and reproduces the old results bit for bit). `pcubature` could be considered for smooth integrands.
 
 Bugs found: `cube_romb` 32-bit overflow beyond 10 refinement levels in 3D (#60).

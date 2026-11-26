@@ -1,4 +1,4 @@
-# libIntegrator: numint (templated quadratures) and adaptive cubature.
+# libIntegrator: numint (templated quadratures); the adaptive cubature of S. G. Johnson is downloaded and compiled in (below).
 nucqcd_add_library(Integrator
   SOURCES
     numint/cube_romb.cpp
@@ -7,8 +7,82 @@ nucqcd_add_library(Integrator
     numint/quad_cc.cpp
     numint/quad_romb.cpp
     numint/quad_tr.cpp
-    numint/vfubini.cpp
-    adaptive/cubature.c)
+    numint/vfubini.cpp)
+
+# ---- cubature (not bundled) -------------------------------------------------------------------
+# hcubature of Steven G. Johnson's cubature 1.0.4 (https://github.com/stevengj/cubature, GPL-2-or-later), the engine of
+# numint::cube_adaptive. It is downloaded at configure time (URL and SHA256 pinned; -DCUBATURE_TARBALL=<file> uses a local
+# copy of v1.0.4.tar.gz, for machines without network), patched (cmake/patches/cubature-1.0.4-nucqcd.patch: hcubature_minEval, the
+# minimum number of function evaluations that the 2010 adapt_integrate, which nucqcd bundled until 2026-11, had) and its one source file
+# is compiled into libIntegrator. The rule to choose the dimension to split a region is that of cubature 1.0.4; -DCUBATURE_LEGACY_SPLIT=yes
+# selects the rule of the 2010 version instead, which reproduces the results of nucqcd before 2026-11 bit for bit (see the ROADMAP).
+# A cubature installed on the system (libcubature-dev) cannot be used: it has no minEval. The unpacked and patched source is redone
+# when the patch changes. <cubature/cubature.h> is provided from <build>/Integrator/cubature-include.
+set(CUBATURE_VERSION 1.0.4)
+set(CUBATURE_SHA256 cd4899de0b047a9d220cfb751a8bdbb8fd0c97c1c894d07523b75168e6426f60)
+set(CUBATURE_TARBALL "" CACHE FILEPATH "Local cubature v1.0.4.tar.gz to use instead of downloading it")
+option(CUBATURE_LEGACY_SPLIT "Use the rule of the 2010 cubature to choose the dimension to split (the results of nucqcd before 2026-11), not that of 1.0.4" OFF)
+set(CUBATURE_PATCH "${PROJECT_SOURCE_DIR}/cmake/patches/cubature-${CUBATURE_VERSION}-nucqcd.patch")
+set(CUBATURE_SRC_DIR "${CMAKE_CURRENT_BINARY_DIR}/cubature-src")
+set(CUBATURE_STAMP "${CUBATURE_SRC_DIR}/.nucqcd-patch-sha256")
+set(CUBATURE_INCLUDE_STAGE "${CMAKE_CURRENT_BINARY_DIR}/cubature-include")
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${CUBATURE_PATCH}")
+file(SHA256 "${CUBATURE_PATCH}" CUBATURE_PATCH_SHA256)
+set(CUBATURE_UP_TO_DATE FALSE)
+if(EXISTS "${CUBATURE_SRC_DIR}/hcubature.c" AND EXISTS "${CUBATURE_STAMP}")
+  file(READ "${CUBATURE_STAMP}" CUBATURE_STAMP_CONTENT)
+  if(CUBATURE_STAMP_CONTENT STREQUAL "${CUBATURE_PATCH_SHA256}")
+    set(CUBATURE_UP_TO_DATE TRUE)
+  endif()
+endif()
+if(NOT CUBATURE_UP_TO_DATE)
+  find_program(PATCH_EXECUTABLE patch REQUIRED)
+  set(CUBATURE_ARCHIVE "${CMAKE_CURRENT_BINARY_DIR}/cubature-${CUBATURE_VERSION}.tar.gz")
+  if(CUBATURE_TARBALL)
+    file(SHA256 "${CUBATURE_TARBALL}" CUBATURE_TARBALL_SHA256)
+    if(NOT CUBATURE_TARBALL_SHA256 STREQUAL CUBATURE_SHA256)
+      message(FATAL_ERROR "cubature: ${CUBATURE_TARBALL} has SHA256 ${CUBATURE_TARBALL_SHA256}, expected ${CUBATURE_SHA256}")
+    endif()
+    configure_file("${CUBATURE_TARBALL}" "${CUBATURE_ARCHIVE}" COPYONLY)
+  else()
+    message(STATUS "cubature: getting ${CUBATURE_VERSION} from github.com/stevengj/cubature (download is skipped if it is there)")
+    file(DOWNLOAD "https://github.com/stevengj/cubature/archive/refs/tags/v${CUBATURE_VERSION}.tar.gz" "${CUBATURE_ARCHIVE}"
+         EXPECTED_HASH SHA256=${CUBATURE_SHA256} STATUS CUBATURE_DOWNLOAD_STATUS)
+    list(GET CUBATURE_DOWNLOAD_STATUS 0 CUBATURE_DOWNLOAD_CODE)
+    if(NOT CUBATURE_DOWNLOAD_CODE EQUAL 0)
+      message(FATAL_ERROR "cubature: the download failed (${CUBATURE_DOWNLOAD_STATUS}); download v${CUBATURE_VERSION}.tar.gz by hand "
+                          "and configure with -DCUBATURE_TARBALL=<file>")
+    endif()
+  endif()
+  set(CUBATURE_UNPACK_DIR "${CMAKE_CURRENT_BINARY_DIR}/cubature-unpack")
+  file(REMOVE_RECURSE "${CUBATURE_UNPACK_DIR}" "${CUBATURE_SRC_DIR}")
+  file(MAKE_DIRECTORY "${CUBATURE_UNPACK_DIR}")
+  execute_process(COMMAND "${CMAKE_COMMAND}" -E tar xzf "${CUBATURE_ARCHIVE}" WORKING_DIRECTORY "${CUBATURE_UNPACK_DIR}"
+                  RESULT_VARIABLE CUBATURE_UNPACK_RESULT)
+  if(NOT CUBATURE_UNPACK_RESULT EQUAL 0 OR NOT EXISTS "${CUBATURE_UNPACK_DIR}/cubature-${CUBATURE_VERSION}/hcubature.c")
+    message(FATAL_ERROR "cubature: could not unpack ${CUBATURE_ARCHIVE}")
+  endif()
+  file(RENAME "${CUBATURE_UNPACK_DIR}/cubature-${CUBATURE_VERSION}" "${CUBATURE_SRC_DIR}")
+  execute_process(COMMAND "${PATCH_EXECUTABLE}" -p1 -i "${CUBATURE_PATCH}"
+                  WORKING_DIRECTORY "${CUBATURE_SRC_DIR}" RESULT_VARIABLE CUBATURE_PATCH_RESULT)
+  if(NOT CUBATURE_PATCH_RESULT EQUAL 0)
+    message(FATAL_ERROR "cubature: applying ${CUBATURE_PATCH} failed")
+  endif()
+  file(WRITE "${CUBATURE_STAMP}" "${CUBATURE_PATCH_SHA256}")
+endif()
+configure_file("${CUBATURE_SRC_DIR}/cubature.h" "${CUBATURE_INCLUDE_STAGE}/cubature/cubature.h" COPYONLY)
+set(CUBATURE_COMPILE_FLAGS "-w")  # third-party code
+if(CUBATURE_LEGACY_SPLIT)
+  set(CUBATURE_COMPILE_FLAGS "${CUBATURE_COMPILE_FLAGS} -DNUCQCD_LEGACY_SPLIT")
+  message(STATUS "cubature: using the split rule of the 2010 version (the results of nucqcd before 2026-11), not that of cubature 1.0.4")
+endif()
+set_source_files_properties("${CUBATURE_SRC_DIR}/hcubature.c" PROPERTIES COMPILE_FLAGS "${CUBATURE_COMPILE_FLAGS}")
+target_sources(Integrator PRIVATE "${CUBATURE_SRC_DIR}/hcubature.c")
+target_include_directories(Integrator PUBLIC "${CUBATURE_INCLUDE_STAGE}")
+if(STATIC_BUILD)
+  target_sources(IntegratorST PRIVATE "${CUBATURE_SRC_DIR}/hcubature.c")
+  target_include_directories(IntegratorST PUBLIC "${CUBATURE_INCLUDE_STAGE}")
+endif()
 
 # ---- Cuba (not bundled) --------------------------------------------------------------------
 # Exposed as the INTERFACE target 'cuba' (library + the <Cuba/cuba.h> header); link 'cuba' to use it.

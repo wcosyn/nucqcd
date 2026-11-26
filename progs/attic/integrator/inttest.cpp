@@ -10,13 +10,13 @@ using namespace std;
 #include <Integrator/numint/typedef.hpp>
 #include <cmath>
 #include <vector>
-#include <Integrator/adaptive/cubature.h>
+#include <cubature/cubature.h>
 
 int main(int argc, char *argv[])
 {
 
   void bol(numint::vector_d &, double r, double ctheta, double phi, double c) ;
-  void bol(unsigned n, const double *x, void *param, unsigned fdim, double *ret) ;
+  int bol(unsigned n, const double *x, void *param, unsigned fdim, double *ret) ;
   
   struct Ftor {
 
@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
   double xmin[3]={0.,-1.,0.},xmax[3]={1.,1.,2.*PI}, c=1.;
   double res[2];
   double err[2];
-  error = adapt_integrate(2,bol,&c,3,xmin,xmax,100,0,SIGNIF*1.E-03,SIGNIF,res,err);
+  error = hcubature_minEval(2,bol,&c,3,xmin,xmax,100,0,SIGNIF*1.E-03,SIGNIF,ERROR_INDIVIDUAL,res,err);
   cout << res[0] << " " << res[1] << " " << err[0] << " " << err[1] << " " << error << endl;
   
 }
@@ -66,12 +66,13 @@ void bol( numint::vector_d &ret, double r, double ctheta, double phi, double c)
   
 }
 
-void bol(unsigned n, const double *x, void *param, unsigned fdim, double *ret){
+int bol(unsigned n, const double *x, void *param, unsigned fdim, double *ret){
   double c=*((double*)param);
   ret[0]=c*x[0]*x[0]*cos(x[2])*cos(x[2])+pow(x[2],0.5);
 //   if(x[2]>PI/3.) ret[1]=(c*x[0]*cos(x[2])/(4.+x[1]));
 //   else ret[1]=0.;
 //   if(x[2]>sqrt(2.)/2.*PI) ret[1]=c*x[0]*x[0];
 //   else ret[1]=0.;
+  return 0;
 }  
   

@@ -1,0 +1,134 @@
+nucqcd patch of cubature 1.0.4 (Steven G. Johnson, https://github.com/stevengj/cubature), applied by Integrator/CMakeLists.txt with patch -p1:
+1. hcubature_minEval: hcubature with a minimum number of function evaluations (convergence is only accepted after more than minEval
+   evaluations), the interface of the 2010 adapt_integrate that nucqcd bundled until 2026-11. hcubature itself is unchanged (minEval = 0).
+2. -DNUCQCD_LEGACY_SPLIT (CMake option CUBATURE_LEGACY_SPLIT) selects the rule of the 2010 version to choose the dimension to split a region
+   (the largest fourth difference, the first on ties), which reproduces the results of nucqcd before 2026-11 bit for bit; without it the rule is
+   that of cubature 1.0.4 (near-ties are broken in favour of the longest side of the region), which changes the adaptive subdivision for
+   integrands with steps. The default is the rule of 1.0.4.
+Made with diff -ru of the pristine tarball files hcubature.c and cubature.h.
+
+diff -ru a/cubature.h b/cubature.h
+--- a/cubature.h
++++ b/cubature.h
+@@ -86,6 +86,15 @@
+ 	      error_norm norm,
+ 	      double *val, double *err);
+ 
++/* nucqcd addition: as hcubature, with a minimum number of function evaluations: convergence is only accepted after more
++   than minEval evaluations (the 2010 adapt_integrate that nucqcd used had this argument) */
++int hcubature_minEval(unsigned fdim, integrand f, void *fdata,
++                      unsigned dim, const double *xmin, const double *xmax,
++                      size_t minEval, size_t maxEval,
++                      double reqAbsError, double reqRelError,
++                      error_norm norm,
++                      double *val, double *err);
++
+ /* as hcubature, but vectorized integrand */
+ int hcubature_v(unsigned fdim, integrand_v f, void *fdata,
+ 		unsigned dim, const double *xmin, const double *xmax, 
+diff -ru a/hcubature.c b/hcubature.c
+--- a/hcubature.c
++++ b/hcubature.c
+@@ -571,6 +571,9 @@
+ 		df += R[iR].ee[j].err;
+ 	  df /= R[iR].h.vol * r->df_scale;
+ 
++#ifndef NUCQCD_LEGACY_SPLIT
++	  /* cubature 1.0.4 (fix of a hang for some integrands with unlimited maxEval): ties between the dimensions within df
++	     are broken in favour of the longest side of the region */
+ 	  for (i = 0; i < dim; ++i) {
+ 		double delta = diff[iR*dim + i] - maxdiff;
+ 		if (delta > df) {
+@@ -580,6 +583,17 @@
+ 		else if (fabs(delta) <= df && R[iR].h.data[dim + i] > R[iR].h.data[dim + dimDiffMax])
+ 			dimDiffMax = i;
+ 	  }
++#else
++	  /* nucqcd: define NUCQCD_LEGACY_SPLIT (CMake option CUBATURE_LEGACY_SPLIT) for the rule of the 2010 version that nucqcd
++	     bundled until 2026-11, to reproduce its results bit for bit: the dimension with the largest fourth difference, the
++	     first one on ties */
++	  (void) df;
++	  for (i = 0; i < dim; ++i)
++		if (diff[iR*dim + i] > maxdiff) {
++			maxdiff = diff[iR*dim + i];
++			dimDiffMax = i;
++		}
++#endif
+ 	  R[iR].splitDim = dimDiffMax;
+      }
+      return SUCCESS;
+@@ -915,7 +929,7 @@
+ static int rulecubature(rule *r, unsigned fdim,
+ 			integrand_v f, void *fdata,
+ 			const hypercube *h,
+-			size_t maxEval,
++			size_t minEval, size_t maxEval,
+ 			double reqAbsError, double reqRelError,
+ 			error_norm norm,
+ 			double *val, double *err, int parallel)
+@@ -947,7 +961,9 @@
+      numEval += r->num_points;
+ 
+      while (numEval < maxEval || !maxEval) {
+-	  if (converged(fdim, regions.ee, reqAbsError, reqRelError, norm))
++	  /* nucqcd: no convergence before more than minEval evaluations (minEval = 0 is the upstream behaviour) */
++	  if (numEval > minEval
++	      && converged(fdim, regions.ee, reqAbsError, reqRelError, norm))
+ 	       break;
+ 
+ 	  if (parallel) { /* maximize potential parallelism */
+@@ -1033,7 +1049,7 @@
+ 
+ static int cubature(unsigned fdim, integrand_v f, void *fdata,
+ 		    unsigned dim, const double *xmin, const double *xmax,
+-		    size_t maxEval, double reqAbsError, double reqRelError,
++		    size_t minEval, size_t maxEval, double reqAbsError, double reqRelError,
+ 		    error_norm norm,
+ 		    double *val, double *err, int parallel)
+ {
+@@ -1060,7 +1076,7 @@
+      h = make_hypercube_range(dim, xmin, xmax);
+      status = !h.data ? FAILURE
+ 	  : rulecubature(r, fdim, f, fdata, &h,
+-				maxEval, reqAbsError, reqRelError, norm,
++				minEval, maxEval, reqAbsError, reqRelError, norm,
+ 				val, err, parallel);
+      destroy_hypercube(&h);
+      destroy_rule(r);
+@@ -1074,7 +1090,7 @@
+                 double *val, double *err)
+ {
+      return cubature(fdim, f, fdata, dim, xmin, xmax,
+-		     maxEval, reqAbsError, reqRelError, norm, val, err, 1);
++		     0, maxEval, reqAbsError, reqRelError, norm, val, err, 1);
+ }
+ 
+ #include "vwrapper.h"
+@@ -1092,7 +1108,26 @@
+ 
+      d.f = f; d.fdata = fdata;
+      ret = cubature(fdim, fv, &d, dim, xmin, xmax,
+-		    maxEval, reqAbsError, reqRelError, norm, val, err, 0);
++		    0, maxEval, reqAbsError, reqRelError, norm, val, err, 0);
++     return ret;
++}
++
++/* nucqcd addition: as hcubature, with a minimum number of function evaluations (the interface of the 2010 adapt_integrate
++   that nucqcd used before): convergence is only accepted after more than minEval evaluations */
++int hcubature_minEval(unsigned fdim, integrand f, void *fdata,
++		      unsigned dim, const double *xmin, const double *xmax,
++		      size_t minEval, size_t maxEval, double reqAbsError, double reqRelError,
++		      error_norm norm,
++		      double *val, double *err)
++{
++     int ret;
++     fv_data d;
++
++     if (fdim == 0) return SUCCESS; /* nothing to do */
++
++     d.f = f; d.fdata = fdata;
++     ret = cubature(fdim, fv, &d, dim, xmin, xmax,
++		    minEval, maxEval, reqAbsError, reqRelError, norm, val, err, 0);
+      return ret;
+ }
+ 
