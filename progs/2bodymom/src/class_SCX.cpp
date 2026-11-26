@@ -138,7 +138,7 @@ void calculate_CX_probabilities(struct Event& event,MeanFieldNucleusThick& nuc,d
 	FastParticle fp2_fsi(event.type2,0,event.p2,0.,0.,1.,1.,SHAREDIR);
 	/** set up the Glauber FSI grid **/
 	
-	GlauberGridThick grid(60,20,5,&nuc,1e-03,2,SHAREDIR); // 1: 60=rgrid, 2: 20=thetagrid, 3: 10=phigrid, 4: nucleus, 5: 1e-6= prec, 5: [int]=integrator, 6=share dir
+	GlauberGridThick grid(60,20,5,&nuc,1e-03,IntegrationMethod::Adaptive,SHAREDIR); // 1: 60=rgrid, 2: 20=thetagrid, 3: 10=phigrid, 4: nucleus, 5: 1e-6= prec, 5: [int]=integrator, 6=share dir
 	grid.clearParticles();
 	grid.addParticle(fp1_fsi);
 	grid.addParticle(fp2_fsi);

@@ -2,6 +2,7 @@
 #include <test_support.hpp>
 
 #include <Integrator/adaptive/cubature.h>
+#include <Integrator/numint/cube.hpp>
 #include <Integrator/numint/numint.hpp>
 
 #include <cmath>
@@ -108,4 +109,44 @@ TEST_CASE("numint::cube_adaptive reports integrals that stop at maxEval", "[cuba
   stats.warn = true;
   std::ostringstream none;
   CHECK_FALSE(numint::adaptive_report(none));
+}
+
+TEST_CASE("numint::cube calls cube_romb and cube_adaptive with the arguments of its options", "[numint][cubature]") {
+  // double and vector results, as used by the Glauber grids: the dispatch must give bit-identical results and counts
+  numint::mdfunction<double, 3> f;
+  f.func = &spherical_volume;
+  numint::array<double, 3> lower = {{0., 0., 0.}};
+  numint::array<double, 3> upper = {{1., pi, 2. * pi}};
+  {
+    double direct = 0., viacube = 0.;
+    unsigned count_direct = 0, count_cube = 0;
+    numint::cube_romb(f, lower, upper, 1e-8, 1e-7, direct, count_direct);
+    numint::cube({numint::IntegrationMethod::Romberg, 1e-8, 1e-7, 0, 0}, f, lower, upper, viacube, count_cube);
+    CHECK(viacube == direct);
+    CHECK(count_cube == count_direct);
+    CHECK_THAT(viacube, WithinRel(4. * pi / 3., 1e-6));
+  }
+  {
+    double direct = 0., viacube = 0.;
+    unsigned count_direct = 0, count_cube = 0;
+    numint::cube_adaptive(f, lower, upper, 1e-8, 1e-7, 100, 200000, direct, count_direct, 0);
+    numint::cube({numint::IntegrationMethod::Adaptive, 1e-8, 1e-7, 100, 200000}, f, lower, upper, viacube, count_cube);
+    CHECK(viacube == direct);
+    CHECK(count_cube == count_direct);
+  }
+  numint::mdfunction<numint::vector_d, 3> g;
+  g.func = &cubature_integrand_md;
+  numint::array<double, 3> lower2 = {{0., -1., 0.}};
+  numint::array<double, 3> upper2 = {{1., 1., 2. * pi}};
+  for (const auto method : {numint::IntegrationMethod::Romberg, numint::IntegrationMethod::Adaptive}) {
+    std::vector<double> direct(1, 0.), viacube(1, 0.);
+    unsigned count_direct = 0, count_cube = 0;
+    if (method == numint::IntegrationMethod::Romberg)
+      numint::cube_romb(g, lower2, upper2, 1e-12, 1e-4, direct, count_direct, 0);
+    else
+      numint::cube_adaptive(g, lower2, upper2, 1e-12, 1e-4, 100, 2000000, direct, count_direct, 0);
+    numint::cube({method, 1e-12, 1e-4, 100, 2000000}, g, lower2, upper2, viacube, count_cube, 0);
+    CHECK(viacube[0] == direct[0]);
+    CHECK(count_cube == count_direct);
+  }
 }

@@ -402,8 +402,8 @@ void EMQECross::getDensr(std::vector<double> &densr, const Kinematics2to2 &tk, c
   
   FastParticle proton(0, 0, tk.GetPYlab(),0.,0.,tk.GetQsquared()*1.E-06,0.,1.,1.,homedir);
   AbstractFsiGrid *grid; 
-  if(thick) grid = new GlauberGridThick(120,36,5,pnucl,prec,2,homedir);
-  else grid= new OneGlauberGrid(120,36,pnucl,prec,2,homedir);
+  if(thick) grid = new GlauberGridThick(120,36,5,pnucl,prec,IntegrationMethod::Adaptive,homedir);
+  else grid= new OneGlauberGrid(120,36,pnucl,prec,IntegrationMethod::Adaptive,homedir);
   grid->clearParticles();
   grid->addParticle(proton);
   grid->updateGrids();
@@ -497,8 +497,8 @@ void EMQECross::getDensr_ctheta(std::vector<double> &densr, const Kinematics2to2
   
   FastParticle proton(0, 0, tk.GetPYlab(),0.,0.,tk.GetQsquared()*1.E-06,0.,1.,1.,homedir);
   AbstractFsiGrid *grid; 
-  if(thick) grid = new GlauberGridThick(120,36,5,pnucl,prec,2,homedir);
-  else grid= new OneGlauberGrid(120,36,pnucl,prec,2,homedir);
+  if(thick) grid = new GlauberGridThick(120,36,5,pnucl,prec,IntegrationMethod::Adaptive,homedir);
+  else grid= new OneGlauberGrid(120,36,pnucl,prec,IntegrationMethod::Adaptive,homedir);
   grid->clearParticles();
   grid->addParticle(proton);
   grid->updateGrids();
@@ -592,8 +592,8 @@ void EMQECross::getPhid(std::vector<complex<double> > &phid, const Kinematics2to
   
   FastParticle proton(0, 0, tk.GetPYlab(),0.,0.,tk.GetQsquared()*1.E-06,0.,1.,1.,homedir);
   AbstractFsiGrid *grid; 
-  if(thick) grid = new GlauberGridThick(120,36,5,pnucl,prec,2,homedir);
-  else grid= new OneGlauberGrid(120,36,pnucl,prec,2,homedir);
+  if(thick) grid = new GlauberGridThick(120,36,5,pnucl,prec,IntegrationMethod::Adaptive,homedir);
+  else grid= new OneGlauberGrid(120,36,pnucl,prec,IntegrationMethod::Adaptive,homedir);
   grid->clearParticles();
   grid->addParticle(proton);
   grid->updateGrids();

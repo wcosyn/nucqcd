@@ -16,10 +16,10 @@ namespace nucqcd {
 
 
 AbstractFsiGrid::AbstractFsiGrid(int r_grid, int cth_grid, int phi_grid, 
-				 MeanFieldNucleus *pnucl, double precision, int integr, std::string homedir):
+				 MeanFieldNucleus *pnucl, double precision, IntegrationMethod integr, std::string homedir):
 filledgrid(0),filledallgrid(0),dir(nucqcd::grid_cache_dir(homedir)),rgrid(r_grid),cthgrid(cth_grid),
 phigrid(phi_grid),allinplane(0),totalprotonout(0), totalneutronout(0),
-protonknockout(0), neutronknockout(0),pnucleus(pnucl),number_of_grids(1),prec(precision),integrator(nucqcd::checked_integrator_flag(integr)){
+protonknockout(0), neutronknockout(0),pnucleus(pnucl),number_of_grids(1),prec(precision),integrator(integr){
   
   invrstep=rgrid/pnucleus->getRange();
   invcthstep=cthgrid/2.;
@@ -261,7 +261,7 @@ void AbstractFsiGrid::setFilenames(string cachedir){
 		  +".eps"+to_string(lround(part.getEpsilonp()*100.));
   }
   fsi_filename+=".r"+to_string(getRgrid())+".cth"+to_string(getCthgrid())
-		+".phi"+to_string(getPhigrid())+".prec"+to_string(getPrec()*1.E05)+".intgr"+to_string(getIntegrator())+".key3.dat";
+		+".phi"+to_string(getPhigrid())+".prec"+to_string(getPrec()*1.E05)+".intgr"+to_string(numint::method_flag(getIntegrator()))+".key3.dat";
 //     cout << fsi_filename << endl;
 }
   

@@ -13,7 +13,7 @@ namespace nucqcd {
 
 
 AbstractFsiCTDecayGrid::AbstractFsiCTDecayGrid(int r_grid, int cth_grid, int phi_grid, MeanFieldNucleus *pnucl, 
-					       double prec, int integrator, string homedir):
+					       double prec, IntegrationMethod integrator, string homedir):
 AbstractFsiGrid(r_grid,cth_grid,phi_grid,pnucl,prec,integrator,homedir),
 AbstractFsiCTGrid(r_grid,cth_grid,phi_grid,pnucl,prec,integrator,homedir){
   number_of_grids=4;

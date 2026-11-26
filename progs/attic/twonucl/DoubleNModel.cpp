@@ -67,8 +67,8 @@ complex<double> DoubleNModel::getMatrixEl(const Kinematics2to3 &tk, int spinout1
   FastParticle nucl1(particletype1, 0, pf1,tk.GetQsquared()/1.e06,0.,1.,1.,homedir);
   FastParticle nucl2(particletype2, 0, pf2,tk.GetQsquared()/1.e06,0.,1.,1.,homedir);
   if(!pw){
-    gridf1 = new GlauberGridThick(60,18,5,pnucl,prec,integrator,homedir);
-    gridf2 = new GlauberGridThick(60,18,5,pnucl,prec,integrator,homedir);
+    gridf1 = new GlauberGridThick(60,18,5,pnucl,prec,integration_method(integrator),homedir);
+    gridf2 = new GlauberGridThick(60,18,5,pnucl,prec,integration_method(integrator),homedir);
     gridf1->addParticle(nucl1);
     gridf2->addParticle(nucl2);
     //gridf1->printParticles();

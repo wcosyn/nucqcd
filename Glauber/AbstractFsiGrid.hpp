@@ -50,6 +50,7 @@
 #include <Tools/Core/Vector3.hpp>
 
 #include <Glauber/FastParticle.hpp>
+#include <Tools/Core/IntegratorFlag.hpp>
 #include <Glauber/MeanFieldNucleus.hpp>
 
 namespace nucqcd {
@@ -78,12 +79,12 @@ public:
    * \param phi_grid gridsizein phi
    * \param pnucl pointer to an instance of MeanFieldNucleus
    * \param prec the precision you want in the integrations
-   * \param integrator which integrator (1:numint::cube_romb, 2:numint::cube_adaptive (0, the old rombergerN, was removed)
+   * \param integrator which integrator: numint::IntegrationMethod::Romberg (numint::cube_romb) or numint::IntegrationMethod::Adaptive (numint::cube_adaptive); the integers 1 and 2 convert with nucqcd::integration_method()
    * \param dir string that contains dir with all input, should be the ./share subdir of the project!
    * The grids are cached in dir/grids/, or in $NUCQCD_GRID_DIR if that is set (see GridCache.hpp).
    */
   AbstractFsiGrid(const int r_grid, const int cth_grid, const int phi_grid, MeanFieldNucleus *pnucl, 
-		  double prec, int integrator, std::string dir);
+		  double prec, IntegrationMethod integrator, std::string dir);
   virtual ~AbstractFsiGrid(); /*!< Destructor */
   // Not copyable: the derived grids own their (up to 5-dimensional) grid arrays as raw pointers and
   // have no copy operations, so a copy would delete them twice. Converting the arrays to owning
@@ -114,7 +115,7 @@ public:
   std::vector<int> getKnockoutM() const {return knockoutm;}/*!<  returns the vector with all the m values of knocked out nucleons */
   bool getAllinplane() const {return allinplane;}/*!<  returns 1 if all the isi/fsi particles lie in the x-z plane */
   double getPrec() const {return prec;}/*!< returns the integration precision */
-  int getIntegrator() const{return integrator;} /*!< returns the integrator type */
+  IntegrationMethod getIntegrator() const{return integrator;} /*!< returns the integrator type */
   
   /*! add particle subject to isi/fsi, checks to see that the vector contains max one incoming particle.
    * The grid stores and uses the particle moved to the centre of its grid-cache bin
@@ -214,7 +215,7 @@ protected:
   std::string fsi_filename; /*!< filename for regular fsi grid */
   int number_of_grids; /*!<number of fsi grids */
   double prec; /*!< integration precision */
-  int integrator; /*!< which integrator (1:numint::cube_romb, 2:numint::cube_adaptive (0, the old rombergerN, was removed) */
+  IntegrationMethod integrator; /*!< which integrator: numint::IntegrationMethod::Romberg (numint::cube_romb) or numint::IntegrationMethod::Adaptive (numint::cube_adaptive); the integers 1 and 2 convert with nucqcd::integration_method() */
   
 private:
   std::string dir;  /*!< grid cache directory (with trailing /) */ 

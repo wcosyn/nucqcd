@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <Integrator/numint/cube.hpp>
 #include <Tools/Core/ErrorMessage.hpp>
 #include <iostream>
 #include <fstream>
@@ -23,7 +24,7 @@ extern"C"{
 
 //constructor, calls abstractfsigrid's constructor
 ROMEAGrid::ROMEAGrid(const int r_grid, const int cth_grid, const int phi_grid, MeanFieldNucleus * pnucl,
-                         double prec, int integrator, fit_type opticalfit, string dir)
+                         double prec, IntegrationMethod integrator, fit_type opticalfit, string dir)
   :AbstractFsiGrid(r_grid, cth_grid, phi_grid, pnucl, prec, integrator, dir),
   opticalsize(1000),opticalstep(pnucl->getRange()/1000.),fit(opticalfit),fsi_grid(NULL),treshold(NULL){
 
@@ -254,34 +255,28 @@ void ROMEAGrid::calcROMEAphase(const int i, const int j, const int k) {
   int res = 90;
   unsigned count = 0;
   double deeserror = 0.;
-  if (integrator == 1 || integrator == 2) {
-    fsi_grid[i][j][k] = 1.;
-    //we loop over all ejected particles
-    for (size_t it = 0; it < getParticles().size(); it++) {	    
-      numint::array < double, 1 > lower = { {getParticles()[it].getHitz()} };
-      numint::array < double, 1 > upper = { {getPnucleus()->getRange()} };
-      if(getParticles()[it].getIncoming()) {
+  fsi_grid[i][j][k] = 1.;
+  //we loop over all ejected particles
+  for (size_t it = 0; it < getParticles().size(); it++) {	    
+    numint::array < double, 1 > lower = { {getParticles()[it].getHitz()} };
+    numint::array < double, 1 > upper = { {getPnucleus()->getRange()} };
+    if(getParticles()[it].getIncoming()) {
 	lower[0]=-getPnucleus()->getRange();
 	upper[0]=getParticles()[it].getHitz();
-      }
-      ROMEAGrid::Ftor_one F;
-      F.grid = this;
-      F.it=it;
-      numint::mdfunction < numint::vector_z, 1 > mdf;
-      mdf.func = &Ftor_one::exec;
-      mdf.param = &F;
-      vector<complex<double> > ret(1, 0.);
-      F.f = klaas_one_bound;
-      if (integrator == 1)
-	res = numint::cube_romb(mdf, lower, upper, 1.E-12, prec, ret, count, 0);
-      else
-	res = numint::cube_adaptive(mdf, lower, upper, 1.E-12, prec, 2E02,2E06, ret, count, 0);
-//       cout << i << " " << j << " " << k << " " << real(ret[0]) << " " << imag(ret[0]) << endl;
-      fsi_grid[i][j][k] *= exp(-nucqcd::i_unit*getParticles()[it].getMass()/getParticles()[it].getP()*ret[0]/nucqcd::hbarc);
     }
-    
+    ROMEAGrid::Ftor_one F;
+    F.grid = this;
+    F.it=it;
+    numint::mdfunction < numint::vector_z, 1 > mdf;
+    mdf.func = &Ftor_one::exec;
+    mdf.param = &F;
+    vector<complex<double> > ret(1, 0.);
+    F.f = klaas_one_bound;
+    res = numint::cube({integrator, 1.E-12, prec, 200, 2000000}, mdf, lower, upper, ret, count, 0);
+//       cout << i << " " << j << " " << k << " " << real(ret[0]) << " " << imag(ret[0]) << endl;
+    fsi_grid[i][j][k] *= exp(-nucqcd::i_unit*getParticles()[it].getMass()/getParticles()[it].getP()*ret[0]/nucqcd::hbarc);
   }
-  else {throw std::invalid_argument(nucqcd::ErrorMessage() << "integrator type not implemented" );}
+  
 //       cout << i << " " << j << " " << k << " " << level << " " << mm << fsi_grid[level][mm][i][j][k] << " " << fsi_ct_grid[level][mm][i][j][k] <<
 //       " " << res << " " << count << endl;
 }

@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
   int phi_grid = 5; // phi grid
   double prec = 1.;
   int integrator = 1; // 0 Win fubini, 1 Klaas romberg?, 2 MIT adaptive
-  GlauberGridThick gridthick(r_grid,cth_grid,phi_grid,&CarbonThick,prec,integrator,homedir);
+  GlauberGridThick gridthick(r_grid,cth_grid,phi_grid,&CarbonThick,prec,nucqcd::integration_method(integrator),homedir);
   gridthick.printParticles();
   gridthick.addParticle(proton);
   gridthick.printParticles();

@@ -64,7 +64,7 @@ public:
    * \param phi_grid gridsizein phi
    * \param pnucl pointer to an instance of MeanFieldNucleus
    * \param prec precision you want in the integrations
-   * \param integrator which integrator (1:numint::cube_romb, 2:numint::cube_adaptive (0, the old rombergerN, was removed)
+   * \param integrator which integrator: numint::IntegrationMethod::Romberg (numint::cube_romb) or numint::IntegrationMethod::Adaptive (numint::cube_adaptive); the integers 1 and 2 convert with nucqcd::integration_method()
    * \param opticalfit  Different fits for the optical potential.  See paper Cooper et al. (Phys.Rev. C80 (2009) 034605) <BR>
    * FIT1:  (1) CA40-PB208 (P,P) 65-1040 MEV  FIT.1  <BR>
      FIT2: (2) CA40-PB208 (P,P) 65-1040 MEV  FIT.2  <BR>
@@ -81,7 +81,7 @@ public:
    * \param dir std::string that contains dir with all input, should be the ./share subdir of the project!
    */
   ROMEAGrid(const int r_grid, const int cth_grid, const int phi_grid, MeanFieldNucleus *pnucl, 
-	      double prec, int integrator, fit_type opticalfit, std::string dir);
+	      double prec, IntegrationMethod integrator, fit_type opticalfit, std::string dir);
   virtual ~ROMEAGrid();/*!< Destructor */
   virtual std::complex<double> getFsiGridFull_interp();   /*!returns the value of the fsi grid for a certain situation at coordinate (r,theta,phi) that has been set previously*/
   virtual std::complex<double> getFsiGridN_interp(const int grid); /*!returns the value of the fsi grid for a certain situation at coordinate (r,theta,phi) that has been set previously*/

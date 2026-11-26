@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
   
   
   if(ppion<4){ //2 pion decay  (1) both pions 
-    GlauberGridThick grid = GlauberGridThick(60,18,5,&nucl,prec,integrator,homedir);
+    GlauberGridThick grid = GlauberGridThick(60,18,5,&nucl,prec,integration_method(integrator),homedir);
     FastParticle pion1(2, 0, ppi,0.,0.,3.,0.,1.,1.,homedir);
     FastParticle pion2(3, 0, ppi,thetapi,0.,3.,0.,1.,1.,homedir);
     grid.clearParticles();
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
     grid.updateGrids();
     grid.clearKnockout();
     for(int i=0;i<nucl.getTotalLevels();i++){
-      pgrid[i] = new DistMomDistrGrid(i, 300., 30,20,5,&grid,1.E-03,2,5E04,0.,homedir);
+      pgrid[i] = new DistMomDistrGrid(i, 300., 30,20,5,&grid,1.E-03,IntegrationMethod::Adaptive,5E04,0.,homedir);
       nucqcd::Rotation rot;
       rot.Rotate(0.,nucqcd::Vector3(0.,1.,0.)); //no rotation...
       pgrid[i]->updateGrids(&grid,i,rot);
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
     ppi=sqrt(ppiz*ppiz+ppiperp*ppiperp);
     double ppi2=sqrt(ppiz2*ppiz2+ppiperp*ppiperp);
     
-    GlauberGridThick grid = GlauberGridThick(60,18,5,&nucl,prec,integrator,homedir);
+    GlauberGridThick grid = GlauberGridThick(60,18,5,&nucl,prec,integration_method(integrator),homedir);
     FastParticle pion1(2, 0, ppi,0.,0.,3.,0.,1.,1.,homedir);
     FastParticle pion2(3, 0, ppi2,acos(ppiz/ppi)+acos(ppiz2/ppi2),0.,3.,0.,1.,1.,homedir);
     grid.clearParticles();
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
     grid.updateGrids();
     grid.clearKnockout();
     for(int i=0;i<nucl.getTotalLevels();i++){
-      pgrid[i] = new DistMomDistrGrid(i, 300., 30,20,5,&grid,1.E-03,2,5E04,0.,homedir);
+      pgrid[i] = new DistMomDistrGrid(i, 300., 30,20,5,&grid,1.E-03,IntegrationMethod::Adaptive,5E04,0.,homedir);
       nucqcd::Rotation rot;
       rot.Rotate(0.,nucqcd::Vector3(0.,1.,0.));
       pgrid[i]->updateGrids(&grid,i,rot);
@@ -103,14 +103,14 @@ int main(int argc, char *argv[])
     }  
   }
   if(ppion==0){ //one compound particle (rho-like) containing two pions
-    OneGlauberGrid grid = OneGlauberGrid(60,18,&nucl,prec,integrator,homedir);
+    OneGlauberGrid grid = OneGlauberGrid(60,18,&nucl,prec,integration_method(integrator),homedir);
     FastParticle rhopion(7, 0, ppi,0.,0.,3.,0.,1.,1.,homedir);
     grid.clearParticles();
     grid.addParticle(rhopion);
     grid.updateGrids();
     grid.clearKnockout();
     for(int i=0;i<nucl.getTotalLevels();i++){
-      pgrid[i] = new DistMomDistrGrid(i, 300., 30,20,5,&grid,1.E-03,2,5E04,0.,homedir);
+      pgrid[i] = new DistMomDistrGrid(i, 300., 30,20,5,&grid,1.E-03,IntegrationMethod::Adaptive,5E04,0.,homedir);
       nucqcd::Rotation rot;
       rot.Rotate(0.,nucqcd::Vector3(0.,1.,0.));
       pgrid[i]->updateGrids(&grid,i,rot);

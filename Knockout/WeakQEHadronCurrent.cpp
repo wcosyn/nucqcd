@@ -17,9 +17,9 @@ WeakQEHadronCurrent::WeakQEHadronCurrent(MeanFieldNucleusThick *pnucleus, double
 	      double mu_s_in, double sigma_screening)
 :pnucl(pnucleus), prec(precision), integrator(nucqcd::checked_integrator_flag(integr)), homedir(dir), maxEval(max_Eval),
 charged(cc), M_A(M_A_in), usersigma(user_sigma), gA_s(gA_s_in), r_s2(r_s2_in), mu_s(mu_s_in), sigmascreening(sigma_screening), enable_ROMEA(enable_ROMEA_in),
-gridthick(GlauberGridThick(120,36,5,pnucleus,precision,2,dir)),
-onegrid(OneGlauberGrid(120,36,pnucleus,precision,2,dir)),
-romgrid(ROMEAGrid(120,36,5,pnucleus,precision,2,ROMEAGrid::fit_type::DEMOCRATICFIT1,dir)){
+gridthick(GlauberGridThick(120,36,5,pnucleus,precision,IntegrationMethod::Adaptive,dir)),
+onegrid(OneGlauberGrid(120,36,pnucleus,precision,IntegrationMethod::Adaptive,dir)),
+romgrid(ROMEAGrid(120,36,5,pnucleus,precision,IntegrationMethod::Adaptive,ROMEAGrid::fit_type::DEMOCRATICFIT1,dir)){
 }
 
 

@@ -312,7 +312,7 @@ void dist2bodymom_glauber(MeanFieldNucleusThick& nuc,Event& e,double& res,double
 	cout << "Sigman of fast particle    " << particle_p1.getSigman() << endl;
 	cout << "Sigmap of recoil particle "  << particle_p2.getSigmap() << endl;
 	cout << "Sigman of recoil particle "  << particle_p2.getSigman() << endl;
-	GlauberGridThick grid(60,20,5,&nuc,1e-03,2,SHAREDIR); // 1: 60=rgrid, 2: 20=thetagrid, 3: 10=phigrid, 4: nucleus, 5: 1e-6= prec, 5: [int]=integrator, 6=share dir
+	GlauberGridThick grid(60,20,5,&nuc,1e-03,IntegrationMethod::Adaptive,SHAREDIR); // 1: 60=rgrid, 2: 20=thetagrid, 3: 10=phigrid, 4: nucleus, 5: 1e-6= prec, 5: [int]=integrator, 6=share dir
 	grid.clearParticles();
 	grid.addParticle(particle_p1);
 	grid.addParticle(particle_p2);

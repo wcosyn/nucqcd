@@ -53,7 +53,7 @@ protected:
    * \param nvariants number of variants in the first index of the grid arrays (2 or 4)
    * \param r_grid,cth_grid,phi_grid,pnuclthick,prec,integrator,dir as for GlauberGridThick */
   GlauberThickGridCommon(int nvariants, int r_grid, int cth_grid, int phi_grid, MeanFieldNucleusThick *pnuclthick,
-                         double prec, int integrator, std::string dir);
+                         double prec, IntegrationMethod integrator, std::string dir);
 
   /*! interpolated value of one variant of the grid at the point set with setinterp: the proton and neutron
    * factors to the powers of the numbers of nucleons that are not knocked out
