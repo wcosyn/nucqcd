@@ -36,7 +36,7 @@ public:
     /*! Constructor
    * \param pnucleus pointer to a MF nucleus instance
    * \param prec precision you want in the integrations
-   * \param integrator which integrator (1:numint::cube_romb, 2:numint::cube_adaptive (0, the old rombergerN, was removed)
+   * \param integrator which integrator: numint::IntegrationMethod::Romberg (numint::cube_romb) or numint::IntegrationMethod::Adaptive (numint::cube_adaptive); the integers 1 and 2 convert with nucqcd::integration_method()
    * \param dir string that contains dir with all input, should be the ./share subdir of the project!
    * \param max_Eval max # of function evaluations in the coordinate integration
    * \param charged neutral weak current [0] or charged weak current [1]
@@ -48,7 +48,7 @@ public:
    * \param sigma_screening [%] screening change of sigma
    * \param enable_ROMEA enable ROMEA FSI for slow nucleons...
    */
-  WeakQEHadronCurrent(MeanFieldNucleusThick *pnucleus, double prec, int integrator, std::string dir, int max_Eval,
+  WeakQEHadronCurrent(MeanFieldNucleusThick *pnucleus, double prec, IntegrationMethod integrator, std::string dir, int max_Eval,
 	bool charged, double M_A_in, bool user_sigma, bool enable_ROMEA, double gA_s=-0.19, double r_s2=0., 
 	double mu_s=0., double sigma_screening=0.);
   ~WeakQEHadronCurrent(); /*!< Destructor */
@@ -122,7 +122,7 @@ public:
   ROMEAGrid *getROMEAGrid() {return &romgrid;} /*!< ROMEA grid for slow nucleons, see romgrid */
   int getShell() const{return shell;} /*!< shell index of the knocked-out nucleon in the current calculation */
   int getM() const{return mm;} /*!< \f$ 2m_j \f$ of the knocked-out nucleon in the current calculation */
-  int getIntegrator() const{return integrator;} /*!< choice of integrator */
+  IntegrationMethod getIntegrator() const{return integrator;} /*!< choice of integrator */
   bool getEnable_ROMEA() const{return enable_ROMEA;} /*!< ROMEA instead of Glauber FSI for slow nucleons */
   MeanFieldNucleusThick* getPnucleus() {return pnucl;} /*!< the nucleus */
   const Matrix<1,4> & getBarcontract0up() const{return barcontract0up;} /*!< bar spinor of the outgoing nucleon (spin up) contracted with the current, polarization vector (1,0,0,0): time component J^0 */
@@ -139,7 +139,7 @@ public:
   
 private:
   double prec; /*!< precision in the integrations */
-  int integrator; /*!< choice of integrator */
+  IntegrationMethod integrator; /*!< choice of integrator */
   AbstractFsiGrid *grid; /*!< pointer to Glauber Grid */
   MeanFieldNucleusThick *pnucl; /*!<  pointer to nucleus */
   NucleonWeakOperator *J; /*!<  pointer to nucleon formfactor instance */

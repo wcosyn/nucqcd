@@ -20,7 +20,7 @@ int main()
 	double pm = 100; // cutoff @ 300?
 	Kinematics2to2 kin(Carbon.getMassA(),Carbon.getMassA_min_proton(),nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
 	double prec = 1e-05;
-	int integrator = 2; // 1 = cube_romb, can converge very slowly
+	nucqcd::IntegrationMethod integrator = nucqcd::IntegrationMethod::Adaptive; // 1 = cube_romb, can converge very slowly
 	int max_Eval = 10000; // max evaluations of function to compute integral
 	bool user_sigma = false; // true to override default sigma
 	EMQEHadronCurrent mod = EMQEHadronCurrent(&Carbon,prec,integrator,homedir,max_Eval,user_sigma);

@@ -49,13 +49,13 @@ public:
    * \param elec contains all the electron kinematics
    * \param pnucl pointer to a MF nucleus instance
    * \param prec precision you want in the integrations
-   * \param integrator which integrator (1:numint::cube_romb, 2:numint::cube_adaptive (0, the old rombergerN, was removed)
+   * \param integrator which integrator: numint::IntegrationMethod::Romberg (numint::cube_romb) or numint::IntegrationMethod::Adaptive (numint::cube_adaptive); the integers 1 and 2 convert with nucqcd::integration_method()
    * \param dir std::string that contains dir with all input, should be the ./share subdir of the project!
    * \param user_sigma does the user want to introduce a (anti)screening on sigma
    * \param sigmascreening [%] how much do you want to change the sigma value
    */
   EMQECross(ElectronKinematics &elec, MeanFieldNucleusThick *pnucl, 
-	double prec, int integrator, std::string dir, bool user_sigma, double sigmascreening=0.);
+	double prec, IntegrationMethod integrator, std::string dir, bool user_sigma, double sigmascreening=0.);
   ~EMQECross(); /*!< Destructor */
   /*! Computes the differential A(e,e'N) cross section for certain kinematics and a certain shell of the nucleus
    * \param kin contains the hadron kinematics
@@ -240,7 +240,7 @@ public:
 private:
   std::string homedir; /*!< Contains dir with all input */
   double prec; /*!< precision you want in the integrations */
-  double integrator; /*!< choice of integrator */
+  IntegrationMethod integrator; /*!< choice of integrator */
   ElectronKinematics electron; /*!< electron kinematics */
   MeanFieldNucleusThick *pnucl; /*!< pointer to nucleus */
   double kinfactors[6]; /*!< electron kinematic factors, get multiplied with response functions */

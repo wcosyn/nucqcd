@@ -18,7 +18,7 @@ pmax(p_max),
 nocuts(no_cuts),
 deuteron(name),
 prec(precision),
-integrator(nucqcd::checked_integrator_flag(integr)),
+integrator(numint::method_flag(nucqcd::integration_method(integr))),
 abserror(1.E-012),
 maxEval(max_Eval),
 fsi(FSI){

@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
   //string nucleus_name="Ca40";//atoi(argv[6]);
   string nucleus_name=argv[1];//atoi(argv[6]);
   double prec=1.E-05;//atof(argv[7]);
-  int integrator=2;//atoi(argv[8]);
+  IntegrationMethod integrator=IntegrationMethod::Adaptive;//atoi(argv[8]);
   int thick=1;//atoi(argv[9]);
   int maxEval=20000;//atoi(argv[10]);
   

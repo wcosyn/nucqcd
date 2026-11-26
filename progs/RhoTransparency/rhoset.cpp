@@ -5,6 +5,7 @@
 using namespace std;
 
 #include <Knockout/RhoTCross.hpp>
+#include <Integrator/numint/cube.hpp>
 #include <Tools/Core/IntegratorFlag.hpp>
 #include <string>
 using namespace nucqcd;
@@ -71,7 +72,7 @@ int main(int argc, char *argv[])
   double p_dil = atof(argv[6]);
   int nocuts = atoi(argv[7]);
   double usersigma = atof(argv[8]);
-  int integrator = atoi(argv[9]);
+  IntegrationMethod integrator = integration_method(atoi(argv[9]));  // 1: cube_romb, 2: cube_adaptive (0, the old nested rombergerN, was removed)
   int maxEval = atoi(argv[10]);
   double prec=atof(argv[11]);
   int ptype=atoi(argv[12]);
@@ -80,9 +81,8 @@ int main(int argc, char *argv[])
   double Ebeam = 4.023;
   
 
-  RhoTCross test = RhoTCross(nucleus,330,homedir,nocuts,1,usersigma,prec,2,maxEval,p_dil,ptype);  
+  RhoTCross test = RhoTCross(nucleus,330,homedir,nocuts,1,usersigma,prec,IntegrationMethod::Adaptive,maxEval,p_dil,ptype);  
   
-  nucqcd::checked_integrator_flag(integrator);  // 1: cube_romb, 2: cube_adaptive (0, the old nested rombergerN, was removed)
   {
     /*! struct that is used for integrators (clean ones)*/
     struct Ftor_tz {
@@ -118,8 +118,7 @@ int main(int argc, char *argv[])
     mdf.func = &Ftor_tz::exec;
     mdf.param = &F;
     F.f=torz?klaas_t:klaas_z;
-    if(integrator==1) res = numint::cube_romb(mdf,lower,upper,1.E-12,1.E-03,ret,count,0);
-    else res = numint::cube_adaptive(mdf,lower,upper,1.E-12,1.E-03,100.,20000,ret,count,0);
+    res = numint::cube({integrator,1.E-12,1.E-03,100,20000},mdf,lower,upper,ret,count,0);
     cout << Q2 << " ";
     for (int l=0;l<test.getNrofcross();l++) cout << ret[l] << " ";
     cout << count << " " << res << endl;

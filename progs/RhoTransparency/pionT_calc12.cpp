@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     double Q2 = 2.*Ebeam*E_out*(1.-cos(theta_e)); //Q2 in MeV^2
 
     PionTCross pionT_object = PionTCross(MeanFieldNucleus::TypeNames.at(nucleus_name),
-                                  400.,nucqcd::share_dir,0,0.,1.E-05,2,20000);
+                                  400.,nucqcd::share_dir,0,0.,1.E-05,IntegrationMethod::Adaptive,20000);
     double *results = new double[pionT_object.getNrofcross()];
     pionT_object.getCross(results, Ebeam,E_out,theta_e);
 

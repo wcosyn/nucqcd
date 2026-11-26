@@ -34,7 +34,7 @@ same PR.
 
 ## Where we are / next up
 
-*Updated 2026-11-26 (after PR #86; the integration-method enumeration, part 1, is in an open PR).*
+*Updated 2026-11-26 (after PR #87; the integration-method enumeration, part 2, is in an open PR).*
 
 **Done** (PRs #44-#82, details in the steps below): ROOT decoupling (ROOT is now only used by the test
 `unit_vectors`; the fits run on the standalone Minuit2, #73); LHAPDF structure functions (step 10); He3 fixes; run
@@ -58,8 +58,7 @@ for all Glauber grid variants (#68) and the deduplication of the two thick grids
 2. **Glauber grids:** the off-axis speed (every point hits the evaluation cap; `cube_romb` was 5x faster at 1e-3;
    variants change values within the precision and need the author's OK), and the rest of the hierarchy dedup
    (the eight abstract classes with four interpolation wrappers per named grid, the 5D raw pointer arrays).
-3. **Smaller items:** the integration method as an enumeration with one dispatch function (step 6, part 2: the Knockout
-   classes and the programs), the hard-coded absolute paths in some programs (step 6, copy-paste leftovers), unbundle cubature (step 7, maintenance only, no accuracy gain per the benchmark), the PDG
+3. **Smaller items:** other integration algorithms in `numint::cube` (step 6, optional part 3), the hard-coded absolute paths in some programs (step 6, copy-paste leftovers), unbundle cubature (step 7, maintenance only, no accuracy gain per the benchmark), the PDG
    constants update (changes values), the long Glauber files (`GlauberGrid.cpp`, `DistMomDistrGrid.cpp`, ...),
    `SolvePhotonAndParticle1` (134 lines), reporting the Suave bug to the Cuba authors, a format string that gives
    no scenario at all is still accepted (step 6, long functions), `Resonance` stays in the DIS library although
@@ -1007,40 +1006,55 @@ Do these one at a time, running the full test suite (including `slow`) after eac
     check, and comments inside function bodies; a reader pass of the remaining `progs/deepsdis` files (many are variants
     of each other) is worth doing. Only the `\brief` lines of the `GPD_Partons` headers were checked (one wrong: `Deut_GPD_T_set.hpp`), not the rest of their comments.
 
-- [ ] **Integration method as an enumeration with one dispatch function (added 2026-11-26; part 1 of 2 done the same
-  day, part 2 to do).** The choice between `numint::cube_romb` and `numint::cube_adaptive` was an `int integrator` (1 or
-  2) in the constructors of the Glauber grids, `RhoTCross`, `PionTCross`, the EM/Weak QE classes and some programs,
-  validated by `checked_integrator_flag` (`Tools/Core/IntegratorFlag.hpp`) and then dispatched by `if (integrator == 1)
-  cube_romb(...) else cube_adaptive(...)` at about 80 places in 15 files (76 `cube_romb` and 106 `cube_adaptive` calls in
-  all, some without the flag). `cube_adaptive` takes two more arguments (minimum and maximum number of evaluations); the
-  call sites hard-code about 14 different pairs (`1E03,maxEval`, `5E02,maxEval`, `2E03,2E06`, `1E04,1E07`, ...);
-  `Knockout/DQEinclusive` has a separate five-value flag (0 adaptive cubature, 1-4 Cuhre, Suave, Vegas and Divonne of
-  Cuba); the integer is part of the grid cache file names (`integr2`, `intgr2`). Plan, in the style of "Model selection"
-  (#72): (1) an enumeration, `numint::IntegrationMethod { Romberg = 1, Adaptive = 2 }`
-  (`Integrator/numint/integration_method.hpp`), with parse functions `nucqcd::integration_method(int)` and
-  `(std::string)` ("romberg", "adaptive", "1", "2"; `Tools/Core/IntegratorFlag.hpp`); (2) a small options struct
-  `numint::IntegrationOptions` (method, `epsabs`, `epsrel`, minimum and maximum evaluations) and one
-  `numint::cube(options, f, lower, upper, result, neval[, dirty])` (`Integrator/numint/cube.hpp`) that hides the
-  signature difference: `cube_romb` has no `dirty`/`compare` arguments for `double`/`dcomplex` results, so there are two
-  forms; (3) the integer stays in the cache file names and the evaluation caps of each call site stay as they were, only
-  named in the options (changing them is a precision decision for the author). Two PRs:
-  - **Part 1 (done 2026-11-26):** the enumeration, the options, `numint::cube`, and all Glauber classes (the 19 dispatch
-    sites, the outer `if (integrator == 1 || integrator == 2)` blocks with their `throw "integrator type not
-    implemented"` removed, which a closed enumeration makes unreachable; constructors, members and `getIntegrator()` of the
-    Glauber grids and `DistMomDistrGrid` take or return an `IntegrationMethod`); callers in `Knockout` (literal `2`),
-    `tests` and `progs` updated; `checked_integrator_flag` stays for the Knockout classes. A unit test checks that
-    `numint::cube` returns bit-identical results and counts to calling the two routines (double and vector results).
-    `ctest -L slow` (11 tests) and the cache file names of the sandbox grids (23 files) are unchanged. **Bug found
-    on the way:** `progs/RhoTransparency/rhotest.cpp` passed the precision and the integrator to
-    `GlauberDecayGridThick` in the wrong order (`..., &FeThick, 2, 1.E-04, homedir`: precision 2 and integrator 0, which
-    throws since #69), so the program could not have run; fixed by swapping (not run: it needs a long Glauber
-    computation).
-  - **Part 2 (to do):** `Knockout` (`RhoTCross`, `PionTCross`, `EMQEHadronCurrent`, `WeakQEHadronCurrent`, `EMQECross`,
-    `WeakQECross`, ...: their `integrator` member and constructor argument, and the `if/else` dispatch with `cube_romb`
-    and `cube_adaptive` in them, 34 comparisons in 8 files outside Glauber), the programs (`rhoset`, `sdiff_Q2*`, ...: the integer argument of the
-    command line goes through `integration_method`), then remove `checked_integrator_flag`. `DQEinclusive`'s Cuba flag
-    later or left alone. Strategy objects with virtual functions were considered and rejected as more machinery than two
-    methods need.
+- [x] **Integration method as an enumeration with one dispatch function** (added and done 2026-11-26, parts 1 and 2:
+  #87 and the next PR; an optional part 3 below). The choice between `numint::cube_romb` and `numint::cube_adaptive` was
+  an `int integrator` (1 or 2) in the constructors of the Glauber grids, `RhoTCross`, `PionTCross`, the EM/Weak QE
+  classes and some programs, validated by `checked_integrator_flag` and then dispatched by `if (integrator == 1)
+  cube_romb(...) else cube_adaptive(...)` at about 80 places in 15 files. `cube_adaptive` takes two more arguments
+  (minimum and maximum number of evaluations); the call sites hard-code about 14 different pairs (`1E03,maxEval`,
+  `5E02,maxEval`, `2E03,2E06`, `1E04,1E07`, ...); the integer is part of the grid cache file names (`integr2`,
+  `intgr2`). Now, in the style of "Model selection" (#72):
+  - an enumeration, `numint::IntegrationMethod { Romberg = 1, Adaptive = 2 }`
+    (`Integrator/numint/integration_method.hpp`), with parse functions `nucqcd::integration_method(int)` and
+    `(std::string)` ("romberg", "adaptive", "1", "2"; `Tools/Core/IntegratorFlag.hpp`), which replace
+    `checked_integrator_flag` (removed);
+  - a small options struct `numint::IntegrationOptions` (method, `epsabs`, `epsrel`, minimum and maximum evaluations) and
+    one `numint::cube(options, f, lower, upper, result, neval[, dirty])` (`Integrator/numint/cube.hpp`) that hides the
+    signature difference (`cube_romb` has no `dirty`/`compare` arguments for `double`/`dcomplex` results, so there are two
+    forms); the evaluation caps of each call site are unchanged, only named in the options;
+  - the integer stays in the cache file names (the 23 file names of the sandbox grids are identical before and after).
+  - **Part 1 (#87):** the enumeration, options, `numint::cube`, the 13 Glauber grid classes and `DistMomDistrGrid` (19
+    dispatch sites; the outer `if (integrator == 1 || integrator == 2) {...} else throw "integrator type not
+    implemented"` blocks are gone, a closed enumeration makes them unreachable). A unit test checks that `numint::cube`
+    returns bit-identical results and counts to calling the two routines.
+  - **Part 2:** `RhoTCross`, `PionTCross`, `EMQECross`, `EMQEHadronCurrent`, `WeakQECross`, `WeakQEHadronCurrent` (15
+    dispatch sites, 13 unwrapped `if/else throw` blocks; the `integrator` members and constructor arguments are an
+    `IntegrationMethod`; `EMQECross` and `WeakQECross` had declared the member as a `double`), the programs and tests
+    that construct them (a literal `2` became `IntegrationMethod::Adaptive`, the sdiff programs' `integrator` struct
+    member and parameters changed type, `rhoset` converts its integer argument with `integration_method` and uses
+    `numint::cube`), the archived programs that still build. `DQEinclusive` is untouched (its flag has five values,
+    see part 3). Not changed on purpose: `RhoTCross`/`PionTCross` ignore their own `integrator` argument when they build
+    their Glauber grids (a literal `Adaptive`, as before; and `rhoset` passes `Adaptive` to `RhoTCross` whatever its
+    argument 9 says).
+  - **Bug found on the way (part 1):** `progs/RhoTransparency/rhotest.cpp` passed the precision and the integrator to
+    `GlauberDecayGridThick` in the wrong order (precision 2, integrator 0, which throws since #69); fixed by swapping
+    (the program was not run, it needs a long Glauber computation).
+  - **Part 3 (optional, to decide; the author asked how much work it is):** other algorithms in the enumeration. The
+    library has Cuba's `cuhre`, `vegas`, `suave` and `divonne` (`Integrator/numint/numint2Cuba.hpp`: `void`, with
+    `nvec`, `flags`, a seed, algorithm-specific parameters (key, `nnew`/`flatness`, `nstart`/`nincrease`/`nbatch`,
+    `key1..3`, `maxpass`, `border`, ..., and a state file), and `nregions`, `neval`, `fail`, the error and `prob` as
+    output arguments) and `cube_tr` (a trapezoid rule, used by nothing outside the library). They are called directly in
+    `progs/neutrinoQE/sdiff_Q2*.cpp` (the "flux integrator": 0 vegas, 1 cuhre, 4 divonne), `progs/2bodymom`
+    (`cuhre`, `suave`), `progs/benchmark/integrators.cpp` (`cuhre`) and `Knockout/DQEinclusive` (a flag 0 adaptive
+    cubature, 1-4 Cuhre, Suave, Vegas, Divonne: a different numbering than 1 and 2 of the grids, so it needs a mapping).
+    Work: new enumerators (`Cuhre`, `Vegas`, `Suave`, `Divonne`) with cases in `numint::cube` (about 150 lines in
+    `cube.hpp`), the mapping of `fail` onto the return value, the algorithm-specific parameters with the defaults that
+    the programs use today (key 11, flags 0, seeds) in an optional struct, a unit test per method with fixed seeds
+    and loose tolerances (Vegas and Suave are stochastic), and moving the direct calls of the programs onto it (separate
+    PR: `DQEinclusive` and the sdiff programs). Open choices: which algorithms are worth offering for the Glauber and
+    Knockout integrands (the benchmark program of #61 can be extended to tell), whether the error estimate and `prob`
+    should be returned, and the interplay of Cuba's forked workers (`CUBACORES`) with grids that are computed point by
+    point inside loops. Not started.
 
 ## 7. Unbundle Cuba (and cubature)
 

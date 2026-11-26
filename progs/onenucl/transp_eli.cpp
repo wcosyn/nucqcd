@@ -35,7 +35,7 @@ double diffcross(MeanFieldNucleusThick& nuc,int level,double pm, double Q2, doub
     
     Kinematics2to2 kin(nuc.getMassA(),nuc.getMassA_min_proton(),nucqcd::mass_p,"qsquared:wlab:pklab",Q2,omega,pm);
     ElectronKinematics* elec = ElectronKinematics::CreateWithBeamEnergy(Ebeam);
-    EMQECross cross(*elec,&nuc,abserr,2,getShareDir(),user_sigma,screening);
+    EMQECross cross(*elec,&nuc,abserr,IntegrationMethod::Adaptive,getShareDir(),user_sigma,screening);
     
     delete elec;
     return cross.getDiffCross(kin,current,thick,src,ct,pw,level,0.,25000,true, true,1.,1.); // kinematics2to2,current [1,2,3], src, CT, pw, shellindex, phi,maxEval,lab

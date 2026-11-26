@@ -1,4 +1,5 @@
 #include <Tools/Core/IntegratorFlag.hpp>
+#include <Integrator/numint/cube.hpp>
 #include <Knockout/RhoTCross.hpp>
 #include <Tools/Core/AuxFunction.hpp>
 #include <Tools/Core/Rotation.hpp>
@@ -10,7 +11,7 @@ namespace nucqcd {
 using namespace std;
 
 RhoTCross::RhoTCross(const int nucleus, const double p_max, const std::string dir, const bool no_cuts,
-  const bool user_set, const double user_sigma, const double precision, const int integr, const int max_Eval,
+  const bool user_set, const double user_sigma, const double precision, IntegrationMethod integr, const int max_Eval,
   const double p_dil, const int particletype
 ):
 homedir(dir),
@@ -20,7 +21,7 @@ userset(user_set),
 usersigma(user_sigma),
 nucleusthick(nucleus,dir),
 prec(precision),
-integrator(nucqcd::checked_integrator_flag(integr)),
+integrator(integr),
 abserror(1.E-012),
 maxEval(max_Eval),
 pdil(p_dil),
@@ -62,28 +63,25 @@ void RhoTCross::getCrosst(double *results, const double Ebeam, const double Q2, 
   
   int res=90;
   unsigned count=0;
-  if (integrator==1||integrator==2){
-    numint::vector_d ret(nrofcross,0.);
-    numint::array<double,3> lower = {{0.,-1.,0.}};
-    numint::array<double,3> upper = {{pmax*1.E-03,1.,2.*PI}};
-    
-    RhoTCross::Ftor_rho F;
-    F.cross = this;
-    F.Q2=Q2;
-    F.nu=nu;
-    F.qvec=qvec;
-    F.t=t;
-    F.Erho=0.;
-    F.prho=0.;
-    numint::mdfunction<numint::vector_d,3> mdf;
-    mdf.func = &Ftor_rho::exec;
-    mdf.param = &F;
-    F.f=klaas_rho_t;
-    if(integrator==1) res = numint::cube_romb(mdf,lower,upper,abserror,1.E-03,ret,count,0);
-    else res = numint::cube_adaptive(mdf,lower,upper,abserror,1.E-03,1E03,maxEval,ret,count,0);
-    for(int i=0;i<nrofcross;++i) results[i]=ret[i];
-    if(ret[2]*1.E-04>abserror) {abserror=ret[2]*1.E-04; }
-  }
+  numint::vector_d ret(nrofcross,0.);
+  numint::array<double,3> lower = {{0.,-1.,0.}};
+  numint::array<double,3> upper = {{pmax*1.E-03,1.,2.*PI}};
+  
+  RhoTCross::Ftor_rho F;
+  F.cross = this;
+  F.Q2=Q2;
+  F.nu=nu;
+  F.qvec=qvec;
+  F.t=t;
+  F.Erho=0.;
+  F.prho=0.;
+  numint::mdfunction<numint::vector_d,3> mdf;
+  mdf.func = &Ftor_rho::exec;
+  mdf.param = &F;
+  F.f=klaas_rho_t;
+  res = numint::cube({integrator, abserror, 1.E-03, 1000, maxEval}, mdf, lower, upper, ret, count, 0);
+  for(int i=0;i<nrofcross;++i) results[i]=ret[i];
+  if(ret[2]*1.E-04>abserror) {abserror=ret[2]*1.E-04; }
   for(int i=0;i<nrofcross;i++) results[i]*= nucqcd::alpha_em*(Ebeam-nu)/(2.*pow(2.*PI,2.)*Ebeam*Q2*(1.-epsilon))*pow(nucqcd::inv_hbarc*1.E03,3.)/nucleusthick.getA()/(2.*qvec);
 //   cout << nu << " " << t << " " << results[0] << " " << res << " " << count << " " << abserror << " " << endl;
 }
@@ -119,28 +117,25 @@ void RhoTCross::getCrossz(double *results, const double Ebeam,  const double Q2,
   
   int res=90;
   unsigned count=0;
-  if (integrator==1||integrator==2){
-    numint::vector_d ret(nrofcross,0.);
-    numint::array<double,3> lower = {{0.,-1.,0.}};
-    numint::array<double,3> upper = {{pmax*1.E-03,1.,2.*PI}};
-    
-    RhoTCross::Ftor_rho F;
-    F.cross = this;
-    F.Q2=Q2;
-    F.nu=nu;
-    F.qvec=qvec;
-    F.t=0.;
-    F.Erho=Erho;
-    F.prho=prho;
-    numint::mdfunction<numint::vector_d,3> mdf;
-    mdf.func = &Ftor_rho::exec;
-    mdf.param = &F;
-    F.f=klaas_rho_z;
-    if(integrator==1) res = numint::cube_romb(mdf,lower,upper,abserror,1.E-03,ret,count,0);
-    else res = numint::cube_adaptive(mdf,lower,upper,abserror,1.E-03,1E03,maxEval,ret,count,0);
-    for(int i=0;i<nrofcross;++i) results[i]=ret[i];
-    if(ret[2]*1.E-04>abserror)  {abserror=ret[2]*1.E-04; }
-  }
+  numint::vector_d ret(nrofcross,0.);
+  numint::array<double,3> lower = {{0.,-1.,0.}};
+  numint::array<double,3> upper = {{pmax*1.E-03,1.,2.*PI}};
+  
+  RhoTCross::Ftor_rho F;
+  F.cross = this;
+  F.Q2=Q2;
+  F.nu=nu;
+  F.qvec=qvec;
+  F.t=0.;
+  F.Erho=Erho;
+  F.prho=prho;
+  numint::mdfunction<numint::vector_d,3> mdf;
+  mdf.func = &Ftor_rho::exec;
+  mdf.param = &F;
+  F.f=klaas_rho_z;
+  res = numint::cube({integrator, abserror, 1.E-03, 1000, maxEval}, mdf, lower, upper, ret, count, 0);
+  for(int i=0;i<nrofcross;++i) results[i]=ret[i];
+  if(ret[2]*1.E-04>abserror)  {abserror=ret[2]*1.E-04; }
   
   for(int i=0;i<nrofcross;i++) results[i]*= nucqcd::alpha_em*(Ebeam-nu)/(2.*pow(2.*PI,2.)*Ebeam*Q2*(1.-epsilon))*pow(nucqcd::inv_hbarc*1.E03,3.)/nucleusthick.getA()*nu/qvec;
 //   cout << nu << " " << z << " " << results[0] << " " << res << " " << count << " " << abserror << endl;
