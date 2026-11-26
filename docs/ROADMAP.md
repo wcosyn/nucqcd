@@ -34,7 +34,7 @@ same PR.
 
 ## Where we are / next up
 
-*Updated 2026-11-25, end of the day (after PR #82; no PR is open).*
+*Updated 2026-11-26 (after PR #83; the `InclusiveCrossRes` investigation is in an open PR).*
 
 **Done** (PRs #44-#82, details in the steps below): ROOT decoupling (ROOT is now only used by the test
 `unit_vectors`; the fits run on the standalone Minuit2, #73); LHAPDF structure functions (step 10); He3 fixes; run
@@ -52,8 +52,9 @@ for all Glauber grid variants (#68) and the deduplication of the two thick grids
    - the **rho transparency t- versus z-integrals** (`torz` flag of `rhoset`, `RhoTCross::getCrosst`/`getCrossz`:
      results differing by orders of magnitude since 2012, probably a common factor such as a Jacobian or the
      nucleus mass; a fix changes values);
-   - the **`InclusiveCrossRes` FSI part that returns exactly 0** (found 2026-11-25 when trying to revive the
-     archived class: it compiles after a one-line fix, the plane-wave part works; the plan is in the item);
+   - ~~the `InclusiveCrossRes` FSI part that returns exactly 0~~ (investigated 2026-11-26: not a bug, the
+     settings of `increstest` cancel by construction; with `fixprop` 1, `symm` 0 the FSI is ~6% of the plane wave;
+     reviving the class is still open, see the item);
    - the **PARTONS setup** on the second computer (`partons.properties` template of `scripts/install_partons.sh`).
 2. **Glauber grids:** the off-axis speed (every point hits the evaluation cap; `cube_romb` was 5x faster at 1e-3;
    variants change values within the precision and need the author's OK), and the rest of the hierarchy dedup
@@ -336,24 +337,31 @@ one commit per bug; no `[known-bug]` tests remain.
   configuration that PARTONS v5 needs (the old file has `environment.configuration.file.path` and
   `grid.directory`). Check what PARTONS v5 needs, fix the template, and decide whether the script
   should replace an outdated file.
-- [ ] **`InclusiveCrossRes`: the FSI part returns exactly 0 (added 2026-11-25).** The resonance model for inclusive
+- [x] **`InclusiveCrossRes`: the FSI part returns exactly 0: not a bug (added 2026-11-25, investigated 2026-11-26).** The resonance model for inclusive
   DIS on the deuteron (W. Cosyn, W. Melnitchouk and M. Sargsian, Phys. Rev. C 89, 014612 (2014)) was archived in
-  #82 (`progs/attic/threeres`, not built). Trying to revive it: it compiles once the stale constructor call
+  #82 (`progs/attic/threeres`, not built). It compiles once the stale constructor call
   `structure(elec, proton, strucname)` is changed to `structure(proton, strucname)` (`DeuteronStructure` lost its
-  `ElectronKinematics` argument), and then `increstest`, `threeres` and a small driver build. **Plane-wave part works:**
-  `calc_F2Dinc` gives 0.30 (proton, x = 0.3, Q^2 = 5 GeV^2, Paris, Alekhin, resonances 1.4 and 2.4 GeV with
-  coefficients +-1/sqrt(2), beam 5 GeV; 1.7 s per call, with debugging output "blaaa" on stdout; 0.1529 at x = 0.5).
-  **`calc_F2DincFSI` returns exactly 0 for both outputs** at x = 0.3, 0.4 and 0.5, `symm` = 1, 0 and -1, off-shell
-  type 3, `fixprop` 0, `kin_choice` 0 (9-16 s per call), and `increstest 1 3 0 5. paris Alekhin 40. 0. 1.4 2.4`
-  printed no result line in 280 s (its first point is x = 0.025). Unknown whether this is a physics zero for these
-  settings, a change in the library since it last ran (the class was taken out of the DIS build at some point),
-  or a bug in the nested 4-level integrals (`int_pr_fsi`, `int_costheta_incl_fsi`, `int_qt`, `int_qphi`, limits that depend
-  on pr and a cut). Plan: (1) read the FSI chain and see which factor is zero (the resonance amplitudes
-  `Resonance`, the cut on the spectator momentum, the `kin_choice`/`symm` switches); (2) look at the git history of the
-  class and of `DeuteronStructure`/`NuclStructure`/`Resonance` for a change that could zero it, and try the last commit
-  where the library built it; (3) compare with the curves of the paper; (4) then decide the integrator (the nested
-  `rombergerN` of `progs/attic/rombergerN.hpp`, or `cube_adaptive` over the variables, see the item on `rombergerN`)
-  and write a regression test before moving it back into the DIS library. Not urgent: the class is not used by anything.
+  `ElectronKinematics` argument). The plane-wave part works (`calc_F2Dinc` 0.30 for the proton at x = 0.3,
+  Q^2 = 5 GeV^2, Paris, Alekhin, resonances 1.4 and 2.4 GeV with coefficients +-1/sqrt(2), beam 5 GeV).
+  **Finding:** the four resonance-pair integrals `(res1, res2)` of `calc_F2DincFSI` are *not* zero (about 6.7e-11 each
+  at x = 0.3, before the factor chi2 and the prefactors) but have the signs +, -, -, +, because the pair weight is
+  `c_1 c_2*` with `c_1 = -c_2 = 1/sqrt(2)`. The sum vanishes exactly whenever the amplitude of a pair does not depend on
+  the two resonances apart from that coefficient. In the code the resonance masses enter the FSI amplitude only through
+  (a) `sigma(Q^2)`, via `sigma_slope` (the example command has slope 0), (b) the shift of the spectator
+  longitudinal momentum for `fixprop` = 1 with `symm` = 0 or -1, and (c) the `kin_choice` cut. With `fixprop` = 0 the
+  integrands use the integrated `Wxprime2`, not the resonance masses. Checks at x = 0.3 (proton, same settings as above, off-shell type 3):
+  sigma slope 0, `symm` 1 or 0, `fixprop` 0 or 1 with `symm` = 1: exactly 0; sigma slope 1 GeV, `fixprop` 0:
+  -4.3e-6 (a 1e-5 residue of the cancellation); **`fixprop` 1, `symm` 0, slope 0: 0.0181 and 0.0183 (the two outputs), about 6% of the
+  plane-wave 0.30**, a physically plausible size. So `increstest 1 3 0 5. paris Alekhin 40. 0. 1.4 2.4` (`symm` 1, `fixprop` 0,
+  slope 0) is a configuration where the model gives zero by construction, not a broken integral (the 280 s without an output line
+  was the slow first point at x = 0.025). The paper's model avoids the cancellation through the mass-dependent resonance
+  parameters and the `fixprop`/`symm` prescriptions; I could not confirm which settings the paper's curves used
+  (**to check by the author**). Minor findings in the class: `abs(structfactor1<1E-09)` has a misplaced bracket (works by
+  accident: abs of a bool), `calc_F2Dinc` prints "blaaa" on stdout, the convergence loop of `get_prz` runs once so it never
+  converges (`otherWx2` is then the first guess, intended or not is unknown). **Still to do if the class is revived:**
+  (1) compare with the curves of the paper using the settings above, (2) decide the integrator (the nested `rombergerN`
+  of `progs/attic/rombergerN.hpp`, or `cube_adaptive`, see the item on `rombergerN`), (3) write a regression test (use
+  `fixprop` 1, `symm` 0) before moving it back into the DIS library. Not urgent: the class is not used by anything.
 - [ ] **Rho transparency: t- and z-integrated results disagree (added 2026-11-23, from the author's
   memory of ~2012; details may be off).** The rho programs offer two ways to do the integrals, which
   should agree but gave results differing by orders of magnitude, while the Glauber/plane-wave ratios
