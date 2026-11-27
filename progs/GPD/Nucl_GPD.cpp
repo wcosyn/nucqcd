@@ -86,6 +86,8 @@ int main(int argc, char *argv[]) {
                         PARTONS::GPDMMS13::classId);
         pVGG99=PARTONS::Partons::getInstance()->getModuleObjectFactory()->newGPDModule(
                         PARTONS::GPDVGG99::classId);
+        // PARTONS >= 2020 has no built-in PDF set for VGG99: it must be given (the old built-in one was MSTW2008nlo68cl)
+        static_cast<PARTONS::GPDVGG99*>(pVGG99)->setSetName("MSTW2008nlo68cl");
                 
         PARTONS::RunningAlphaStrongModule* pRunningAlphaStrongModule = PARTONS::Partons::getInstance()->getModuleObjectFactory()->newRunningAlphaStrongModule(
                     PARTONS::RunningAlphaStrongStandard::classId);

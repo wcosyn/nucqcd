@@ -34,9 +34,9 @@ same PR.
 
 ## Where we are / next up
 
-*Updated 2026-11-26, night (after PR #97; no PR is open).*
+*Updated 2026-11-27 (after PR #99; no PR is open).*
 
-**Done** (PRs #44-#97, details in the steps below): ROOT decoupling (ROOT is now only used by the test
+**Done** (PRs #44-#99, details in the steps below): ROOT decoupling (ROOT is now only used by the test
 `unit_vectors`; the fits run on the standalone Minuit2, #73); LHAPDF structure functions (step 10); He3 fixes; run
 bookkeeping in all programs (step 11, #49, #51, #64); Cuba unbundled (#67); the code layout (`Tools` split, includes
 from the repository root, `.hpp`, namespace `nucqcd`, the `T*` classes renamed, the `TNamed` leftovers removed:
@@ -52,7 +52,8 @@ the integration method as an enumeration with one dispatch function, `numint::cu
 on the input of the rho programs (#90); a note on the vintage of the physical constants, which are not updated (#91); the
 seven abstract Glauber grid classes reduced to two (`GridVariant`, #92); the raw pointer arrays of the Glauber grids,
 `DistMomDistrGrid`, `FsiCorrelator` and `setPionGlauberData` replaced by `Grid3D` and `std::vector` (#93, #94); the four longest Glauber files split (#96); the thick Glauber grids off the z axis integrated in the frame
-of the particle, 20 to 100 times faster (#97).
+of the particle, 20 to 100 times faster (#97). On 2026-11-27: the PARTONS setup on the second computer (the VGG99 PDF set,
+the NaN at the corner of the nucleon grid, #99).
 
 **Options for the next step** (my recommended order; the author decides):
 1. **Open leads** (step 4, "Open leads (to investigate)"):
@@ -63,7 +64,8 @@ of the particle, 20 to 100 times faster (#97).
    - ~~the `InclusiveCrossRes` FSI part that returns exactly 0~~ (investigated 2026-11-26: not a bug, the
      settings of `increstest` cancel by construction; with `fixprop` 1, `symm` 0 the FSI is ~6% of the plane wave;
      reviving the class is still open, see the item);
-   - the **PARTONS setup** on the second computer (`partons.properties` template of `scripts/install_partons.sh`).
+   - ~~the **PARTONS setup** on the second computer~~ (2026-11-27: the VGG99 PDF set was never given to PARTONS v5, fixed; the
+     NaN at the corner of the nucleon grid fixed, see the item).
 2. **Glauber grids:** the off-axis speed is done for the thick grids (#97: the integrals in the frame of the particle; values
    changed by up to a few 1e-3, towards the converged value). Open: filling grid points in parallel (needs the hit point out of the
    members), the thin `GlauberGrid` (not converted, see the item), the missing SRC normalization term on the z axis (see the item).
@@ -337,14 +339,24 @@ one commit per bug; no `[known-bug]` tests remain.
 
 ### Open leads (to investigate)
 
-- [ ] **PARTONS setup on the author's second computer (added 2026-11-23).** `GPD_Partons/bin/partons.properties`
-  (not in git; `scripts/install_partons.sh` leaves an existing one unchanged) points to
-  `~/Git/PARTONS/partons/data`, which does not exist on this computer, so the GPD programs stop at
-  start-up. With a `partons.properties` as the install script writes it, PARTONS starts but stops with
-  "Info file not found for PDF set 'UNDEFINED'": the script's template may lack the PDF-set
-  configuration that PARTONS v5 needs (the old file has `environment.configuration.file.path` and
-  `grid.directory`). Check what PARTONS v5 needs, fix the template, and decide whether the script
-  should replace an outdated file.
+- [x] **PARTONS setup on the author's second computer (added 2026-11-23, fixed 2026-11-27).** The GPD programs stopped
+  with "Info file not found for PDF set 'UNDEFINED'". Two causes, neither in the template of
+  `partons.properties` (PARTONS v5 reads no PDF set from it; the template starts PARTONS fine):
+  - since 2020 PARTONS has no built-in MSTW grid: `GPDVGG99` takes its LHAPDF set as the module parameter `setName`
+    (default `UNDEFINED`), which no program set. All nine places that create a VGG99 module now call
+    `setSetName("MSTW2008nlo68cl")`, the set of the old built-in grid (`mstw2008nlo.00.dat`);
+  - `GPDMMS13` hard-codes `MSTW2008nlo68cl`, which the install script did not fetch. It does now (next to the
+    sets of #46).
+  The script also warns when an existing `partons.properties` has v4 keys (`environment.configuration.file.path`,
+  `grid.directory`), but still never overwrites it. Cached VGG99 grids in `share/gpd_deutgrids/` were made with the
+  old built-in set; delete them to recompute.
+  **The NaN ("Unphysical x given: nan"), found 2026-11-27:** it came from the degenerate corner |x| = xi = 1 of the
+  nucleon grid in `GPD_V_Nucl_grid`, where the integration limits of VGG99 and MMS13 are 0/0. The old PARTONS passed
+  the NaN on and the grid zeroed it (`isnan` check); LHAPDF 6 throws instead and aborted the whole grid. The corner is
+  now skipped (set to 0, as before). No other grid point throws. Note that `conv_V_test` does not build the nucleon grid
+  at all when xi exceeds the deuteron limit for the given t, so such runs are trivially zero (e.g. xi 0.2, -t 0.5).
+  `GPDMMS13` provides only H and E in PARTONS, so `conv_V_test` with MMS13 stops at the axial (Ht, Et) grid: use MMS13
+  only for the vector part.
 - [x] **`InclusiveCrossRes`: the FSI part returns exactly 0: not a bug (added 2026-11-25, investigated 2026-11-26).** The resonance model for inclusive
   DIS on the deuteron (W. Cosyn, W. Melnitchouk and M. Sargsian, Phys. Rev. C 89, 014612 (2014)) was archived in
   #82 (`progs/attic/threeres`, not built). It compiles once the stale constructor call

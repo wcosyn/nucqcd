@@ -81,6 +81,8 @@ int main(int argc, char *argv[]){
                 }
         else if(!GPD_model.compare("GPDVGG99")){
                 pGPDModel = PARTONS::Partons::getInstance()->getModuleObjectFactory()->newGPDModule(PARTONS::GPDVGG99::classId);
+                // PARTONS >= 2020 has no built-in PDF set for VGG99: it must be given (the old built-in one was MSTW2008nlo68cl)
+                static_cast<PARTONS::GPDVGG99*>(pGPDModel)->setSetName("MSTW2008nlo68cl");
                 ID = PARTONS::GPDVGG99::classId;
         }
         else if(!GPD_model.compare("GPDGK16Numerical")){

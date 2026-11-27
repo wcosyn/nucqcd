@@ -482,6 +482,8 @@ int main(int argc, char *argv[]) {
             case(VGG99):
                 pGPDModel=PARTONS::Partons::getInstance()->getModuleObjectFactory()->newGPDModule(
                         PARTONS::GPDVGG99::classId);
+                // PARTONS >= 2020 has no built-in PDF set for VGG99: it must be given (the old built-in one was MSTW2008nlo68cl)
+                static_cast<PARTONS::GPDVGG99*>(pGPDModel)->setSetName("MSTW2008nlo68cl");
                 break;
             default:
                 cerr << "Invalid GPD model name chosen " << endl;

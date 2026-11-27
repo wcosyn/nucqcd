@@ -27,6 +27,11 @@ vector<double> GPD_V_Nucl_grid::getVectorGPDSet(const double x, const double xi,
         for(int i=0;i<=200;i++){
             for(int j=0;j<=100;j++){
                 double x = 0.01*(i-100)+(i==100?1.E-04:0.);
+                // The corner |x|=xi=1 is degenerate: the integration limits of the VGG99 and MMS13 double distributions
+                // contain (1-|x|)/(1-xi) = 0/0 and give NaN, which is set to 0 below. Old PARTONS passed the NaN on silently;
+                // LHAPDF >= 6 throws "Unphysical x" and would abort the whole grid. Skip the point instead of catching
+                // everything, so that real errors (e.g. an undefined PDF set) still show up.
+                if(fabs(x)>=1.-1.E-12 && j==100){ grid[i][j][0]=grid[i][j][1]=0.; continue; }
                 PARTONS::GPDKinematic gpdKinematic(x,0.01*(j)+(j==0?1.E-04:0.),t*1.E-06, scale*scale, scale*scale);
                 PARTONS::GPDResult gpdResult = pGPDService->computeSingleKinematic(gpdKinematic,
                     pGPDModel);
