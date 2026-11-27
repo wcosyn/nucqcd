@@ -9,8 +9,9 @@
 #      sf::Thread / sf::Mutex / sf::Lock that PARTONS uses
 #   3. builds LHAPDF with its Python bindings (module `lhapdf`, installed in the user site-packages of
 #      python3), patching lhapdf-config so it accepts --incdir, which PARTONS' FindLHAPDF calls, and
-#      installs the PDF sets CT18LO, NNPDFpol11_100 and MSTW2008lo68cl (nucqcd's "MSTW" and its tests); nucqcd itself
-#      uses LHAPDF when it is found, also without PARTONS ("LHAPDF:<set>" structure functions)
+#      installs the PDF sets CT18LO, NNPDFpol11_100 and MSTW2008lo68cl (nucqcd's "MSTW" and its tests) and
+#      MSTW2008nlo68cl (the PDF set of the PARTONS GPD models VGG99 and MMS13; the GPD programs set it); nucqcd
+#      itself uses LHAPDF when it is found, also without PARTONS ("LHAPDF:<set>" structure functions)
 #   4. builds APFEL++
 #   5. clones/updates and builds elementary-utils, numa and partons (in that order)
 #   6. writes partons.properties / logger.properties into GPD_Partons/bin (where the GPD programs
@@ -98,7 +99,7 @@ python3 -c 'import lhapdf; print("lhapdf python module", lhapdf.__version__, "in
 sed -i 's/^\(\s*\)--includedir)\(\s*\)show_incdir=1 ;;/\1--includedir|--incdir)\2show_incdir=1 ;;/' "$PREFIX/bin/lhapdf-config"
 "$PREFIX/bin/lhapdf-config" --incdir > /dev/null || { echo "lhapdf-config --incdir patch failed"; exit 1; }
 # PDF sets for nucqcd ("MSTW" = MSTW2008lo68cl) and its tests, into $PREFIX/share/LHAPDF
-for set in CT18LO NNPDFpol11_100 MSTW2008lo68cl; do
+for set in CT18LO NNPDFpol11_100 MSTW2008lo68cl MSTW2008nlo68cl; do
   [ -d "$PREFIX/share/LHAPDF/$set" ] || "$PREFIX/bin/lhapdf" install "$set" \
     || { echo "lhapdf install $set failed"; exit 1; }
 done
@@ -143,6 +144,12 @@ EOF
   echo "wrote $BIN/partons.properties"
 else
   echo "$BIN/partons.properties exists, left unchanged"
+  # PARTONS v4 files carry keys that v5 does not use, and paths into a PARTONS source tree; v5 needs neither
+  # (the PDF set of VGG99 and MMS13 is a module parameter, set in the GPD programs, not a property)
+  if grep -qE '^\s*(environment\.configuration\.file\.path|grid\.directory)\s*=' "$BIN/partons.properties"; then
+    echo "WARNING: $BIN/partons.properties has PARTONS v4 keys (environment.configuration.file.path / grid.directory)."
+    echo "         Delete it and re-run this script to get the v5 template."
+  fi
 fi
 if [[ ! -f $BIN/logger.properties ]]; then
   cat > "$BIN/logger.properties" <<EOF
