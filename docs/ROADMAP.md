@@ -25,7 +25,7 @@ same PR.
 | 3 | Rename the repository | ✅ done (PR #7, tagged-poldeut PRs #1 and #2) |
 | 4 | Bug fixes | ✅ done: listed bugs (PRs #8, #9, #12); found later: stale FSI+CT grid (#18), kinematics (#19, #20, #33), DoubleNModel/Pair (#21, then moved to the attic in #22), π⁻ Glauber parameters (#28), TDeuteron errors (#31), He3 spin sum (#47) and factor A in `He3Cross` (#48), `TMPI` not compiling with MPI-3 (fixed in the attic with step 6, "Retire MPI", #54), `RunLog` reading freed memory at `exit()` (#57), `cube_romb` overflow beyond 10 levels in 3D (#60). New bugs found later are added here |
 | 5 | Low-risk modernization | ✅ done: `-fopenmp`, Fortran interop (#11), constants (#13, #14), grid cache (#15–#17), ownership (#23), exceptions (#24), Doxygen (#10, #25–#30, #32, #34–#39: no warnings left) |
-| 6 | Structural refactors | 🔶 done: constants macros (#41), `NuclStructure` merge (#42), code layout (`Tools` split #52, prefixed includes and `.hpp` #53, namespace `nucqcd` #65, the `T*` classes renamed #76, the `TNamed` leftovers #78), `Model`/`Cross` renamed (#53), MPI retired (#54), integrator benchmark (#61), precision reporting (#62), integrator option 0 removed (#69), CRLF to LF (#66), long files split (#70), `GetVar*` table (#71), model names as enumerations (#72), the long `TKinematics2to3` functions split (#74) and the crash they showed fixed (#75), the thick Glauber grids deduplicated (#77); `rombergerN` removed from the libraries (#82); copy-paste comments and a duplicate header guard (#86); the integration method as an enumeration with one dispatch function (#87, #88); the Glauber abstract classes reduced from seven to two (#92); the raw grid arrays replaced by `Grid3D` and `std::vector` (#93, #94); the long Glauber files split (#96); to do: the off-axis grid speed, the hard-coded paths, optional other integration algorithms |
+| 6 | Structural refactors | 🔶 done: constants macros (#41), `NuclStructure` merge (#42), code layout (`Tools` split #52, prefixed includes and `.hpp` #53, namespace `nucqcd` #65, the `T*` classes renamed #76, the `TNamed` leftovers #78), `Model`/`Cross` renamed (#53), MPI retired (#54), integrator benchmark (#61), precision reporting (#62), integrator option 0 removed (#69), CRLF to LF (#66), long files split (#70), `GetVar*` table (#71), model names as enumerations (#72), the long `TKinematics2to3` functions split (#74) and the crash they showed fixed (#75), the thick Glauber grids deduplicated (#77); `rombergerN` removed from the libraries (#82); copy-paste comments and a duplicate header guard (#86); the integration method as an enumeration with one dispatch function (#87, #88); the Glauber abstract classes reduced from seven to two (#92); the raw grid arrays replaced by `Grid3D` and `std::vector` (#93, #94); the long Glauber files split (#96); the off-axis thick grids in the frame of the particle (#97, 20 to 100 times faster, values change by up to a few 1e-3); to do: parallel grid points, the hard-coded paths, optional other integration algorithms |
 | 7 | Unbundle Cuba and cubature | ✅ done: Cuba (#67), cubature (cubature 1.0.4 downloaded and patched; results of integrands with steps change at the 1e-6 to 1e-2 level, `-DCUBATURE_LEGACY_SPLIT=yes` reproduces the old ones) |
 | 8 | Repository README | ⬜ (last, after 9, 10 and 11) |
 | 9 | Decouple from ROOT where possible | ✅ done: phases 1–5 (#44, #45, #50, #55, #56, #58), phase 6: GPD generators (#59) and the fits on the standalone Minuit2 (#73). ROOT is only used by the test `unit_vectors` |
@@ -63,8 +63,10 @@ seven abstract Glauber grid classes reduced to two (`GridVariant`, #92); the raw
      settings of `increstest` cancel by construction; with `fixprop` 1, `symm` 0 the FSI is ~6% of the plane wave;
      reviving the class is still open, see the item);
    - the **PARTONS setup** on the second computer (`partons.properties` template of `scripts/install_partons.sh`).
-2. **Glauber grids:** the off-axis speed (every point hits the evaluation cap; `cube_romb` was 5x faster at 1e-3;
-   variants change values within the precision and need the author's OK). The hierarchy dedup is done (#77, #92, #93, #94);
+2. **Glauber grids:** the off-axis speed is done for the thick grids (#97: the integrals in the frame of the particle; values
+   changed by up to a few 1e-3, towards the converged value). Open: filling grid points in parallel (needs the hit point out of the
+   members), the thin `GlauberGrid` (not converted, see the item), the missing SRC normalization term on the z axis (see the item).
+   The hierarchy dedup is done (#77, #92, #93, #94);
    only the named `printFsi_*_grid` functions are left, low priority.
 3. **Smaller items:** other integration algorithms in `numint::cube` (step 6, optional part 3), the hard-coded absolute paths in some programs (step 6, copy-paste leftovers), the longest files of the libraries other than `Glauber/` (see the item on long files, step 6),
    `SolvePhotonAndParticle1` (134 lines), reporting the Suave bug to the Cuba authors, a format string that gives
@@ -811,7 +813,7 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   `RhoTCross`) using `rombergerN`. Not touched: `DQEinclusive`, whose `integrator` argument is a different
   switch (its case 0 is `cube_adaptive`), and the hard-coded `rombergerN` uses (next item). Tested in
   `unit_errors`; all tests including `slow` pass with unchanged references.
-- [ ] **Speed of the Glauber grids (to investigate, added 2026-11-23).** From the author's experience,
+- [~] **Speed of the Glauber grids (added 2026-11-23; off-axis thick grids done 2026-11-26, #97; parallel grid points open).** From the author's experience,
   grids for particles that do not all move along the z axis are slow to compute (cached afterwards,
   but still). The `numint` integrators used there (`cube_adaptive`, `cube_romb`) are serial; only the
   explicit `numint::cuhre/vegas/...` wrappers use Cuba, which forks workers on one node
@@ -829,6 +831,35 @@ Do these one at a time, running the full test suite (including `slow`) after eac
   accuracy. Next: find out which part of the off-axis integrand is hard (the cut at the hit point, the
   profile function's oscillations?), consider a better variable choice, `cube_romb` for these grids, or
   parallel grid points.
+  **Done (2026-11-26, #97): the thick grids off axis in the frame of the particle.** The cause was the integrand, not the
+  integrator: in the spherical coordinates of the lab the Glauber phase of one particle is a step along a plane
+  (z along the momentum > z of the hit point) times a Gaussian in the transverse distance to the particle's line, a narrow tilted tube;
+  neither lines up with the integration variables, so no integrator converged within the cap. For a particle along z the code
+  already used cylindrical coordinates around the momentum (`klaas_int_bound`), which turn the step into a limit of the
+  z integral and the tube into a Gaussian in b. `GlauberThickGridCommon::integrateTilted` does the same for one particle in any direction
+  (variables b, z, phi' around the momentum, phi' from the direction of the b vector of the hit point; the lab coordinates of the point,
+  needed for the SRC factors, are rebuilt from the frame; an incoming particle integrates the other half of z), for
+  `GlauberGridThick` and `GlauberDecayGridThick` (several particles still use the lab coordinates; `setUseTiltedFrame(false)` selects them
+  for one particle, as before, for comparisons). **Measured** (12 x 6 x 3 carbon grid, 1500 MeV proton, theta 0.5 rad, `cube_adaptive` 1e-3):
+  61 s before, 0.6 s with the plain FSI/CT variants and 3.2 s with the SRC grids (the normalization integral, see below);
+  the 4 x 4 x 3 rho (type 4) grid: 0.6 s. **Values:** the old values were cap-limited, with errors of up to 2.3e-3 (relative to the converged value)
+  although the integrator reported 1e-3: new at 1e-3 versus new at 1e-7 differ by 7e-5, old at 1e-3 versus the old integrand with `cube_romb` at 1e-4 by 2e-3,
+  the new integrand with `cube_romb` 1e-4 and `cube_adaptive` 1e-6 agree to 1e-7 at the point checked, the two old ones to 6e-5; new versus old, both tight: 8e-5 (adaptive 1e-6)
+  and 1.5e-4 (romb 1e-4) for all eight decay variants including SRC. **A trap on the way:** the SRC variants of the lab
+  integrand contain the term N = integral of density * correlation over the whole nucleus (1 - the FSI part is then N - amplitude * integral);
+  `klaas_int_bound` (particle along z) takes N = 1. First version of the new path did too and differed from the old by up to 8.5e-3 in the SRC variants;
+  the normalization is now computed (an extra integral per grid point, at precision prec/100 because the correlation peak at the hit point makes
+  the integrator stop too early at prec: errors of 3e-3 at prec 1e-3). The test `reg_glauber_tilted` compares the two coordinate systems (proton, rho, rho pion pair, incoming proton);
+  the references of the off-axis entries of `reg_glauber_grid` and `reg_glauber_variants` were regenerated (largest differences 1e-3 absolute in the former, 9e-5 in the latter; the entries on the z axis and
+  of the thin grid did not move).
+  **Grid files in `share/grids` computed off axis before this are not recomputed** (the file name does not record the physics): delete them to get the new values.
+  **Open leads:** (1) filling grid points in parallel (the integrands still read the hit point from members of the grid and of the particle; it would be
+  all grid points independent, about 8x on 8 cores, values unchanged); (2) N does not depend on phi of the hit point or the particle, so one integral per (r, cos theta) and proton
+  would do instead of one per grid point (5x fewer in the 120 x 36 x 5 grid; most of the 3.2 s above); (3) **the SRC variants for a particle along z omit N**:
+  they use `1 - amplitude * integral` where the off-axis (old and new) formula has `N - amplitude * integral`; N * (correlation grid at the hit point)
+  differs from 1 by about 1e-2 at some points (the 8.5e-3 above), so the on-axis SRC grids may be off by that much: to quantify and, with the author's OK, fix
+  (changes values of A(e,e'p) with SRC); (4) the thin `GlauberGrid` has the same lab-coordinate integrand with the single-particle wavefunction as weight
+  and was not converted (its test takes 20 s).
 - [x] **Remove the integrators `rombergerN` and `cube_romb`?** (`rombergerN` removed 2026-11-25, #82; `cube_romb` stays) (added 2026-11-23). The author
   remembers the adaptive integrators doing better, especially for multidimensional integrands with
   non-trivial boundaries or cuts inside the integrand. **Benchmark done 2026-11-23

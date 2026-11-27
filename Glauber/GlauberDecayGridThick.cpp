@@ -1,4 +1,3 @@
-#include <cstdlib>
 #include <Integrator/numint/cube.hpp>
 #include <Tools/Core/ErrorMessage.hpp>
 #include <iostream>
@@ -106,6 +105,14 @@ void GlauberDecayGridThick::calcGlauberphasesBoth(const int i, const int j, cons
       fsi_ct_grid[2][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[6];
       fsi_ct_grid[3][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[7] * src;
     }
+    else if (getParticles().size() == 1 && useTiltedFrame) {
+      vector < double >ret;
+      integrateTilted(proton, klaas_int_tilted, 8, 2000000, ret);
+      for (int v = 0; v < 4; v++) {
+        fsi_grid[v][proton][i][j][k] = tiltedPhase(proton, ret, v, src);
+        fsi_ct_grid[v][proton][i][j][k] = tiltedPhase(proton, ret, 4 + v, src);
+      }
+    }
     else {
       numint::array < double, 3 > lower = { {0., -1., 0.} };
       numint::array < double, 3 > upper = { {getPnucleusthick()->getRange(), 1., 2. * PI} };
@@ -159,6 +166,12 @@ void GlauberDecayGridThick::calcGlauberphasesCt(const int i, const int j, const 
       fsi_ct_grid[2][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[2];
       fsi_ct_grid[3][proton][i][j][k] = 1. - getParticles()[0].getScatterfront(proton) * ret[3] * src;
     }
+    else if (getParticles().size() == 1 && useTiltedFrame) {
+      vector < double >ret;
+      integrateTilted(proton, klaas_int_tilted_ct, 4, 5000000, ret);
+      for (int v = 0; v < 4; v++)
+        fsi_ct_grid[v][proton][i][j][k] = tiltedPhase(proton, ret, v, src);
+    }
     else {
       numint::array < double, 3 > lower = { {0., -1., 0.} };
       numint::array < double, 3 > upper = { {getPnucleusthick()->getRange(), 1., 2. * PI} };
@@ -205,6 +218,31 @@ void GlauberDecayGridThick::calcGlauberphasesCt(const int i, const int j, const 
 //   results[1] = results[0] * gr;
 //   results[3] = results[2] * gr;
 // }
+
+void GlauberDecayGridThick::klaas_int_tilted(numint::vector_d & results, double b, double z, double phi, GlauberThickGridCommon & grid,
+                                             int proton, const TiltedFrame &frame) {
+  results = numint::vector_d(8, 0.);
+  TiltedPoint p;
+  if (!tiltedPoint(grid, b, z, phi, proton, frame, p)) return;
+  FastParticle &part = grid.getParticles()[0];
+  results[0] = p.fsi;
+  results[2] = p.fsi * part.getDecay_sigma(z, proton);
+  results[4] = p.fsi * part.getCTsigma(z);
+  results[6] = results[2] * part.getCTsigma(z);
+  for (int v = 1; v < 8; v += 2) results[v] = results[v - 1] * p.src;
+}
+
+void GlauberDecayGridThick::klaas_int_tilted_ct(numint::vector_d & results, double b, double z, double phi, GlauberThickGridCommon & grid,
+                                                int proton, const TiltedFrame &frame) {
+  results = numint::vector_d(4, 0.);
+  TiltedPoint p;
+  if (!tiltedPoint(grid, b, z, phi, proton, frame, p)) return;
+  FastParticle &part = grid.getParticles()[0];
+  results[0] = p.fsi * part.getCTsigma(z);
+  results[2] = results[0] * part.getDecay_sigma(z, proton);
+  results[1] = results[0] * p.src;
+  results[3] = results[2] * p.src;
+}
 
 void GlauberDecayGridThick::klaas_int_all(numint::vector_z & results, double r, double costheta, double phi, GlauberDecayGridThick & grid, int proton) {
   double sintheta = sqrt(1. - costheta * costheta);

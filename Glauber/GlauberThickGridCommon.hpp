@@ -12,6 +12,7 @@
 #include <Glauber/AbstractFsiCTGrid.hpp>
 #include <Glauber/FsiCorrelator.hpp>
 #include <Glauber/MeanFieldNucleusThick.hpp>
+#include <Integrator/numint/numint.hpp>
 #include <Tools/Core/Grid3D.hpp>
 
 #include <complex>
@@ -59,9 +60,52 @@ public:
    * GlauberGridThick) */
   virtual int getGridNumber(GridVariant variant) const;
 
+  /*! use the coordinates around the momentum of the particle (TiltedFrame) for a single particle off the z axis (default),
+   * or the spherical coordinates of the lab for it like for several particles (the code until 2026-11: up to 100 times slower
+   * off axis, the cap on the number of evaluations is reached, and errors of a few 1e-3 at precision 1e-3; for comparisons) */
+  void setUseTiltedFrame(bool use) {useTiltedFrame = use;}
+  bool getUseTiltedFrame() const {return useTiltedFrame;} /*!< see setUseTiltedFrame */
+  unsigned getEvalCount() const {return evalCount;} /*!< number of integrand evaluations of the last integrateTilted call (diagnostics) */
   const FsiCorrelator& getFsiCorrelator() const {return fsicorrelator;} /*!< the FsiCorrelator (SRC grid) */
   FsiCorrelator& getFsiCorrelator() {return fsicorrelator;} /*!< the FsiCorrelator (SRC grid) */
   MeanFieldNucleusThick *getPnucleusthick() const {return pnucleusthick;} /*!< the nucleus */
+
+public:
+  /*! The coordinates for a single particle in any direction: cylindrical (b, z, phi) around the momentum of the
+   * particle, with phi measured from the direction of the b vector of the hit point. In these the step of the
+   * Glauber phase (only the nucleons the particle still has to pass count) is a limit of the z integral and the
+   * profile function a Gaussian in b, where in the spherical coordinates of the lab it is a cut along a plane and a
+   * narrow tilted tube. (Only the A(e,e'p)-like case of one particle; for several particles there is no common frame.) */
+  struct TiltedFrame {
+    double u[3]; /*!< unit vector along the b vector of the hit point (any perpendicular one if that is zero) */
+    double w[3]; /*!< unit vector perpendicular to the momentum and to u */
+  };
+  /*! what the integrands in the frame of the particle have in common */
+  struct TiltedPoint {
+    double dens; /*!< density times the Jacobian (b / r^2), without the profile function */
+    double fsi; /*!< dens times the Gaussian profile: the integrand of the plain FSI factor, without the scattering amplitude */
+    double src; /*!< the SRC factor at the point (correlation function times the correlation grid) */
+  };
+  /*! computes TiltedPoint at b, z, phi (frame coordinates) for the single particle of the grid
+   * \return false if the point is outside the nucleus (r larger than its range): then the integrand is zero */
+  static bool tiltedPoint(GlauberThickGridCommon &grid, double b, double z, double phi, int proton, const TiltedFrame &frame, TiltedPoint &point);
+  /*! the FSI factor from the results of integrateTilted
+   * \param proton proton or neutron \param ret results of integrateTilted \param index which result (odd: an SRC variant, which uses N and the SRC factor at the hit point) \param src the SRC factor at the hit point
+   * (getCorrGrid_interp there) */
+  std::complex<double> tiltedPhase(int proton, const std::vector<double> &ret, int index, double src);
+  /*! integrand of the SRC normalization N (see integrateTilted) */
+  static void srcNormIntegrand(numint::vector_d &results, double b, double z, double phi, GlauberThickGridCommon &grid, int proton, const TiltedFrame &frame);
+  /*! integrand function in the frame of the particle: results (the number is that of the integrand) at the point b, z, phi */
+  typedef void (*TiltedIntegrand)(numint::vector_d &results, double b, double z, double phi, GlauberThickGridCommon &grid, int proton, const TiltedFrame &frame);
+  /*! integrates a TiltedIntegrand over the nucleus for the single particle of the grid and the point that is set (the hit point)
+   * \param proton proton or neutron \param f integrand \param nresults number of results of f
+   * \param maxeval maximum number of evaluations
+   * \param ret [out] nresults+1 values: the integrals of f, then the SRC normalization N = integral of dens * src over the
+   * whole nucleus (z from -range to range). The SRC variants of the FSI factor are (N - amplitude * integral of f) * src(hit point), the
+   * others 1 - amplitude * integral of f. N is not exactly 1/src(hit point), and the case of a particle along the z axis
+   * (klaas_int_bound) takes the term to be 1.
+   * The z limits of f run from the hit point to the edge of the nucleus (to the other side for an incoming particle). */
+  void integrateTilted(int proton, TiltedIntegrand f, int nresults, int maxeval, std::vector<double> &ret);
 
 protected:
   /*! Constructor
@@ -98,6 +142,8 @@ protected:
   std::vector<std::vector<Grid3D<std::complex<double> > > > fsi_grid; /*!< grid that contains the fsi factor, `[variant][nucleon: 0 neutron, 1 proton][r][cos theta][phi]` */
   std::vector<std::vector<Grid3D<std::complex<double> > > > fsi_ct_grid; /*!< grid that contains the fsi+ct factor, same indices */
   double error; /*!< integration error estimate of the cubature integrators */
+  bool useTiltedFrame = true; /*!< see setUseTiltedFrame */
+  unsigned evalCount = 0; /*!< number of integrand evaluations of the last integrateTilted call */
 
 private:
   /*! the loop over the grid points of constructAllGrids and constructCtGrid

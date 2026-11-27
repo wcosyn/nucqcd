@@ -1,6 +1,7 @@
 #include <Glauber/GlauberThickGridCommon.hpp>
 
 #include <Tools/Core/ErrorMessage.hpp>
+#include <Integrator/numint/cube.hpp>
 #include <Tools/Core/constants.hpp>
 
 #include <cassert>
@@ -186,6 +187,105 @@ void GlauberThickGridCommon::writeoutFsiGrid(ofstream &outfile) {
 void GlauberThickGridCommon::writeoutFsiCtGrid(ofstream &outfile) {
   for_all_points(fsi_ct_grid,
                  [&outfile](complex<double> &v) { outfile.write(reinterpret_cast<char *>(&v), sizeof(complex<double>)); });
+}
+
+
+namespace {
+/*! integrator functor of the tilted frame */
+struct TiltedFtor {
+  static void exec(const numint::array<double,3> &x, void *param, numint::vector_d &ret) {
+    TiltedFtor &p = *static_cast<TiltedFtor *>(param);
+    p.f(ret, x[0], x[1], x[2], *p.grid, p.proton, p.frame);
+  }
+  GlauberThickGridCommon *grid;
+  int proton;
+  GlauberThickGridCommon::TiltedFrame frame;
+  GlauberThickGridCommon::TiltedIntegrand f;
+};
+}  // namespace
+
+std::complex<double> GlauberThickGridCommon::tiltedPhase(int proton, const std::vector<double> &ret, int index, double src) {
+  const std::complex<double> front = getParticles()[0].getScatterfront(proton);
+  if (index % 2) return (ret.back() - front * ret[index]) * src;
+  return 1. - front * ret[index];
+}
+
+void GlauberThickGridCommon::srcNormIntegrand(numint::vector_d &results, double b, double z, double phi, GlauberThickGridCommon &grid,
+                                              int proton, const TiltedFrame &frame) {
+  results = numint::vector_d(1, 0.);
+  TiltedPoint p;
+  if (tiltedPoint(grid, b, z, phi, proton, frame, p)) results[0] = p.dens * p.src;
+}
+
+bool GlauberThickGridCommon::tiltedPoint(GlauberThickGridCommon &grid, double b, double z, double phi, int proton,
+                                         const TiltedFrame &frame, TiltedPoint &point) {
+  const double r = std::sqrt(b * b + z * z);
+  if (r > grid.getPnucleus()->getRange()) return false;
+  FastParticle &part = grid.getParticles()[0];
+  double cosphi, sinphi;
+  sincos(phi, &sinphi, &cosphi);
+  const double hbn = part.getHitbnorm();
+  point.dens = grid.getPnucleusthick()->getDensity(r, proton) / (r * r) * b;
+  point.fsi = point.dens *
+    std::exp(-(b * b + hbn * hbn - 2. * b * hbn * cosphi) / (2. * part.getBetasq(proton)));
+  // lab coordinates of the point: b cos(phi) u + b sin(phi) w + z e, and its distance to the hit point
+  const double px = b * cosphi * frame.u[0] + b * sinphi * frame.w[0] + z * part.getEx();
+  const double py = b * cosphi * frame.u[1] + b * sinphi * frame.w[1] + z * part.getEy();
+  const double pz = b * cosphi * frame.u[2] + b * sinphi * frame.w[2] + z * part.getEz();
+  const double dx = px - grid.getR_hit() * grid.getSintheta_hit() * grid.getCosphi_hit();
+  const double dy = py - grid.getR_hit() * grid.getSintheta_hit() * grid.getSinphi_hit();
+  const double dz = pz - grid.getR_hit() * grid.getCostheta_hit();
+  point.src = grid.getFsiCorrelator().correlation(std::sqrt(dx * dx + dy * dy + dz * dz))
+              * grid.getFsiCorrelator().getCorrGrid_interp(r, pz / r, proton);
+  return true;
+}
+
+void GlauberThickGridCommon::integrateTilted(int proton, TiltedIntegrand f, int nresults, int maxeval, std::vector<double> &ret) {
+  const double range = getPnucleusthick()->getRange();
+  FastParticle &part = getParticles()[0];
+  ret.assign(nresults, 0.);
+  // the frame
+  TiltedFtor F;
+  F.grid = this;
+  F.proton = proton;
+  F.f = f;
+  const double e[3] = {part.getEx(), part.getEy(), part.getEz()};
+  const double *hb = part.getHitbvec();
+  const double norm = part.getHitbnorm();
+  if (norm > 1.E-10) {
+    for (int i = 0; i < 3; i++) F.frame.u[i] = hb[i] / norm;
+  }
+  else {  // any direction perpendicular to e
+    double a[3] = {1., 0., 0.};
+    if (std::fabs(e[0]) > 0.9) {a[0] = 0.; a[1] = 1.;}
+    const double dot = a[0] * e[0] + a[1] * e[1] + a[2] * e[2];
+    double n2 = 0.;
+    for (int i = 0; i < 3; i++) {F.frame.u[i] = a[i] - dot * e[i]; n2 += F.frame.u[i] * F.frame.u[i];}
+    for (int i = 0; i < 3; i++) F.frame.u[i] /= std::sqrt(n2);
+  }
+  F.frame.w[0] = e[1] * F.frame.u[2] - e[2] * F.frame.u[1];
+  F.frame.w[1] = e[2] * F.frame.u[0] - e[0] * F.frame.u[2];
+  F.frame.w[2] = e[0] * F.frame.u[1] - e[1] * F.frame.u[0];
+  // the particle scatters on the nucleons it still has to pass (z > hitz), or has passed (an incoming one)
+  numint::array < double, 3 > lower = { {1.E-06, part.getIncoming() ? -range : part.getHitz(), 0.} };
+  numint::array < double, 3 > upper = { {range, part.getIncoming() ? part.getHitz() : range, 2. * PI} };
+  unsigned count = 0;
+  numint::mdfunction < numint::vector_d, 3 > mdf;
+  mdf.func = &TiltedFtor::exec;
+  mdf.param = &F;
+  if (lower[1] < upper[1])
+    numint::cube({integrator, 1.E-12, prec, 2000, maxeval}, mdf, lower, upper, ret, count, 0);
+  evalCount = count;
+  // the SRC normalization: the same integration over all z of dens * src
+  F.f = srcNormIntegrand;
+  lower[1] = -range;
+  upper[1] = range;
+  std::vector<double> srcnorm(1, 0.);
+  // N is a narrow peak at the hit point (the correlation function): at the precision of the other integrals the
+  // integrator stops too early (errors of 3e-3 at prec 1e-3), at prec/100 the error is ~1e-4. The cost is small.
+  numint::cube({integrator, 1.E-12, 0.01 * prec, 2000, maxeval}, mdf, lower, upper, srcnorm, count, 0);
+  evalCount += count;
+  ret.push_back(srcnorm[0]);
 }
 
 }  // namespace nucqcd
