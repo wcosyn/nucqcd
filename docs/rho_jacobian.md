@@ -163,3 +163,27 @@ Carlo, the unfixed code was not run here). Caveats: the 2 x 3 grid is very coars
 because of the cuts (one t point and one z point in the run), so a 1-2% difference can be quadrature and cut-edge
 effects: this shows that the factor ~A is gone, not that the remaining 1-2% is zero. Helium only. The nu range was
 chosen so that W² = m_N² + 2 m_N nu - Q² stays above 4 GeV² (W > 2 GeV; the programs now check this, see the remark on the cuts above).
+
+### Carbon (2026-11-27)
+
+The same driver and settings for carbon (nucleus 1), Q² = 2 GeV², nu = 3.0-3.2 GeV, 2 x 3 Gauss-Legendre points per version
+(12 points, run in parallel on 12 cores, about 66 minutes per point on a cold grid cache; all six t points and all six z points
+were used, none was zero):
+
+| Index | Case | t integral | z integral | z/t | T from t | T from z |
+|---|---|---|---|---|---|---|
+| 0 | RMSGA | 1.2292e-07 | 1.2055e-07 | 0.981 | 0.649 | 0.661 |
+| 1 | RMSGA+SRC | 1.2343e-07 | 1.2099e-07 | 0.980 | 0.651 | 0.663 |
+| 2 | RMSGA+Decay | 8.7795e-08 | 8.6432e-08 | 0.984 | 0.463 | 0.474 |
+| 3 | RMSGA+SRC+Decay | 8.8036e-08 | 8.6638e-08 | 0.984 | 0.464 | 0.475 |
+| 4 | RMSGA+CT | 1.3610e-07 | 1.3261e-07 | 0.974 | 0.718 | 0.727 |
+| 5 | RMSGA+CT+SRC | 1.3614e-07 | 1.3265e-07 | 0.974 | 0.718 | 0.727 |
+| 6 | RMSGA+CT+Decay | 1.0088e-07 | 9.8521e-08 | 0.977 | 0.532 | 0.540 |
+| 7 | RMSGA+CT+SRC+Decay | 1.0078e-07 | 9.8427e-08 | 0.977 | 0.532 | 0.540 |
+| 8 | plane wave | 1.8954e-07 | 1.8243e-07 | 0.962 | 1 | 1 |
+
+z/t = 0.962-0.984 and the transparencies from t and z agree within 0.012 (helium: 0.999-1.022 and 0.011). The factor of about
+M_A/m_N (12 for carbon) that `massX` produced is gone. The plane wave, which has no FSI, already differs by 3.8%, so the
+2-4% is quadrature and cut-edge effects of the coarse grid and not a leftover of the Jacobian (the sign is opposite to
+helium, which also points to the quadrature). The z/t of the FSI cases follows the plane wave: the transparencies from z
+are 0.008-0.012 above those from t, as the plane-wave ratio would give. A finer grid was not run.
