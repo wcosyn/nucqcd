@@ -53,7 +53,8 @@ on the input of the rho programs (#90); a note on the vintage of the physical co
 seven abstract Glauber grid classes reduced to two (`GridVariant`, #92); the raw pointer arrays of the Glauber grids,
 `DistMomDistrGrid`, `FsiCorrelator` and `setPionGlauberData` replaced by `Grid3D` and `std::vector` (#93, #94); the four longest Glauber files split (#96); the thick Glauber grids off the z axis integrated in the frame
 of the particle, 20 to 100 times faster (#97). On 2026-11-27: the PARTONS setup on the second computer (the VGG99 PDF set,
-the NaN at the corner of the nucleon grid, #99).
+the NaN at the corner of the nucleon grid, #99); the rho t/z check for carbon (#100: z/t 0.962-0.984, the plane wave included, so
+quadrature and cut edges, not the Jacobian).
 
 **Options for the next step** (my recommended order; the author decides):
 1. **Open leads** (step 4, "Open leads (to investigate)"):
