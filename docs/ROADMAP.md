@@ -53,13 +53,14 @@ on the input of the rho programs (#90); a note on the vintage of the physical co
 seven abstract Glauber grid classes reduced to two (`GridVariant`, #92); the raw pointer arrays of the Glauber grids,
 `DistMomDistrGrid`, `FsiCorrelator` and `setPionGlauberData` replaced by `Grid3D` and `std::vector` (#93, #94); the four longest Glauber files split (#96); the thick Glauber grids off the z axis integrated in the frame
 of the particle, 20 to 100 times faster (#97). On 2026-11-27: the PARTONS setup on the second computer (the VGG99 PDF set,
-the NaN at the corner of the nucleon grid, #99).
+the NaN at the corner of the nucleon grid, #99); the rho t/z check for carbon (#100: z/t 0.962-0.984, the plane wave included, so
+quadrature and cut edges, not the Jacobian).
 
 **Options for the next step** (my recommended order; the author decides):
 1. **Open leads** (step 4, "Open leads (to investigate)"):
    - ~~the rho transparency t- versus z-integrals~~ (2026-11-26: the z version had the residual nucleus mass instead of
-     the Jacobian |dt/dz|/(2 nu); fixed in #85, checked with the Glauber distributions for helium, z/t within 2.2%; a carbon
-     or finer-grid check and the effect on the z-version transparencies are open; the W > 2 GeV cut is checked on the input of
+     the Jacobian |dt/dz|/(2 nu); fixed in #85, checked with the Glauber distributions for helium (z/t within 2.2%) and carbon (within 3.8%, the plane wave
+     included, transparencies within 0.012); only a finer-grid check is open; the W > 2 GeV cut is checked on the input of
      `rhoset` and `rhosingle`, see the item);
    - ~~the `InclusiveCrossRes` FSI part that returns exactly 0~~ (investigated 2026-11-26: not a bug, the
      settings of `increstest` cancel by construction; with `fixprop` 1, `symm` 0 the FSI is ~6% of the plane wave;
@@ -439,8 +440,9 @@ one commit per bug; no `[known-bug]` tests remain.
     was not studied.
   - **Full comparison with the Glauber distributions (2026-11-26, `docs/rho_jacobian.md` section 6):** helium, Q² = 2 GeV²,
     nu = 3.0-3.2 GeV, 2 x 3 Gauss-Legendre points per version, real `RhoTCross`: z/t = 0.999-1.022 for all nine
-    cases (plane wave 1.014) and transparencies from t and z within 0.011. A coarse test (cut edges, quadrature), helium
-    only: carbon and a finer grid are still to do if wanted. The "before" value of the unfixed code was not run (the
+    cases (plane wave 1.014) and transparencies from t and z within 0.011. A coarse test (cut edges, quadrature).
+    **Carbon (2026-11-27, same setup, section 6 of the note):** z/t = 0.962-0.984 (plane wave 0.962, so it is quadrature and
+    cut edges, not FSI or the Jacobian) and transparencies from t and z within 0.012. A finer grid is still to do if wanted. The "before" value of the unfixed code was not run (the
     Monte Carlo gives the factor).
   - **W > 2 GeV cut (2026-11-26):** the analysis of the paper also cuts W > 2 GeV, which `getCrosst`/`getCrossz` do not
     (it is a limit on the nu range at fixed Q^2). `RhoTCross::checkWcut(Q2, nu_min)` (with `getW` and `Wmin`) now throws
