@@ -34,9 +34,9 @@ same PR.
 
 ## Where we are / next up
 
-*Updated 2026-11-26, evening (after PR #94; no PR is open).*
+*Updated 2026-11-26, night (after PR #97; no PR is open).*
 
-**Done** (PRs #44-#94, details in the steps below): ROOT decoupling (ROOT is now only used by the test
+**Done** (PRs #44-#97, details in the steps below): ROOT decoupling (ROOT is now only used by the test
 `unit_vectors`; the fits run on the standalone Minuit2, #73); LHAPDF structure functions (step 10); He3 fixes; run
 bookkeeping in all programs (step 11, #49, #51, #64); Cuba unbundled (#67); the code layout (`Tools` split, includes
 from the repository root, `.hpp`, namespace `nucqcd`, the `T*` classes renamed, the `TNamed` leftovers removed:
@@ -51,7 +51,8 @@ with the derivation in `docs/rho_jacobian.md` (#85); copy-paste comments and a d
 the integration method as an enumeration with one dispatch function, `numint::cube` (#87, #88); the W > 2 GeV cut checked
 on the input of the rho programs (#90); a note on the vintage of the physical constants, which are not updated (#91); the
 seven abstract Glauber grid classes reduced to two (`GridVariant`, #92); the raw pointer arrays of the Glauber grids,
-`DistMomDistrGrid`, `FsiCorrelator` and `setPionGlauberData` replaced by `Grid3D` and `std::vector` (#93, #94).
+`DistMomDistrGrid`, `FsiCorrelator` and `setPionGlauberData` replaced by `Grid3D` and `std::vector` (#93, #94); the four longest Glauber files split (#96); the thick Glauber grids off the z axis integrated in the frame
+of the particle, 20 to 100 times faster (#97).
 
 **Options for the next step** (my recommended order; the author decides):
 1. **Open leads** (step 4, "Open leads (to investigate)"):
