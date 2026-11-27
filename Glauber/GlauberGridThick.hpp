@@ -157,6 +157,10 @@ private:
   /*! integrandum function (clean ones), only CT*/
   static void klaas_int_bound_ct(numint::vector_d &, double b, double z, double phi, GlauberGridThick & grid, int proton);
 
+  /*! integrandum in the frame of the particle (see GlauberThickGridCommon::integrateTilted), results as klaas_int_bound: fsi, fsi+src, fsi+ct, fsi+ct+src */
+  static void klaas_int_tilted(numint::vector_d &, double b, double z, double phi, GlauberThickGridCommon & grid, int proton, const TiltedFrame &frame);
+  /*! integrandum in the frame of the particle, only CT: fsi+ct, fsi+ct+src */
+  static void klaas_int_tilted_ct(numint::vector_d &, double b, double z, double phi, GlauberThickGridCommon & grid, int proton, const TiltedFrame &frame);
 };
 
 
