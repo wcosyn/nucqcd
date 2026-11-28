@@ -358,6 +358,12 @@ one commit per bug; no `[known-bug]` tests remain.
   at all when xi exceeds the deuteron limit for the given t, so such runs are trivially zero (e.g. xi 0.2, -t 0.5).
   `GPDMMS13` provides only H and E in PARTONS, so `conv_V_test` with MMS13 stops at the axial (Ht, Et) grid: use MMS13
   only for the vector part.
+  **Complete VGG99 run (2026-11-27):** `conv_V_test Paris 0.1 0.2 1 1 1 1 GPDVGG99` (xi 0.1, -t 0.2 GeV^2) runs to the end
+  with the fix: 12405 s (3.4 h) on one core, no NaN in the output, no exception. No `share/gpd_deutgrids/` existed on this
+  computer, so there were no stale grids to delete. The cube_adaptive footer says 1606 of 1990 integrals stopped at
+  maxEval = 10000 without reaching 1e-3 (worst estimated error inf, from integrals that are zero); the PARTONS "Cannot reach
+  tolerances" warnings (about 65 MB in 13 minutes, so filter them) were not investigated and the results were not
+  compared with the old built-in grid. The numbers of this run have not been checked against a reference.
 - [x] **`InclusiveCrossRes`: the FSI part returns exactly 0: not a bug (added 2026-11-25, investigated 2026-11-26).** The resonance model for inclusive
   DIS on the deuteron (W. Cosyn, W. Melnitchouk and M. Sargsian, Phys. Rev. C 89, 014612 (2014)) was archived in
   #82 (`progs/attic/threeres`, not built). It compiles once the stale constructor call
